@@ -49,3 +49,9 @@ python setup.py install
 ```
 
 That will install the openai.
+
+## TODO list
+* make user able to select the model
+* highlight the source
+* feeding
+* AI analysis
