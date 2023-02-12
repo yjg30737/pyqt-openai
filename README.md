@@ -48,6 +48,7 @@ That will install the openai.
 
 ## TODO list
 * show the explanation of every model and terms related to AI (e.g. temperature, topp..)
+* Basic style
 * highlight the source
 * feeding
 * AI analysis
