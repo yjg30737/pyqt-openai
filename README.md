@@ -47,6 +47,7 @@ python setup.py install
 That will install the openai.
 
 ## TODO list
+* logging
 * feeding
 * AI analysis
 * show the explanation of every model and terms related to AI (e.g. temperature, topp..)
