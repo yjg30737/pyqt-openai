@@ -3,7 +3,7 @@ import openai
 from chatWidget import Prompt, ChatBrowser
 
 # this API key should be yours
-openai.api_key = '[MY_OPENAPI_API_KEY]'
+# openai.api_key = '[MY_OPENAPI_API_KEY]'
 
 from PyQt5.QtCore import Qt, QCoreApplication, QThread, pyqtSignal
 from PyQt5.QtGui import QGuiApplication, QFont
