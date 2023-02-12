@@ -5,6 +5,8 @@ This shows an example of using OpenAI with PyQt as a chatbot.
 
 The OpenAI model this package uses is the <a href="https://beta.openai.com/docs/models/gpt-3">text-davinci-003</a> model of GPT-3.
 
+You can select other model with the combobox on the sidebar at the right side of the window.
+
 An internet connection is required. 
 
 ## Requirements
@@ -13,13 +15,7 @@ An internet connection is required.
 * openai
 
 ## Preview
-### Preview 1
-
-![image](https://user-images.githubusercontent.com/55078043/216815117-a8c58337-bd0e-44a4-923f-3d58b33d61b6.png)
-
-### Preview 2
-
-![image](https://user-images.githubusercontent.com/55078043/216815122-3cf33222-8c7d-4ab0-af32-ddb229084605.png)
+![image](https://user-images.githubusercontent.com/55078043/218295611-e50f448f-f6c5-4caf-8aa0-4927ad845935.png)
 
 ## How to play
 1. git clone ~
@@ -51,7 +47,7 @@ python setup.py install
 That will install the openai.
 
 ## TODO list
-* make user able to select the model
+* show the explanation of every model and terms related to AI (e.g. temperature, topp..)
 * highlight the source
 * feeding
 * AI analysis
