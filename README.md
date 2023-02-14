@@ -3,7 +3,7 @@ Example of using OpenAI with PyQt (Python cross-platform GUI toolkit)
 
 This shows an example of using OpenAI with PyQt as a chatbot. 
 
-The OpenAI model this package uses is the <a href="https://beta.openai.com/docs/models/gpt-3">text-davinci-003</a> model of GPT-3.
+The OpenAI model this package uses is the <a href="https://beta.openai.com/docs/models/gpt-3">text-davinci-003</a> model of GPT-3 by default.
 
 You can select other model with the combobox on the sidebar at the right side of the window.
 
@@ -48,8 +48,8 @@ That will install the openai.
 
 ## TODO list
 * logging
-* feeding
-* AI analysis
+* feeding (with PyTorch)
+* AI analysis (with wanDB)
 * show the explanation of every model and terms related to AI (e.g. temperature, topp..)
 * Basic style
 * highlight the source
