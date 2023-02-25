@@ -1,14 +1,14 @@
-import openai
+import openai, os
 
 from chatWidget import Prompt, ChatBrowser
 
 # this API key should be yours
-# openai.api_key = '[MY_OPENAPI_API_KEY]'
+openai.api_key = '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'
 
 from PyQt5.QtCore import Qt, QCoreApplication, QThread, pyqtSignal
 from PyQt5.QtGui import QGuiApplication, QFont
 from PyQt5.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QWidget, QSplitter, QComboBox, QSpinBox, \
-    QFormLayout, QDoubleSpinBox
+    QFormLayout, QDoubleSpinBox, QPushButton, QSizePolicy, QFileDialog
 
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
 QCoreApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)  # HighDPI support
@@ -109,6 +109,9 @@ class OpenAIChatBot(QMainWindow):
         presencePenaltySpinBox.setValue(self.__presence_penalty)
         presencePenaltySpinBox.valueChanged.connect(self.__presencePenaltyChanged)
 
+        saveAsLogButton = QPushButton('Save')
+        saveAsLogButton.clicked.connect(self.__saveAsLog)
+
         lay = QFormLayout()
         lay.addRow('Option', None)
         lay.addRow('Model', modelComboBox)
@@ -117,6 +120,7 @@ class OpenAIChatBot(QMainWindow):
         lay.addRow('Top P', toppSpinBox)
         lay.addRow('Frequency penalty', frequencyPenaltySpinBox)
         lay.addRow('Presence penalty', presencePenaltySpinBox)
+        lay.addWidget(saveAsLogButton)
 
         sidebarWidget = QWidget()
         sidebarWidget.setLayout(lay)
@@ -175,6 +179,19 @@ class OpenAIChatBot(QMainWindow):
 
     def __presencePenaltyChanged(self, v):
         self.__presence_penalty = round(v, 2)
+
+    def __saveAsLog(self):
+        # HTML file(*.html)
+        filename = QFileDialog.getSaveFileName(self, 'Save', os.path.expanduser('~'), 'Text File (*.txt)')
+        if filename[0]:
+            filename = filename[0]
+            file_extension = os.path.splitext(filename)[-1]
+            if file_extension == '.txt':
+                with open(filename, 'w') as f:
+                    f.write(self.__browser.getAllText())
+                os.startfile(os.path.dirname(filename))
+            # elif file_extension == '.html':
+            #     os.startfile(os.path.dirname(filename))
 
 
 if __name__ == "__main__":

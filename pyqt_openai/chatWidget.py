@@ -34,6 +34,18 @@ class ChatBrowser(QScrollArea):
             self.verticalScrollBar().setSliderPosition(self.verticalScrollBar().maximum())
         return super().event(e)
 
+    def getAllText(self):
+        all_text_lst = []
+        lay = self.widget().layout()
+        if lay:
+            for i in range(lay.count()):
+                if lay.itemAt(i) and lay.itemAt(i).widget():
+                    widget = lay.itemAt(i).widget()
+                    if isinstance(widget, QLabel):
+                        prefix = 'User' if i % 2 == 0 else 'AI'
+                        all_text_lst.append(f'{prefix}: {widget.text()}')
+
+        return '\n'.join(all_text_lst)
 
 class TextEditPrompt(QTextEdit):
     returnPressed = pyqtSignal()
