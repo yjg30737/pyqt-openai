@@ -3,12 +3,12 @@ import openai, os
 from chatWidget import Prompt, ChatBrowser
 
 # this API key should be yours
-openai.api_key = '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'
+openai.api_key = '[MY_OPENAPI_API_KEY]'
 
 from PyQt5.QtCore import Qt, QCoreApplication, QThread, pyqtSignal
 from PyQt5.QtGui import QGuiApplication, QFont
 from PyQt5.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QWidget, QSplitter, QComboBox, QSpinBox, \
-    QFormLayout, QDoubleSpinBox, QPushButton, QSizePolicy, QFileDialog, QToolBar, QWidgetAction
+    QFormLayout, QDoubleSpinBox, QPushButton, QFileDialog, QToolBar, QWidgetAction
 
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
 QCoreApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)  # HighDPI support
