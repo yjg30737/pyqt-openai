@@ -8,7 +8,7 @@ openai.api_key = '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'
 from PyQt5.QtCore import Qt, QCoreApplication, QThread, pyqtSignal
 from PyQt5.QtGui import QGuiApplication, QFont
 from PyQt5.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QWidget, QSplitter, QComboBox, QSpinBox, \
-    QFormLayout, QDoubleSpinBox, QPushButton, QSizePolicy, QFileDialog
+    QFormLayout, QDoubleSpinBox, QPushButton, QSizePolicy, QFileDialog, QToolBar, QWidgetAction
 
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
 QCoreApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)  # HighDPI support
@@ -125,7 +125,6 @@ class OpenAIChatBot(QMainWindow):
         sidebarWidget = QWidget()
         sidebarWidget.setLayout(lay)
 
-
         mainWidget = QSplitter()
         mainWidget.addWidget(chatWidget)
         mainWidget.addWidget(sidebarWidget)
@@ -148,6 +147,22 @@ class OpenAIChatBot(QMainWindow):
         self.__browser.showText('Hello! How may i help you?', False)
 
         self.__lineEdit.setFocus()
+
+        self.__setActions()
+        self.__setToolBar()
+
+    def __setActions(self):
+        self.__stackAction = QWidgetAction(self)
+        self.__stackBtn = QPushButton('Stack on Top')
+        self.__stackBtn.setCheckable(True)
+        self.__stackBtn.toggled.connect(self.__stackToggle)
+        self.__stackAction.setDefaultWidget(self.__stackBtn)
+
+    def __setToolBar(self):
+        toolbar = QToolBar()
+        toolbar.addAction(self.__stackAction)
+        toolbar.setMovable(False)
+        self.addToolBar(toolbar)
 
     def __chat(self):
         openai_arg = {
@@ -199,6 +214,13 @@ class OpenAIChatBot(QMainWindow):
                 with open(filename, 'w') as f:
                     f.write(self.__browser.getAllText())
                 os.startfile(os.path.dirname(filename))
+
+    def __stackToggle(self, f):
+        if f:
+            self.setWindowFlags(self.windowFlags() | Qt.WindowStaysOnTopHint)
+        else:
+            self.setWindowFlags(self.windowFlags() & ~Qt.WindowStaysOnTopHint)
+        self.show()
 
 
 if __name__ == "__main__":
