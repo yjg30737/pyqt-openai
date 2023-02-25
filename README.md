@@ -47,7 +47,7 @@ python setup.py install
 That will install the openai.
 
 ## TODO list
-* logging
+* <s>logging</s>
 * feeding (with PyTorch)
 * AI analysis (with wanDB)
 * show the explanation of every model and terms related to AI (e.g. temperature, topp..)
