@@ -125,12 +125,22 @@ class OpenAIChatBot(QMainWindow):
         sidebarWidget = QWidget()
         sidebarWidget.setLayout(lay)
 
+
         mainWidget = QSplitter()
         mainWidget.addWidget(chatWidget)
         mainWidget.addWidget(sidebarWidget)
         mainWidget.setSizes([700, 300])
         mainWidget.setChildrenCollapsible(False)
         mainWidget.setHandleWidth(2)
+        mainWidget.setStyleSheet(
+        '''
+        QSplitter::handle:horizontal
+        {
+            background: #CCC;
+            height: 1px;
+        }
+        ''')
+
         self.setCentralWidget(mainWidget)
         self.resize(1024, 768)
 
@@ -181,7 +191,6 @@ class OpenAIChatBot(QMainWindow):
         self.__presence_penalty = round(v, 2)
 
     def __saveAsLog(self):
-        # HTML file(*.html)
         filename = QFileDialog.getSaveFileName(self, 'Save', os.path.expanduser('~'), 'Text File (*.txt)')
         if filename[0]:
             filename = filename[0]
@@ -190,8 +199,6 @@ class OpenAIChatBot(QMainWindow):
                 with open(filename, 'w') as f:
                     f.write(self.__browser.getAllText())
                 os.startfile(os.path.dirname(filename))
-            # elif file_extension == '.html':
-            #     os.startfile(os.path.dirname(filename))
 
 
 if __name__ == "__main__":
