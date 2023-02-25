@@ -122,12 +122,12 @@ class OpenAIChatBot(QMainWindow):
         lay.addRow('Presence penalty', presencePenaltySpinBox)
         lay.addWidget(saveAsLogButton)
 
-        sidebarWidget = QWidget()
-        sidebarWidget.setLayout(lay)
+        self.__sidebarWidget = QWidget()
+        self.__sidebarWidget.setLayout(lay)
 
         mainWidget = QSplitter()
         mainWidget.addWidget(chatWidget)
-        mainWidget.addWidget(sidebarWidget)
+        mainWidget.addWidget(self.__sidebarWidget)
         mainWidget.setSizes([700, 300])
         mainWidget.setChildrenCollapsible(False)
         mainWidget.setHandleWidth(2)
@@ -158,9 +158,17 @@ class OpenAIChatBot(QMainWindow):
         self.__stackBtn.toggled.connect(self.__stackToggle)
         self.__stackAction.setDefaultWidget(self.__stackBtn)
 
+        self.__sideBarAction = QWidgetAction(self)
+        self.__sideBarBtn = QPushButton('Show Sidebar')
+        self.__sideBarBtn.setCheckable(True)
+        self.__sideBarBtn.setChecked(True)
+        self.__sideBarBtn.toggled.connect(self.__sidebarWidget.setVisible)
+        self.__sideBarAction.setDefaultWidget(self.__sideBarBtn)
+
     def __setToolBar(self):
         toolbar = QToolBar()
         toolbar.addAction(self.__stackAction)
+        toolbar.addAction(self.__sideBarAction)
         toolbar.setMovable(False)
         self.addToolBar(toolbar)
 
