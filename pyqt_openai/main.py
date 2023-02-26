@@ -5,13 +5,13 @@ from chatWidget import Prompt, ChatBrowser
 # this API key should be yours
 from notifier import NotifierWidget
 
-openai.api_key = '[MY_OPENAPI_API_KEY]'
+openai.api_key = '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'
 
 from PyQt5.QtCore import Qt, QCoreApplication, QThread, pyqtSignal
 from PyQt5.QtGui import QGuiApplication, QFont, QIcon
 from PyQt5.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QWidget, QSplitter, QComboBox, QSpinBox, \
     QFormLayout, QDoubleSpinBox, QPushButton, QFileDialog, QToolBar, QWidgetAction, QHBoxLayout, QAction, QMenu, \
-    QSystemTrayIcon, QMessageBox
+    QSystemTrayIcon, QMessageBox, QSizePolicy
 
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
 QCoreApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)  # HighDPI support
@@ -56,13 +56,31 @@ class OpenAIChatBot(QMainWindow):
         self.setWindowTitle('PyQt OpenAI Chatbot')
         self.setWindowIcon(QIcon('ico/openai.svg'))
         self.__prompt = Prompt()
+
+        self.__queryTypeCmbBox = QComboBox()
+        self.__queryTypeCmbBox.addItems(['Text Completion', 'Code Completion', 'Image Generation'])
+
         self.__lineEdit = self.__prompt.getTextEdit()
         self.__lineEdit.setPlaceholderText('Write some text...')
         self.__lineEdit.returnPressed.connect(self.__chat)
+
         self.__browser = ChatBrowser()
+
+        lay = QHBoxLayout()
+        lay.addWidget(self.__queryTypeCmbBox)
+        lay.addWidget(self.__prompt)
+        lay.setSpacing(0)
+        lay.setContentsMargins(0, 0, 0, 0)
+
+        self.__queryTypeCmbBox.setMaximumHeight(self.__prompt.sizeHint().height())
+
+        self.__queryWidget = QWidget()
+        self.__queryWidget.setLayout(lay)
+        self.__queryWidget.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
+
         lay = QVBoxLayout()
         lay.addWidget(self.__browser)
-        lay.addWidget(self.__prompt)
+        lay.addWidget(self.__queryWidget)
         lay.setSpacing(0)
         chatWidget = QWidget()
         chatWidget.setLayout(lay)
@@ -231,9 +249,10 @@ class OpenAIChatBot(QMainWindow):
     def __afterGenerated(self):
         self.__lineEdit.setEnabled(True)
         self.__lineEdit.setFocus()
-        self.__notifierWidget = NotifierWidget()
-        self.__notifierWidget.show()
-        self.__notifierWidget.doubleClicked.connect(self.show)
+        if not self.isVisible():
+            self.__notifierWidget = NotifierWidget()
+            self.__notifierWidget.show()
+            self.__notifierWidget.doubleClicked.connect(self.show)
 
     def __modelChanged(self, v):
         self.__engine = v
@@ -276,6 +295,7 @@ class OpenAIChatBot(QMainWindow):
     def closeEvent(self, e):
         message = 'The window has been closed. Would you like to continue running this app in the background?'
         closeMessageBox = QMessageBox()
+        closeMessageBox.setWindowTitle('Wait!')
         closeMessageBox.setText(message)
         closeMessageBox.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
         reply = closeMessageBox.exec()
