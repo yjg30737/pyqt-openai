@@ -5,7 +5,7 @@ from chatWidget import Prompt, ChatBrowser
 # this API key should be yours
 from notifier import NotifierWidget
 
-openai.api_key = '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'
+openai.api_key = '[MY_OPENAPI_API_KEY]'
 
 from PyQt5.QtCore import Qt, QCoreApplication, QThread, pyqtSignal
 from PyQt5.QtGui import QGuiApplication, QFont, QIcon
@@ -21,21 +21,34 @@ QApplication.setFont(QFont('Arial', 12))
 
 
 class OpenAIThread(QThread):
-    replyGenerated = pyqtSignal(str, bool)
+    replyGenerated = pyqtSignal(str, bool, bool)
 
-    def __init__(self, openai_arg, *args, **kwargs):
+    def __init__(self, openai_arg, idx, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.__openai_arg = openai_arg
+        self.__idx = idx
 
     def run(self):
+        if self.__idx == 0:
+            openai_object = openai.Completion.create(
+                **self.__openai_arg
+            )
 
-        openai_object = openai.Completion.create(
-            **self.__openai_arg
-        )
+            response_text = openai_object['choices'][0]['text'].strip()
 
-        response_text = openai_object['choices'][0]['text'].strip()
+            self.replyGenerated.emit(response_text, False, False)
+        elif self.__idx == 1:
+            try:
+                response = openai.Image.create(
+                    **self.__openai_arg
+                )
 
-        self.replyGenerated.emit(response_text, False)
+                image_url = response['data'][0]['url']
+
+                self.replyGenerated.emit(image_url, False, True)
+            except openai.error.InvalidRequestError as e:
+                self.replyGenerated.emit('Your request was rejected as a result of our safety system. \n'
+                                         'Your prompt may contain text that is not allowed by our safety system.', False)
 
 
 class OpenAIChatBot(QMainWindow):
@@ -57,8 +70,8 @@ class OpenAIChatBot(QMainWindow):
         self.setWindowIcon(QIcon('ico/openai.svg'))
         self.__prompt = Prompt()
 
-        self.__queryTypeCmbBox = QComboBox()
-        self.__queryTypeCmbBox.addItems(['Text Completion', 'Code Completion', 'Image Generation'])
+        self.__aiTypeCmbBox = QComboBox()
+        self.__aiTypeCmbBox.addItems(['Text/Code Completion', 'Image Generation'])
 
         self.__lineEdit = self.__prompt.getTextEdit()
         self.__lineEdit.setPlaceholderText('Write some text...')
@@ -67,12 +80,12 @@ class OpenAIChatBot(QMainWindow):
         self.__browser = ChatBrowser()
 
         lay = QHBoxLayout()
-        lay.addWidget(self.__queryTypeCmbBox)
+        lay.addWidget(self.__aiTypeCmbBox)
         lay.addWidget(self.__prompt)
         lay.setSpacing(0)
         lay.setContentsMargins(0, 0, 0, 0)
 
-        self.__queryTypeCmbBox.setMaximumHeight(self.__prompt.sizeHint().height())
+        self.__aiTypeCmbBox.setMaximumHeight(self.__prompt.sizeHint().height())
 
         self.__queryWidget = QWidget()
         self.__queryWidget.setLayout(lay)
@@ -228,19 +241,27 @@ class OpenAIChatBot(QMainWindow):
         self.addToolBar(toolbar)
 
     def __chat(self):
-        openai_arg = {
-            'engine': self.__engine,
-            'prompt': self.__lineEdit.toPlainText(),
-            'temperature': self.__temperature,
-            'max_tokens': self.__max_tokens,
-            'top_p': self.__top_p,
-            'frequency_penalty': self.__frequency_penalty,
-            'presence_penalty': self.__presence_penalty,
-        }
-
+        idx = self.__aiTypeCmbBox.currentIndex()
+        openai_arg = ''
+        if idx == 0:
+            openai_arg = {
+                'engine': self.__engine,
+                'prompt': self.__lineEdit.toPlainText(),
+                'temperature': self.__temperature,
+                'max_tokens': self.__max_tokens,
+                'top_p': self.__top_p,
+                'frequency_penalty': self.__frequency_penalty,
+                'presence_penalty': self.__presence_penalty,
+            }
+        elif idx == 1:
+            openai_arg = {
+                "prompt": self.__lineEdit.toPlainText(),
+                "n": 1,
+                "size": "1024x1024"
+            }
         self.__lineEdit.setEnabled(False)
-        self.__t = OpenAIThread(openai_arg)
-        self.__t.replyGenerated.connect(self.__browser.showText)
+        self.__t = OpenAIThread(openai_arg, idx)
+        self.__t.replyGenerated.connect(self.__browser.showReply)
         self.__browser.showText(self.__lineEdit.toPlainText(), True)
         self.__lineEdit.clear()
         self.__t.start()

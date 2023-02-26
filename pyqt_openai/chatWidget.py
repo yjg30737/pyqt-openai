@@ -1,4 +1,7 @@
+import requests
+
 from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QScrollArea, QVBoxLayout, QWidget, QLabel, QHBoxLayout, QTextEdit
 
 
@@ -17,6 +20,22 @@ class ChatBrowser(QScrollArea):
         self.setWidget(widget)
         self.setWidgetResizable(True)
 
+    def showReply(self, content, user_f, image_f):
+        if image_f:
+            self.showImage(content, user_f)
+        else:
+            self.showText(content, user_f)
+
+    def showImage(self, image_url, user_f):
+        chatLbl = QLabel()
+        response = requests.get(image_url)
+        pixmap = QPixmap()
+        pixmap.loadFromData(response.content)
+        pixmap = pixmap.scaled(chatLbl.width(), chatLbl.height())
+        chatLbl.setPixmap(pixmap)
+        chatLbl.setStyleSheet('QLabel { background-color: #DDD; padding: 1em }')
+        self.widget().layout().addWidget(chatLbl)
+
     def showText(self, text, user_f):
         chatLbl = QLabel(text)
         chatLbl.setWordWrap(True)
@@ -34,6 +53,7 @@ class ChatBrowser(QScrollArea):
             self.verticalScrollBar().setSliderPosition(self.verticalScrollBar().maximum())
         return super().event(e)
 
+    # TODO distinguish the image response
     def getAllText(self):
         all_text_lst = []
         lay = self.widget().layout()
@@ -46,6 +66,7 @@ class ChatBrowser(QScrollArea):
                         all_text_lst.append(f'{prefix}: {widget.text()}')
 
         return '\n'.join(all_text_lst)
+
 
 class TextEditPrompt(QTextEdit):
     returnPressed = pyqtSignal()
