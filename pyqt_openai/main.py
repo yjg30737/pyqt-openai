@@ -8,7 +8,7 @@ openai.api_key = '[MY_OPENAPI_API_KEY]'
 from PyQt5.QtCore import Qt, QCoreApplication, QThread, pyqtSignal
 from PyQt5.QtGui import QGuiApplication, QFont
 from PyQt5.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QWidget, QSplitter, QComboBox, QSpinBox, \
-    QFormLayout, QDoubleSpinBox, QPushButton, QFileDialog, QToolBar, QWidgetAction
+    QFormLayout, QDoubleSpinBox, QPushButton, QFileDialog, QToolBar, QWidgetAction, QHBoxLayout
 
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
 QCoreApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)  # HighDPI support
@@ -165,10 +165,21 @@ class OpenAIChatBot(QMainWindow):
         self.__sideBarBtn.toggled.connect(self.__sidebarWidget.setVisible)
         self.__sideBarAction.setDefaultWidget(self.__sideBarBtn)
 
+        self.__transparentAction = QWidgetAction(self)
+        self.__transparentSpinBox = QSpinBox()
+        self.__transparentSpinBox.setRange(0, 100)
+        self.__transparentSpinBox.setValue(100)
+        self.__transparentSpinBox.valueChanged.connect(self.__setTransparency)
+        self.__transparentSpinBox.setToolTip('Set Transparency of Window')
+        self.__transparentAction.setDefaultWidget(self.__transparentSpinBox)
+
     def __setToolBar(self):
         toolbar = QToolBar()
+        lay = QHBoxLayout()
         toolbar.addAction(self.__stackAction)
         toolbar.addAction(self.__sideBarAction)
+        toolbar.addAction(self.__transparentAction)
+        toolbar.setLayout(lay)
         toolbar.setMovable(False)
         self.addToolBar(toolbar)
 
@@ -229,6 +240,9 @@ class OpenAIChatBot(QMainWindow):
         else:
             self.setWindowFlags(self.windowFlags() & ~Qt.WindowStaysOnTopHint)
         self.show()
+
+    def __setTransparency(self, v):
+        self.setWindowOpacity(v / 100)
 
 
 if __name__ == "__main__":
