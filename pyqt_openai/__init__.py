@@ -1,1 +1,1 @@
-from pyqt_openai.main import OpenAIChatBot
+from pyqt_openai.main import *

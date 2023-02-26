@@ -3,7 +3,9 @@ import openai, os
 from chatWidget import Prompt, ChatBrowser
 
 # this API key should be yours
-openai.api_key = '[MY_OPENAPI_API_KEY]'
+from notifier import NotifierWidget
+
+openai.api_key = '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'
 
 from PyQt5.QtCore import Qt, QCoreApplication, QThread, pyqtSignal
 from PyQt5.QtGui import QGuiApplication, QFont, QIcon
@@ -228,6 +230,9 @@ class OpenAIChatBot(QMainWindow):
     def __afterGenerated(self):
         self.__lineEdit.setEnabled(True)
         self.__lineEdit.setFocus()
+        self.__notifierWidget = NotifierWidget()
+        self.__notifierWidget.show()
+        self.__notifierWidget.doubleClicked.connect(self.show)
 
     def __modelChanged(self, v):
         self.__engine = v
