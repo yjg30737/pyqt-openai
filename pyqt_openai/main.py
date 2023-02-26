@@ -6,9 +6,10 @@ from chatWidget import Prompt, ChatBrowser
 openai.api_key = '[MY_OPENAPI_API_KEY]'
 
 from PyQt5.QtCore import Qt, QCoreApplication, QThread, pyqtSignal
-from PyQt5.QtGui import QGuiApplication, QFont
+from PyQt5.QtGui import QGuiApplication, QFont, QIcon
 from PyQt5.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QWidget, QSplitter, QComboBox, QSpinBox, \
-    QFormLayout, QDoubleSpinBox, QPushButton, QFileDialog, QToolBar, QWidgetAction, QHBoxLayout
+    QFormLayout, QDoubleSpinBox, QPushButton, QFileDialog, QToolBar, QWidgetAction, QHBoxLayout, QAction, QMenu, \
+    QSystemTrayIcon
 
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
 QCoreApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)  # HighDPI support
@@ -62,6 +63,24 @@ class OpenAIChatBot(QMainWindow):
         lay.setSpacing(0)
         chatWidget = QWidget()
         chatWidget.setLayout(lay)
+
+        # background app
+        menu = QMenu()
+
+        action = QAction("Quit", self)
+        action.setIcon(QIcon('ico/close.svg'))
+
+        action.triggered.connect(app.quit)
+
+        menu.addAction(action)
+
+        tray_icon = QSystemTrayIcon(app)
+        tray_icon.setIcon(QIcon('ico/openai.svg'))
+        tray_icon.activated.connect(self.__activated)
+
+        tray_icon.setContextMenu(menu)
+
+        tray_icon.show()
 
         modelComboBox = QComboBox()
         modelComboBox.addItems([
@@ -173,6 +192,10 @@ class OpenAIChatBot(QMainWindow):
         self.__transparentSpinBox.setToolTip('Set Transparency of Window')
         self.__transparentAction.setDefaultWidget(self.__transparentSpinBox)
 
+    def __activated(self, reason):
+        if reason == 3:
+            self.show()
+
     def __setToolBar(self):
         toolbar = QToolBar()
         lay = QHBoxLayout()
@@ -249,6 +272,7 @@ if __name__ == "__main__":
     import sys
 
     app = QApplication(sys.argv)
+    app.setQuitOnLastWindowClosed(False)
     w = OpenAIChatBot()
     w.show()
-    app.exec()
+    sys.exit(app.exec())
