@@ -11,7 +11,7 @@ from PyQt5.QtCore import Qt, QCoreApplication, QThread, pyqtSignal
 from PyQt5.QtGui import QGuiApplication, QFont, QIcon
 from PyQt5.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QWidget, QSplitter, QComboBox, QSpinBox, \
     QFormLayout, QDoubleSpinBox, QPushButton, QFileDialog, QToolBar, QWidgetAction, QHBoxLayout, QAction, QMenu, \
-    QSystemTrayIcon
+    QSystemTrayIcon, QMessageBox
 
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
 QCoreApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)  # HighDPI support
@@ -271,6 +271,20 @@ class OpenAIChatBot(QMainWindow):
 
     def __setTransparency(self, v):
         self.setWindowOpacity(v / 100)
+
+    def closeEvent(self, e):
+        message = 'The window has been closed. Would you like to continue running this app in the background?'
+        closeMessageBox = QMessageBox()
+        closeMessageBox.setText(message)
+        closeMessageBox.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+        reply = closeMessageBox.exec()
+        # Yes
+        if reply == 16384:
+            e.accept()
+        # No
+        elif reply == 65536:
+            app.quit()
+        return super().closeEvent(e)
 
 
 if __name__ == "__main__":
