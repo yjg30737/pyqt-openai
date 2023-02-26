@@ -54,6 +54,7 @@ class OpenAIChatBot(QMainWindow):
 
     def __initUi(self):
         self.setWindowTitle('PyQt OpenAI Chatbot')
+        self.setWindowIcon(QIcon('ico/openai.svg'))
         self.__prompt = Prompt()
         self.__lineEdit = self.__prompt.getTextEdit()
         self.__lineEdit.setPlaceholderText('Write some text...')
