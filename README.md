@@ -50,8 +50,10 @@ That will install the openai.
 
 ## TODO list
 * <s>logging</s>
-* feeding (with PyTorch)
-* AI analysis (with wanDB)
+* fine-tuning (with JSONL)
+* Add the fine-tuned model in combo box
+* Sync the fine-tunes, analysis (with wanDB)
 * show the explanation of every model and terms related to AI (e.g. temperature, topp..)
-* Basic style
+* <s>Basic style</s>
 * highlight the source
+* Add the basic example sources of making deep learning model with PyTorch
