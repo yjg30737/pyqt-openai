@@ -11,7 +11,7 @@ from PyQt5.QtCore import Qt, QCoreApplication, QThread, pyqtSignal
 from PyQt5.QtGui import QGuiApplication, QFont, QIcon
 from PyQt5.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QWidget, QSplitter, QComboBox, QSpinBox, \
     QFormLayout, QDoubleSpinBox, QPushButton, QFileDialog, QToolBar, QWidgetAction, QHBoxLayout, QAction, QMenu, \
-    QSystemTrayIcon, QMessageBox, QSizePolicy, QGroupBox
+    QSystemTrayIcon, QMessageBox, QSizePolicy, QGroupBox, QLineEdit
 
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
 QCoreApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)  # HighDPI support
@@ -179,8 +179,21 @@ class OpenAIChatBot(QMainWindow):
         optionGrpBox.setTitle('Option')
         optionGrpBox.setLayout(lay)
 
+        # find the training data
+        self.__findDataLineEdit = QLineEdit()
+
+        findDataBtn = QPushButton('Find...')
+        findDataBtn.clicked.connect(self.__findData)
+
+        lay = QHBoxLayout()
+        lay.setSpacing(0)
+        lay.addWidget(self.__findDataLineEdit)
+        lay.addWidget(findDataBtn)
+        lay.setAlignment(Qt.AlignTop)
+
         fineTuneGrpBox = QGroupBox()
         fineTuneGrpBox.setTitle('Fine-tune training (coming soon)')
+        fineTuneGrpBox.setLayout(lay)
 
         lay = QVBoxLayout()
         lay.addWidget(optionGrpBox)
@@ -338,6 +351,12 @@ class OpenAIChatBot(QMainWindow):
         elif reply == 65536:
             app.quit()
         return super().closeEvent(e)
+
+    def __findData(self):
+        filename = QFileDialog.getOpenFileName(self, 'Open', '', 'JSONL Files (*.jsonl)')
+        if filename[0]:
+            filename = filename[0]
+            self.__findDataLineEdit.setText(filename)
 
 
 if __name__ == "__main__":
