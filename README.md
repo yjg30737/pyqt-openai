@@ -5,6 +5,8 @@ This shows an example of using OpenAI with PyQt as a chatbot.
 
 The OpenAI model this package uses is the <a href="https://beta.openai.com/docs/models/gpt-3">text-davinci-003</a> model of GPT-3 by default.
 
+Image generation feature available since v0.0.16. You can see the detail in <a href="https://platform.openai.com/docs/guides/images/introduction">official OpenAI</a> site. Currently this feature is very basic now.
+
 You can select other model with the combobox on the sidebar at the right side of the window.
 
 An internet connection is required. 
@@ -48,8 +50,10 @@ That will install the openai.
 
 ## TODO list
 * <s>logging</s>
-* feeding (with PyTorch)
-* AI analysis (with wanDB)
+* fine-tuning (with JSONL)
+* Add the fine-tuned model in combo box
+* Sync the fine-tunes, analysis (with wanDB)
 * show the explanation of every model and terms related to AI (e.g. temperature, topp..)
-* Basic style
+* <s>Basic style</s>
 * highlight the source
+* Add the basic example sources of making deep learning model with PyTorch
