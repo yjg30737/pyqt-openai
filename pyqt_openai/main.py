@@ -5,7 +5,10 @@ from chatWidget import Prompt, ChatBrowser
 # this API key should be yours
 from notifier import NotifierWidget
 
+# for script
 openai.api_key = '[MY_OPENAPI_API_KEY]'
+# for subprocess
+# os.environ['OPENAI_API_KEY'] = '[MY_OPENAPI_API_KEY]'
 
 from PyQt5.QtCore import Qt, QCoreApplication, QThread, pyqtSignal
 from PyQt5.QtGui import QGuiApplication, QFont, QIcon
@@ -185,11 +188,34 @@ class OpenAIChatBot(QMainWindow):
         findDataBtn = QPushButton('Find...')
         findDataBtn.clicked.connect(self.__findData)
 
+        self.__fineTuningBtn = QPushButton('Fine Tuning')
+        self.__fineTuningBtn.clicked.connect(self.__fineTuning)
+        self.__fineTuningBtn.setDisabled(True)
+
         lay = QHBoxLayout()
         lay.setSpacing(0)
         lay.addWidget(self.__findDataLineEdit)
         lay.addWidget(findDataBtn)
         lay.setAlignment(Qt.AlignTop)
+        lay.setContentsMargins(5, 5, 5, 1)
+
+        fineTuneGrpBoxTopWidget = QWidget()
+        fineTuneGrpBoxTopWidget.setLayout(lay)
+
+        lay = QVBoxLayout()
+        lay.addWidget(self.__fineTuningBtn)
+        lay.setAlignment(Qt.AlignTop)
+
+        fineTuneGrpBoxBottomWidget = QWidget()
+        fineTuneGrpBoxBottomWidget.setLayout(lay)
+        lay.setContentsMargins(5, 1, 5, 5)
+
+        lay = QVBoxLayout()
+        lay.addWidget(fineTuneGrpBoxTopWidget)
+        lay.addWidget(fineTuneGrpBoxBottomWidget)
+        lay.setAlignment(Qt.AlignTop)
+        lay.setSpacing(0)
+        lay.setContentsMargins(0, 0, 0, 0)
 
         fineTuneGrpBox = QGroupBox()
         fineTuneGrpBox.setTitle('Fine-tune training (coming soon)')
@@ -357,6 +383,35 @@ class OpenAIChatBot(QMainWindow):
         if filename[0]:
             filename = filename[0]
             self.__findDataLineEdit.setText(filename)
+            self.__fineTuningBtn.setEnabled(True)
+            
+
+    def __fineTuning(self):
+        pass
+        # https://platform.openai.com/docs/guides/fine-tuning/cli-data-preparation-tool
+        # validating & giving suggestions and reformat the data
+        # subprocess.run('openai tools fine_tunes.prepare_data -f data.jsonl')
+
+        # https://platform.openai.com/docs/guides/fine-tuning/create-a-fine-tuned-model
+        # create a fine-tuned model
+        # subprocess.run('openai api fine_tunes.create -t data_prepared.jsonl -m davinci')
+
+        # run this when event stream is interrupted for any reason
+        # subprocess.run('openai api fine_tunes.follow -i ft-SKhbQrd51sjRoiu5tfihXlrj')
+        # you can see the job done when it is finished
+        # https://platform.openai.com/account/usage
+        # https://platform.openai.com/playground
+
+        # list the jobs
+        # subprocess.run('openai api fine_tunes.list')
+
+        # get the status of certain job. The resulting object includes
+        # job status (which can be one of pending, running, succeeded, or failed)
+        # and other information
+        # subprocess.run('openai api fine_tunes.get -i ft-CiVD03BQy3cv8OTWiyi8QK7Y')
+
+        # cancel the job
+        # subprocess.run('openai api fine_tunes.cancel -i ft-SKhbQrd51sjRoiu5tfihXlrj')
 
 
 if __name__ == "__main__":
