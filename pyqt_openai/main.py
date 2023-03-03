@@ -391,16 +391,17 @@ class OpenAIChatBot(QMainWindow):
             subprocess.Popen('cmd.exe', creationflags=subprocess.CREATE_NEW_CONSOLE)
         elif platform.system() in ['Darwin', 'Linux']:
             subprocess.Popen('bash', creationflags=subprocess.CREATE_NEW_CONSOLE)
+
         # https://platform.openai.com/docs/guides/fine-tuning/cli-data-preparation-tool
         # validating & giving suggestions and reformat the data
         # subprocess.run('openai tools fine_tunes.prepare_data -f data.jsonl')
 
         # https://platform.openai.com/docs/guides/fine-tuning/create-a-fine-tuned-model
         # create a fine-tuned model
-        # subprocess.run('openai api fine_tunes.create -t data_prepared.jsonl -m davinci')
+        # subprocess.run('openai api fine_tunes.create -t [TRAIN_FILE_ID_OR_PATH] -m [BASE_MODEL]')
 
         # run this when event stream is interrupted for any reason
-        # subprocess.run('openai api fine_tunes.follow -i ft-SKhbQrd51sjRoiu5tfihXlrj')
+        # subprocess.run('openai api fine_tunes.follow -i [YOUR_FINE_TUNE_JOB_ID]')
         # you can see the job done when it is finished
         # https://platform.openai.com/account/usage
         # https://platform.openai.com/playground
@@ -411,10 +412,10 @@ class OpenAIChatBot(QMainWindow):
         # get the status of certain job. The resulting object includes
         # job status (which can be one of pending, running, succeeded, or failed)
         # and other information
-        # subprocess.run('openai api fine_tunes.get -i ft-CiVD03BQy3cv8OTWiyi8QK7Y')
+        # subprocess.run('openai api fine_tunes.get -i [YOUR_FINE_TUNE_JOB_ID]')
 
         # cancel the job
-        # subprocess.run('openai api fine_tunes.cancel -i ft-SKhbQrd51sjRoiu5tfihXlrj')
+        # subprocess.run('openai api fine_tunes.cancel -i [YOUR_FINE_TUNE_JOB_ID]')
 
 
 if __name__ == "__main__":
