@@ -11,7 +11,7 @@ from PyQt5.QtCore import Qt, QCoreApplication, QThread, pyqtSignal
 from PyQt5.QtGui import QGuiApplication, QFont, QIcon
 from PyQt5.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QWidget, QSplitter, QComboBox, QSpinBox, \
     QFormLayout, QDoubleSpinBox, QPushButton, QFileDialog, QToolBar, QWidgetAction, QHBoxLayout, QAction, QMenu, \
-    QSystemTrayIcon, QMessageBox, QSizePolicy
+    QSystemTrayIcon, QMessageBox, QSizePolicy, QGroupBox
 
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
 QCoreApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)  # HighDPI support
@@ -165,8 +165,8 @@ class OpenAIChatBot(QMainWindow):
         saveAsLogButton = QPushButton('Save')
         saveAsLogButton.clicked.connect(self.__saveAsLog)
 
+
         lay = QFormLayout()
-        lay.addRow('Option', None)
         lay.addRow('Model', modelComboBox)
         lay.addRow('Temperature', temperatureSpinBox)
         lay.addRow('Maximum length', maxTokensSpinBox)
@@ -174,6 +174,17 @@ class OpenAIChatBot(QMainWindow):
         lay.addRow('Frequency penalty', frequencyPenaltySpinBox)
         lay.addRow('Presence penalty', presencePenaltySpinBox)
         lay.addWidget(saveAsLogButton)
+
+        optionGrpBox = QGroupBox()
+        optionGrpBox.setTitle('Option')
+        optionGrpBox.setLayout(lay)
+
+        fineTuneGrpBox = QGroupBox()
+        fineTuneGrpBox.setTitle('Fine-tune training (coming soon)')
+
+        lay = QVBoxLayout()
+        lay.addWidget(optionGrpBox)
+        lay.addWidget(fineTuneGrpBox)
 
         self.__sidebarWidget = QWidget()
         self.__sidebarWidget.setLayout(lay)
