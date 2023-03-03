@@ -1,4 +1,4 @@
-import openai, os
+import openai, os, platform, subprocess
 
 from chatWidget import Prompt, ChatBrowser
 
@@ -7,7 +7,7 @@ from notifier import NotifierWidget
 
 # for script
 openai.api_key = '[MY_OPENAPI_API_KEY]'
-# for subprocess
+# for subprocess (mostly)
 # os.environ['OPENAI_API_KEY'] = '[MY_OPENAPI_API_KEY]'
 
 from PyQt5.QtCore import Qt, QCoreApplication, QThread, pyqtSignal
@@ -387,7 +387,10 @@ class OpenAIChatBot(QMainWindow):
             
 
     def __fineTuning(self):
-        pass
+        if platform.system() == 'Windows':
+            subprocess.Popen('cmd.exe', creationflags=subprocess.CREATE_NEW_CONSOLE)
+        elif platform.system() in ['Darwin', 'Linux']:
+            subprocess.Popen('bash', creationflags=subprocess.CREATE_NEW_CONSOLE)
         # https://platform.openai.com/docs/guides/fine-tuning/cli-data-preparation-tool
         # validating & giving suggestions and reformat the data
         # subprocess.run('openai tools fine_tunes.prepare_data -f data.jsonl')
