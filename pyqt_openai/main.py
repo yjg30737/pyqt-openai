@@ -14,7 +14,7 @@ from PyQt5.QtCore import Qt, QCoreApplication, QThread, pyqtSignal
 from PyQt5.QtGui import QGuiApplication, QFont, QIcon
 from PyQt5.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QWidget, QSplitter, QComboBox, QSpinBox, \
     QFormLayout, QDoubleSpinBox, QPushButton, QFileDialog, QToolBar, QWidgetAction, QHBoxLayout, QAction, QMenu, \
-    QSystemTrayIcon, QMessageBox, QSizePolicy, QGroupBox, QLineEdit
+    QSystemTrayIcon, QMessageBox, QSizePolicy, QGroupBox, QLineEdit, QLabel
 
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
 QCoreApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)  # HighDPI support
@@ -168,6 +168,19 @@ class OpenAIChatBot(QMainWindow):
         saveAsLogButton = QPushButton('Save')
         saveAsLogButton.clicked.connect(self.__saveAsLog)
 
+        apiLbl = QLabel('API')
+        apiLineEdit = QLineEdit()
+        apiLineEdit.setPlaceholderText('Write your API Key...')
+
+        lay = QVBoxLayout()
+        lay.addWidget(apiLbl)
+        lay.addWidget(apiLineEdit)
+        lay.setAlignment(Qt.AlignTop)
+
+        apiGrpBox = QGroupBox()
+        apiGrpBox.setLayout(lay)
+        apiGrpBox.setFixedHeight(apiGrpBox.sizeHint().height())
+        apiGrpBox.setDisabled(True)
 
         lay = QFormLayout()
         lay.addRow('Model', modelComboBox)
@@ -222,6 +235,7 @@ class OpenAIChatBot(QMainWindow):
         fineTuneGrpBox.setLayout(lay)
 
         lay = QVBoxLayout()
+        lay.addWidget(apiGrpBox)
         lay.addWidget(optionGrpBox)
         lay.addWidget(fineTuneGrpBox)
 
