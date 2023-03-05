@@ -50,7 +50,7 @@ That will install the openai.
 
 ## TODO list
 * <s>logging</s>
-* fine-tuning (with JSONL)
+* fine-tuning (with JSONL) - currently working
 * Add the fine-tuned model in combo box
 * Sync the fine-tunes, analysis (with wanDB)
 * show the explanation of every model and terms related to AI (e.g. temperature, topp..)
