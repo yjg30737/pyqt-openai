@@ -11,7 +11,7 @@ openai.api_key = '[MY_OPENAPI_API_KEY]'
 # os.environ['OPENAI_API_KEY'] = '[MY_OPENAPI_API_KEY]'
 
 from PyQt5.QtCore import Qt, QCoreApplication, QThread, pyqtSignal
-from PyQt5.QtGui import QGuiApplication, QFont, QIcon
+from PyQt5.QtGui import QGuiApplication, QFont, QIcon, QColor
 from PyQt5.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QWidget, QSplitter, QComboBox, QSpinBox, \
     QFormLayout, QDoubleSpinBox, QPushButton, QFileDialog, QToolBar, QWidgetAction, QHBoxLayout, QAction, QMenu, \
     QSystemTrayIcon, QMessageBox, QSizePolicy, QGroupBox, QLineEdit, QLabel
@@ -330,10 +330,12 @@ class OpenAIChatBot(QMainWindow):
         if response.status_code == 200:
             openai.api_key = api_key
             os.environ['OPENAI_API_KEY'] = api_key
-            self.__apiCheckPreviewLbl.setText('API key is valid.')
+            self.__apiCheckPreviewLbl.setStyleSheet("color: {}".format(QColor(0, 200, 0).name()))
+            self.__apiCheckPreviewLbl.setText('API key is valid')
             self.__lineEdit.setEnabled(True)
         else:
-            self.__apiCheckPreviewLbl.setText('API key is invalid.')
+            self.__apiCheckPreviewLbl.setStyleSheet("color: {}".format(QColor(255, 0, 0).name()))
+            self.__apiCheckPreviewLbl.setText('API key is invalid')
             self.__lineEdit.setEnabled(False)
         self.__apiCheckPreviewLbl.show()
 
