@@ -307,7 +307,14 @@ class OpenAIChatBot(QMainWindow):
         self.__transparentSpinBox.setValue(100)
         self.__transparentSpinBox.valueChanged.connect(self.__setTransparency)
         self.__transparentSpinBox.setToolTip('Set Transparency of Window')
-        self.__transparentAction.setDefaultWidget(self.__transparentSpinBox)
+
+        lay = QHBoxLayout()
+        lay.addWidget(QLabel('Window Transparency'))
+        lay.addWidget(self.__transparentSpinBox)
+
+        transparencyActionWidget = QWidget()
+        transparencyActionWidget.setLayout(lay)
+        self.__transparentAction.setDefaultWidget(transparencyActionWidget)
 
     def __activated(self, reason):
         if reason == 3:
@@ -326,7 +333,6 @@ class OpenAIChatBot(QMainWindow):
     def __setApi(self):
         api_key = self.__apiLineEdit.text()
         response = requests.get('https://api.openai.com/v1/engines', headers={'Authorization': f'Bearer {api_key}'})
-        print(response.status_code)
         if response.status_code == 200:
             openai.api_key = api_key
             os.environ['OPENAI_API_KEY'] = api_key
