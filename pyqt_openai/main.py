@@ -172,6 +172,7 @@ class OpenAIChatBot(QMainWindow):
         self.__apiLineEdit = QLineEdit()
         self.__apiLineEdit.setPlaceholderText('Write your API Key...')
         self.__apiLineEdit.returnPressed.connect(self.__setApi)
+        self.__apiLineEdit.setEchoMode(QLineEdit.Password)
 
         apiBtn = QPushButton('Use')
         apiBtn.clicked.connect(self.__setApi)
