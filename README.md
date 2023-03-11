@@ -17,7 +17,7 @@ An internet connection is required.
 * openai
 
 ## Preview
-![image](https://user-images.githubusercontent.com/55078043/224462716-d27ffa77-01d3-4ef6-84fb-527e75df58b5.png)
+![image](https://user-images.githubusercontent.com/55078043/224462964-b764f10c-839f-41c0-85c5-839f69bcbe30.png)
 
 ## How to play
 1. git clone ~
