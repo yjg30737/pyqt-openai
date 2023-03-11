@@ -2,15 +2,9 @@ import openai, requests, os, platform, subprocess
 
 from chatWidget import Prompt, ChatBrowser
 
-# this API key should be yours
 from notifier import NotifierWidget
 
-# for script
-openai.api_key = '[MY_OPENAPI_API_KEY]'
-# for subprocess (mostly)
-# os.environ['OPENAI_API_KEY'] = '[MY_OPENAPI_API_KEY]'
-
-from PyQt5.QtCore import Qt, QCoreApplication, QThread, pyqtSignal
+from PyQt5.QtCore import Qt, QCoreApplication, QThread, pyqtSignal, QSettings
 from PyQt5.QtGui import QGuiApplication, QFont, QIcon, QColor
 from PyQt5.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QWidget, QSplitter, QComboBox, QSpinBox, \
     QFormLayout, QDoubleSpinBox, QPushButton, QFileDialog, QToolBar, QWidgetAction, QHBoxLayout, QAction, QMenu, \
@@ -67,6 +61,16 @@ class OpenAIChatBot(QMainWindow):
         self.__top_p = 1.0
         self.__frequency_penalty = 0.0
         self.__presence_penalty = 0.0
+        self.__settings_struct = QSettings('pyqt_openai.ini', QSettings.IniFormat)
+
+        # this api key should be yours
+        if self.__settings_struct.contains('API_KEY'):
+            # for script
+            openai.api_key = self.__settings_struct.value('API_KEY')
+            # for subprocess (mostly)
+            os.environ['OPENAI_API_KEY'] = self.__settings_struct.value('API_KEY')
+        else:
+            self.__settings_struct.setValue('API_KEY', '')
 
     def __initUi(self):
         self.setWindowTitle('PyQt OpenAI Chatbot')
@@ -171,6 +175,22 @@ class OpenAIChatBot(QMainWindow):
         apiLbl = QLabel('API')
         self.__apiLineEdit = QLineEdit()
         self.__apiLineEdit.setPlaceholderText('Write your API Key...')
+        self.__apiLineEdit.setText(openai.api_key)
+
+        # TODO show the label to notify user to given api key is valid or not
+        # check if loaded API_KEY from ini file is not empty
+        if openai.api_key:
+            # check if loaded api is valid
+            response = requests.get('https://api.openai.com/v1/engines', headers={'Authorization': f'Bearer {openai.api_key}'})
+            if response.status_code == 200:
+                self.__lineEdit.setEnabled(True)
+            # if api is not valid (this is likely the case of editing arbitrarily by user)
+            else:
+                self.__lineEdit.setEnabled(False)
+        # if it is empty
+        else:
+            self.__lineEdit.setEnabled(False)
+
         self.__apiLineEdit.returnPressed.connect(self.__setApi)
         self.__apiLineEdit.setEchoMode(QLineEdit.Password)
 
@@ -280,9 +300,7 @@ class OpenAIChatBot(QMainWindow):
         self.__browser.showText('Hello!', True)
         self.__browser.showText('Hello! How may i help you?', False)
 
-        # TODO "save the api key" option
         self.__lineEdit.setFocus()
-        self.__lineEdit.setEnabled(False)
 
         self.__setActions()
         self.__setToolBar()
@@ -338,6 +356,7 @@ class OpenAIChatBot(QMainWindow):
             os.environ['OPENAI_API_KEY'] = api_key
             self.__apiCheckPreviewLbl.setStyleSheet("color: {}".format(QColor(0, 200, 0).name()))
             self.__apiCheckPreviewLbl.setText('API key is valid')
+            self.__settings_struct.setValue('API_KEY', api_key)
             self.__lineEdit.setEnabled(True)
         else:
             self.__apiCheckPreviewLbl.setStyleSheet("color: {}".format(QColor(255, 0, 0).name()))
