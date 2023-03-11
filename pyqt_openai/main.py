@@ -179,6 +179,7 @@ class OpenAIChatBot(QMainWindow):
         lay = QHBoxLayout()
         lay.addWidget(self.__apiLineEdit)
         lay.addWidget(apiBtn)
+        lay.setContentsMargins(0, 0, 0, 0)
 
         apiWidget = QWidget()
         apiWidget.setLayout(lay)
@@ -192,7 +193,6 @@ class OpenAIChatBot(QMainWindow):
         lay.addWidget(apiWidget)
         lay.addWidget(self.__apiCheckPreviewLbl)
         lay.setAlignment(Qt.AlignTop)
-        lay.setSpacing(2)
 
         apiGrpBox = QGroupBox()
         apiGrpBox.setLayout(lay)
@@ -279,7 +279,9 @@ class OpenAIChatBot(QMainWindow):
         self.__browser.showText('Hello!', True)
         self.__browser.showText('Hello! How may i help you?', False)
 
+        # TODO "save the api key" option
         self.__lineEdit.setFocus()
+        self.__lineEdit.setEnabled(False)
 
         self.__setActions()
         self.__setToolBar()
@@ -328,8 +330,10 @@ class OpenAIChatBot(QMainWindow):
             openai.api_key = api_key
             os.environ['OPENAI_API_KEY'] = api_key
             self.__apiCheckPreviewLbl.setText('API key is valid.')
+            self.__lineEdit.setEnabled(True)
         else:
             self.__apiCheckPreviewLbl.setText('API key is invalid.')
+            self.__lineEdit.setEnabled(False)
         self.__apiCheckPreviewLbl.show()
 
     def __chat(self):
