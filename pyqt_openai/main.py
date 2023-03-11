@@ -1,4 +1,4 @@
-import openai, os, platform, subprocess
+import openai, requests, os, platform, subprocess
 
 from chatWidget import Prompt, ChatBrowser
 
@@ -169,18 +169,28 @@ class OpenAIChatBot(QMainWindow):
         saveAsLogButton.clicked.connect(self.__saveAsLog)
 
         apiLbl = QLabel('API')
-        apiLineEdit = QLineEdit()
-        apiLineEdit.setPlaceholderText('Write your API Key...')
+        self.__apiLineEdit = QLineEdit()
+        self.__apiLineEdit.setPlaceholderText('Write your API Key...')
+        self.__apiLineEdit.returnPressed.connect(self.__setApi)
+
+        apiBtn = QPushButton('Use')
+        apiBtn.clicked.connect(self.__setApi)
+
+        lay = QHBoxLayout()
+        lay.addWidget(self.__apiLineEdit)
+        lay.addWidget(apiBtn)
+
+        apiWidget = QWidget()
+        apiWidget.setLayout(lay)
 
         lay = QVBoxLayout()
         lay.addWidget(apiLbl)
-        lay.addWidget(apiLineEdit)
+        lay.addWidget(apiWidget)
         lay.setAlignment(Qt.AlignTop)
 
         apiGrpBox = QGroupBox()
         apiGrpBox.setLayout(lay)
         apiGrpBox.setFixedHeight(apiGrpBox.sizeHint().height())
-        apiGrpBox.setDisabled(True)
 
         lay = QFormLayout()
         lay.addRow('Model', modelComboBox)
@@ -303,6 +313,18 @@ class OpenAIChatBot(QMainWindow):
         toolbar.setLayout(lay)
         toolbar.setMovable(False)
         self.addToolBar(toolbar)
+
+    def __setApi(self):
+        api_key = self.__apiLineEdit.text()
+        response = requests.get('https://api.openai.com/v1/engines', headers={'Authorization': f'Bearer {api_key}'})
+        print(response.status_code)
+        if response.status_code == 200:
+            print("API key is valid.")
+            openai.api_key = api_key
+            os.environ['OPENAI_API_KEY'] = api_key
+        else:
+            print("API key is invalid.")
+
 
     def __chat(self):
         idx = self.__aiTypeCmbBox.currentIndex()
