@@ -183,14 +183,20 @@ class OpenAIChatBot(QMainWindow):
         apiWidget = QWidget()
         apiWidget.setLayout(lay)
 
+        self.__apiCheckPreviewLbl = QLabel('')
+        self.__apiCheckPreviewLbl.hide()
+        self.__apiCheckPreviewLbl.setFont(QFont('Arial', 10))
+
         lay = QVBoxLayout()
         lay.addWidget(apiLbl)
         lay.addWidget(apiWidget)
+        lay.addWidget(self.__apiCheckPreviewLbl)
         lay.setAlignment(Qt.AlignTop)
+        lay.setSpacing(2)
 
         apiGrpBox = QGroupBox()
         apiGrpBox.setLayout(lay)
-        apiGrpBox.setFixedHeight(apiGrpBox.sizeHint().height())
+        apiGrpBox.setFixedHeight(apiGrpBox.sizeHint().height() + self.__apiCheckPreviewLbl.fontMetrics().boundingRect('M').height())
 
         lay = QFormLayout()
         lay.addRow('Model', modelComboBox)
@@ -319,12 +325,12 @@ class OpenAIChatBot(QMainWindow):
         response = requests.get('https://api.openai.com/v1/engines', headers={'Authorization': f'Bearer {api_key}'})
         print(response.status_code)
         if response.status_code == 200:
-            print("API key is valid.")
             openai.api_key = api_key
             os.environ['OPENAI_API_KEY'] = api_key
+            self.__apiCheckPreviewLbl.setText('API key is valid.')
         else:
-            print("API key is invalid.")
-
+            self.__apiCheckPreviewLbl.setText('API key is invalid.')
+        self.__apiCheckPreviewLbl.show()
 
     def __chat(self):
         idx = self.__aiTypeCmbBox.currentIndex()
