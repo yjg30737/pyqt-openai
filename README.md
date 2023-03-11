@@ -22,12 +22,7 @@ An internet connection is required.
 ## How to play
 1. git clone ~
 2. from the root directory, type "cd pyqt_openai"
-3. in the pyqt_openai directory, you'll see the "main.py" file. Open it and you can see lines below
-```python
-# this API key should be yours
-# openai.api_key = '[MY_OPENAPI_API_KEY]'
-```
-  You should get your [MY_OPENAPI_API_KEY]. You can get it in <a href="https://platform.openai.com/account/api-keys">official site</a> of openai. Sign up and log in before you get it.
+3. You should put your api key in the line edit. You can get it in <a href="https://platform.openai.com/account/api-keys">official site</a> of openai. Sign up and log in before you get it.
 
 Be sure, this is a very important API key that belongs to you only, so you should remember it and keep it secure.
 4. python main.py
