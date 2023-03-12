@@ -1,3 +1,5 @@
+import json
+
 import openai, requests, os, platform, subprocess
 
 from chatWidget import Prompt, ChatBrowser
@@ -8,7 +10,7 @@ from PyQt5.QtCore import Qt, QCoreApplication, QThread, pyqtSignal, QSettings
 from PyQt5.QtGui import QGuiApplication, QFont, QIcon, QColor
 from PyQt5.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QWidget, QSplitter, QComboBox, QSpinBox, \
     QFormLayout, QDoubleSpinBox, QPushButton, QFileDialog, QToolBar, QWidgetAction, QHBoxLayout, QAction, QMenu, \
-    QSystemTrayIcon, QMessageBox, QSizePolicy, QGroupBox, QLineEdit, QLabel
+    QSystemTrayIcon, QMessageBox, QSizePolicy, QGroupBox, QLineEdit, QLabel, QFrame, QCheckBox
 
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
 QCoreApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)  # HighDPI support
@@ -33,6 +35,11 @@ class OpenAIThread(QThread):
 
             response_text = openai_object['choices'][0]['text'].strip()
 
+            print(self.__openai_arg)
+
+            # with open('conversation.json', 'a') as f:
+            #     f.write(json.dumps(**self.__openai_arg))
+
             self.replyGenerated.emit(response_text, False, False)
         elif self.__idx == 1:
             try:
@@ -43,6 +50,7 @@ class OpenAIThread(QThread):
                 image_url = response['data'][0]['url']
 
                 self.replyGenerated.emit(image_url, False, True)
+
             except openai.error.InvalidRequestError as e:
                 self.replyGenerated.emit('Your request was rejected as a result of our safety system. \n'
                                          'Your prompt may contain text that is not allowed by our safety system.', False)
@@ -169,7 +177,7 @@ class OpenAIChatBot(QMainWindow):
         presencePenaltySpinBox.setValue(self.__presence_penalty)
         presencePenaltySpinBox.valueChanged.connect(self.__presencePenaltyChanged)
 
-        saveAsLogButton = QPushButton('Save')
+        saveAsLogButton = QPushButton('Save As Log')
         saveAsLogButton.clicked.connect(self.__saveAsLog)
 
         apiLbl = QLabel('API')
@@ -226,7 +234,26 @@ class OpenAIChatBot(QMainWindow):
         lay.addRow('Top P', toppSpinBox)
         lay.addRow('Frequency penalty', frequencyPenaltySpinBox)
         lay.addRow('Presence penalty', presencePenaltySpinBox)
+
+        modelOptionGrpBox = QGroupBox()
+        modelOptionGrpBox.setTitle('Model')
+        modelOptionGrpBox.setLayout(lay)
+
+        rememberPastConversationChkBox = QCheckBox('Store Previous Conversation in Real Time (testing)')
+        rememberPastConversationChkBox.setDisabled(True)
+
+        lay = QVBoxLayout()
+        lay.addWidget(rememberPastConversationChkBox)
         lay.addWidget(saveAsLogButton)
+
+        generalOptionGrpBox = QGroupBox()
+        generalOptionGrpBox.setTitle('General')
+        generalOptionGrpBox.setLayout(lay)
+
+        lay = QVBoxLayout()
+        lay.addWidget(modelOptionGrpBox)
+        lay.addWidget(generalOptionGrpBox)
+        lay.setAlignment(Qt.AlignTop)
 
         optionGrpBox = QGroupBox()
         optionGrpBox.setTitle('Option')
