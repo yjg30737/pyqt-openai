@@ -22,9 +22,10 @@ QApplication.setFont(QFont('Arial', 12))
 class OpenAIThread(QThread):
     replyGenerated = pyqtSignal(str, bool, bool)
 
-    def __init__(self, openai_arg, idx, *args, **kwargs):
+    def __init__(self, openai_arg, idx, remember_f, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.__openai_arg = openai_arg
+        self.__remember_f = remember_f
         self.__idx = idx
 
     def run(self):
@@ -35,13 +36,14 @@ class OpenAIThread(QThread):
 
             response_text = openai_object['choices'][0]['text'].strip()
 
-            conv = {
-                'prompt': self.__openai_arg['prompt'],
-                'response': response_text,
-            }
+            if self.__remember_f:
+                conv = {
+                    'prompt': self.__openai_arg['prompt'],
+                    'response': response_text,
+                }
 
-            with open('conv.json', 'a') as f:
-                f.write(json.dumps(conv) + '\n')
+                with open('conv.json', 'a') as f:
+                    f.write(json.dumps(conv) + '\n')
 
             self.replyGenerated.emit(response_text, False, False)
         elif self.__idx == 1:
@@ -256,8 +258,9 @@ class OpenAIChatBot(QMainWindow):
         modelOptionGrpBox.setLayout(lay)
 
         rememberPastConversationChkBox = QCheckBox('Store Previous Conversation in Real Time (testing)')
-        rememberPastConversationChkBox.setChecked(False)
+        rememberPastConversationChkBox.setChecked(self.__remember_past_conv)
         rememberPastConversationChkBox.setDisabled(True)
+        rememberPastConversationChkBox.toggled.connect(self.__rememberPastConversationChkBoxToggled)
 
         lay = QVBoxLayout()
         lay.addWidget(rememberPastConversationChkBox)
@@ -408,16 +411,19 @@ class OpenAIChatBot(QMainWindow):
             self.__lineEdit.setEnabled(False)
         self.__apiCheckPreviewLbl.show()
 
+    def __rememberPastConversationChkBoxToggled(self, f):
+        self.__settings_struct.setValue('REMEMBER_PAST_CONVERSATION', str(int(f)))
+
     def __chat(self):
         idx = self.__aiTypeCmbBox.currentIndex()
         openai_arg = ''
         if idx == 0:
-            convs = []
-            with open('conv.json', 'r') as f:
-                for line in f:
-                    conv = json.loads(line.strip())
-                    convs.append(conv)
-            print(convs)
+            if self.__remember_past_conv:
+                convs = []
+                with open('conv.json', 'r') as f:
+                    for line in f:
+                        conv = json.loads(line.strip())
+                        convs.append(conv)
             openai_arg = {
                 'engine': self.__engine,
                 'prompt': self.__lineEdit.toPlainText(),
@@ -434,7 +440,7 @@ class OpenAIChatBot(QMainWindow):
                 "size": "1024x1024"
             }
         self.__lineEdit.setEnabled(False)
-        self.__t = OpenAIThread(openai_arg, idx)
+        self.__t = OpenAIThread(openai_arg, idx, self.__remember_past_conv)
         self.__t.replyGenerated.connect(self.__browser.showReply)
         self.__browser.showText(self.__lineEdit.toPlainText(), True)
         self.__lineEdit.clear()
