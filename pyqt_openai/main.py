@@ -72,6 +72,7 @@ class OpenAIChatBot(QMainWindow):
         self.__top_p = 1.0
         self.__frequency_penalty = 0.0
         self.__presence_penalty = 0.0
+
         self.__settings_struct = QSettings('pyqt_openai.ini', QSettings.IniFormat)
 
         # this api key should be yours
@@ -82,6 +83,18 @@ class OpenAIChatBot(QMainWindow):
             os.environ['OPENAI_API_KEY'] = self.__settings_struct.value('API_KEY')
         else:
             self.__settings_struct.setValue('API_KEY', '')
+
+        # "remember past conv" feature
+        if self.__settings_struct.contains('REMEMBER_PAST_CONVERSATION'):
+            self.__remember_past_conv = True if self.__settings_struct.value('REMEMBER_PAST_CONVERSATION') == '1' else False
+        else:
+            self.__settings_struct.setValue('REMEMBER_PAST_CONVERSATION', '0')
+
+        if os.path.exists('conv.json'):
+            pass
+        else:
+            with open('conv.json', 'w') as f:
+                json.dump({}, f)
 
     def __initUi(self):
         self.setWindowTitle('PyQt OpenAI Chatbot')
