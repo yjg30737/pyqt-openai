@@ -1,0 +1,8 @@
+{"prompt": "say the random word that starts with \"a\"", "response": "Apple"}
+{"prompt": "any other word?", "response": "Fantastic"}
+{"prompt": "any other word?", "response": "Fantastic"}
+{"prompt": "i said the random word starts with \"a\", not \"f\".", "response": "Apple"}
+{"prompt": "any other word?", "response": "Fantastic"}
+{"prompt": "do you know any other word that starts with \"a\" aside from you menitioned?", "response": "Aardvark, abacus, abaft, abandon, abase, abash, abate, abbey, abbot, abbreviate, abdicate, abdomen, abduct, aberrant, abet, abhor, abide, abject, ablaze, able, abode, abolish, abominable, abrade, abridge, abrupt, abscess, abscond, absolute, absorb, abstain, abstract, absurd, abundant, abuse, abut, abyss."}
+{"prompt": "why did you say that?", "response": "I said that because I wanted to express my opinion or feelings on the matter."}
+{"prompt": "what did you just say?", "response": "I'm sorry, I didn't catch that. Could you please repeat what you said?"}

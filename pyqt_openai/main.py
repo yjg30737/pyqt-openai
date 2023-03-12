@@ -35,10 +35,13 @@ class OpenAIThread(QThread):
 
             response_text = openai_object['choices'][0]['text'].strip()
 
-            print(self.__openai_arg)
+            conv = {
+                'prompt': self.__openai_arg['prompt'],
+                'response': response_text,
+            }
 
-            # with open('conversation.json', 'a') as f:
-            #     f.write(json.dumps(**self.__openai_arg))
+            with open('conv.json', 'a') as f:
+                f.write(json.dumps(conv) + '\n')
 
             self.replyGenerated.emit(response_text, False, False)
         elif self.__idx == 1:
@@ -240,6 +243,7 @@ class OpenAIChatBot(QMainWindow):
         modelOptionGrpBox.setLayout(lay)
 
         rememberPastConversationChkBox = QCheckBox('Store Previous Conversation in Real Time (testing)')
+        rememberPastConversationChkBox.setChecked(False)
         rememberPastConversationChkBox.setDisabled(True)
 
         lay = QVBoxLayout()
@@ -395,6 +399,12 @@ class OpenAIChatBot(QMainWindow):
         idx = self.__aiTypeCmbBox.currentIndex()
         openai_arg = ''
         if idx == 0:
+            convs = []
+            with open('conv.json', 'r') as f:
+                for line in f:
+                    conv = json.loads(line.strip())
+                    convs.append(conv)
+            print(convs)
             openai_arg = {
                 'engine': self.__engine,
                 'prompt': self.__lineEdit.toPlainText(),
