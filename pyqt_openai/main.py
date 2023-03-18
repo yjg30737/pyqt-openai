@@ -7,10 +7,13 @@ from chatWidget import Prompt, ChatBrowser
 from notifier import NotifierWidget
 
 from PyQt5.QtCore import Qt, QCoreApplication, QThread, pyqtSignal, QSettings
-from PyQt5.QtGui import QGuiApplication, QFont, QIcon, QColor
+from PyQt5.QtGui import QGuiApplication, QFont, QIcon, QColor, QPixmap
 from PyQt5.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QWidget, QSplitter, QComboBox, QSpinBox, \
     QFormLayout, QDoubleSpinBox, QPushButton, QFileDialog, QToolBar, QWidgetAction, QHBoxLayout, QAction, QMenu, \
     QSystemTrayIcon, QMessageBox, QSizePolicy, QGroupBox, QLineEdit, QLabel, QFrame, QCheckBox
+
+from pyqt_openai.modelTable import ModelTable
+from pyqt_openai.svgLabel import SvgLabel
 
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
 QCoreApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)  # HighDPI support
@@ -245,8 +248,38 @@ class OpenAIChatBot(QMainWindow):
         apiGrpBox.setLayout(lay)
         apiGrpBox.setFixedHeight(apiGrpBox.sizeHint().height() + self.__apiCheckPreviewLbl.fontMetrics().boundingRect('M').height())
 
+        seeEveryModelCheckBox = QCheckBox('See Every Model')
+        seeEveryModelCheckBoxLbl = SvgLabel()
+        seeEveryModelCheckBoxLbl.setSvgFile('ico/help.svg')
+        seeEveryModelCheckBoxLbl.setToolTip('Check this box to show all models, including obsolete ones.')
+
+        lay = QHBoxLayout()
+        lay.addWidget(seeEveryModelCheckBox)
+        lay.addWidget(seeEveryModelCheckBoxLbl)
+        lay.setContentsMargins(0, 0, 0, 0)
+        lay.setAlignment(Qt.AlignLeft)
+
+        seeEveryModelWidget = QWidget()
+        seeEveryModelWidget.setLayout(lay)
+
+        seeEveryModelWidgetLbl = SvgLabel()
+        seeEveryModelWidgetLbl.setSvgFile('ico/help.svg')
+        seeEveryModelWidgetLbl.setToolTip('The combobox lists latest models.')
+
+        lay = QHBoxLayout()
+        lay.addWidget(modelComboBox)
+        lay.addWidget(seeEveryModelWidgetLbl)
+        lay.setContentsMargins(0, 0, 0, 0)
+
+        modelCmbBoxWidget = QWidget()
+        modelCmbBoxWidget.setLayout(lay)
+
+        modelTable = ModelTable()
+
         lay = QFormLayout()
-        lay.addRow('Model', modelComboBox)
+        lay.addRow(seeEveryModelWidget)
+        lay.addRow('Model', modelCmbBoxWidget)
+        lay.addRow(modelTable)
         lay.addRow('Temperature', temperatureSpinBox)
         lay.addRow('Maximum length', maxTokensSpinBox)
         lay.addRow('Top P', toppSpinBox)
@@ -457,6 +490,7 @@ class OpenAIChatBot(QMainWindow):
 
     def __modelChanged(self, v):
         self.__engine = v
+        print(self.__engine)
 
     def __temperatureChanged(self, v):
         self.__temperature = round(v, 2)
