@@ -1,4 +1,4 @@
-import json
+import json, webbrowser
 
 import openai, requests, os, platform, subprocess
 
@@ -6,12 +6,13 @@ from chatWidget import Prompt, ChatBrowser
 
 from notifier import NotifierWidget
 
-from PyQt5.QtCore import Qt, QCoreApplication, QThread, pyqtSignal, QSettings
-from PyQt5.QtGui import QGuiApplication, QFont, QIcon, QColor, QPixmap
+from PyQt5.QtCore import Qt, QCoreApplication, QThread, pyqtSignal, QSettings, QEvent
+from PyQt5.QtGui import QGuiApplication, QFont, QIcon, QColor, QPixmap, QCursor
 from PyQt5.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QWidget, QSplitter, QComboBox, QSpinBox, \
     QFormLayout, QDoubleSpinBox, QPushButton, QFileDialog, QToolBar, QWidgetAction, QHBoxLayout, QAction, QMenu, \
     QSystemTrayIcon, QMessageBox, QSizePolicy, QGroupBox, QLineEdit, QLabel, QFrame, QCheckBox
 
+from pyqt_openai.clickableTooltip import ClickableTooltip
 from pyqt_openai.modelTable import ModelTable
 from pyqt_openai.svgLabel import SvgLabel
 
@@ -252,6 +253,7 @@ class OpenAIChatBot(QMainWindow):
         seeEveryModelCheckBoxLbl = SvgLabel()
         seeEveryModelCheckBoxLbl.setSvgFile('ico/help.svg')
         seeEveryModelCheckBoxLbl.setToolTip('Check this box to show all models, including obsolete ones.')
+        seeEveryModelCheckBoxLbl.installEventFilter(self)
 
         lay = QHBoxLayout()
         lay.addWidget(seeEveryModelCheckBox)
@@ -264,7 +266,8 @@ class OpenAIChatBot(QMainWindow):
 
         seeEveryModelWidgetLbl = SvgLabel()
         seeEveryModelWidgetLbl.setSvgFile('ico/help.svg')
-        seeEveryModelWidgetLbl.setToolTip('The combobox lists latest models.')
+        seeEveryModelWidgetLbl.setToolTip('The combobox lists <a href="https://platform.openai.com/docs/models/gpt-3-5">latest models.</a>')
+        seeEveryModelWidgetLbl.installEventFilter(self)
 
         lay = QHBoxLayout()
         lay.addWidget(modelComboBox)
@@ -427,6 +430,17 @@ class OpenAIChatBot(QMainWindow):
         toolbar.setLayout(lay)
         toolbar.setMovable(False)
         self.addToolBar(toolbar)
+
+    def eventFilter(self, source, event):
+        if event.type() == QEvent.ToolTip and source.toolTip():
+            toolTip = ClickableTooltip.showText(
+                QCursor.pos(), source.toolTip(), source)
+            toolTip.linkActivated.connect(self.toolTipLinkClicked)
+            return True
+        return super().eventFilter(source, event)
+
+    def toolTipLinkClicked(self, url):
+        webbrowser.open(url)
 
     def __setApi(self):
         api_key = self.__apiLineEdit.text()
