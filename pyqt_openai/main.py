@@ -14,6 +14,7 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QWidget, QSp
 
 from pyqt_openai.clickableTooltip import ClickableTooltip
 from pyqt_openai.modelTable import ModelTable
+from pyqt_openai.svgButton import SvgButton
 from pyqt_openai.svgLabel import SvgLabel
 
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
@@ -34,6 +35,7 @@ class OpenAIThread(QThread):
 
     def run(self):
         if self.__idx == 0:
+
             openai_object = openai.Completion.create(
                 **self.__openai_arg
             )
@@ -72,7 +74,7 @@ class OpenAIChatBot(QMainWindow):
         self.__initUi()
 
     def __initVal(self):
-        self.__engine = "text-davinci-003"
+        self.__engine = "gpt-3.5-turbo"
         self.__temperature = 0.0
         self.__max_tokens = 256
         self.__top_p = 1.0
@@ -155,12 +157,11 @@ class OpenAIChatBot(QMainWindow):
 
         modelComboBox = QComboBox()
         modelComboBox.addItems([
+            'gpt-3.5-turbo',
+            'gpt-3.5-turbo-0301',
             'text-davinci-003',
-            'text-curie-001',
-            'text-babbage-001',
-            'text-ada-001',
+            'text-davinci-002',
             'code-davinci-002',
-            'code-cushman-001'
         ])
         modelComboBox.setCurrentText(self.__engine)
         modelComboBox.currentTextChanged.connect(self.__modelChanged)
@@ -390,13 +391,15 @@ class OpenAIChatBot(QMainWindow):
 
     def __setActions(self):
         self.__stackAction = QWidgetAction(self)
-        self.__stackBtn = QPushButton('Stack on Top')
+        self.__stackBtn = SvgButton()
+        self.__stackBtn.setIcon('ico/stackontop.svg')
         self.__stackBtn.setCheckable(True)
         self.__stackBtn.toggled.connect(self.__stackToggle)
         self.__stackAction.setDefaultWidget(self.__stackBtn)
 
         self.__sideBarAction = QWidgetAction(self)
-        self.__sideBarBtn = QPushButton('Show Sidebar')
+        self.__sideBarBtn = SvgButton()
+        self.__sideBarBtn.setIcon('ico/sidebar.svg')
         self.__sideBarBtn.setCheckable(True)
         self.__sideBarBtn.setChecked(True)
         self.__sideBarBtn.toggled.connect(self.__sidebarWidget.setVisible)
@@ -471,15 +474,21 @@ class OpenAIChatBot(QMainWindow):
                     for line in f:
                         conv = json.loads(line.strip())
                         convs.append(conv)
-            openai_arg = {
-                'engine': self.__engine,
-                'prompt': self.__lineEdit.toPlainText(),
-                'temperature': self.__temperature,
-                'max_tokens': self.__max_tokens,
-                'top_p': self.__top_p,
-                'frequency_penalty': self.__frequency_penalty,
-                'presence_penalty': self.__presence_penalty,
-            }
+            if self.__engine in ['gpt-3.5-turbo', 'gpt-3.5-turbo-0301']:
+                openai_arg = {
+                    'model': self.__engine,
+                    'messages': [{"role": "user", "content": self.__lineEdit.toPlainText()}]
+                }
+            else:
+                openai_arg = {
+                    'engine': self.__engine,
+                    'prompt': self.__lineEdit.toPlainText(),
+                    'temperature': self.__temperature,
+                    'max_tokens': self.__max_tokens,
+                    'top_p': self.__top_p,
+                    'frequency_penalty': self.__frequency_penalty,
+                    'presence_penalty': self.__presence_penalty,
+                }
         elif idx == 1:
             openai_arg = {
                 "prompt": self.__lineEdit.toPlainText(),
@@ -562,7 +571,7 @@ class OpenAIChatBot(QMainWindow):
             filename = filename[0]
             self.__findDataLineEdit.setText(filename)
             self.__fineTuningBtn.setEnabled(True)
-            
+
 
     def __fineTuning(self):
         if platform.system() == 'Windows':
