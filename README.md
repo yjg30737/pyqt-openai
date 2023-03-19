@@ -3,13 +3,13 @@ Example of using OpenAI with PyQt (Python cross-platform GUI toolkit)
 
 This shows an example of using OpenAI with PyQt as a chatbot. 
 
-The OpenAI model this package uses is the <a href="https://beta.openai.com/docs/models/gpt-3">text-davinci-003</a> model of GPT-3 by default.
+The OpenAI model this package uses is the <a href="https://platform.openai.com/docs/models/gpt-3-5">gpt-3.5-turbo</a> model(which is nearly as functional as <b>ChatGPT</b>) by default.
 
 Image generation feature available since v0.0.16. You can see the detail in <a href="https://platform.openai.com/docs/guides/images/introduction">official OpenAI</a> site. Currently this feature is very basic now.
 
 You can select other model with the combobox on the sidebar at the right side of the window.
 
-An internet connection is required. 
+An internet connection is required.
 
 ## Requirements
 * PyQt5
@@ -17,7 +17,9 @@ An internet connection is required.
 * openai
 
 ## Preview
-![image](https://user-images.githubusercontent.com/55078043/224462964-b764f10c-839f-41c0-85c5-839f69bcbe30.png)
+This is using GPT-3.5 turbo model.
+
+![image](https://user-images.githubusercontent.com/55078043/226176448-57ea6ef1-3672-44ff-a27b-4b42e2c5e357.png)
 
 ## How to play
 1. git clone ~
