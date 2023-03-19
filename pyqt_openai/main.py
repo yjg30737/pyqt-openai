@@ -218,6 +218,7 @@ class OpenAIChatBot(QMainWindow):
         self.__apiLineEdit.setPlaceholderText('Write your API Key...')
         self.__apiLineEdit.setText(openai.api_key)
 
+        self.__apiCheckPreviewLbl = QLabel('')
         self.__modelTable = ModelTable()
 
         # check if loaded API_KEY from ini file is not empty
@@ -227,9 +228,18 @@ class OpenAIChatBot(QMainWindow):
             f = response.status_code == 200
             self.__lineEdit.setEnabled(f)
             self.__modelTable.setEnabled(f)
+            if f:
+                self.__apiCheckPreviewLbl.setStyleSheet("color: {}".format(QColor(0, 200, 0).name()))
+                self.__apiCheckPreviewLbl.setText('API key is valid')
+            else:
+                self.__apiCheckPreviewLbl.setStyleSheet("color: {}".format(QColor(255, 0, 0).name()))
+                self.__apiCheckPreviewLbl.setText('API key is invalid')
+            self.__apiCheckPreviewLbl.show()
+
         # if it is empty
         else:
             self.__lineEdit.setEnabled(False)
+            self.__apiCheckPreviewLbl.hide()
 
         self.__apiLineEdit.returnPressed.connect(self.__setApi)
         self.__apiLineEdit.setEchoMode(QLineEdit.Password)
@@ -245,8 +255,6 @@ class OpenAIChatBot(QMainWindow):
         apiWidget = QWidget()
         apiWidget.setLayout(lay)
 
-        self.__apiCheckPreviewLbl = QLabel('')
-        self.__apiCheckPreviewLbl.hide()
         self.__apiCheckPreviewLbl.setFont(QFont('Arial', 10))
 
         lay = QVBoxLayout()
@@ -295,7 +303,7 @@ class OpenAIChatBot(QMainWindow):
         lay.addWidget(self.__modelTable)
 
         modelTableGrpBox = QGroupBox()
-        modelTableGrpBox.setTitle('Model Info')
+        modelTableGrpBox.setTitle('Model Info (testing)')
         modelTableGrpBox.setLayout(lay)
 
         lay = QFormLayout()
