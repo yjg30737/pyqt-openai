@@ -12,7 +12,7 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QWidget, QSp
     QFormLayout, QDoubleSpinBox, QPushButton, QFileDialog, QToolBar, QWidgetAction, QHBoxLayout, QAction, QMenu, \
     QSystemTrayIcon, QMessageBox, QSizePolicy, QGroupBox, QLineEdit, QLabel, QCheckBox
 
-from pyqt_openai.apiData import getModelEndpoint, getEveryModel, getLatestModel, setEveryModel
+from pyqt_openai.apiData import getModelEndpoint, getEveryModel, getLatestModel, setEveryModel, getAttrOfModel
 from pyqt_openai.clickableTooltip import ClickableTooltip
 from pyqt_openai.modelTable import ModelTable
 from pyqt_openai.svgButton import SvgButton

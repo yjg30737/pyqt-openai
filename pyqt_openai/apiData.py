@@ -31,6 +31,7 @@ def getLatestModel():
             'code-davinci-002']
 
 def setEveryModel():
+    # TODO make the singleton or something instead of using global
     global MODEL_DATA
     MODEL_DATA = openai.Model.list()['data']
 
@@ -38,4 +39,4 @@ def getEveryModel():
     return [model.id for model in MODEL_DATA]
 
 def getAttrOfModel():
-    return 'something'
+    return [model.permission for model in MODEL_DATA]
