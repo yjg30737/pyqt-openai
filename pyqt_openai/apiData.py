@@ -20,3 +20,6 @@ def getModelEndpoint(model):
         endpoint_group = list(v)
         if model in endpoint_group:
             return k
+
+def getModelList():
+    return openai.Model.list()['data']

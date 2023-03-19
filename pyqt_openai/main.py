@@ -7,10 +7,10 @@ from chatWidget import Prompt, ChatBrowser
 from notifier import NotifierWidget
 
 from PyQt5.QtCore import Qt, QCoreApplication, QThread, pyqtSignal, QSettings, QEvent
-from PyQt5.QtGui import QGuiApplication, QFont, QIcon, QColor, QPixmap, QCursor
+from PyQt5.QtGui import QGuiApplication, QFont, QIcon, QColor, QCursor
 from PyQt5.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QWidget, QSplitter, QComboBox, QSpinBox, \
     QFormLayout, QDoubleSpinBox, QPushButton, QFileDialog, QToolBar, QWidgetAction, QHBoxLayout, QAction, QMenu, \
-    QSystemTrayIcon, QMessageBox, QSizePolicy, QGroupBox, QLineEdit, QLabel, QFrame, QCheckBox
+    QSystemTrayIcon, QMessageBox, QSizePolicy, QGroupBox, QLineEdit, QLabel, QCheckBox
 
 from pyqt_openai.apiData import getModelEndpoint
 from pyqt_openai.clickableTooltip import ClickableTooltip
@@ -267,7 +267,8 @@ class OpenAIChatBot(QMainWindow):
         apiGrpBox.setLayout(lay)
         apiGrpBox.setFixedHeight(apiGrpBox.sizeHint().height() + self.__apiCheckPreviewLbl.fontMetrics().boundingRect('M').height())
 
-        seeEveryModelCheckBox = QCheckBox('See Every Model')
+        seeEveryModelCheckBox = QCheckBox('See every item (not all items may work)')
+        seeEveryModelCheckBox.toggled.connect(self.__seeEveryModelToggled)
         seeEveryModelCheckBoxLbl = SvgLabel()
         seeEveryModelCheckBoxLbl.setSvgFile('ico/help.svg')
         seeEveryModelCheckBoxLbl.setToolTip('Check this box to show all models, including obsolete ones.')
@@ -489,6 +490,9 @@ class OpenAIChatBot(QMainWindow):
 
     def __rememberPastConversationChkBoxToggled(self, f):
         self.__settings_struct.setValue('REMEMBER_PAST_CONVERSATION', str(int(f)))
+
+    def __seeEveryModelToggled(self, f):
+        print(f)
 
     def __chat(self):
         idx = self.__aiTypeCmbBox.currentIndex()
