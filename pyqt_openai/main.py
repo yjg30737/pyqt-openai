@@ -218,16 +218,15 @@ class OpenAIChatBot(QMainWindow):
         self.__apiLineEdit.setPlaceholderText('Write your API Key...')
         self.__apiLineEdit.setText(openai.api_key)
 
-        # TODO show the label to notify user to given api key is valid or not
+        self.__modelTable = ModelTable()
+
         # check if loaded API_KEY from ini file is not empty
         if openai.api_key:
             # check if loaded api is valid
             response = requests.get('https://api.openai.com/v1/engines', headers={'Authorization': f'Bearer {openai.api_key}'})
-            if response.status_code == 200:
-                self.__lineEdit.setEnabled(True)
-            # if api is not valid (this is likely the case of editing arbitrarily by user)
-            else:
-                self.__lineEdit.setEnabled(False)
+            f = response.status_code == 200
+            self.__lineEdit.setEnabled(f)
+            self.__modelTable.setEnabled(f)
         # if it is empty
         else:
             self.__lineEdit.setEnabled(False)
@@ -288,12 +287,21 @@ class OpenAIChatBot(QMainWindow):
         modelCmbBoxWidget = QWidget()
         modelCmbBoxWidget.setLayout(lay)
 
-        modelTable = ModelTable()
+        modelTableSubLbl = QLabel('You can view the information only by entering the valid API key.')
+        modelTableSubLbl.setFont(QFont('Arial', 9))
+
+        lay = QVBoxLayout()
+        lay.addWidget(modelTableSubLbl)
+        lay.addWidget(self.__modelTable)
+
+        modelTableGrpBox = QGroupBox()
+        modelTableGrpBox.setTitle('Model Info')
+        modelTableGrpBox.setLayout(lay)
 
         lay = QFormLayout()
         lay.addRow(seeEveryModelWidget)
         lay.addRow('Model', modelCmbBoxWidget)
-        lay.addRow(modelTable)
+        lay.addRow(modelTableGrpBox)
         lay.addRow('Temperature', temperatureSpinBox)
         lay.addRow('Maximum length', maxTokensSpinBox)
         lay.addRow('Top P', toppSpinBox)
