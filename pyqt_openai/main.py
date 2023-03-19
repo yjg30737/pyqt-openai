@@ -486,11 +486,13 @@ class OpenAIChatBot(QMainWindow):
                         convs.append(conv)
             # TODO refactoring
             if self.__engine in ['gpt-3.5-turbo', 'gpt-3.5-turbo-0301']:
+                # "assistant" below is for making the AI remember the last question
                 openai_arg = {
                     'model': self.__engine,
                     'messages': [
                         {"role": "system", "content": "You are a helpful assistant."},
-                        {"role": "user", "content": self.__lineEdit.toPlainText()}
+                        {"role": "assistant", "content": self.__browser.getLastResponse()},
+                        {"role": "user", "content": self.__lineEdit.toPlainText()},
                     ]
                 }
             else:

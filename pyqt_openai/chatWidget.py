@@ -67,6 +67,16 @@ class ChatBrowser(QScrollArea):
 
         return '\n'.join(all_text_lst)
 
+    def getLastResponse(self):
+        lay = self.widget().layout()
+        if lay:
+            i = lay.count()-1
+            if lay.itemAt(i) and lay.itemAt(i).widget():
+                widget = lay.itemAt(i).widget()
+                if isinstance(widget, QLabel):
+                    return widget.text()
+        return ''
+
 
 class TextEditPrompt(QTextEdit):
     returnPressed = pyqtSignal()
