@@ -12,6 +12,7 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QWidget, QSp
     QFormLayout, QDoubleSpinBox, QPushButton, QFileDialog, QToolBar, QWidgetAction, QHBoxLayout, QAction, QMenu, \
     QSystemTrayIcon, QMessageBox, QSizePolicy, QGroupBox, QLineEdit, QLabel, QFrame, QCheckBox
 
+from pyqt_openai.apiData import getModelEndpoint
 from pyqt_openai.clickableTooltip import ClickableTooltip
 from pyqt_openai.modelTable import ModelTable
 from pyqt_openai.svgButton import SvgButton
@@ -27,31 +28,40 @@ QApplication.setFont(QFont('Arial', 12))
 class OpenAIThread(QThread):
     replyGenerated = pyqtSignal(str, bool, bool)
 
-    def __init__(self, openai_arg, idx, remember_f, *args, **kwargs):
+    def __init__(self, model, openai_arg, idx, remember_f, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.__model = model
+        self.__endpoint = getModelEndpoint(model)
         self.__openai_arg = openai_arg
         self.__remember_f = remember_f
         self.__idx = idx
 
     def run(self):
         if self.__idx == 0:
+            if self.__endpoint == '/vi/chat/completions':
+                response = openai.ChatCompletion.create(
+                       **self.__openai_arg
+                )
+                response_text = response['choices'][0]['message']['content']
+                self.replyGenerated.emit(response_text, False, False)
+            elif self.__endpoint == '/vi/completions':
+                openai_object = openai.Completion.create(
+                    **self.__openai_arg
+                )
 
-            openai_object = openai.Completion.create(
-                **self.__openai_arg
-            )
+                response_text = openai_object['choices'][0]['text'].strip()
 
-            response_text = openai_object['choices'][0]['text'].strip()
+                # this doesn't store any data, so we manually do that every time
+                if self.__remember_f:
+                    conv = {
+                        'prompt': self.__openai_arg['prompt'],
+                        'response': response_text,
+                    }
 
-            if self.__remember_f:
-                conv = {
-                    'prompt': self.__openai_arg['prompt'],
-                    'response': response_text,
-                }
+                    with open('conv.json', 'a') as f:
+                        f.write(json.dumps(conv) + '\n')
 
-                with open('conv.json', 'a') as f:
-                    f.write(json.dumps(conv) + '\n')
-
-            self.replyGenerated.emit(response_text, False, False)
+                self.replyGenerated.emit(response_text, False, False)
         elif self.__idx == 1:
             try:
                 response = openai.Image.create(
@@ -474,6 +484,7 @@ class OpenAIChatBot(QMainWindow):
                     for line in f:
                         conv = json.loads(line.strip())
                         convs.append(conv)
+            # TODO refactoring
             if self.__engine in ['gpt-3.5-turbo', 'gpt-3.5-turbo-0301']:
                 openai_arg = {
                     'model': self.__engine,
@@ -496,7 +507,7 @@ class OpenAIChatBot(QMainWindow):
                 "size": "1024x1024"
             }
         self.__lineEdit.setEnabled(False)
-        self.__t = OpenAIThread(openai_arg, idx, self.__remember_past_conv)
+        self.__t = OpenAIThread(self.__engine, openai_arg, idx, self.__remember_past_conv)
         self.__t.replyGenerated.connect(self.__browser.showReply)
         self.__browser.showText(self.__lineEdit.toPlainText(), True)
         self.__lineEdit.clear()

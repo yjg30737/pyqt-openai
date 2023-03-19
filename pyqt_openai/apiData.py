@@ -13,6 +13,7 @@ ENDPOINT_DICT = {
     '/vi/moderations': ['text-moderation-stable', 'text-moderation-latest']
 }
 
+
 def getModelEndpoint(model):
     for k, v in ENDPOINT_DICT.items():
         endpoint_group = list(v)
