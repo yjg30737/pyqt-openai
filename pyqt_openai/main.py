@@ -204,7 +204,7 @@ class OpenAIChatBot(QMainWindow):
         presencePenaltySpinBox.setValue(self.__presence_penalty)
         presencePenaltySpinBox.valueChanged.connect(self.__presencePenaltyChanged)
 
-        saveAsLogButton = QPushButton('Save As Log')
+        saveAsLogButton = QPushButton('Save the Conversation as Log')
         saveAsLogButton.clicked.connect(self.__saveAsLog)
 
         apiLbl = QLabel('API')
