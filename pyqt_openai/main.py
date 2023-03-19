@@ -12,7 +12,7 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QWidget, QSp
     QFormLayout, QDoubleSpinBox, QPushButton, QFileDialog, QToolBar, QWidgetAction, QHBoxLayout, QAction, QMenu, \
     QSystemTrayIcon, QMessageBox, QSizePolicy, QGroupBox, QLineEdit, QLabel, QCheckBox
 
-from pyqt_openai.apiData import getModelEndpoint
+from pyqt_openai.apiData import getModelEndpoint, getEveryModel, getLatestModel
 from pyqt_openai.clickableTooltip import ClickableTooltip
 from pyqt_openai.modelTable import ModelTable
 from pyqt_openai.svgButton import SvgButton
@@ -165,16 +165,10 @@ class OpenAIChatBot(QMainWindow):
 
         tray_icon.show()
 
-        modelComboBox = QComboBox()
-        modelComboBox.addItems([
-            'gpt-3.5-turbo',
-            'gpt-3.5-turbo-0301',
-            'text-davinci-003',
-            'text-davinci-002',
-            'code-davinci-002',
-        ])
-        modelComboBox.setCurrentText(self.__engine)
-        modelComboBox.currentTextChanged.connect(self.__modelChanged)
+        self.__modelComboBox = QComboBox()
+        self.__modelComboBox.addItems(getLatestModel())
+        self.__modelComboBox.setCurrentText(self.__engine)
+        self.__modelComboBox.currentTextChanged.connect(self.__modelChanged)
 
         temperatureSpinBox = QDoubleSpinBox()
         temperatureSpinBox.setRange(0, 1)
@@ -267,11 +261,11 @@ class OpenAIChatBot(QMainWindow):
         apiGrpBox.setLayout(lay)
         apiGrpBox.setFixedHeight(apiGrpBox.sizeHint().height() + self.__apiCheckPreviewLbl.fontMetrics().boundingRect('M').height())
 
-        seeEveryModelCheckBox = QCheckBox('See every item (not all items may work)')
+        seeEveryModelCheckBox = QCheckBox('View every model (not all models may work)')
         seeEveryModelCheckBox.toggled.connect(self.__seeEveryModelToggled)
         seeEveryModelCheckBoxLbl = SvgLabel()
         seeEveryModelCheckBoxLbl.setSvgFile('ico/help.svg')
-        seeEveryModelCheckBoxLbl.setToolTip('Check this box to show all models, including obsolete ones.')
+        seeEveryModelCheckBoxLbl.setToolTip('''Check this box to show all models, including obsolete ones. If you don\'t check this, combobox lists <a href="https://platform.openai.com/docs/models/gpt-3-5">latest models.</a>''')
         seeEveryModelCheckBoxLbl.installEventFilter(self)
 
         lay = QHBoxLayout()
@@ -282,19 +276,6 @@ class OpenAIChatBot(QMainWindow):
 
         seeEveryModelWidget = QWidget()
         seeEveryModelWidget.setLayout(lay)
-
-        seeEveryModelWidgetLbl = SvgLabel()
-        seeEveryModelWidgetLbl.setSvgFile('ico/help.svg')
-        seeEveryModelWidgetLbl.setToolTip('The combobox lists <a href="https://platform.openai.com/docs/models/gpt-3-5">latest models.</a>')
-        seeEveryModelWidgetLbl.installEventFilter(self)
-
-        lay = QHBoxLayout()
-        lay.addWidget(modelComboBox)
-        lay.addWidget(seeEveryModelWidgetLbl)
-        lay.setContentsMargins(0, 0, 0, 0)
-
-        modelCmbBoxWidget = QWidget()
-        modelCmbBoxWidget.setLayout(lay)
 
         modelTableSubLbl = QLabel('You can view the information only by entering the valid API key.')
         modelTableSubLbl.setFont(QFont('Arial', 9))
@@ -309,7 +290,7 @@ class OpenAIChatBot(QMainWindow):
 
         lay = QFormLayout()
         lay.addRow(seeEveryModelWidget)
-        lay.addRow('Model', modelCmbBoxWidget)
+        lay.addRow('Model', self.__modelComboBox)
         lay.addRow(modelTableGrpBox)
         lay.addRow('Temperature', temperatureSpinBox)
         lay.addRow('Maximum length', maxTokensSpinBox)
@@ -492,7 +473,16 @@ class OpenAIChatBot(QMainWindow):
         self.__settings_struct.setValue('REMEMBER_PAST_CONVERSATION', str(int(f)))
 
     def __seeEveryModelToggled(self, f):
-        print(f)
+        curModel = self.__modelComboBox.currentText()
+        self.__modelComboBox.clear()
+        self.__modelComboBox.currentTextChanged.disconnect(self.__modelChanged)
+        if f:
+            self.__modelComboBox.addItems(getEveryModel())
+            self.__modelComboBox.setCurrentText(curModel)
+        else:
+            self.__modelComboBox.addItems(getLatestModel())
+            self.__modelComboBox.setCurrentText(curModel)
+        self.__modelComboBox.currentTextChanged.connect(self.__modelChanged)
 
     def __chat(self):
         idx = self.__aiTypeCmbBox.currentIndex()

@@ -21,5 +21,13 @@ def getModelEndpoint(model):
         if model in endpoint_group:
             return k
 
-def getModelList():
-    return openai.Model.list()['data']
+def getLatestModel():
+    return ['gpt-3.5-turbo',
+            'gpt-3.5-turbo-0301',
+            'text-davinci-003',
+            'text-davinci-002',
+            'code-davinci-002']
+
+def getEveryModel():
+    model_list = openai.Model.list()['data']
+    return [model.id for model in model_list]
