@@ -12,7 +12,7 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QWidget, QSp
     QFormLayout, QDoubleSpinBox, QPushButton, QFileDialog, QToolBar, QWidgetAction, QHBoxLayout, QAction, QMenu, \
     QSystemTrayIcon, QMessageBox, QSizePolicy, QGroupBox, QLineEdit, QLabel, QCheckBox
 
-from pyqt_openai.apiData import getModelEndpoint, getEveryModel, getLatestModel
+from pyqt_openai.apiData import getModelEndpoint, getEveryModel, getLatestModel, setEveryModel
 from pyqt_openai.clickableTooltip import ClickableTooltip
 from pyqt_openai.modelTable import ModelTable
 from pyqt_openai.svgButton import SvgButton
@@ -221,6 +221,7 @@ class OpenAIChatBot(QMainWindow):
             response = requests.get('https://api.openai.com/v1/engines', headers={'Authorization': f'Bearer {openai.api_key}'})
             f = response.status_code == 200
             self.__lineEdit.setEnabled(f)
+            setEveryModel()
             self.__modelTable.setEnabled(f)
             if f:
                 self.__apiCheckPreviewLbl.setStyleSheet("color: {}".format(QColor(0, 200, 0).name()))
@@ -454,20 +455,24 @@ class OpenAIChatBot(QMainWindow):
         webbrowser.open(url)
 
     def __setApi(self):
-        api_key = self.__apiLineEdit.text()
-        response = requests.get('https://api.openai.com/v1/engines', headers={'Authorization': f'Bearer {api_key}'})
-        if response.status_code == 200:
-            openai.api_key = api_key
-            os.environ['OPENAI_API_KEY'] = api_key
-            self.__apiCheckPreviewLbl.setStyleSheet("color: {}".format(QColor(0, 200, 0).name()))
-            self.__apiCheckPreviewLbl.setText('API key is valid')
-            self.__settings_struct.setValue('API_KEY', api_key)
-            self.__lineEdit.setEnabled(True)
-        else:
+        try:
+            api_key = self.__apiLineEdit.text()
+            response = requests.get('https://api.openai.com/v1/engines', headers={'Authorization': f'Bearer {api_key}'})
+            if response.status_code == 200:
+                openai.api_key = api_key
+                os.environ['OPENAI_API_KEY'] = api_key
+                self.__apiCheckPreviewLbl.setStyleSheet("color: {}".format(QColor(0, 200, 0).name()))
+                self.__apiCheckPreviewLbl.setText('API key is valid')
+                self.__settings_struct.setValue('API_KEY', api_key)
+                self.__lineEdit.setEnabled(True)
+            else:
+                raise Exception
+        except Exception as e:
             self.__apiCheckPreviewLbl.setStyleSheet("color: {}".format(QColor(255, 0, 0).name()))
             self.__apiCheckPreviewLbl.setText('API key is invalid')
             self.__lineEdit.setEnabled(False)
-        self.__apiCheckPreviewLbl.show()
+        finally:
+            self.__apiCheckPreviewLbl.show()
 
     def __rememberPastConversationChkBoxToggled(self, f):
         self.__settings_struct.setValue('REMEMBER_PAST_CONVERSATION', str(int(f)))

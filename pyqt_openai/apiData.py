@@ -15,6 +15,8 @@ ENDPOINT_DICT = {
     '/vi/moderations': ['text-moderation-stable', 'text-moderation-latest']
 }
 
+MODEL_DATA = []
+
 def getModelEndpoint(model):
     for k, v in ENDPOINT_DICT.items():
         endpoint_group = list(v)
@@ -28,6 +30,12 @@ def getLatestModel():
             'text-davinci-002',
             'code-davinci-002']
 
+def setEveryModel():
+    global MODEL_DATA
+    MODEL_DATA = openai.Model.list()['data']
+
 def getEveryModel():
-    model_list = openai.Model.list()['data']
-    return [model.id for model in model_list]
+    return [model.id for model in MODEL_DATA]
+
+def getAttrOfModel():
+    return 'something'
