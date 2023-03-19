@@ -38,7 +38,7 @@ class OpenAIThread(QThread):
 
     def run(self):
         if self.__idx == 0:
-            if self.__endpoint == '/vi/chat/completions':
+            if self.__endpoint == '/v1/chat/completions':
                 response = openai.ChatCompletion.create(
                        **self.__openai_arg
                 )
@@ -488,7 +488,10 @@ class OpenAIChatBot(QMainWindow):
             if self.__engine in ['gpt-3.5-turbo', 'gpt-3.5-turbo-0301']:
                 openai_arg = {
                     'model': self.__engine,
-                    'messages': [{"role": "user", "content": self.__lineEdit.toPlainText()}]
+                    'messages': [
+                        {"role": "system", "content": "You are a helpful assistant."},
+                        {"role": "user", "content": self.__lineEdit.toPlainText()}
+                    ]
                 }
             else:
                 openai_arg = {
