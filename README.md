@@ -12,7 +12,7 @@ You can select other model with the combobox on the sidebar at the right side of
 An internet connection is required.
 
 ## Requirements
-* PyQt5
+* PyQt5 >= 5.14
 * aiohttp - It needs to be installed for the current version of OpenAI.
 * openai
 
