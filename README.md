@@ -27,6 +27,7 @@ This is using GPT-3.5 turbo model.
 3. You should put your api key in the line edit. You can get it in <a href="https://platform.openai.com/account/api-keys">official site</a> of openai. Sign up and log in before you get it. <b>By the way, this is free trial, not permanently free. See <a href="https://platform.openai.com/account/billing/overview">this</a> after you have logged in.</b>
 
 Be sure, this is a very important API key that belongs to you only, so you should remember it and keep it secure.
+
 4. python main.py
 
 If installation doesn't work, check the troubleshooting below.
