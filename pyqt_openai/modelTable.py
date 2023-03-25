@@ -1,3 +1,4 @@
+from PyQt5.QtGui import QBrush, QColor
 from qtpy.QtWidgets import QTableWidget, QHeaderView, QTableWidgetItem, QAbstractItemView
 from qtpy.QtCore import Qt
 
@@ -16,6 +17,7 @@ class ModelTable(QTableWidget):
         self.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         item = QTableWidgetItem('Allow Fine Tuning')
         item.setTextAlignment(Qt.AlignCenter)
+        item.setBackground(QBrush(QColor(230, 230, 230)))
         self.setItem(0, 0, item)
         self.setEditTriggers(QAbstractItemView.NoEditTriggers)
 
