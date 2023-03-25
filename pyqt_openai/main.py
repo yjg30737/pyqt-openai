@@ -101,7 +101,6 @@ class OpenAIChatBot(QMainWindow):
             openai.api_key = self.__settings_struct.value('API_KEY')
             # for subprocess (mostly)
             os.environ['OPENAI_API_KEY'] = self.__settings_struct.value('API_KEY')
-            self.__modelData.setModelData()
         else:
             self.__settings_struct.setValue('API_KEY', '')
 
@@ -225,7 +224,9 @@ class OpenAIChatBot(QMainWindow):
             f = response.status_code == 200
             self.__lineEdit.setEnabled(f)
             self.__modelTable.setEnabled(f)
+            self.__modelData.setModelData()
             self.__modelTable.setModelInfo(self.__modelData.getModelData(), self.__engine, 'allow_fine_tuning')
+            print(self.__modelTable.getModelInfo())
             if f:
                 self.__apiCheckPreviewLbl.setStyleSheet("color: {}".format(QColor(0, 200, 0).name()))
                 self.__apiCheckPreviewLbl.setText('API key is valid')

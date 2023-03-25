@@ -35,3 +35,7 @@ class ModelTable(QTableWidget):
         item = QTableWidgetItem(token)
         item.setTextAlignment(Qt.AlignCenter)
         self.setItem(0, 1, item)
+
+    # currently get the allow_fine_tuning only
+    def getModelInfo(self):
+        return self.item(0, 1).text()
