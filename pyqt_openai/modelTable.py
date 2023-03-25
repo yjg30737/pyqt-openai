@@ -1,5 +1,5 @@
-from PyQt5.QtWidgets import QTableWidget, QHeaderView, QTableWidgetItem, QAbstractItemView
-from PyQt5.QtCore import Qt
+from qtpy.QtWidgets import QTableWidget, QHeaderView, QTableWidgetItem, QAbstractItemView
+from qtpy.QtCore import Qt
 
 
 class ModelTable(QTableWidget):

@@ -1,8 +1,10 @@
+import os
+
 import requests
 
-from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QScrollArea, QVBoxLayout, QWidget, QLabel, QHBoxLayout, QTextEdit
+from qtpy.QtCore import Qt, Signal
+from qtpy.QtGui import QPixmap
+from qtpy.QtWidgets import QScrollArea, QVBoxLayout, QWidget, QLabel, QHBoxLayout, QTextEdit
 
 
 class ChatBrowser(QScrollArea):
@@ -79,7 +81,7 @@ class ChatBrowser(QScrollArea):
 
 
 class TextEditPrompt(QTextEdit):
-    returnPressed = pyqtSignal()
+    returnPressed = Signal()
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
