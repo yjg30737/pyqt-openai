@@ -23,5 +23,7 @@ class ModelTable(QTableWidget):
 
     # TODO set more attributes
     # currently set the allow_fine_tuning only
-    def setModelInfo(self, info):
-        print(info)
+    def setModelInfo(self, model_list, model_name, prop):
+        item = QTableWidgetItem(str([model['permission'][0][prop] for model in model_list if model['id'] == model_name][0]))
+        item.setTextAlignment(Qt.AlignCenter)
+        self.setItem(0, 1, item)

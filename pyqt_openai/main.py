@@ -12,8 +12,9 @@ from qtpy.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QWidget, QSpl
     QFormLayout, QDoubleSpinBox, QPushButton, QFileDialog, QToolBar, QWidgetAction, QHBoxLayout, QAction, QMenu, \
     QSystemTrayIcon, QMessageBox, QSizePolicy, QGroupBox, QLineEdit, QLabel, QCheckBox
 
-from pyqt_openai.apiData import getModelEndpoint, getEveryModel, getLatestModel, setEveryModel, getAttrOfModel
+from pyqt_openai.apiData import getModelEndpoint, getLatestModel
 from pyqt_openai.clickableTooltip import ClickableTooltip
+from pyqt_openai.apiData import ModelData
 from pyqt_openai.modelTable import ModelTable
 from pyqt_openai.svgButton import SvgButton
 from pyqt_openai.svgLabel import SvgLabel
@@ -90,6 +91,7 @@ class OpenAIChatBot(QMainWindow):
         self.__top_p = 1.0
         self.__frequency_penalty = 0.0
         self.__presence_penalty = 0.0
+        self.__modelData = ModelData()
 
         self.__settings_struct = QSettings('pyqt_openai.ini', QSettings.IniFormat)
 
@@ -99,6 +101,7 @@ class OpenAIChatBot(QMainWindow):
             openai.api_key = self.__settings_struct.value('API_KEY')
             # for subprocess (mostly)
             os.environ['OPENAI_API_KEY'] = self.__settings_struct.value('API_KEY')
+            self.__modelData.setModelData()
         else:
             self.__settings_struct.setValue('API_KEY', '')
 
@@ -221,8 +224,8 @@ class OpenAIChatBot(QMainWindow):
             response = requests.get('https://api.openai.com/v1/engines', headers={'Authorization': f'Bearer {openai.api_key}'})
             f = response.status_code == 200
             self.__lineEdit.setEnabled(f)
-            setEveryModel()
             self.__modelTable.setEnabled(f)
+            self.__modelTable.setModelInfo(self.__modelData.getModelData(), self.__engine, 'allow_fine_tuning')
             if f:
                 self.__apiCheckPreviewLbl.setStyleSheet("color: {}".format(QColor(0, 200, 0).name()))
                 self.__apiCheckPreviewLbl.setText('API key is valid')
@@ -461,6 +464,7 @@ class OpenAIChatBot(QMainWindow):
             if response.status_code == 200:
                 openai.api_key = api_key
                 os.environ['OPENAI_API_KEY'] = api_key
+                self.__modelData.setModelData()
                 self.__apiCheckPreviewLbl.setStyleSheet("color: {}".format(QColor(0, 200, 0).name()))
                 self.__apiCheckPreviewLbl.setText('API key is valid')
                 self.__settings_struct.setValue('API_KEY', api_key)
@@ -479,15 +483,14 @@ class OpenAIChatBot(QMainWindow):
 
     def __seeEveryModelToggled(self, f):
         curModel = self.__modelComboBox.currentText()
-        self.__modelComboBox.clear()
         self.__modelComboBox.currentTextChanged.disconnect(self.__modelChanged)
+        self.__modelComboBox.clear()
         if f:
-            self.__modelComboBox.addItems(getEveryModel())
-            self.__modelComboBox.setCurrentText(curModel)
+            self.__modelComboBox.addItems([model.id for model in self.__modelData.getModelData()])
         else:
             self.__modelComboBox.addItems(getLatestModel())
-            self.__modelComboBox.setCurrentText(curModel)
         self.__modelComboBox.currentTextChanged.connect(self.__modelChanged)
+        self.__modelComboBox.setCurrentText(curModel)
 
     def __chat(self):
         idx = self.__aiTypeCmbBox.currentIndex()
@@ -508,7 +511,7 @@ class OpenAIChatBot(QMainWindow):
                         {"role": "system", "content": "You are a helpful assistant."},
                         {"role": "assistant", "content": self.__browser.getLastResponse()},
                         {"role": "user", "content": self.__lineEdit.toPlainText()},
-                    ]
+                    ],
                 }
             else:
                 openai_arg = {
@@ -544,7 +547,7 @@ class OpenAIChatBot(QMainWindow):
 
     def __modelChanged(self, v):
         self.__engine = v
-        print(self.__engine)
+        self.__modelTable.setModelInfo(self.__modelData.getModelData(), self.__engine, 'allow_fine_tuning')
 
     def __temperatureChanged(self, v):
         self.__temperature = round(v, 2)
