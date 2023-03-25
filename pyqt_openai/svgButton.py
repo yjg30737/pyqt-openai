@@ -1,7 +1,7 @@
 import os.path, posixpath
 
-from PyQt5.QtGui import QColor, QPalette, qGray
-from PyQt5.QtWidgets import QGraphicsColorizeEffect, QWidget, qApp, QPushButton
+from qtpy.QtGui import QColor, QPalette, qGray
+from qtpy.QtWidgets import QGraphicsColorizeEffect, QWidget, qApp, QPushButton
 
 
 class SvgButton(QPushButton):

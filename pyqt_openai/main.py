@@ -6,9 +6,9 @@ from chatWidget import Prompt, ChatBrowser
 
 from notifier import NotifierWidget
 
-from PyQt5.QtCore import Qt, QCoreApplication, QThread, pyqtSignal, QSettings, QEvent
-from PyQt5.QtGui import QGuiApplication, QFont, QIcon, QColor, QCursor
-from PyQt5.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QWidget, QSplitter, QComboBox, QSpinBox, \
+from qtpy.QtCore import Qt, QCoreApplication, QThread, QSettings, QEvent, Signal
+from qtpy.QtGui import QGuiApplication, QFont, QIcon, QColor, QCursor
+from qtpy.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QWidget, QSplitter, QComboBox, QSpinBox, \
     QFormLayout, QDoubleSpinBox, QPushButton, QFileDialog, QToolBar, QWidgetAction, QHBoxLayout, QAction, QMenu, \
     QSystemTrayIcon, QMessageBox, QSizePolicy, QGroupBox, QLineEdit, QLabel, QCheckBox
 
@@ -26,7 +26,7 @@ QApplication.setFont(QFont('Arial', 12))
 
 
 class OpenAIThread(QThread):
-    replyGenerated = pyqtSignal(str, bool, bool)
+    replyGenerated = Signal(str, bool, bool)
 
     def __init__(self, model, openai_arg, idx, remember_f, *args, **kwargs):
         super().__init__(*args, **kwargs)

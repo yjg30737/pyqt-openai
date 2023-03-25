@@ -1,11 +1,11 @@
-from PyQt5.QtGui import QFont, QIcon
-from PyQt5.QtWidgets import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QDesktopWidget, QSizePolicy, qApp, QPushButton, \
+from qtpy.QtGui import QFont, QIcon
+from qtpy.QtWidgets import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QDesktopWidget, QSizePolicy, qApp, QPushButton, \
     QApplication
-from PyQt5.QtCore import Qt, QPoint, QTimer, pyqtSignal, QPropertyAnimation
+from qtpy.QtCore import Qt, QPoint, Signal, QTimer, QPropertyAnimation
 
 
 class NotifierWidget(QWidget):
-    doubleClicked = pyqtSignal()
+    doubleClicked = Signal()
 
     def __init__(self, informative_text='', detailed_text=''):
         super().__init__()
