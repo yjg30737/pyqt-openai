@@ -217,17 +217,18 @@ class OpenAIChatBot(QMainWindow):
         self.__apiCheckPreviewLbl = QLabel('')
         self.__modelTable = ModelTable()
 
+        self.__fineTuningBtn = QPushButton('Fine Tuning')
+        self.__fineTuningBtn.clicked.connect(self.__fineTuning)
+
+        # TODO move this to the bottom to enhance the readability
         # check if loaded API_KEY from ini file is not empty
         if openai.api_key:
             # check if loaded api is valid
             response = requests.get('https://api.openai.com/v1/engines', headers={'Authorization': f'Bearer {openai.api_key}'})
             f = response.status_code == 200
             self.__lineEdit.setEnabled(f)
-            self.__modelTable.setEnabled(f)
-            self.__modelData.setModelData()
-            self.__modelTable.setModelInfo(self.__modelData.getModelData(), self.__engine, 'allow_fine_tuning')
-            print(self.__modelTable.getModelInfo())
             if f:
+                self.__setModelInfoByModel(True)
                 self.__apiCheckPreviewLbl.setStyleSheet("color: {}".format(QColor(0, 200, 0).name()))
                 self.__apiCheckPreviewLbl.setText('API key is valid')
             else:
@@ -334,10 +335,6 @@ class OpenAIChatBot(QMainWindow):
 
         findDataBtn = QPushButton('Find...')
         findDataBtn.clicked.connect(self.__findData)
-
-        self.__fineTuningBtn = QPushButton('Fine Tuning')
-        self.__fineTuningBtn.clicked.connect(self.__fineTuning)
-        self.__fineTuningBtn.setDisabled(True)
 
         lay = QHBoxLayout()
         lay.setSpacing(0)
@@ -465,7 +462,7 @@ class OpenAIChatBot(QMainWindow):
             if response.status_code == 200:
                 openai.api_key = api_key
                 os.environ['OPENAI_API_KEY'] = api_key
-                self.__modelData.setModelData()
+                self.__setModelInfoByModel(True)
                 self.__apiCheckPreviewLbl.setStyleSheet("color: {}".format(QColor(0, 200, 0).name()))
                 self.__apiCheckPreviewLbl.setText('API key is valid')
                 self.__settings_struct.setValue('API_KEY', api_key)
@@ -546,9 +543,15 @@ class OpenAIChatBot(QMainWindow):
             self.__notifierWidget.show()
             self.__notifierWidget.doubleClicked.connect(self.show)
 
+    def __setModelInfoByModel(self, init_model: bool = False):
+        if init_model:
+            self.__modelData.setModelData()
+        self.__modelTable.setModelInfo(self.__modelData.getModelData(), self.__engine, 'allow_fine_tuning')
+        self.__fineTuningBtn.setEnabled(self.__modelTable.getModelInfo())
+
     def __modelChanged(self, v):
         self.__engine = v
-        self.__modelTable.setModelInfo(self.__modelData.getModelData(), self.__engine, 'allow_fine_tuning')
+        self.__setModelInfoByModel()
 
     def __temperatureChanged(self, v):
         self.__temperature = round(v, 2)

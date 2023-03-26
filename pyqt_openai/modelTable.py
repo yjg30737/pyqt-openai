@@ -15,10 +15,13 @@ class ModelTable(QTableWidget):
         self.horizontalHeader().setVisible(False)
         self.verticalHeader().setVisible(False)
         self.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-        item = QTableWidgetItem('Allow Fine Tuning')
-        item.setTextAlignment(Qt.AlignCenter)
-        item.setBackground(QBrush(QColor(230, 230, 230)))
-        self.setItem(0, 0, item)
+        item1 = QTableWidgetItem('Allow Fine Tuning')
+        item1.setTextAlignment(Qt.AlignCenter)
+        item1.setBackground(QBrush(QColor(230, 230, 230)))
+        item2 = QTableWidgetItem('N/A')
+        item2.setTextAlignment(Qt.AlignCenter)
+        self.setItem(0, 0, item1)
+        self.setItem(0, 1, item2)
         self.setEditTriggers(QAbstractItemView.NoEditTriggers)
 
     # TODO set more attributes
@@ -38,4 +41,7 @@ class ModelTable(QTableWidget):
 
     # currently get the allow_fine_tuning only
     def getModelInfo(self):
-        return self.item(0, 1).text()
+        token = self.item(0, 1).text()
+        if token in ['Yes', 'No', 'N/A']:
+            token = True if token == 'Yes' else False
+        return token
