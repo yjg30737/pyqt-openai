@@ -45,7 +45,7 @@ class OpenAIThread(QThread):
                 )
                 response_text = response['choices'][0]['message']['content']
                 self.replyGenerated.emit(response_text, False, False)
-            elif self.__endpoint == '/vi/completions':
+            elif self.__endpoint == '/v1/completions':
                 openai_object = openai.Completion.create(
                     **self.__openai_arg
                 )
