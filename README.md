@@ -48,11 +48,11 @@ That will install the openai.
 
 ## TODO list
 * <s>logging</s>
-* <a href="https://github.com/yjg30737/pyqt-openai/tree/feature/fine-tuning">fine-tuning (with JSONL), Add the fine-tuned model in combo box</a>
-* <a href="https://github.com/yjg30737/pyqt-openai/tree/feature/qtpy">support PyQt6, PySide2, PySide6</a>
+* fine-tuning (with JSONL), Add the fine-tuned model in combo box <a href="https://github.com/yjg30737/pyqt-openai/tree/feature/fine-tuning">(branch)</a>
+* support PyQt6, PySide2, PySide6 <a href="https://github.com/yjg30737/pyqt-openai/tree/feature/qtpy">(branch)</a>
 * sync the fine-tunes, analysis (with wanDB)
 * show the explanation of every model and terms related to AI (e.g. temperature, topp..)
-* <a href="https://github.com/yjg30737/pyqt-openai/tree/feature/leftsidebar">show the left side bar to manage the past conversation</a>
+* show the left side bar to manage the past conversation <a href="https://github.com/yjg30737/pyqt-openai/tree/feature/leftsidebar">(branch)</a>
 * <s>Basic style</s>
 * highlight the source
 * add the basic example sources of making deep learning model with PyTorch
