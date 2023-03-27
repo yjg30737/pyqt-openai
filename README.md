@@ -1,7 +1,7 @@
 # pyqt-openai
 Example of using OpenAI with PyQt (Python cross-platform GUI toolkit)
 
-This shows an example of using OpenAI with PyQt as a chatbot. 
+This shows an example of using OpenAI with PyQt as a chatbot.
 
 The OpenAI model this package uses is the <a href="https://platform.openai.com/docs/models/gpt-3-5">gpt-3.5-turbo</a> model(which is nearly as functional as <b>ChatGPT</b>) by default.
 
@@ -48,13 +48,14 @@ That will install the openai.
 
 ## TODO list
 * <s>logging</s>
-* fine-tuning (with JSONL) - currently working
-* Add the fine-tuned model in combo box
-* Sync the fine-tunes, analysis (with wanDB)
+* <a href="https://github.com/yjg30737/pyqt-openai/tree/feature/fine-tuning">fine-tuning (with JSONL), Add the fine-tuned model in combo box</a>
+* <a href="https://github.com/yjg30737/pyqt-openai/tree/feature/qtpy">support PyQt6, PySide2, PySide6</a>
+* sync the fine-tunes, analysis (with wanDB)
 * show the explanation of every model and terms related to AI (e.g. temperature, topp..)
+* <a href="https://github.com/yjg30737/pyqt-openai/tree/feature/leftsidebar">show the left side bar to manage the past conversation</a>
 * <s>Basic style</s>
 * highlight the source
-* Add the basic example sources of making deep learning model with PyTorch
+* add the basic example sources of making deep learning model with PyTorch
 
 ## See Also
 * <a href="https://learn.microsoft.com/en-us/azure/cognitive-services/openai/overview">Azure OpenAI service</a>
