@@ -55,3 +55,10 @@ That will install the openai.
 * <s>Basic style</s>
 * highlight the source
 * Add the basic example sources of making deep learning model with PyTorch
+
+## See Also
+* <a href="https://learn.microsoft.com/en-us/azure/cognitive-services/openai/overview">Azure OpenAI service</a>
+* <a href="https://openai.com/waitlist/gpt-4-api">join gpt4 waitlist</a>
+* <a href="https://https://openai.com/waitlist/plugins">join chatgpt plugins waitlist</a>
+
+I will keep updating the "See Also" when i heard the informative news about the OpenAI.
