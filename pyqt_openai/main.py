@@ -20,7 +20,10 @@ from pyqt_openai.svgLabel import SvgLabel
 
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
 QCoreApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)  # HighDPI support
-QGuiApplication.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
+# qt version should be above 5.14
+# todo check the qt version with qtpy
+if os.environ['QT_API'] == 'pyqt5' or os.environ['QT_API'] != 'pyside6':
+    QGuiApplication.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
 
 QApplication.setFont(QFont('Arial', 12))
 
