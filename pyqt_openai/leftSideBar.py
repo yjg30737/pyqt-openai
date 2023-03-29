@@ -58,27 +58,27 @@ class LeftSideBar(QWidget):
         lay.setContentsMargins(0, 0, 0, 0)
         lay.setSpacing(0)
 
-        convListWidget = ConvListWidget()
-        convListWidget.addConv('A')
-        convListWidget.addConv('B')
-        convListWidget.addConv('C')
+        self.__convListWidget = ConvListWidget()
+        self.__convListWidget.addConv('A')
+        self.__convListWidget.addConv('B')
+        self.__convListWidget.addConv('C')
 
-        convListWidget.setAlternatingRowColors(True)
+        self.__convListWidget.setAlternatingRowColors(True)
 
         lay = QVBoxLayout()
         lay.addWidget(topWidget)
-        lay.addWidget(convListWidget)
+        lay.addWidget(self.__convListWidget)
 
         self.setLayout(lay)
 
     def __add(self):
-        print('add')
+        self.__convListWidget.addConv('A')
 
     def __delete(self):
-        print('delete')
+        self.__convListWidget.deleteConv()
 
     def __clear(self):
-        print('clear')
+        self.__convListWidget.clearConv()
 
     def __search(self, text):
         print(text)
