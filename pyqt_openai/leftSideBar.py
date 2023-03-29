@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import QWidget, QListWidget, QVBoxLayout, QHBoxLayout, QSpacerItem, QSizePolicy
 
+from pyqt_openai.searchBar import SearchBar
 from pyqt_openai.svgButton import SvgButton
 
 
@@ -9,6 +10,8 @@ class LeftSideBar(QWidget):
         self.__initUi()
 
     def __initUi(self):
+        searchBar = SearchBar()
+
         self.__addBtn = SvgButton()
         self.__delBtn = SvgButton()
         self.__clearBtn = SvgButton()
@@ -26,6 +29,7 @@ class LeftSideBar(QWidget):
         self.__clearBtn.clicked.connect(self.__clear)
 
         lay = QHBoxLayout()
+        lay.addWidget(searchBar)
         lay.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.MinimumExpanding))
         lay.addWidget(self.__addBtn)
         lay.addWidget(self.__delBtn)
