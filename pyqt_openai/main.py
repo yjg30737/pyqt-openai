@@ -379,7 +379,7 @@ class OpenAIChatBot(QMainWindow):
         mainWidget.addWidget(self.__leftSideBarWidget)
         mainWidget.addWidget(chatWidget)
         mainWidget.addWidget(self.__rightSidebarWidget)
-        mainWidget.setSizes([300, 700, 300])
+        mainWidget.setSizes([150, 700, 150])
         mainWidget.setChildrenCollapsible(False)
         mainWidget.setHandleWidth(2)
         mainWidget.setStyleSheet(

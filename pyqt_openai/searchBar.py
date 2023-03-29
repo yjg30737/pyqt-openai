@@ -1,3 +1,4 @@
+from PyQt5.QtWidgets import QSizePolicy
 from qtpy.QtWidgets import QWidget, QLineEdit, QGridLayout, QLabel, \
     QHBoxLayout, QApplication
 from qtpy.QtCore import Signal
@@ -53,6 +54,8 @@ class SearchBar(QWidget):
         lay = QGridLayout()
         lay.addWidget(searchWidget)
         lay.setContentsMargins(0, 0, 0, 0)
+
+        self.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Preferred)
 
         self.__setStyle()
 

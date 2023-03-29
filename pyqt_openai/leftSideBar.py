@@ -14,6 +14,7 @@ class LeftSideBar(QWidget):
     def __initUi(self):
         searchBar = SearchBar()
         searchBar.searched.connect(self.__search)
+        searchBar.setPlaceHolder('Search the Conversation...')
 
         self.__addBtn = SvgButton()
         self.__delBtn = SvgButton()
@@ -33,15 +34,29 @@ class LeftSideBar(QWidget):
 
         lay = QHBoxLayout()
         lay.addWidget(searchBar)
-        lay.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.MinimumExpanding))
+        lay.setContentsMargins(0, 0, 0, 0)
+        lay.setSpacing(0)
+
+        topLeftWidget = QWidget()
+        topLeftWidget.setLayout(lay)
+
+        lay = QHBoxLayout()
         lay.addWidget(self.__addBtn)
         lay.addWidget(self.__delBtn)
         lay.addWidget(self.__clearBtn)
         lay.setContentsMargins(0, 0, 0, 0)
         lay.setSpacing(0)
 
-        btnWidget = QWidget()
-        btnWidget.setLayout(lay)
+        topRightWidget = QWidget()
+        topRightWidget.setLayout(lay)
+
+        lay = QHBoxLayout()
+        lay.addWidget(topLeftWidget)
+        lay.addWidget(topRightWidget)
+        topWidget = QWidget()
+        topWidget.setLayout(lay)
+        lay.setContentsMargins(0, 0, 0, 0)
+        lay.setSpacing(0)
 
         convListWidget = ConvListWidget()
         convListWidget.addConv('A')
@@ -51,7 +66,7 @@ class LeftSideBar(QWidget):
         convListWidget.setAlternatingRowColors(True)
 
         lay = QVBoxLayout()
-        lay.addWidget(btnWidget)
+        lay.addWidget(topWidget)
         lay.addWidget(convListWidget)
 
         self.setLayout(lay)
