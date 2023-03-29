@@ -34,7 +34,7 @@ class LeftSideBar(QWidget):
 
         lay = QHBoxLayout()
         lay.addWidget(searchBar)
-        lay.setContentsMargins(0, 0, 0, 0)
+        lay.setContentsMargins(0, 0, 2, 0)
         lay.setSpacing(0)
 
         topLeftWidget = QWidget()
