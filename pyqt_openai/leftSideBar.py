@@ -1,5 +1,7 @@
-from PyQt5.QtWidgets import QWidget, QListWidget, QVBoxLayout, QHBoxLayout, QSpacerItem, QSizePolicy
+from PyQt5.QtWidgets import QWidget, QListWidget, QVBoxLayout, QHBoxLayout, QSpacerItem, QSizePolicy, QListWidgetItem, \
+    QLabel
 
+from pyqt_openai.convListWidget import ConvListWidget
 from pyqt_openai.searchBar import SearchBar
 from pyqt_openai.svgButton import SvgButton
 
@@ -11,6 +13,7 @@ class LeftSideBar(QWidget):
 
     def __initUi(self):
         searchBar = SearchBar()
+        searchBar.searched.connect(self.__search)
 
         self.__addBtn = SvgButton()
         self.__delBtn = SvgButton()
@@ -40,8 +43,12 @@ class LeftSideBar(QWidget):
         btnWidget = QWidget()
         btnWidget.setLayout(lay)
 
-        convListWidget = QListWidget()
-        convListWidget.addItems(['A', 'B', 'C'])
+        convListWidget = ConvListWidget()
+        convListWidget.addConv('A')
+        convListWidget.addConv('B')
+        convListWidget.addConv('C')
+
+        convListWidget.setAlternatingRowColors(True)
 
         lay = QVBoxLayout()
         lay.addWidget(btnWidget)
@@ -57,3 +64,6 @@ class LeftSideBar(QWidget):
 
     def __clear(self):
         print('clear')
+
+    def __search(self, text):
+        print(text)
