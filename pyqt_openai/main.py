@@ -14,6 +14,7 @@ from qtpy.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QWidget, QSpl
 
 from pyqt_openai.apiData import getModelEndpoint, getEveryModel, getLatestModel, setEveryModel, getAttrOfModel
 from pyqt_openai.clickableTooltip import ClickableTooltip
+from pyqt_openai.leftSideBar import LeftSideBar
 from pyqt_openai.modelTable import ModelTable
 from pyqt_openai.svgButton import SvgButton
 from pyqt_openai.svgLabel import SvgLabel
@@ -117,6 +118,8 @@ class OpenAIChatBot(QMainWindow):
     def __initUi(self):
         self.setWindowTitle('PyQt OpenAI Chatbot')
         self.setWindowIcon(QIcon('ico/openai.svg'))
+        self.__leftSideBarWidget = LeftSideBar()
+
         self.__prompt = Prompt()
 
         self.__aiTypeCmbBox = QComboBox()
@@ -369,13 +372,14 @@ class OpenAIChatBot(QMainWindow):
         lay.addWidget(optionGrpBox)
         lay.addWidget(fineTuneGrpBox)
 
-        self.__sidebarWidget = QWidget()
-        self.__sidebarWidget.setLayout(lay)
+        self.__rightSidebarWidget = QWidget()
+        self.__rightSidebarWidget.setLayout(lay)
 
         mainWidget = QSplitter()
+        mainWidget.addWidget(self.__leftSideBarWidget)
         mainWidget.addWidget(chatWidget)
-        mainWidget.addWidget(self.__sidebarWidget)
-        mainWidget.setSizes([700, 300])
+        mainWidget.addWidget(self.__rightSidebarWidget)
+        mainWidget.setSizes([300, 700, 300])
         mainWidget.setChildrenCollapsible(False)
         mainWidget.setHandleWidth(2)
         mainWidget.setStyleSheet(
@@ -405,14 +409,25 @@ class OpenAIChatBot(QMainWindow):
         self.__stackBtn.setCheckable(True)
         self.__stackBtn.toggled.connect(self.__stackToggle)
         self.__stackAction.setDefaultWidget(self.__stackBtn)
+        self.__stackBtn.setToolTip('Always On Top')
 
         self.__sideBarAction = QWidgetAction(self)
         self.__sideBarBtn = SvgButton()
         self.__sideBarBtn.setIcon('ico/sidebar.svg')
         self.__sideBarBtn.setCheckable(True)
         self.__sideBarBtn.setChecked(True)
-        self.__sideBarBtn.toggled.connect(self.__sidebarWidget.setVisible)
+        self.__sideBarBtn.toggled.connect(self.__leftSideBarWidget.setVisible)
         self.__sideBarAction.setDefaultWidget(self.__sideBarBtn)
+        self.__sideBarBtn.setToolTip('Conversation Log')
+
+        self.__settingAction = QWidgetAction(self)
+        self.__settingBtn = SvgButton()
+        self.__settingBtn.setIcon('ico/setting.svg')
+        self.__settingBtn.setCheckable(True)
+        self.__settingBtn.setChecked(True)
+        self.__settingBtn.toggled.connect(self.__rightSidebarWidget.setVisible)
+        self.__settingAction.setDefaultWidget(self.__settingBtn)
+        self.__settingBtn.setToolTip('Conversation Log')
 
         self.__transparentAction = QWidgetAction(self)
         self.__transparentSpinBox = QSpinBox()
@@ -438,10 +453,13 @@ class OpenAIChatBot(QMainWindow):
         lay = QHBoxLayout()
         toolbar.addAction(self.__stackAction)
         toolbar.addAction(self.__sideBarAction)
+        toolbar.addAction(self.__settingAction)
         toolbar.addAction(self.__transparentAction)
         toolbar.setLayout(lay)
         toolbar.setMovable(False)
         self.addToolBar(toolbar)
+        # QToolbar's layout can't be set spacing with lay.setSpacing so i've just did this instead
+        toolbar.setStyleSheet('QToolBar { spacing: 2px; }')
 
     def eventFilter(self, source, event):
         if event.type() == QEvent.ToolTip and source.toolTip():
