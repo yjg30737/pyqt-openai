@@ -1,5 +1,6 @@
 import openai
 
+# static
 # https://platform.openai.com/docs/models/model-endpoint-compatibility
 ENDPOINT_DICT = {
     '/v1/chat/completions': ['gpt-4', 'gpt-4-0314', 'gpt-4-32k', 'gpt-4-32k-0314', 'gpt-3.5-turbo', 'gpt-3.5-turbo-0301'],
@@ -15,8 +16,6 @@ ENDPOINT_DICT = {
     '/vi/moderations': ['text-moderation-stable', 'text-moderation-latest']
 }
 
-MODEL_DATA = []
-
 def getModelEndpoint(model):
     for k, v in ENDPOINT_DICT.items():
         endpoint_group = list(v)
@@ -30,13 +29,17 @@ def getLatestModel():
             'text-davinci-002',
             'code-davinci-002']
 
-def setEveryModel():
-    # TODO make the singleton or something instead of using global
-    global MODEL_DATA
-    MODEL_DATA = openai.Model.list()['data']
+# dynamic
+class ModelData:
+    def __init__(self):
+        super().__init__()
+        self.__modelList = []
 
-def getEveryModel():
-    return [model.id for model in MODEL_DATA]
+    def setModelData(self):
+        self.__modelList = openai.Model.list()['data']
 
-def getAttrOfModel():
-    return [model.permission for model in MODEL_DATA]
+    def getModelData(self):
+        return self.__modelList
+
+    def getPermissionProperty(self, model_name, property):
+        return [model['permission'][0][property] for model in self.__modelList if model['id'] == model_name][0]
