@@ -91,6 +91,7 @@ class OpenAIChatBot(QMainWindow):
         self.__top_p = 1.0
         self.__frequency_penalty = 0.0
         self.__presence_penalty = 0.0
+        self.__remember_past_conv = False
 
         self.__settings_struct = QSettings('pyqt_openai.ini', QSettings.IniFormat)
 
