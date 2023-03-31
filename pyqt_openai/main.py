@@ -1,3 +1,4 @@
+import inspect
 import json, webbrowser
 
 import openai, requests, os, platform, subprocess
@@ -30,7 +31,14 @@ QApplication.setFont(QFont('Arial', 12))
 
 
 class OpenAIThread(QThread):
-    replyGenerated = Signal(str, bool, bool)
+    """
+    == replyGenerated Signal ==
+    First: response
+    Second: user or AI
+    Third: streaming a chat completion or not
+    Forth: Image generation with DALL-E or not
+    """
+    replyGenerated = Signal(str, bool, bool, bool)
 
     def __init__(self, model, openai_arg, idx, remember_f, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -46,8 +54,20 @@ class OpenAIThread(QThread):
                 response = openai.ChatCompletion.create(
                        **self.__openai_arg
                 )
-                response_text = response['choices'][0]['message']['content']
-                self.replyGenerated.emit(response_text, False, False)
+                # if it is streaming, type will be generator
+                if inspect.isgenerator(response):
+                    for chunk in response:
+                        delta = chunk['choices'][0]['delta']
+                        response_text = delta.get('content', '')
+                        if response_text:
+                            self.replyGenerated.emit(response_text, False, True, False)
+                        else:
+                            finish_reason = chunk['choices'][0].get('finish_reason', '')
+                            if finish_reason:
+                                print(finish_reason)
+                else:
+                    response_text = response['choices'][0]['message']['content']
+                    self.replyGenerated.emit(response_text, False, False, False)
             elif self.__endpoint == '/v1/completions':
                 openai_object = openai.Completion.create(
                     **self.__openai_arg
@@ -74,7 +94,7 @@ class OpenAIThread(QThread):
 
                 image_url = response['data'][0]['url']
 
-                self.replyGenerated.emit(image_url, False, True)
+                self.replyGenerated.emit(image_url, False, False, True)
 
             except openai.error.InvalidRequestError as e:
                 self.replyGenerated.emit('Your request was rejected as a result of our safety system. \n'
@@ -94,6 +114,8 @@ class OpenAIChatBot(QMainWindow):
         self.__top_p = 1.0
         self.__frequency_penalty = 0.0
         self.__presence_penalty = 0.0
+        self.__stream = True
+        self.__finishReason = False
         self.__modelData = ModelData()
 
         self.__settings_struct = QSettings('pyqt_openai.ini', QSettings.IniFormat)
@@ -209,6 +231,16 @@ class OpenAIChatBot(QMainWindow):
         presencePenaltySpinBox.setValue(self.__presence_penalty)
         presencePenaltySpinBox.valueChanged.connect(self.__presencePenaltyChanged)
 
+        streamChkBox = QCheckBox()
+        streamChkBox.setChecked(self.__stream)
+        streamChkBox.toggled.connect(self.__streamChecked)
+        streamChkBox.setText('Stream')
+
+        finishReasonChkBox = QCheckBox()
+        finishReasonChkBox.setChecked(self.__finishReason)
+        finishReasonChkBox.toggled.connect(self.__finishReasonChecked)
+        finishReasonChkBox.setText('Show Finish Reason')
+
         saveAsLogButton = QPushButton('Save the Conversation as Log')
         saveAsLogButton.clicked.connect(self.__saveAsLog)
 
@@ -306,6 +338,8 @@ class OpenAIChatBot(QMainWindow):
         lay.addRow('Top P', toppSpinBox)
         lay.addRow('Frequency penalty', frequencyPenaltySpinBox)
         lay.addRow('Presence penalty', presencePenaltySpinBox)
+        lay.addRow(streamChkBox)
+        lay.addRow(finishReasonChkBox)
 
         modelOptionGrpBox = QGroupBox()
         modelOptionGrpBox.setTitle('Model')
@@ -394,8 +428,8 @@ class OpenAIChatBot(QMainWindow):
         self.setCentralWidget(mainWidget)
         self.resize(1024, 768)
 
-        self.__browser.showText('Hello!', True)
-        self.__browser.showText('Hello! How may i help you?', False)
+        self.__browser.showText('Hello!', False, True)
+        self.__browser.showText('Hello! How may i help you?', False, False)
 
         self.__lineEdit.setFocus()
 
@@ -513,6 +547,7 @@ class OpenAIChatBot(QMainWindow):
                         {"role": "assistant", "content": self.__browser.getLastResponse()},
                         {"role": "user", "content": self.__lineEdit.toPlainText()},
                     ],
+                    'stream': self.__stream,
                 }
             else:
                 openai_arg = {
@@ -533,7 +568,7 @@ class OpenAIChatBot(QMainWindow):
         self.__lineEdit.setEnabled(False)
         self.__t = OpenAIThread(self.__engine, openai_arg, idx, self.__remember_past_conv)
         self.__t.replyGenerated.connect(self.__browser.showReply)
-        self.__browser.showText(self.__lineEdit.toPlainText(), True)
+        self.__browser.showText(self.__lineEdit.toPlainText(), False, True)
         self.__lineEdit.clear()
         self.__t.start()
         self.__t.finished.connect(self.__afterGenerated)
@@ -570,6 +605,12 @@ class OpenAIChatBot(QMainWindow):
 
     def __presencePenaltyChanged(self, v):
         self.__presence_penalty = round(v, 2)
+
+    def __streamChecked(self, f):
+        self.__stream = f
+
+    def __finishReasonChecked(self, f):
+        self.__finishReason = f
 
     def __saveAsLog(self):
         filename = QFileDialog.getSaveFileName(self, 'Save', os.path.expanduser('~'), 'Text File (*.txt)')

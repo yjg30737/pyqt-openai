@@ -22,11 +22,11 @@ class ChatBrowser(QScrollArea):
         self.setWidget(widget)
         self.setWidgetResizable(True)
 
-    def showReply(self, content, user_f, image_f):
+    def showReply(self, content, user_f, stream_f, image_f):
         if image_f:
             self.showImage(content, user_f)
         else:
-            self.showText(content, user_f)
+            self.showText(content, stream_f, user_f)
 
     def showImage(self, image_url, user_f):
         chatLbl = QLabel()
@@ -38,7 +38,7 @@ class ChatBrowser(QScrollArea):
         chatLbl.setStyleSheet('QLabel { background-color: #DDD; padding: 1em }')
         self.widget().layout().addWidget(chatLbl)
 
-    def showText(self, text, user_f):
+    def showText(self, text, stream_f, user_f):
         chatLbl = QLabel(text)
         chatLbl.setWordWrap(True)
         chatLbl.setTextInteractionFlags(Qt.TextSelectableByMouse)
@@ -46,6 +46,11 @@ class ChatBrowser(QScrollArea):
             chatLbl.setStyleSheet('QLabel { padding: 1em }')
             chatLbl.setAlignment(Qt.AlignRight)
         else:
+            if stream_f:
+                lbl = self.widget().layout().itemAt(self.widget().layout().count()-1).widget()
+                if isinstance(lbl, QLabel) and lbl.alignment() == Qt.AlignLeft:
+                    lbl.setText(lbl.text()+text)
+                    return
             chatLbl.setStyleSheet('QLabel { background-color: #DDD; padding: 1em }')
             chatLbl.setAlignment(Qt.AlignLeft)
         self.widget().layout().addWidget(chatLbl)
