@@ -115,6 +115,7 @@ class OpenAIChatBot(QMainWindow):
         self.__frequency_penalty = 0.0
         self.__presence_penalty = 0.0
         self.__stream = True
+        self.__finishReason = False
         self.__modelData = ModelData()
 
         self.__settings_struct = QSettings('pyqt_openai.ini', QSettings.IniFormat)
@@ -235,6 +236,11 @@ class OpenAIChatBot(QMainWindow):
         streamChkBox.toggled.connect(self.__streamChecked)
         streamChkBox.setText('Stream')
 
+        finishReasonChkBox = QCheckBox()
+        finishReasonChkBox.setChecked(self.__finishReason)
+        finishReasonChkBox.toggled.connect(self.__finishReasonChecked)
+        finishReasonChkBox.setText('Show Finish Reason')
+
         saveAsLogButton = QPushButton('Save the Conversation as Log')
         saveAsLogButton.clicked.connect(self.__saveAsLog)
 
@@ -333,6 +339,7 @@ class OpenAIChatBot(QMainWindow):
         lay.addRow('Frequency penalty', frequencyPenaltySpinBox)
         lay.addRow('Presence penalty', presencePenaltySpinBox)
         lay.addRow(streamChkBox)
+        lay.addRow(finishReasonChkBox)
 
         modelOptionGrpBox = QGroupBox()
         modelOptionGrpBox.setTitle('Model')
@@ -601,6 +608,9 @@ class OpenAIChatBot(QMainWindow):
 
     def __streamChecked(self, f):
         self.__stream = f
+
+    def __finishReasonChecked(self, f):
+        self.__finishReason = f
 
     def __saveAsLog(self):
         filename = QFileDialog.getSaveFileName(self, 'Save', os.path.expanduser('~'), 'Text File (*.txt)')
