@@ -81,4 +81,7 @@ class LeftSideBar(QWidget):
         self.__convListWidget.clearConv()
 
     def __search(self, text):
-        print(text)
+        for i in range(self.__convListWidget.count()):
+            item = self.__convListWidget.item(i)
+            widget = self.__convListWidget.itemWidget(item)
+            item.setHidden(False if text.lower() in widget.text().lower() else True)
