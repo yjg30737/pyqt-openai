@@ -1,6 +1,5 @@
-from PyQt5.QtWidgets import QSizePolicy
 from qtpy.QtWidgets import QWidget, QLineEdit, QGridLayout, QLabel, \
-    QHBoxLayout, QApplication
+    QHBoxLayout, QApplication, QSizePolicy
 from qtpy.QtCore import Signal
 from pyqt_svg_label import SvgLabel
 
