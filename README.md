@@ -61,5 +61,5 @@ That will install the openai.
 * <a href="https://learn.microsoft.com/en-us/azure/cognitive-services/openai/overview">Azure OpenAI service</a>
 * <a href="https://openai.com/waitlist/gpt-4-api">join gpt4 waitlist</a>
 * <a href="https://https://openai.com/waitlist/plugins">join chatgpt plugins waitlist</a>
+* You can join pyqt-openai's <a href="https://discord.gg/cHekprskVE">Discord Server</a> to have a conversation about it or AI-related stuff. This channel is extremely new so currently there is nothing 😥 I will move the "See Also" list above to my Discord Server since it looks like a news feed page or something. 
 
-I will keep updating the "See Also" when i heard the informative news about the OpenAI.
