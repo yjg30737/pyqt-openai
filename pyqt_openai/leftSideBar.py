@@ -18,15 +18,19 @@ class LeftSideBar(QWidget):
 
         self.__addBtn = SvgButton()
         self.__delBtn = SvgButton()
+        self.__saveBtn = SvgButton()
 
         self.__addBtn.setIcon('ico/add.svg')
         self.__delBtn.setIcon('ico/delete.svg')
+        self.__saveBtn.setIcon('ico/download.svg')
 
         self.__addBtn.setToolTip('Add')
         self.__delBtn.setToolTip('Delete')
+        self.__saveBtn.setToolTip('Save')
 
         self.__addBtn.clicked.connect(self.__add)
         self.__delBtn.clicked.connect(self.__delete)
+        self.__saveBtn.clicked.connect(self.__save)
 
         self.__allCheckBox = QCheckBox('Check All')
         self.__allCheckBox.stateChanged.connect(self.__stateChanged)
@@ -36,6 +40,7 @@ class LeftSideBar(QWidget):
         lay.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.MinimumExpanding))
         lay.addWidget(self.__addBtn)
         lay.addWidget(self.__delBtn)
+        lay.addWidget(self.__saveBtn)
         lay.setContentsMargins(0, 0, 0, 0)
 
         navWidget = QWidget()
@@ -65,6 +70,9 @@ class LeftSideBar(QWidget):
 
     def __delete(self):
         self.__convListWidget.removeCheckedRows()
+
+    def __save(self):
+        print('save')
 
     def __stateChanged(self, f):
         self.__convListWidget.toggleState(f)
