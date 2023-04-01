@@ -1,34 +1,44 @@
 from datetime import datetime
 
 from qtpy.QtGui import QFont
-from qtpy.QtCore import Qt
-from qtpy.QtWidgets import QListWidget, QPushButton, QListWidgetItem, QLabel, QHBoxLayout, QWidget, QApplication, QVBoxLayout
+from qtpy.QtCore import Qt, Signal
+from qtpy.QtWidgets import QListWidget, QSizePolicy, QDialog, QListWidgetItem, QLabel, QHBoxLayout, QWidget, QApplication, QVBoxLayout
+
+from pyqt_openai.inputDialog import InputDialog
+from pyqt_openai.svgButton import SvgButton
 
 
 class ConvItemWidget(QWidget):
-    def __init__(self, text: str):
+    btnClicked = Signal(QListWidgetItem)
+
+    def __init__(self, text: str, item: QListWidgetItem):
         super().__init__()
+        self.__item = item
         self.__initUi(text)
 
     def __initUi(self, text):
         self.__topicLbl = QLabel(text)
 
-        dateLbl = QLabel()
-        current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        dateLbl.setText(f'Last updated: {current_time}')
-        dateLbl.setFont(QFont('Arial', 9))
+        self.__dateLbl = QLabel()
+        self.__dateLbl.setFont(QFont('Arial', 9))
+        self.__refreshTime()
 
         lay = QVBoxLayout()
         lay.addWidget(self.__topicLbl)
-        lay.addWidget(dateLbl)
+        lay.addWidget(self.__dateLbl)
         lay.setContentsMargins(0, 0, 0, 0)
 
         leftWidget = QWidget()
         leftWidget.setLayout(lay)
 
+        editButton = SvgButton()
+        editButton.setIcon('ico/edit.svg')
+        editButton.setToolTip('Rename')
+        editButton.clicked.connect(self.__btnClicked)
+
         lay = QHBoxLayout()
         lay.setContentsMargins(0, 0, 0, 0)
-        lay.addWidget(QPushButton('Edit'))
+        lay.addWidget(editButton)
         self.__btnWidget = QWidget()
         self.__btnWidget.setLayout(lay)
         self.__btnWidget.setVisible(False)
@@ -63,6 +73,18 @@ class ConvItemWidget(QWidget):
         self.__btnWidget.setVisible(False)
         return super().leaveEvent(e)
 
+    def __btnClicked(self):
+        dialog = InputDialog('Rename', self.__topicLbl.text())
+        reply = dialog.exec()
+        if reply == QDialog.Accepted:
+            text = dialog.getText()
+            self.__topicLbl.setText(text)
+            self.__refreshTime()
+
+    def __refreshTime(self):
+        current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        self.__dateLbl.setText(f'Last updated: {current_time}')
+
 
 class ConvListWidget(QListWidget):
     def __init__(self, *args, **kwargs):
@@ -76,7 +98,7 @@ class ConvListWidget(QListWidget):
         item = QListWidgetItem()
         item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
         item.setCheckState(Qt.Unchecked)
-        widget = ConvItemWidget(text)
+        widget = ConvItemWidget(text, item)
         item.setSizeHint(widget.sizeHint())
         self.insertItem(0, item)
         self.setItemWidget(item, widget)
@@ -87,13 +109,12 @@ class ConvListWidget(QListWidget):
                 item.setCheckState(Qt.Unchecked)
             else:
                 item.setCheckState(Qt.Checked)
-
+    
     def toggleState(self, state):
         for i in range(self.count()):
             item = self.item(i)
             if item.checkState() != state:
                 item.setCheckState(state)
-
 
     def getCheckedRows(self):
         return self.__getFlagRows(Qt.Checked)
