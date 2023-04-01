@@ -59,9 +59,9 @@ class LeftSideBar(QWidget):
         lay.setSpacing(0)
 
         self.__convListWidget = ConvListWidget()
-        self.__convListWidget.addConv('A')
-        self.__convListWidget.addConv('B')
-        self.__convListWidget.addConv('C')
+        self.__convListWidget.addConv('New Chat')
+        self.__convListWidget.addConv('New Chat')
+        self.__convListWidget.addConv('New Chat')
 
         self.__convListWidget.setAlternatingRowColors(True)
 

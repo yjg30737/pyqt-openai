@@ -1,7 +1,8 @@
 from datetime import datetime
 
 from qtpy.QtGui import QFont
-from qtpy.QtWidgets import QListWidget, QListWidgetItem, QLabel, QHBoxLayout, QWidget, QApplication, QVBoxLayout
+from qtpy.QtCore import Qt
+from qtpy.QtWidgets import QListWidget, QPushButton, QListWidgetItem, QLabel, QHBoxLayout, QWidget, QApplication, QVBoxLayout
 
 
 class ConvItemWidget(QWidget):
@@ -20,6 +21,29 @@ class ConvItemWidget(QWidget):
         lay = QVBoxLayout()
         lay.addWidget(self.__topicLbl)
         lay.addWidget(dateLbl)
+        lay.setContentsMargins(0, 0, 0, 0)
+
+        leftWidget = QWidget()
+        leftWidget.setLayout(lay)
+
+        lay = QHBoxLayout()
+        lay.setContentsMargins(0, 0, 0, 0)
+        lay.addWidget(QPushButton('Edit'))
+        self.__btnWidget = QWidget()
+        self.__btnWidget.setLayout(lay)
+        self.__btnWidget.setVisible(False)
+
+        lay = QVBoxLayout()
+        lay.addWidget(self.__btnWidget)
+        lay.setAlignment(Qt.AlignCenter)
+        lay.setContentsMargins(0, 0, 0, 0)
+
+        rightWidget = QWidget()
+        rightWidget.setLayout(lay)
+
+        lay = QHBoxLayout()
+        lay.addWidget(leftWidget)
+        lay.addWidget(rightWidget)
 
         self.setLayout(lay)
 
@@ -31,17 +55,38 @@ class ConvItemWidget(QWidget):
     def text(self):
         return self.__topicLbl.text()
 
+    def enterEvent(self, e):
+        self.__btnWidget.setVisible(True)
+        return super().enterEvent(e)
+
+    def leaveEvent(self, e):
+        self.__btnWidget.setVisible(False)
+        return super().leaveEvent(e)
+
 
 class ConvListWidget(QListWidget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.__initUi()
+
+    def __initUi(self):
+        self.itemClicked.connect(self.__clicked)
 
     def addConv(self, text: str):
         item = QListWidgetItem()
+        item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
+        item.setCheckState(Qt.Unchecked)
         widget = ConvItemWidget(text)
         item.setSizeHint(widget.sizeHint())
         self.insertItem(0, item)
         self.setItemWidget(item, widget)
+
+    def __clicked(self, item):
+        if item.listWidget().itemWidget(item) != None:
+            if item.checkState() == Qt.Checked:
+                item.setCheckState(Qt.Unchecked)
+            else:
+                item.setCheckState(Qt.Checked)
 
     def deleteConv(self):
         item = self.currentItem()
