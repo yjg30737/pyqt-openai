@@ -433,9 +433,6 @@ class OpenAIChatBot(QMainWindow):
         self.setCentralWidget(mainWidget)
         self.resize(1024, 768)
 
-        self.__browser.showText('Hello!', False, True)
-        self.__browser.showText('Hello! How may i help you?', False, False)
-
         self.__lineEdit.setFocus()
 
         self.__setActions()
