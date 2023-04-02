@@ -47,7 +47,7 @@ python setup.py install
 That will install the openai.
 
 ## TODO list
-* fine-tuning (with JSONL), Add the fine-tuned model in combo box <a href="https://github.com/yjg30737/pyqt-openai/tree/feature/fine-tuning">(branch)</a> - maybe i ditch this and use LlamaIndex instead because using fine-tuning costs a lot of money. 
+* fine-tuning (with JSONL), Add the fine-tuned model in combo box <a href="https://github.com/yjg30737/pyqt-openai/tree/feature/fine-tuning">(branch)</a> - maybe i ditch this and use LlamaIndex instead because using fine-tuning costs a lot of money, if user used a paid account
 * support PyQt6, PySide2, PySide6 <a href="https://github.com/yjg30737/pyqt-openai/tree/feature/qtpy">(branch)</a>
 * show the explanation of every model and terms related to AI (e.g. temperature, topp..)
 * show the left side bar to manage the past conversation <a href="https://github.com/yjg30737/pyqt-openai/tree/feature/leftsidebar">(branch)</a>
