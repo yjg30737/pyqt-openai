@@ -100,7 +100,7 @@ class OpenAIThread(QThread):
             self.replyGenerated.emit('<p style="color:red">Your request was rejected as a result of our safety system.<br/>'
                                      'Your prompt may contain text that is not allowed by our safety system.</p>', False, False, False)
         except openai.error.RateLimitError as e:
-            self.replyGenerated.emit(f'<p style="color:red">{e}<br/>https://platform.openai.com/account/usage</p>', False, False, False)
+            self.replyGenerated.emit(f'<p style="color:red">{e}<br/>Check the usage: https://platform.openai.com/account/usage<br/>Update to paid account: https://platform.openai.com/account/billing/overview', False, False, False)
 
 class OpenAIChatBot(QMainWindow):
     def __init__(self):
