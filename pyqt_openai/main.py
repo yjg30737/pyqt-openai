@@ -102,6 +102,7 @@ class OpenAIThread(QThread):
         except openai.error.RateLimitError as e:
             self.replyGenerated.emit(f'<p style="color:red">{e}<br/>Check the usage: https://platform.openai.com/account/usage<br/>Update to paid account: https://platform.openai.com/account/billing/overview', False, False, False)
 
+
 class OpenAIChatBot(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -670,7 +671,6 @@ class OpenAIChatBot(QMainWindow):
             filename = filename[0]
             self.__findDataLineEdit.setText(filename)
             self.__fineTuningBtn.setEnabled(True)
-
 
     def __fineTuning(self):
         if platform.system() == 'Windows':
