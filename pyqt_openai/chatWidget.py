@@ -54,9 +54,9 @@ class ChatBrowser(QScrollArea):
                     return
             chatLbl.setStyleSheet('QLabel { background-color: #DDD; padding: 1em }')
             chatLbl.setAlignment(Qt.AlignLeft)
+            chatLbl.setOpenExternalLinks(True)
         self.widget().layout().addWidget(chatLbl)
 
-        # basic save feature (doesn't work well in streaming)
         conv = {
             'type': 'User' if user_f else 'AI',
             'response': text,

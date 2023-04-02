@@ -1,3 +1,4 @@
+from qtpy.QtCore import Signal
 from qtpy.QtWidgets import QWidget, QCheckBox, QListWidget, QVBoxLayout, QHBoxLayout, QSpacerItem, QSizePolicy, QListWidgetItem, \
     QLabel
 
@@ -7,6 +8,9 @@ from pyqt_openai.svgButton import SvgButton
 
 
 class LeftSideBar(QWidget):
+    added = Signal()
+    deleted = Signal(list)
+
     def __init__(self):
         super().__init__()
         self.__initUi()
@@ -67,9 +71,12 @@ class LeftSideBar(QWidget):
 
     def __add(self):
         self.__convListWidget.addConv('New Chat')
+        self.added.emit()
 
     def __delete(self):
+        rows = self.__convListWidget.getCheckedRows()
         self.__convListWidget.removeCheckedRows()
+        self.deleted.emit(rows)
 
     def __save(self):
         print('save')
