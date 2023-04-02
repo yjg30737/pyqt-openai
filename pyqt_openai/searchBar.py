@@ -98,6 +98,3 @@ class SearchBar(QWidget):
 
     def getSearchLabel(self):
         return self.__searchIconLbl
-
-    def showEvent(self, e):
-        self.__searchLineEdit.setFocus()

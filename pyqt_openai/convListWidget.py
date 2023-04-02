@@ -2,7 +2,7 @@ from datetime import datetime
 
 from qtpy.QtGui import QFont
 from qtpy.QtCore import Qt, Signal
-from qtpy.QtWidgets import QListWidget, QSizePolicy, QDialog, QListWidgetItem, QLabel, QHBoxLayout, QWidget, QApplication, QVBoxLayout
+from qtpy.QtWidgets import QListWidget, QDialog, QListWidgetItem, QLabel, QHBoxLayout, QWidget, QApplication, QVBoxLayout
 
 from pyqt_openai.inputDialog import InputDialog
 from pyqt_openai.svgButton import SvgButton
