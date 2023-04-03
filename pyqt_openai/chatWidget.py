@@ -4,8 +4,8 @@ import os
 import requests
 
 from qtpy.QtCore import Qt, Signal
-from qtpy.QtGui import QPixmap
-from qtpy.QtWidgets import QScrollArea, QVBoxLayout, QWidget, QLabel, QHBoxLayout, QTextEdit
+from qtpy.QtGui import QPixmap, QFont
+from qtpy.QtWidgets import QScrollArea, QVBoxLayout, QWidget, QLabel, QHBoxLayout, QTextEdit, QStackedWidget
 
 
 class ChatBrowser(QScrollArea):
@@ -14,14 +14,26 @@ class ChatBrowser(QScrollArea):
         self.__initUi()
 
     def __initUi(self):
+        self.__homeWidget = QLabel('Home')
+        self.__homeWidget.setAlignment(Qt.AlignCenter)
+        self.__homeWidget.setFont(QFont('Arial', 32))
+
         lay = QVBoxLayout()
         lay.setAlignment(Qt.AlignTop)
         lay.setSpacing(0)
         lay.setContentsMargins(0, 0, 0, 0)
-        widget = QWidget()
-        widget.setLayout(lay)
+
+        self.__chatWidget = QWidget()
+        self.__chatWidget.setLayout(lay)
+
+        widget = QStackedWidget()
+        widget.addWidget(self.__homeWidget)
+        widget.addWidget(self.__chatWidget)
         self.setWidget(widget)
         self.setWidgetResizable(True)
+
+    def getChatWidget(self):
+        return self.__chatWidget
 
     def showReply(self, content, user_f, stream_f, image_f):
         if image_f:
@@ -37,9 +49,13 @@ class ChatBrowser(QScrollArea):
         pixmap = pixmap.scaled(chatLbl.width(), chatLbl.height())
         chatLbl.setPixmap(pixmap)
         chatLbl.setStyleSheet('QLabel { background-color: #DDD; padding: 1em }')
-        self.widget().layout().addWidget(chatLbl)
+        self.getChatWidget().layout().addWidget(chatLbl)
 
     def showText(self, text, stream_f, user_f):
+        if self.widget().currentWidget() == self.__chatWidget:
+            pass
+        else:
+            self.widget().setCurrentIndex(1)
         chatLbl = QLabel(text)
         chatLbl.setWordWrap(True)
         chatLbl.setTextInteractionFlags(Qt.TextSelectableByMouse)
@@ -48,14 +64,14 @@ class ChatBrowser(QScrollArea):
             chatLbl.setAlignment(Qt.AlignRight)
         else:
             if stream_f:
-                lbl = self.widget().layout().itemAt(self.widget().layout().count()-1).widget()
+                lbl = self.getChatWidget().layout().itemAt(self.getChatWidget().layout().count()-1).widget()
                 if isinstance(lbl, QLabel) and lbl.alignment() == Qt.AlignLeft:
                     lbl.setText(lbl.text()+text)
                     return
             chatLbl.setStyleSheet('QLabel { background-color: #DDD; padding: 1em }')
             chatLbl.setAlignment(Qt.AlignLeft)
             chatLbl.setOpenExternalLinks(True)
-        self.widget().layout().addWidget(chatLbl)
+        self.getChatWidget().layout().addWidget(chatLbl)
 
     def event(self, e):
         if e.type() == 43:
@@ -65,7 +81,7 @@ class ChatBrowser(QScrollArea):
     # TODO distinguish the image response
     def getAllText(self):
         all_text_lst = []
-        lay = self.widget().layout()
+        lay = self.getChatWidget().layout()
         if lay:
             for i in range(lay.count()):
                 if lay.itemAt(i) and lay.itemAt(i).widget():
@@ -77,7 +93,7 @@ class ChatBrowser(QScrollArea):
         return '\n'.join(all_text_lst)
 
     def getLastResponse(self):
-        lay = self.widget().layout()
+        lay = self.getChatWidget().layout()
         if lay:
             i = lay.count()-1
             if lay.itemAt(i) and lay.itemAt(i).widget():
@@ -87,7 +103,7 @@ class ChatBrowser(QScrollArea):
         return ''
 
     def getEveryResponse(self):
-        lay = self.widget().layout()
+        lay = self.getChatWidget().layout()
         if lay:
             text_lst = []
             for i in range(lay.count()):
@@ -101,12 +117,13 @@ class ChatBrowser(QScrollArea):
             return ''
 
     def clear(self):
-        lay = self.widget().layout()
+        lay = self.getChatWidget().layout()
         if lay:
             for i in range(lay.count()-1, -1, -1):
                 item = lay.itemAt(i)
                 if item and item.widget():
                     lay.removeWidget(item.widget())
+        self.widget().setCurrentIndex(0)
 
 class TextEditPrompt(QTextEdit):
     returnPressed = Signal()

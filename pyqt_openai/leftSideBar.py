@@ -9,6 +9,7 @@ from pyqt_openai.svgButton import SvgButton
 
 class LeftSideBar(QWidget):
     added = Signal()
+    changed = Signal(int)
     deleted = Signal(list)
 
     def __init__(self):
@@ -30,7 +31,7 @@ class LeftSideBar(QWidget):
 
         self.__addBtn.setToolTip('Add')
         self.__delBtn.setToolTip('Delete')
-        self.__saveBtn.setToolTip('Save')
+        self.__saveBtn.setToolTip('Save (testing)')
 
         self.__addBtn.clicked.connect(self.__add)
         self.__delBtn.clicked.connect(self.__delete)
@@ -60,6 +61,7 @@ class LeftSideBar(QWidget):
 
         self.__convListWidget = ConvListWidget()
         self.__convListWidget.addConv('New Chat')
+        self.__convListWidget.currentRowChanged.connect(self.changed)
 
         self.__convListWidget.setAlternatingRowColors(True)
 
@@ -71,6 +73,7 @@ class LeftSideBar(QWidget):
 
     def __add(self):
         self.__convListWidget.addConv('New Chat')
+        self.__convListWidget.setCurrentRow(0)
         self.added.emit()
 
     def __delete(self):
