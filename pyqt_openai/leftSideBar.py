@@ -1,3 +1,5 @@
+import json
+
 from qtpy.QtCore import Signal
 from qtpy.QtWidgets import QWidget, QCheckBox, QListWidget, QVBoxLayout, QHBoxLayout, QSpacerItem, QSizePolicy, QListWidgetItem, \
     QLabel
@@ -60,7 +62,6 @@ class LeftSideBar(QWidget):
         lay.setContentsMargins(0, 0, 0, 0)
 
         self.__convListWidget = ConvListWidget()
-        self.__convListWidget.addConv('New Chat')
         self.__convListWidget.currentRowChanged.connect(self.changed)
 
         self.__convListWidget.setAlternatingRowColors(True)
@@ -92,3 +93,15 @@ class LeftSideBar(QWidget):
             item = self.__convListWidget.item(i)
             widget = self.__convListWidget.itemWidget(item)
             item.setHidden(False if text.lower() in widget.text().lower() else True)
+
+    def initHistory(self):
+        with open('conv_history.json', 'r') as f:
+            try:
+                data = json.load(f).get('each_conv_lst', '')
+                if data:
+                    for obj in data:
+                        self.__convListWidget.addConv(obj['title'])
+                else:
+                    raise Exception
+            except Exception as e:
+                print(e)

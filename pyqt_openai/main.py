@@ -157,8 +157,11 @@ class OpenAIChatBot(QMainWindow):
     def __initUi(self):
         self.setWindowTitle('PyQt OpenAI Chatbot')
         self.setWindowIcon(QIcon('ico/openai.svg'))
+
         self.__leftSideBarWidget = LeftSideBar()
+        self.__leftSideBarWidget.initHistory()
         self.__leftSideBarWidget.added.connect(self.__addConv)
+        self.__leftSideBarWidget.changed.connect(self.__changeConv)
         self.__leftSideBarWidget.deleted.connect(self.__deleteConv)
 
         self.__prompt = Prompt()
@@ -704,6 +707,9 @@ class OpenAIChatBot(QMainWindow):
             f.write(json.dumps(data) + '\n')
 
         self.__browser.clear()
+
+    def __changeConv(self, idx):
+        print(f'changed to {idx}')
 
     def __updateConv(self, id, title=None, conv_unit=None):
         with open('conv_history.json', 'r') as f:
