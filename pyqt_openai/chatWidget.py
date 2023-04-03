@@ -57,14 +57,6 @@ class ChatBrowser(QScrollArea):
             chatLbl.setOpenExternalLinks(True)
         self.widget().layout().addWidget(chatLbl)
 
-        conv = {
-            'type': 'User' if user_f else 'AI',
-            'response': text,
-        }
-
-        with open('conv_history.json', 'a') as f:
-            f.write(json.dumps(conv) + '\n')
-
     def event(self, e):
         if e.type() == 43:
             self.verticalScrollBar().setSliderPosition(self.verticalScrollBar().maximum())
@@ -99,13 +91,22 @@ class ChatBrowser(QScrollArea):
         if lay:
             text_lst = []
             for i in range(lay.count()):
-                if lay.itemAt(i) and lay.itemAt(i).widget():
-                    widget = lay.itemAt(i).widget()
+                item = lay.itemAt(i)
+                if item and item.widget():
+                    widget = item.widget()
                     if isinstance(widget, QLabel) and i % 2 == 1:
                         text_lst.append(widget.text())
             return '\n'.join(text_lst)
         else:
             return ''
+
+    def clear(self):
+        lay = self.widget().layout()
+        if lay:
+            for i in range(lay.count()-1, -1, -1):
+                item = lay.itemAt(i)
+                if item and item.widget():
+                    lay.removeWidget(item.widget())
 
 class TextEditPrompt(QTextEdit):
     returnPressed = Signal()

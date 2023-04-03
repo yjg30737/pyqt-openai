@@ -703,6 +703,8 @@ class OpenAIChatBot(QMainWindow):
             data['each_conv_lst'].append({ 'id': max_id, 'title': 'New Chat', 'conv_data': [] })
             f.write(json.dumps(data) + '\n')
 
+        self.__browser.clear()
+
     def __updateConv(self, id, title=None, conv_unit=None):
         with open('conv_history.json', 'r') as f:
             data = json.load(f)

@@ -142,11 +142,3 @@ class ConvListWidget(QListWidget):
         flag_lst = reversed(flag_lst)
         for i in flag_lst:
             self.takeItem(i)
-
-    def deleteConv(self):
-        item = self.currentItem()
-        self.takeItem(self.row(item))
-
-    def clearConv(self):
-        for i in range(self.count()-1, -1, -1):
-            self.takeItem(i)
