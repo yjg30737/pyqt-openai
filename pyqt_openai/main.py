@@ -148,6 +148,8 @@ class OpenAIChatBot(QMainWindow):
         self.setWindowTitle('PyQt OpenAI Chatbot')
         self.setWindowIcon(QIcon('ico/openai.svg'))
         self.__leftSideBarWidget = LeftSideBar()
+        self.__leftSideBarWidget.added.connect(self.__addConv)
+        self.__leftSideBarWidget.deleted.connect(self.__deleteConv)
 
         self.__prompt = Prompt()
 
@@ -671,6 +673,38 @@ class OpenAIChatBot(QMainWindow):
             filename = filename[0]
             self.__findDataLineEdit.setText(filename)
             self.__fineTuningBtn.setEnabled(True)
+    def __addConv(self):
+        with open('conv_history.json', 'r') as f:
+            data = json.load(f)
+
+        with open('conv_history.json', 'w') as f:
+            lst = data['each_conv_lst']
+            max_id = max(lst, key=lambda x: x["id"])["id"]+1
+            data['each_conv_lst'].append({ 'id': max_id, 'title': 'New Chat', 'conv_data': [] })
+            f.write(json.dumps(data) + '\n')
+
+    def __updateConv(self, id, title=None, conv_unit=None):
+        with open('conv_history.json', 'r') as f:
+            data = json.load(f)
+
+        with open('conv_history.json', 'w') as f:
+            lst = data['each_conv_lst']
+            obj = list(filter(lambda x: x["id"] == id, lst))[0]
+            if title:
+                obj['title'] = title
+            if conv_unit:
+                obj['conv_data'].append(conv_unit)
+            json.dump(data, f)
+
+    def __deleteConv(self, id_lst):
+        with open('conv_history.json', 'r') as f:
+            data = json.load(f)
+
+        with open('conv_history.json', 'w') as f:
+            lst = data['each_conv_lst']
+            obj = list(filter(lambda x: x["id"] in id_lst, lst))[0]
+            lst.remove(obj)
+            json.dump(data, f)
 
     def __fineTuning(self):
         if platform.system() == 'Windows':
