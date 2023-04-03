@@ -708,9 +708,11 @@ class OpenAIChatBot(QMainWindow):
 
         self.__browser.clear()
 
+    # TODO set the feature
     def __changeConv(self, idx):
         print(f'changed to {idx}')
 
+    # TODO implement the feature
     def __updateConv(self, id, title=None, conv_unit=None):
         with open('conv_history.json', 'r') as f:
             data = json.load(f)
