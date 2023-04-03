@@ -65,7 +65,6 @@ class ChatBrowser(QScrollArea):
         with open('conv_history.json', 'a') as f:
             f.write(json.dumps(conv) + '\n')
 
-
     def event(self, e):
         if e.type() == 43:
             self.verticalScrollBar().setSliderPosition(self.verticalScrollBar().maximum())

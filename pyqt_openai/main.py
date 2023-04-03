@@ -132,6 +132,16 @@ class OpenAIChatBot(QMainWindow):
         else:
             self.__settings_struct.setValue('API_KEY', '')
 
+        # init json file
+        if os.path.exists('conv_history.json'):
+            pass
+        else:
+            with open('conv_history.json', 'w') as f:
+                init_data = {
+                    'each_conv_lst': []
+                }
+                f.write(json.dumps(init_data))
+
         # "remember past conv" feature
         if self.__settings_struct.contains('REMEMBER_PAST_CONVERSATION'):
             self.__remember_past_conv = True if self.__settings_struct.value('REMEMBER_PAST_CONVERSATION') == '1' else False
@@ -586,9 +596,18 @@ class OpenAIChatBot(QMainWindow):
                 "size": "1024x1024"
             }
         self.__lineEdit.setEnabled(False)
+        self.__browser.showText(self.__lineEdit.toPlainText(), False, True)
+        # conv = {
+        #     'type': 'User' if user_f else 'AI',
+        #     'response': text,
+        # }
+        # self.__updateConv(0, 'New Chat', )
+
         self.__t = OpenAIThread(self.__engine, openai_arg, idx, self.__remember_past_conv)
         self.__t.replyGenerated.connect(self.__browser.showReply)
-        self.__browser.showText(self.__lineEdit.toPlainText(), False, True)
+        # id = 0
+        # title = 'New Chat'
+        # self.__updateConv()
         self.__lineEdit.clear()
         self.__t.start()
         self.__t.finished.connect(self.__afterGenerated)
@@ -673,13 +692,14 @@ class OpenAIChatBot(QMainWindow):
             filename = filename[0]
             self.__findDataLineEdit.setText(filename)
             self.__fineTuningBtn.setEnabled(True)
+
     def __addConv(self):
         with open('conv_history.json', 'r') as f:
             data = json.load(f)
 
         with open('conv_history.json', 'w') as f:
             lst = data['each_conv_lst']
-            max_id = max(lst, key=lambda x: x["id"])["id"]+1
+            max_id = max(lst, key=lambda x: x["id"])["id"]+1 if len(lst) > 0 else 0
             data['each_conv_lst'].append({ 'id': max_id, 'title': 'New Chat', 'conv_data': [] })
             f.write(json.dumps(data) + '\n')
 
