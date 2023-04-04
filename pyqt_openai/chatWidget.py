@@ -125,6 +125,9 @@ class ChatBrowser(QScrollArea):
                     lay.removeWidget(item.widget())
         self.widget().setCurrentIndex(0)
 
+    def setConversation(self, conv_data):
+        print(conv_data)
+
 class TextEditPrompt(QTextEdit):
     returnPressed = Signal()
 

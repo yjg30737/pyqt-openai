@@ -712,7 +712,12 @@ class OpenAIChatBot(QMainWindow):
 
     # TODO set the feature
     def __changeConv(self, item: QListWidgetItem):
-        pass
+        id = item.data(Qt.UserRole)
+        with open('conv_history.json', 'r') as f:
+            data = json.load(f)
+            lst = data['each_conv_lst']
+            obj = list(filter(lambda x: x["id"] == id, lst))[0]
+            self.__browser.setConversation(obj['conv_data'])
 
     # TODO implement the feature
     def __updateConv(self, id, title=None, conv_unit=None):

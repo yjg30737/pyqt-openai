@@ -103,7 +103,7 @@ class LeftSideBar(QWidget):
                 data = json.load(f).get('each_conv_lst', '')
                 if data:
                     for obj in data:
-                        self.__convListWidget.addConv(obj['title'])
+                        self.__convListWidget.addConv(obj['title'], obj['id'])
                 else:
                     raise Exception
             except Exception as e:
