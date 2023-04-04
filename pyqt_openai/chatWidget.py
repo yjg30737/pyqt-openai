@@ -46,7 +46,11 @@ class ChatBrowser(QScrollArea):
             self.showImage(text, user_f)
         else:
             self.showText(text, stream_f, user_f)
-        self.convUpdated.emit(self.__cur_id, text)
+        if not stream_f:
+            self.convUpdated.emit(self.__cur_id, text)
+
+    def streamFinished(self):
+        self.convUpdated.emit(self.__cur_id, self.getLastResponse())
 
     def showImage(self, image_url, user_f):
         chatLbl = QLabel()

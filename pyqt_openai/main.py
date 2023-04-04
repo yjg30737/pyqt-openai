@@ -40,6 +40,7 @@ class OpenAIThread(QThread):
     Forth: Image generation with DALL-E or not
     """
     replyGenerated = Signal(str, bool, bool, bool)
+    streamFinished = Signal()
 
     def __init__(self, model, openai_arg, idx, remember_f, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -66,7 +67,7 @@ class OpenAIThread(QThread):
                             else:
                                 finish_reason = chunk['choices'][0].get('finish_reason', '')
                                 if finish_reason:
-                                    print(finish_reason)
+                                    self.streamFinished.emit()
                     else:
                         response_text = response['choices'][0]['message']['content']
                         self.replyGenerated.emit(response_text, False, False, False)
@@ -606,6 +607,7 @@ class OpenAIChatBot(QMainWindow):
 
         self.__t = OpenAIThread(self.__engine, openai_arg, idx, self.__remember_past_conv)
         self.__t.replyGenerated.connect(self.__browser.showLabel)
+        self.__t.streamFinished.connect(self.__browser.streamFinished)
         self.__lineEdit.clear()
         self.__t.start()
         self.__t.finished.connect(self.__afterGenerated)
