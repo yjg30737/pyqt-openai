@@ -132,6 +132,9 @@ class ChatBrowser(QScrollArea):
                     lay.removeWidget(item.widget())
         self.widget().setCurrentIndex(0)
 
+    def isNew(self):
+        return self.widget().currentIndex() == 0
+
     def setCurId(self, id):
         self.__cur_id = id
 

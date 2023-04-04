@@ -600,6 +600,8 @@ class OpenAIChatBot(QMainWindow):
                 "size": "1024x1024"
             }
         self.__lineEdit.setEnabled(False)
+        if self.__browser.isNew():
+            self.__addConv()
         self.__browser.showConv(self.__lineEdit.toPlainText(), True, False, False)
 
         self.__t = OpenAIThread(self.__engine, openai_arg, idx, self.__remember_past_conv)
@@ -703,6 +705,7 @@ class OpenAIChatBot(QMainWindow):
         self.__browser.clear()
         self.__browser.setCurId(cur_id)
         self.__leftSideBarWidget.addToList(cur_id)
+        self.__lineEdit.setFocus()
 
     # TODO set the feature
     def __changeConv(self, item: QListWidgetItem):
