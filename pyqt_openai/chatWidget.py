@@ -41,7 +41,7 @@ class ChatBrowser(QScrollArea):
     def getChatWidget(self):
         return self.__chatWidget
 
-    def showConv(self, text, user_f, stream_f, image_f):
+    def showLabel(self, text, user_f, stream_f, image_f):
         if image_f:
             self.showImage(text, user_f)
         else:

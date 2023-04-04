@@ -602,10 +602,10 @@ class OpenAIChatBot(QMainWindow):
         self.__lineEdit.setEnabled(False)
         if self.__browser.isNew():
             self.__addConv()
-        self.__browser.showConv(self.__lineEdit.toPlainText(), True, False, False)
+        self.__browser.showLabel(self.__lineEdit.toPlainText(), True, False, False)
 
         self.__t = OpenAIThread(self.__engine, openai_arg, idx, self.__remember_past_conv)
-        self.__t.replyGenerated.connect(self.__browser.showConv)
+        self.__t.replyGenerated.connect(self.__browser.showLabel)
         self.__lineEdit.clear()
         self.__t.start()
         self.__t.finished.connect(self.__afterGenerated)
