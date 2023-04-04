@@ -1,4 +1,5 @@
 from datetime import datetime
+import json
 
 from qtpy.QtGui import QFont
 from qtpy.QtCore import Qt, Signal
@@ -87,19 +88,23 @@ class ConvItemWidget(QWidget):
 
 
 class ConvListWidget(QListWidget):
+    changed = Signal(QListWidgetItem)
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.__initUi()
 
     def __initUi(self):
         self.itemClicked.connect(self.__clicked)
+        self.currentItemChanged.connect(self.changed)
 
-    def addConv(self, text: str):
+    def addConv(self, text: str, id: int):
         item = QListWidgetItem()
         item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
         item.setCheckState(Qt.Unchecked)
         widget = ConvItemWidget(text, item)
         item.setSizeHint(widget.sizeHint())
+        item.setData(Qt.UserRole, id)
         self.insertItem(0, item)
         self.setItemWidget(item, widget)
 
@@ -116,18 +121,23 @@ class ConvListWidget(QListWidget):
             if item.checkState() != state:
                 item.setCheckState(state)
 
+    # TODO refactoring getCheckedRows, getCheckedRowsIds, getUncheckedRows
     def getCheckedRows(self):
         return self.__getFlagRows(Qt.Checked)
+
+    def getCheckedRowsIds(self):
+        return self.__getFlagRows(Qt.Checked, is_id=True)
 
     def getUncheckedRows(self):
         return self.__getFlagRows(Qt.Unchecked)
 
-    def __getFlagRows(self, flag: Qt.CheckState):
+    def __getFlagRows(self, flag: Qt.CheckState, is_id: bool = False):
         flag_lst = []
         for i in range(self.count()):
             item = self.item(i)
             if item.checkState() == flag:
-                flag_lst.append(i)
+                token = item.data(Qt.UserRole) if is_id else i
+                flag_lst.append(token)
 
         return flag_lst
 

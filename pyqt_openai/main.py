@@ -11,7 +11,7 @@ from qtpy.QtCore import Qt, QCoreApplication, QThread, QSettings, QEvent, Signal
 from qtpy.QtGui import QGuiApplication, QFont, QIcon, QColor, QCursor
 from qtpy.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QWidget, QSplitter, QComboBox, QSpinBox, \
     QFormLayout, QDoubleSpinBox, QPushButton, QFileDialog, QToolBar, QWidgetAction, QHBoxLayout, QAction, QMenu, \
-    QSystemTrayIcon, QMessageBox, QSizePolicy, QGroupBox, QLineEdit, QLabel, QCheckBox
+    QSystemTrayIcon, QMessageBox, QSizePolicy, QGroupBox, QLineEdit, QLabel, QCheckBox, QListWidgetItem
 
 from pyqt_openai.apiData import getModelEndpoint, getLatestModel
 from pyqt_openai.clickableTooltip import ClickableTooltip
@@ -697,6 +697,7 @@ class OpenAIChatBot(QMainWindow):
             self.__fineTuningBtn.setEnabled(True)
 
     def __addConv(self):
+        max_id = 0
         with open('conv_history.json', 'r') as f:
             data = json.load(f)
 
@@ -707,10 +708,11 @@ class OpenAIChatBot(QMainWindow):
             f.write(json.dumps(data) + '\n')
 
         self.__browser.clear()
+        self.__leftSideBarWidget.addToList(max_id)
 
     # TODO set the feature
-    def __changeConv(self, idx):
-        print(f'changed to {idx}')
+    def __changeConv(self, item: QListWidgetItem):
+        pass
 
     # TODO implement the feature
     def __updateConv(self, id, title=None, conv_unit=None):
@@ -727,13 +729,15 @@ class OpenAIChatBot(QMainWindow):
             json.dump(data, f)
 
     def __deleteConv(self, id_lst):
+        print(id_lst)
         with open('conv_history.json', 'r') as f:
             data = json.load(f)
 
         with open('conv_history.json', 'w') as f:
             lst = data['each_conv_lst']
-            obj = list(filter(lambda x: x["id"] in id_lst, lst))[0]
-            lst.remove(obj)
+            obj_to_delete = list(filter(lambda x: x["id"] in id_lst, lst))
+            for obj in obj_to_delete:
+                lst.remove(obj)
             json.dump(data, f)
 
     def __fineTuning(self):

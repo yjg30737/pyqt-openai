@@ -11,7 +11,7 @@ from pyqt_openai.svgButton import SvgButton
 
 class LeftSideBar(QWidget):
     added = Signal()
-    changed = Signal(int)
+    changed = Signal(QListWidgetItem)
     deleted = Signal(list)
 
     def __init__(self):
@@ -35,9 +35,9 @@ class LeftSideBar(QWidget):
         self.__delBtn.setToolTip('Delete')
         self.__saveBtn.setToolTip('Save (testing)')
 
-        self.__addBtn.clicked.connect(self.__add)
-        self.__delBtn.clicked.connect(self.__delete)
-        self.__saveBtn.clicked.connect(self.__save)
+        self.__addBtn.clicked.connect(self.__addClicked)
+        self.__delBtn.clicked.connect(self.__deleteClicked)
+        self.__saveBtn.clicked.connect(self.__saveClicked)
 
         self.__allCheckBox = QCheckBox('Check All')
         self.__allCheckBox.stateChanged.connect(self.__stateChanged)
@@ -62,7 +62,7 @@ class LeftSideBar(QWidget):
         lay.setContentsMargins(0, 0, 0, 0)
 
         self.__convListWidget = ConvListWidget()
-        self.__convListWidget.currentRowChanged.connect(self.changed)
+        self.__convListWidget.changed.connect(self.changed)
 
         self.__convListWidget.setAlternatingRowColors(True)
 
@@ -72,17 +72,20 @@ class LeftSideBar(QWidget):
 
         self.setLayout(lay)
 
-    def __add(self):
-        self.__convListWidget.addConv('New Chat')
-        self.__convListWidget.setCurrentRow(0)
+    def __addClicked(self):
         self.added.emit()
 
-    def __delete(self):
-        rows = self.__convListWidget.getCheckedRows()
+    def addToList(self, id):
+        self.__convListWidget.addConv('New Chat', id)
+        self.__convListWidget.setCurrentRow(0)
+
+    def __deleteClicked(self):
+        # get the ID of row, not actual index (because list is in a stacked form)
+        rows = self.__convListWidget.getCheckedRowsIds()
         self.__convListWidget.removeCheckedRows()
         self.deleted.emit(rows)
 
-    def __save(self):
+    def __saveClicked(self):
         print('save')
 
     def __stateChanged(self, f):
