@@ -174,6 +174,7 @@ class OpenAIChatBot(QMainWindow):
         self.__lineEdit.returnPressed.connect(self.__chat)
 
         self.__browser = ChatBrowser()
+        self.__browser.convUpdated.connect(self.__updateConv)
 
         lay = QHBoxLayout()
         lay.addWidget(self.__aiTypeCmbBox)
@@ -577,7 +578,7 @@ class OpenAIChatBot(QMainWindow):
                     'model': self.__engine,
                     'messages': [
                         {"role": "system", "content": "You are a helpful assistant."},
-                        {"role": "assistant", "content": self.__browser.getLastResponse()},
+                        {"role": "assistant", "content": self.__browser.getAllText()},
                         {"role": "user", "content": self.__lineEdit.toPlainText()},
                     ],
                     'stream': self.__stream,
@@ -599,18 +600,10 @@ class OpenAIChatBot(QMainWindow):
                 "size": "1024x1024"
             }
         self.__lineEdit.setEnabled(False)
-        self.__browser.showText(self.__lineEdit.toPlainText(), False, True)
-        # conv = {
-        #     'type': 'User' if user_f else 'AI',
-        #     'response': text,
-        # }
-        # self.__updateConv(0, 'New Chat', )
+        self.__browser.showConv(self.__lineEdit.toPlainText(), True, False, False)
 
         self.__t = OpenAIThread(self.__engine, openai_arg, idx, self.__remember_past_conv)
-        self.__t.replyGenerated.connect(self.__browser.showReply)
-        # id = 0
-        # title = 'New Chat'
-        # self.__updateConv()
+        self.__t.replyGenerated.connect(self.__browser.showConv)
         self.__lineEdit.clear()
         self.__t.start()
         self.__t.finished.connect(self.__afterGenerated)
@@ -697,18 +690,19 @@ class OpenAIChatBot(QMainWindow):
             self.__fineTuningBtn.setEnabled(True)
 
     def __addConv(self):
-        max_id = 0
+        cur_id = 0
         with open('conv_history.json', 'r') as f:
             data = json.load(f)
 
         with open('conv_history.json', 'w') as f:
             lst = data['each_conv_lst']
-            max_id = max(lst, key=lambda x: x["id"])["id"]+1 if len(lst) > 0 else 0
-            data['each_conv_lst'].append({ 'id': max_id, 'title': 'New Chat', 'conv_data': [] })
+            cur_id = max(lst, key=lambda x: x["id"])["id"]+1 if len(lst) > 0 else 0
+            data['each_conv_lst'].append({ 'id': cur_id, 'title': 'New Chat', 'conv_data': [] })
             f.write(json.dumps(data) + '\n')
 
         self.__browser.clear()
-        self.__leftSideBarWidget.addToList(max_id)
+        self.__browser.setCurId(cur_id)
+        self.__leftSideBarWidget.addToList(cur_id)
 
     # TODO set the feature
     def __changeConv(self, item: QListWidgetItem):
@@ -717,10 +711,10 @@ class OpenAIChatBot(QMainWindow):
             data = json.load(f)
             lst = data['each_conv_lst']
             obj = list(filter(lambda x: x["id"] == id, lst))[0]
-            self.__browser.setConversation(obj['conv_data'])
+            self.__browser.setConversation(id, obj['conv_data'])
 
     # TODO implement the feature
-    def __updateConv(self, id, title=None, conv_unit=None):
+    def __updateConv(self, id, conv_unit=None, title=None):
         with open('conv_history.json', 'r') as f:
             data = json.load(f)
 

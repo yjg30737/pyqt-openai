@@ -9,9 +9,15 @@ from qtpy.QtWidgets import QScrollArea, QVBoxLayout, QWidget, QLabel, QHBoxLayou
 
 
 class ChatBrowser(QScrollArea):
+    convUpdated = Signal(int, str)
+
     def __init__(self):
         super().__init__()
+        self.__initVal()
         self.__initUi()
+
+    def __initVal(self):
+        self.__cur_id = 0
 
     def __initUi(self):
         self.__homeWidget = QLabel('Home')
@@ -35,11 +41,12 @@ class ChatBrowser(QScrollArea):
     def getChatWidget(self):
         return self.__chatWidget
 
-    def showReply(self, content, user_f, stream_f, image_f):
+    def showConv(self, text, user_f, stream_f, image_f):
         if image_f:
-            self.showImage(content, user_f)
+            self.showImage(text, user_f)
         else:
-            self.showText(content, stream_f, user_f)
+            self.showText(text, stream_f, user_f)
+        self.convUpdated.emit(self.__cur_id, text)
 
     def showImage(self, image_url, user_f):
         chatLbl = QLabel()
@@ -125,8 +132,11 @@ class ChatBrowser(QScrollArea):
                     lay.removeWidget(item.widget())
         self.widget().setCurrentIndex(0)
 
-    def setConversation(self, conv_data):
-        print(conv_data)
+    def setCurId(self, id):
+        self.__cur_id = id
+
+    def setConversation(self, id, conv_data):
+        print(id, conv_data)
 
 class TextEditPrompt(QTextEdit):
     returnPressed = Signal()
