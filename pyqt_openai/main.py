@@ -716,7 +716,7 @@ class OpenAIChatBot(QMainWindow):
             data = json.load(f)
             lst = data['each_conv_lst']
             obj = list(filter(lambda x: x["id"] == id, lst))[0]
-            self.__browser.setConversation(id, obj['conv_data'])
+            self.__browser.replaceConv(id, obj['conv_data'])
 
     # TODO implement the feature
     def __updateConv(self, id, conv_unit=None, title=None):

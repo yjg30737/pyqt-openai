@@ -67,6 +67,9 @@ class ChatBrowser(QScrollArea):
             pass
         else:
             self.widget().setCurrentIndex(1)
+        self.__setLabel(text, stream_f, user_f)
+
+    def __setLabel(self, text, stream_f, user_f):
         chatLbl = QLabel(text)
         chatLbl.setWordWrap(True)
         chatLbl.setTextInteractionFlags(Qt.TextSelectableByMouse)
@@ -142,8 +145,12 @@ class ChatBrowser(QScrollArea):
     def setCurId(self, id):
         self.__cur_id = id
 
-    def setConversation(self, id, conv_data):
-        print(id, conv_data)
+    def replaceConv(self, id, conv_data):
+        self.clear()
+        self.widget().setCurrentIndex(1)
+        for i in range(len(conv_data)):
+            self.__setLabel(conv_data[i], False, not bool(i % 2))
+
 
 class TextEditPrompt(QTextEdit):
     returnPressed = Signal()
