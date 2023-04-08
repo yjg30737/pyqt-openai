@@ -14,6 +14,9 @@ You can select other model with the combobox on the sidebar at the right side of
 
 An internet connection is required.
 
+## Note
+Some of the features are still being tested(e.g. save button at the left side bar, fine-tuning).
+
 ## Requirements
 * qtpy - the package allowing you to write code that works with both PyQt and PySide
 * PyQt5 >= 5.14 or PySide6
@@ -28,7 +31,10 @@ This is using GPT-3.5 turbo model by default.
 <b>You have to write your openai api key inside the red box.</b> see [How to play](#how-to-play)
 
 ### Conversation preview
-![image](https://user-images.githubusercontent.com/55078043/230718604-fe425540-41c6-4753-99c9-7a8c66d59b5d.png)
+#### Image
+![image](https://user-images.githubusercontent.com/55078043/230718925-bc36693b-1ad6-472f-ab08-63517e3a433f.png)
+#### Video
+https://user-images.githubusercontent.com/55078043/230719180-3e665a05-959c-4b49-b693-7046a538630e.mp4
 
 ## How to play
 1. git clone ~
