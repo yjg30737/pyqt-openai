@@ -695,21 +695,25 @@ class OpenAIChatBot(QMainWindow):
 
     def __addConv(self):
         cur_id = 0
-        with open('conv_history.json', 'r') as f:
-            data = json.load(f)
+        try:
+            with open('conv_history.json', 'r') as f:
+                data = json.load(f)
 
-        with open('conv_history.json', 'w') as f:
-            lst = data['each_conv_lst']
-            cur_id = max(lst, key=lambda x: x["id"])["id"]+1 if len(lst) > 0 else 0
-            data['each_conv_lst'].append({ 'id': cur_id, 'title': 'New Chat', 'conv_data': [] })
-            f.write(json.dumps(data) + '\n')
+            with open('conv_history.json', 'w') as f:
+                lst = data['each_conv_lst']
+                cur_id = max(lst, key=lambda x: x["id"])["id"]+1 if len(lst) > 0 else 0
+                data['each_conv_lst'].append({ 'id': cur_id, 'title': 'New Chat', 'conv_data': [] })
+                f.write(json.dumps(data) + '\n')
 
-        self.__browser.clear()
-        self.__browser.setCurId(cur_id)
-        self.__leftSideBarWidget.addToList(cur_id)
-        self.__lineEdit.setFocus()
+                self.__browser.clear()
+                self.__browser.setCurId(cur_id)
+                self.__leftSideBarWidget.addToList(cur_id)
+                self.__lineEdit.setFocus()
+        except json.decoder.JSONDecodeError as e:
+            QMessageBox.critical(self, 'Error', 'The contents of the JSON file are not valid.', QMessageBox.Yes)
+        except Exception as e:
+            print(e)
 
-    # TODO set the feature
     def __changeConv(self, item: QListWidgetItem):
         id = item.data(Qt.UserRole)
         with open('conv_history.json', 'r') as f:
