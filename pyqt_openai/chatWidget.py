@@ -145,8 +145,13 @@ class ChatBrowser(QScrollArea):
     def setCurId(self, id):
         self.__cur_id = id
 
+    def resetChatWidget(self, id):
+        self.clear()
+        self.setCurId(id)
+
     def replaceConv(self, id, conv_data):
         self.clear()
+        self.setCurId(id)
         self.widget().setCurrentIndex(1)
         for i in range(len(conv_data)):
             self.__setLabel(conv_data[i], False, not bool(i % 2))

@@ -79,6 +79,9 @@ class LeftSideBar(QWidget):
         self.__convListWidget.addConv('New Chat', id)
         self.__convListWidget.setCurrentRow(0)
 
+    def isCurrentConvExists(self):
+        return self.__convListWidget.count() > 0 and self.__convListWidget.currentItem()
+
     def __deleteClicked(self):
         # get the ID of row, not actual index (because list is in a stacked form)
         rows = self.__convListWidget.getCheckedRowsIds()

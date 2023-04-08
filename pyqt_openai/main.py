@@ -88,7 +88,7 @@ class OpenAIThread(QThread):
                         with open('conv.json', 'a') as f:
                             f.write(json.dumps(conv) + '\n')
 
-                    self.replyGenerated.emit(response_text, False, False)
+                    self.replyGenerated.emit(response_text, False, False, False)
             elif self.__idx == 1:
                 response = openai.Image.create(
                     **self.__openai_arg
@@ -133,15 +133,7 @@ class OpenAIChatBot(QMainWindow):
         else:
             self.__settings_struct.setValue('API_KEY', '')
 
-        # init json file
-        if os.path.exists('conv_history.json'):
-            pass
-        else:
-            with open('conv_history.json', 'w') as f:
-                init_data = {
-                    'each_conv_lst': []
-                }
-                f.write(json.dumps(init_data))
+        self.__initConvHistoryJson()
 
         # "remember past conv" feature
         if self.__settings_struct.contains('REMEMBER_PAST_CONVERSATION'):
@@ -154,6 +146,27 @@ class OpenAIChatBot(QMainWindow):
         else:
             with open('conv.json', 'w') as f:
                 json.dump({}, f)
+
+    def __initConvHistoryJson(self):
+        # init json file
+        if os.path.exists('conv_history.json'):
+            try:
+                with open('conv_history.json', 'r') as f:
+                    data = json.load(f)
+            except json.decoder.JSONDecodeError as e:
+                reply = QMessageBox.critical(self, 'Error',
+                                             'The contents of the JSON file(conv_history.json) are not valid.\n'
+                                             'Would you like to create a new JSON file?',
+                                             QMessageBox.Yes | QMessageBox.No)
+                if reply == QMessageBox.Yes:
+                    os.remove('conv_history.json')
+                    self.__initConvHistoryJson()
+        else:
+            with open('conv_history.json', 'w') as f:
+                init_data = {
+                    'each_conv_lst': []
+                }
+                f.write(json.dumps(init_data))
 
     def __initUi(self):
         self.setWindowTitle('PyQt OpenAI Chatbot')
@@ -601,7 +614,9 @@ class OpenAIChatBot(QMainWindow):
                 "size": "1024x1024"
             }
         self.__lineEdit.setEnabled(False)
-        if self.__browser.isNew():
+        if self.__leftSideBarWidget.isCurrentConvExists():
+            pass
+        else:
             self.__addConv()
         self.__browser.showLabel(self.__lineEdit.toPlainText(), True, False, False)
 
@@ -695,32 +710,33 @@ class OpenAIChatBot(QMainWindow):
 
     def __addConv(self):
         cur_id = 0
-        try:
-            with open('conv_history.json', 'r') as f:
-                data = json.load(f)
-
-            with open('conv_history.json', 'w') as f:
-                lst = data['each_conv_lst']
-                cur_id = max(lst, key=lambda x: x["id"])["id"]+1 if len(lst) > 0 else 0
-                data['each_conv_lst'].append({ 'id': cur_id, 'title': 'New Chat', 'conv_data': [] })
-                f.write(json.dumps(data) + '\n')
-
-                self.__browser.clear()
-                self.__browser.setCurId(cur_id)
-                self.__leftSideBarWidget.addToList(cur_id)
-                self.__lineEdit.setFocus()
-        except json.decoder.JSONDecodeError as e:
-            QMessageBox.critical(self, 'Error', 'The contents of the JSON file are not valid.', QMessageBox.Yes)
-        except Exception as e:
-            print(e)
-
-    def __changeConv(self, item: QListWidgetItem):
-        id = item.data(Qt.UserRole)
         with open('conv_history.json', 'r') as f:
             data = json.load(f)
+
+        with open('conv_history.json', 'w') as f:
             lst = data['each_conv_lst']
-            obj = list(filter(lambda x: x["id"] == id, lst))[0]
-            self.__browser.replaceConv(id, obj['conv_data'])
+            cur_id = max(lst, key=lambda x: x["id"])["id"]+1 if len(lst) > 0 else 0
+            data['each_conv_lst'].append({ 'id': cur_id, 'title': 'New Chat', 'conv_data': [] })
+            f.write(json.dumps(data) + '\n')
+
+        self.__browser.resetChatWidget(cur_id)
+        self.__leftSideBarWidget.addToList(cur_id)
+        self.__lineEdit.setFocus()
+
+    def __changeConv(self, item: QListWidgetItem):
+        # If a 'change' event occurs but there are no items, it should mean that list is empty
+        # so reset conv_history.json
+        if item:
+            id = item.data(Qt.UserRole)
+            with open('conv_history.json', 'r') as f:
+                data = json.load(f)
+                lst = data['each_conv_lst']
+                obj = list(filter(lambda x: x["id"] == id, lst))[0]
+                self.__browser.replaceConv(id, obj['conv_data'])
+        else:
+            self.__browser.resetChatWidget(0)
+            os.remove('conv_history.json')
+            self.__initConvHistoryJson()
 
     # TODO implement the feature
     def __updateConv(self, id, conv_unit=None, title=None):

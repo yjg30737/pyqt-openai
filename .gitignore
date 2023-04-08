@@ -130,3 +130,4 @@ dmypy.json
 
 # pyqt_openai
 conv.json
+conv_history.json
