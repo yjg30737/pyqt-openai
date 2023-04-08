@@ -25,7 +25,7 @@ This is using GPT-3.5 turbo model by default.
 
 ### Homepage
 ![image](https://user-images.githubusercontent.com/55078043/230718379-d8f85397-74e9-483a-8686-5ce59ead70a3.png)
-You have to write your openai api key inside the red box. see [How to play](#how-to-play)
+<b>You have to write your openai api key inside the red box.</b> see [How to play](#how-to-play)
 
 ### Conversation preview
 ![image](https://user-images.githubusercontent.com/55078043/230718604-fe425540-41c6-4753-99c9-7a8c66d59b5d.png)
