@@ -64,6 +64,8 @@ class ConvItemWidget(QWidget):
         # i don't know this was fixed or not in PySide6 so i will check it out FIXME
         self.__topicLbl.setFont(QApplication.font())
 
+        self.setAutoFillBackground(True)
+
     def text(self):
         return self.__topicLbl.text()
 
@@ -113,12 +115,15 @@ class ConvListWidget(QListWidget):
         self.setItemWidget(item, widget)
 
     def __clicked(self, item):
-        if item.listWidget().itemWidget(item) != None:
-            if item.checkState() == Qt.Checked:
-                item.setCheckState(Qt.Unchecked)
-            else:
-                item.setCheckState(Qt.Checked)
-    
+        potentialChkBoxWidgetInItem = QApplication.widgetAt(self.cursor().pos())
+        if isinstance(potentialChkBoxWidgetInItem, QWidget) and potentialChkBoxWidgetInItem.children():
+            if isinstance(potentialChkBoxWidgetInItem.children()[0], ConvItemWidget):
+                if item.listWidget().itemWidget(item) != None:
+                    if item.checkState() == Qt.Checked:
+                        item.setCheckState(Qt.Unchecked)
+                    else:
+                        item.setCheckState(Qt.Checked)
+
     def toggleState(self, state):
         for i in range(self.count()):
             item = self.item(i)
