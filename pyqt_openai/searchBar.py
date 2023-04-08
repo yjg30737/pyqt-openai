@@ -1,7 +1,7 @@
 from qtpy.QtWidgets import QWidget, QLineEdit, QGridLayout, QLabel, \
     QHBoxLayout, QApplication, QSizePolicy
 from qtpy.QtCore import Signal
-from pyqt_svg_label import SvgLabel
+from pyqt_openai.svgLabel import SvgLabel
 
 
 class SearchBar(QWidget):
@@ -98,6 +98,3 @@ class SearchBar(QWidget):
 
     def getSearchLabel(self):
         return self.__searchIconLbl
-
-    def showEvent(self, e):
-        self.__searchLineEdit.setFocus()

@@ -1,4 +1,7 @@
-from qtpy.QtWidgets import QWidget, QListWidget, QVBoxLayout, QHBoxLayout, QSpacerItem, QSizePolicy, QListWidgetItem, \
+import json
+
+from qtpy.QtCore import Signal
+from qtpy.QtWidgets import QWidget, QCheckBox, QListWidget, QVBoxLayout, QHBoxLayout, QSpacerItem, QSizePolicy, QListWidgetItem, \
     QLabel
 
 from pyqt_openai.convListWidget import ConvListWidget
@@ -7,6 +10,11 @@ from pyqt_openai.svgButton import SvgButton
 
 
 class LeftSideBar(QWidget):
+    added = Signal()
+    changed = Signal(QListWidgetItem)
+    deleted = Signal(list)
+    propUpdated = Signal(int, str, str)
+
     def __init__(self):
         super().__init__()
         self.__initUi()
@@ -18,50 +26,45 @@ class LeftSideBar(QWidget):
 
         self.__addBtn = SvgButton()
         self.__delBtn = SvgButton()
-        self.__clearBtn = SvgButton()
+        self.__saveBtn = SvgButton()
 
         self.__addBtn.setIcon('ico/add.svg')
         self.__delBtn.setIcon('ico/delete.svg')
-        self.__clearBtn.setIcon('ico/clear.svg')
+        self.__saveBtn.setIcon('ico/download.svg')
 
         self.__addBtn.setToolTip('Add')
         self.__delBtn.setToolTip('Delete')
-        self.__clearBtn.setToolTip('Clear')
+        self.__saveBtn.setToolTip('Save (testing)')
 
-        self.__addBtn.clicked.connect(self.__add)
-        self.__delBtn.clicked.connect(self.__delete)
-        self.__clearBtn.clicked.connect(self.__clear)
+        self.__addBtn.clicked.connect(self.__addClicked)
+        self.__delBtn.clicked.connect(self.__deleteClicked)
+        self.__saveBtn.clicked.connect(self.__saveClicked)
 
-        lay = QHBoxLayout()
-        lay.addWidget(searchBar)
-        lay.setContentsMargins(0, 0, 2, 0)
-        lay.setSpacing(0)
-
-        topLeftWidget = QWidget()
-        topLeftWidget.setLayout(lay)
+        self.__allCheckBox = QCheckBox('Check All')
+        self.__allCheckBox.stateChanged.connect(self.__stateChanged)
 
         lay = QHBoxLayout()
+        lay.addWidget(self.__allCheckBox)
+        lay.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.MinimumExpanding))
         lay.addWidget(self.__addBtn)
         lay.addWidget(self.__delBtn)
-        lay.addWidget(self.__clearBtn)
+        lay.addWidget(self.__saveBtn)
         lay.setContentsMargins(0, 0, 0, 0)
-        lay.setSpacing(0)
 
-        topRightWidget = QWidget()
-        topRightWidget.setLayout(lay)
+        navWidget = QWidget()
+        navWidget.setLayout(lay)
 
-        lay = QHBoxLayout()
-        lay.addWidget(topLeftWidget)
-        lay.addWidget(topRightWidget)
+        lay = QVBoxLayout()
+        lay.addWidget(navWidget)
+        lay.addWidget(searchBar)
+
         topWidget = QWidget()
         topWidget.setLayout(lay)
         lay.setContentsMargins(0, 0, 0, 0)
-        lay.setSpacing(0)
 
         self.__convListWidget = ConvListWidget()
-        self.__convListWidget.addConv('A')
-        self.__convListWidget.addConv('B')
-        self.__convListWidget.addConv('C')
+        self.__convListWidget.changed.connect(self.changed)
+        self.__convListWidget.propUpdated.connect(self.propUpdated)
 
         self.__convListWidget.setAlternatingRowColors(True)
 
@@ -71,17 +74,42 @@ class LeftSideBar(QWidget):
 
         self.setLayout(lay)
 
-    def __add(self):
-        self.__convListWidget.addConv('A')
+    def __addClicked(self):
+        self.added.emit()
 
-    def __delete(self):
-        self.__convListWidget.deleteConv()
+    def addToList(self, id):
+        self.__convListWidget.addConv('New Chat', id)
+        self.__convListWidget.setCurrentRow(0)
 
-    def __clear(self):
-        self.__convListWidget.clearConv()
+    def isCurrentConvExists(self):
+        return self.__convListWidget.count() > 0 and self.__convListWidget.currentItem()
+
+    def __deleteClicked(self):
+        # get the ID of row, not actual index (because list is in a stacked form)
+        rows = self.__convListWidget.getCheckedRowsIds()
+        self.__convListWidget.removeCheckedRows()
+        self.deleted.emit(rows)
+
+    def __saveClicked(self):
+        print('save')
+
+    def __stateChanged(self, f):
+        self.__convListWidget.toggleState(f)
 
     def __search(self, text):
         for i in range(self.__convListWidget.count()):
             item = self.__convListWidget.item(i)
             widget = self.__convListWidget.itemWidget(item)
             item.setHidden(False if text.lower() in widget.text().lower() else True)
+
+    def initHistory(self):
+        with open('conv_history.json', 'r') as f:
+            try:
+                data = json.load(f).get('each_conv_lst', '')
+                if data:
+                    for obj in data:
+                        self.__convListWidget.addConv(obj['title'], obj['id'])
+                else:
+                    raise Exception
+            except Exception as e:
+                print(e)

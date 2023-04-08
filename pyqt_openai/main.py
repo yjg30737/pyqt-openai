@@ -11,7 +11,7 @@ from qtpy.QtCore import Qt, QCoreApplication, QThread, QSettings, QEvent, Signal
 from qtpy.QtGui import QGuiApplication, QFont, QIcon, QColor, QCursor
 from qtpy.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QWidget, QSplitter, QComboBox, QSpinBox, \
     QFormLayout, QDoubleSpinBox, QPushButton, QFileDialog, QToolBar, QWidgetAction, QHBoxLayout, QAction, QMenu, \
-    QSystemTrayIcon, QMessageBox, QSizePolicy, QGroupBox, QLineEdit, QLabel, QCheckBox
+    QSystemTrayIcon, QMessageBox, QSizePolicy, QGroupBox, QLineEdit, QLabel, QCheckBox, QListWidgetItem
 
 from pyqt_openai.apiData import getModelEndpoint, getLatestModel
 from pyqt_openai.clickableTooltip import ClickableTooltip
@@ -40,6 +40,7 @@ class OpenAIThread(QThread):
     Forth: Image generation with DALL-E or not
     """
     replyGenerated = Signal(str, bool, bool, bool)
+    streamFinished = Signal()
 
     def __init__(self, model, openai_arg, idx, remember_f, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -50,45 +51,45 @@ class OpenAIThread(QThread):
         self.__idx = idx
 
     def run(self):
-        if self.__idx == 0:
-            if self.__endpoint == '/v1/chat/completions':
-                response = openai.ChatCompletion.create(
-                       **self.__openai_arg
-                )
-                # if it is streaming, type will be generator
-                if inspect.isgenerator(response):
-                    for chunk in response:
-                        delta = chunk['choices'][0]['delta']
-                        response_text = delta.get('content', '')
-                        if response_text:
-                            self.replyGenerated.emit(response_text, False, True, False)
-                        else:
-                            finish_reason = chunk['choices'][0].get('finish_reason', '')
-                            if finish_reason:
-                                print(finish_reason)
-                else:
-                    response_text = response['choices'][0]['message']['content']
+        try:
+            if self.__idx == 0:
+                if self.__endpoint == '/v1/chat/completions':
+                    response = openai.ChatCompletion.create(
+                           **self.__openai_arg
+                    )
+                    # if it is streaming, type will be generator
+                    if inspect.isgenerator(response):
+                        for chunk in response:
+                            delta = chunk['choices'][0]['delta']
+                            response_text = delta.get('content', '')
+                            if response_text:
+                                self.replyGenerated.emit(response_text, False, True, False)
+                            else:
+                                finish_reason = chunk['choices'][0].get('finish_reason', '')
+                                if finish_reason:
+                                    self.streamFinished.emit()
+                    else:
+                        response_text = response['choices'][0]['message']['content']
+                        self.replyGenerated.emit(response_text, False, False, False)
+                elif self.__endpoint == '/v1/completions':
+                    openai_object = openai.Completion.create(
+                        **self.__openai_arg
+                    )
+
+                    response_text = openai_object['choices'][0]['text'].strip()
+
+                    # this doesn't store any data, so we manually do that every time
+                    if self.__remember_f:
+                        conv = {
+                            'prompt': self.__openai_arg['prompt'],
+                            'response': response_text,
+                        }
+
+                        with open('conv.json', 'a') as f:
+                            f.write(json.dumps(conv) + '\n')
+
                     self.replyGenerated.emit(response_text, False, False, False)
-            elif self.__endpoint == '/v1/completions':
-                openai_object = openai.Completion.create(
-                    **self.__openai_arg
-                )
-
-                response_text = openai_object['choices'][0]['text'].strip()
-
-                # this doesn't store any data, so we manually do that every time
-                if self.__remember_f:
-                    conv = {
-                        'prompt': self.__openai_arg['prompt'],
-                        'response': response_text,
-                    }
-
-                    with open('conv.json', 'a') as f:
-                        f.write(json.dumps(conv) + '\n')
-
-                self.replyGenerated.emit(response_text, False, False)
-        elif self.__idx == 1:
-            try:
+            elif self.__idx == 1:
                 response = openai.Image.create(
                     **self.__openai_arg
                 )
@@ -96,10 +97,11 @@ class OpenAIThread(QThread):
                 image_url = response['data'][0]['url']
 
                 self.replyGenerated.emit(image_url, False, False, True)
-
-            except openai.error.InvalidRequestError as e:
-                self.replyGenerated.emit('Your request was rejected as a result of our safety system. \n'
-                                         'Your prompt may contain text that is not allowed by our safety system.', False)
+        except openai.error.InvalidRequestError as e:
+            self.replyGenerated.emit('<p style="color:red">Your request was rejected as a result of our safety system.<br/>'
+                                     'Your prompt may contain text that is not allowed by our safety system.</p>', False, False, False)
+        except openai.error.RateLimitError as e:
+            self.replyGenerated.emit(f'<p style="color:red">{e}<br/>Check the usage: https://platform.openai.com/account/usage<br/>Update to paid account: https://platform.openai.com/account/billing/overview', False, False, False)
 
 
 class OpenAIChatBot(QMainWindow):
@@ -131,6 +133,8 @@ class OpenAIChatBot(QMainWindow):
         else:
             self.__settings_struct.setValue('API_KEY', '')
 
+        self.__initConvHistoryJson()
+
         # "remember past conv" feature
         if self.__settings_struct.contains('REMEMBER_PAST_CONVERSATION'):
             self.__remember_past_conv = True if self.__settings_struct.value('REMEMBER_PAST_CONVERSATION') == '1' else False
@@ -143,10 +147,37 @@ class OpenAIChatBot(QMainWindow):
             with open('conv.json', 'w') as f:
                 json.dump({}, f)
 
+    def __initConvHistoryJson(self):
+        # init json file
+        if os.path.exists('conv_history.json'):
+            try:
+                with open('conv_history.json', 'r') as f:
+                    data = json.load(f)
+            except json.decoder.JSONDecodeError as e:
+                reply = QMessageBox.critical(self, 'Error',
+                                             'The contents of the JSON file(conv_history.json) are not valid.\n'
+                                             'Would you like to create a new JSON file?',
+                                             QMessageBox.Yes | QMessageBox.No)
+                if reply == QMessageBox.Yes:
+                    os.remove('conv_history.json')
+                    self.__initConvHistoryJson()
+        else:
+            with open('conv_history.json', 'w') as f:
+                init_data = {
+                    'each_conv_lst': []
+                }
+                f.write(json.dumps(init_data))
+
     def __initUi(self):
         self.setWindowTitle('PyQt OpenAI Chatbot')
         self.setWindowIcon(QIcon('ico/openai.svg'))
+
         self.__leftSideBarWidget = LeftSideBar()
+        self.__leftSideBarWidget.initHistory()
+        self.__leftSideBarWidget.added.connect(self.__addConv)
+        self.__leftSideBarWidget.changed.connect(self.__changeConv)
+        self.__leftSideBarWidget.deleted.connect(self.__deleteConv)
+        self.__leftSideBarWidget.propUpdated.connect(self.__updateProp)
 
         self.__prompt = Prompt()
 
@@ -158,6 +189,7 @@ class OpenAIChatBot(QMainWindow):
         self.__lineEdit.returnPressed.connect(self.__chat)
 
         self.__browser = ChatBrowser()
+        self.__browser.convUpdated.connect(self.__updateProp)
 
         lay = QHBoxLayout()
         lay.addWidget(self.__aiTypeCmbBox)
@@ -433,13 +465,10 @@ class OpenAIChatBot(QMainWindow):
         self.setCentralWidget(mainWidget)
         self.resize(1024, 768)
 
-        self.__browser.showText('Hello!', False, True)
-        self.__browser.showText('Hello! How may i help you?', False, False)
-
-        self.__lineEdit.setFocus()
-
         self.__setActions()
         self.__setToolBar()
+
+        self.__lineEdit.setFocus()
 
     def __setActions(self):
         self.__stackAction = QWidgetAction(self)
@@ -454,19 +483,20 @@ class OpenAIChatBot(QMainWindow):
         self.__sideBarBtn = SvgButton()
         self.__sideBarBtn.setIcon('ico/sidebar.svg')
         self.__sideBarBtn.setCheckable(True)
-        self.__sideBarBtn.setChecked(True)
         self.__sideBarBtn.toggled.connect(self.__leftSideBarWidget.setVisible)
         self.__sideBarAction.setDefaultWidget(self.__sideBarBtn)
-        self.__sideBarBtn.setToolTip('Conversation Log')
+        self.__sideBarBtn.setToolTip('Chat List')
+        self.__sideBarBtn.setChecked(True)
 
         self.__settingAction = QWidgetAction(self)
         self.__settingBtn = SvgButton()
         self.__settingBtn.setIcon('ico/setting.svg')
-        self.__settingBtn.setCheckable(True)
-        self.__settingBtn.setChecked(True)
         self.__settingBtn.toggled.connect(self.__rightSidebarWidget.setVisible)
         self.__settingAction.setDefaultWidget(self.__settingBtn)
-        self.__settingBtn.setToolTip('Conversation Log')
+        self.__settingBtn.setToolTip('Settings')
+        self.__settingBtn.setCheckable(True)
+        self.__settingBtn.setChecked(True)
+        self.__settingBtn.setChecked(False)
 
         self.__transparentAction = QWidgetAction(self)
         self.__transparentSpinBox = QSpinBox()
@@ -563,7 +593,7 @@ class OpenAIChatBot(QMainWindow):
                     'model': self.__engine,
                     'messages': [
                         {"role": "system", "content": "You are a helpful assistant."},
-                        {"role": "assistant", "content": self.__browser.getLastResponse()},
+                        {"role": "assistant", "content": self.__browser.getAllText()},
                         {"role": "user", "content": self.__lineEdit.toPlainText()},
                     ],
                     'stream': self.__stream,
@@ -585,9 +615,15 @@ class OpenAIChatBot(QMainWindow):
                 "size": "1024x1024"
             }
         self.__lineEdit.setEnabled(False)
+        if self.__leftSideBarWidget.isCurrentConvExists():
+            pass
+        else:
+            self.__addConv()
+        self.__browser.showLabel(self.__lineEdit.toPlainText(), True, False, False)
+
         self.__t = OpenAIThread(self.__engine, openai_arg, idx, self.__remember_past_conv)
-        self.__t.replyGenerated.connect(self.__browser.showReply)
-        self.__browser.showText(self.__lineEdit.toPlainText(), False, True)
+        self.__t.replyGenerated.connect(self.__browser.showLabel)
+        self.__t.streamFinished.connect(self.__browser.streamFinished)
         self.__lineEdit.clear()
         self.__t.start()
         self.__t.finished.connect(self.__afterGenerated)
@@ -673,6 +709,61 @@ class OpenAIChatBot(QMainWindow):
             self.__findDataLineEdit.setText(filename)
             self.__fineTuningBtn.setEnabled(True)
 
+    def __addConv(self):
+        cur_id = 0
+        with open('conv_history.json', 'r') as f:
+            data = json.load(f)
+
+        with open('conv_history.json', 'w') as f:
+            lst = data['each_conv_lst']
+            cur_id = max(lst, key=lambda x: x["id"])["id"]+1 if len(lst) > 0 else 0
+            data['each_conv_lst'].append({ 'id': cur_id, 'title': 'New Chat', 'conv_data': [] })
+            f.write(json.dumps(data) + '\n')
+
+        self.__browser.resetChatWidget(cur_id)
+        self.__leftSideBarWidget.addToList(cur_id)
+        self.__lineEdit.setFocus()
+
+    def __changeConv(self, item: QListWidgetItem):
+        # If a 'change' event occurs but there are no items, it should mean that list is empty
+        # so reset conv_history.json
+        if item:
+            id = item.data(Qt.UserRole)
+            with open('conv_history.json', 'r') as f:
+                data = json.load(f)
+                lst = data['each_conv_lst']
+                obj = list(filter(lambda x: x["id"] == id, lst))[0]
+                self.__browser.replaceConv(id, obj['conv_data'])
+        else:
+            self.__browser.resetChatWidget(0)
+            os.remove('conv_history.json')
+            self.__initConvHistoryJson()
+
+    # TODO implement the feature
+    def __updateProp(self, id, conv_unit=None, title=None):
+        with open('conv_history.json', 'r') as f:
+            data = json.load(f)
+
+        with open('conv_history.json', 'w') as f:
+            lst = data['each_conv_lst']
+            obj = list(filter(lambda x: x["id"] == id, lst))[0]
+            if title:
+                obj['title'] = title
+            if conv_unit:
+                obj['conv_data'].append(conv_unit)
+            json.dump(data, f)
+
+    def __deleteConv(self, id_lst):
+        print(id_lst)
+        with open('conv_history.json', 'r') as f:
+            data = json.load(f)
+
+        with open('conv_history.json', 'w') as f:
+            lst = data['each_conv_lst']
+            obj_to_delete = list(filter(lambda x: x["id"] in id_lst, lst))
+            for obj in obj_to_delete:
+                lst.remove(obj)
+            json.dump(data, f)
 
     def __fineTuning(self):
         if platform.system() == 'Windows':

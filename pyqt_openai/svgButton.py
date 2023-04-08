@@ -102,7 +102,6 @@ class SvgButton(QPushButton):
 
     def setIcon(self, icon: str):
         self.__icon = os.path.join(os.path.dirname(__file__), icon).replace(os.sep, posixpath.sep)
-        print(self.__icon)
         self.__styleInit()
 
     def eventFilter(self, obj, e):
