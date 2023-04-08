@@ -1,7 +1,7 @@
 import os.path, posixpath
 
-from PyQt5.QtGui import QColor, QPalette, qGray
-from PyQt5.QtWidgets import QGraphicsColorizeEffect, QWidget, qApp, QPushButton
+from qtpy.QtGui import QColor, QPalette, qGray
+from qtpy.QtWidgets import QGraphicsColorizeEffect, QWidget, qApp, QPushButton
 
 
 class SvgButton(QPushButton):
@@ -102,7 +102,6 @@ class SvgButton(QPushButton):
 
     def setIcon(self, icon: str):
         self.__icon = os.path.join(os.path.dirname(__file__), icon).replace(os.sep, posixpath.sep)
-        print(self.__icon)
         self.__styleInit()
 
     def eventFilter(self, obj, e):

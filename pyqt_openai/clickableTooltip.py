@@ -1,7 +1,7 @@
 
-from PyQt5.QtCore import Qt, QTimer, QRect, QPoint, QEvent
-from PyQt5.QtGui import QPalette, QCursor, QRegion, QPainter
-from PyQt5.QtWidgets import QApplication, QMenu, \
+from qtpy.QtCore import Qt, QTimer, QRect, QPoint, QEvent
+from qtpy.QtGui import QPalette, QCursor, QRegion, QPainter
+from qtpy.QtWidgets import QApplication, QMenu, \
     QStyle, QStyleOption, QStyleHintReturnMask, QLabel
 
 

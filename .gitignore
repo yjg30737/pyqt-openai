@@ -129,5 +129,5 @@ dmypy.json
 .pyre/
 
 # pyqt_openai
-pyqt_openai.ini
 conv.json
+conv_history.json

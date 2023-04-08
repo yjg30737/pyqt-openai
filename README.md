@@ -1,4 +1,7 @@
 # pyqt-openai
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/55078043/229002952-9afe57de-b0b6-400f-9628-b8e0044d3f7b.png">
+</p>
 Example of using OpenAI with PyQt (Python cross-platform GUI toolkit)
 
 This shows an example of using OpenAI with PyQt as a chatbot.
