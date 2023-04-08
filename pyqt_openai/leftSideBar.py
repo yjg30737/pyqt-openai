@@ -13,6 +13,7 @@ class LeftSideBar(QWidget):
     added = Signal()
     changed = Signal(QListWidgetItem)
     deleted = Signal(list)
+    propUpdated = Signal(int, str, str)
 
     def __init__(self):
         super().__init__()
@@ -63,6 +64,7 @@ class LeftSideBar(QWidget):
 
         self.__convListWidget = ConvListWidget()
         self.__convListWidget.changed.connect(self.changed)
+        self.__convListWidget.propUpdated.connect(self.propUpdated)
 
         self.__convListWidget.setAlternatingRowColors(True)
 

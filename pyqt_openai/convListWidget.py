@@ -1,5 +1,4 @@
 from datetime import datetime
-import json
 
 from qtpy.QtGui import QFont
 from qtpy.QtCore import Qt, Signal
@@ -11,10 +10,12 @@ from pyqt_openai.svgButton import SvgButton
 
 class ConvItemWidget(QWidget):
     btnClicked = Signal(QListWidgetItem)
+    propUpdated = Signal(int, str, str)
 
-    def __init__(self, text: str, item: QListWidgetItem):
+    def __init__(self, text: str, item: QListWidgetItem, id):
         super().__init__()
         self.__item = item
+        self.__id = id
         self.__initUi(text)
 
     def __initUi(self, text):
@@ -22,7 +23,7 @@ class ConvItemWidget(QWidget):
 
         self.__dateLbl = QLabel()
         self.__dateLbl.setFont(QFont('Arial', 9))
-        self.__refreshTime()
+        self.refreshTime()
 
         lay = QVBoxLayout()
         lay.addWidget(self.__topicLbl)
@@ -80,15 +81,17 @@ class ConvItemWidget(QWidget):
         if reply == QDialog.Accepted:
             text = dialog.getText()
             self.__topicLbl.setText(text)
-            self.__refreshTime()
+            self.propUpdated.emit(self.__id, None, text)
+            self.refreshTime()
 
-    def __refreshTime(self):
-        current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        self.__dateLbl.setText(f'Last updated: {current_time}')
+    def refreshTime(self):
+        updated_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        self.__dateLbl.setText(f'Last updated: {updated_time}')
 
 
 class ConvListWidget(QListWidget):
     changed = Signal(QListWidgetItem)
+    propUpdated = Signal(int, str, str)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -102,7 +105,8 @@ class ConvListWidget(QListWidget):
         item = QListWidgetItem()
         item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
         item.setCheckState(Qt.Unchecked)
-        widget = ConvItemWidget(text, item)
+        widget = ConvItemWidget(text, item, id)
+        widget.propUpdated.connect(self.propUpdated)
         item.setSizeHint(widget.sizeHint())
         item.setData(Qt.UserRole, id)
         self.insertItem(0, item)

@@ -177,6 +177,7 @@ class OpenAIChatBot(QMainWindow):
         self.__leftSideBarWidget.added.connect(self.__addConv)
         self.__leftSideBarWidget.changed.connect(self.__changeConv)
         self.__leftSideBarWidget.deleted.connect(self.__deleteConv)
+        self.__leftSideBarWidget.propUpdated.connect(self.__updateProp)
 
         self.__prompt = Prompt()
 
@@ -188,7 +189,7 @@ class OpenAIChatBot(QMainWindow):
         self.__lineEdit.returnPressed.connect(self.__chat)
 
         self.__browser = ChatBrowser()
-        self.__browser.convUpdated.connect(self.__updateConv)
+        self.__browser.convUpdated.connect(self.__updateProp)
 
         lay = QHBoxLayout()
         lay.addWidget(self.__aiTypeCmbBox)
@@ -739,7 +740,7 @@ class OpenAIChatBot(QMainWindow):
             self.__initConvHistoryJson()
 
     # TODO implement the feature
-    def __updateConv(self, id, conv_unit=None, title=None):
+    def __updateProp(self, id, conv_unit=None, title=None):
         with open('conv_history.json', 'r') as f:
             data = json.load(f)
 
