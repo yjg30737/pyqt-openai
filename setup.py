@@ -21,6 +21,7 @@ setup(
     long_description=long_description,
     install_requires=[
         'PyQt5>=5.14',
+        'PySide6',
         'qtpy',
         'aiohttp',
         'openai',
