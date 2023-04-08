@@ -15,14 +15,20 @@ You can select other model with the combobox on the sidebar at the right side of
 An internet connection is required.
 
 ## Requirements
-* PyQt5 >= 5.14
-* aiohttp - It needs to be installed for the current version of OpenAI.
+* qtpy - the package allowing you to write code that works with both PyQt and PySide
+* PyQt5 >= 5.14 or PySide6
 * openai
+* aiohttp - It needs to be installed for the current version of OpenAI.
 
 ## Preview
-This is using GPT-3.5 turbo model.
+This is using GPT-3.5 turbo model by default.
 
-![image](https://user-images.githubusercontent.com/55078043/226176448-57ea6ef1-3672-44ff-a27b-4b42e2c5e357.png)
+### Homepage
+![image](https://user-images.githubusercontent.com/55078043/230718379-d8f85397-74e9-483a-8686-5ce59ead70a3.png)
+You have to write your openai api key inside the red box. see [How to play](#how-to-play)
+
+### Conversation preview
+![image](https://user-images.githubusercontent.com/55078043/230718604-fe425540-41c6-4753-99c9-7a8c66d59b5d.png)
 
 ## How to play
 1. git clone ~
@@ -57,6 +63,7 @@ That will install the openai.
 * highlight the source (eventually)
 * make the itemClicked signal of a QListWidget be called only when the user clicks on the checkbox of a QListWidgetItem
 * saving the conversation data with json -> sqlite3
+* show reason when the chat input is disabled for some reasons
 * add the basic example sources of making deep learning model with PyTorch (eventually)
 
 ## See Also
