@@ -55,6 +55,8 @@ That will install the openai.
 * show the explanation of every model and terms related to AI (e.g. temperature, topp..)
 * show the left side bar to manage the past conversation <a href="https://github.com/yjg30737/pyqt-openai/tree/feature/leftsidebar">(branch)</a>
 * highlight the source (eventually)
+* make the itemClicked signal of a QListWidget be called only when the user clicks on the checkbox of a QListWidgetItem
+* saving the conversation data with json -> sqlite3
 * add the basic example sources of making deep learning model with PyTorch (eventually)
 
 ## See Also
