@@ -34,7 +34,7 @@ class LeftSideBar(QWidget):
 
         self.__addBtn.setToolTip('Add')
         self.__delBtn.setToolTip('Delete')
-        self.__saveBtn.setToolTip('Save (testing)')
+        self.__saveBtn.setToolTip('Save')
 
         self.__addBtn.clicked.connect(self.__addClicked)
         self.__delBtn.clicked.connect(self.__deleteClicked)
