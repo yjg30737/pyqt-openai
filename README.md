@@ -71,6 +71,7 @@ That will install the openai.
 * saving the conversation data with json -> sqlite3
 * show reason when the chat input is disabled for some reasons
 * add the basic example sources of making deep learning model with PyTorch (eventually)
+* support multiple language
 
 ## See Also
 * <a href="https://learn.microsoft.com/en-us/azure/cognitive-services/openai/overview">Azure OpenAI service</a>
