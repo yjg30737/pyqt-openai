@@ -1,16 +1,19 @@
 import json
 import sqlite3
 
+from sqlite import SqliteDatabase
+
 
 def convertJsonIntoSql():
+    db = SqliteDatabase()
     # Read data from json
     with open('conv_history.json', 'r') as f:
         data = json.load(f)
         root_table = list(data.keys())[0]
         print('root_table: ', root_table)
         for obj in list(data.values())[0]:
-            id, title, conv_data = obj
-
+            id, title, conv_data = obj.values()
+            db.insert(title)
 
 convertJsonIntoSql()
 
