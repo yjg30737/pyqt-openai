@@ -133,6 +133,9 @@ class OpenAIChatBot(QMainWindow):
         else:
             self.__settings_struct.setValue('API_KEY', '')
 
+        if self.__isConvHistoryJsonExists():
+            print('json should be migrated to sqlite')
+
         self.__initConvHistoryJson()
 
         # "remember past conv" feature
@@ -146,6 +149,9 @@ class OpenAIChatBot(QMainWindow):
         else:
             with open('conv.json', 'w') as f:
                 json.dump({}, f)
+
+    def __isConvHistoryJsonExists(self):
+        return os.path.exists('conv_history.json')
 
     def __initConvHistoryJson(self):
         # init json file
