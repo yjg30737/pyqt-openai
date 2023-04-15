@@ -68,7 +68,8 @@ That will install the openai.
 * show the left side bar to manage the past conversation <a href="https://github.com/yjg30737/pyqt-openai/tree/feature/leftsidebar">(branch)</a>
 * highlight the source (eventually)
 * make the itemClicked signal of a QListWidget be called only when the user clicks on the checkbox of a QListWidgetItem
-* saving the conversation data with json -> sqlite3
+* saving the conversation data with json -> PostgreSQL
+* using SQLAlchemy
 * show reason when the chat input is disabled for some reasons
 * add the basic example sources of making deep learning model with PyTorch (eventually)
 * support multiple language
