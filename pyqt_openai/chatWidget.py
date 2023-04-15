@@ -9,7 +9,7 @@ from qtpy.QtWidgets import QScrollArea, QVBoxLayout, QWidget, QLabel, QHBoxLayou
 
 
 class ChatBrowser(QScrollArea):
-    convUpdated = Signal(int, str)
+    convUnitUpdated = Signal(int, int, str)
 
     def __init__(self):
         super().__init__()
@@ -47,10 +47,11 @@ class ChatBrowser(QScrollArea):
         else:
             self.showText(text, stream_f, user_f)
         if not stream_f:
-            self.convUpdated.emit(self.__cur_id, text)
+            # change user_f type from bool to int to insert in db
+            self.convUnitUpdated.emit(self.__cur_id, int(user_f), text)
 
     def streamFinished(self):
-        self.convUpdated.emit(self.__cur_id, self.getLastResponse())
+        self.convUnitUpdated.emit(self.__cur_id, 0, self.getLastResponse())
 
     def showImage(self, image_url, user_f):
         chatLbl = QLabel()

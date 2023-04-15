@@ -10,7 +10,7 @@ from pyqt_openai.svgButton import SvgButton
 
 class ConvItemWidget(QWidget):
     btnClicked = Signal(QListWidgetItem)
-    propUpdated = Signal(int, str, str)
+    convUpdated = Signal(int, str)
 
     def __init__(self, text: str, item: QListWidgetItem, id):
         super().__init__()
@@ -83,7 +83,7 @@ class ConvItemWidget(QWidget):
         if reply == QDialog.Accepted:
             text = dialog.getText()
             self.__topicLbl.setText(text)
-            self.propUpdated.emit(self.__id, None, text)
+            self.convUpdated.emit(self.__id, text)
             self.refreshTime()
 
     def refreshTime(self):
@@ -93,7 +93,7 @@ class ConvItemWidget(QWidget):
 
 class ConvListWidget(QListWidget):
     changed = Signal(QListWidgetItem)
-    propUpdated = Signal(int, str, str)
+    convUpdated = Signal(int, str)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -108,7 +108,7 @@ class ConvListWidget(QListWidget):
         item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
         item.setCheckState(Qt.Unchecked)
         widget = ConvItemWidget(text, item, id)
-        widget.propUpdated.connect(self.propUpdated)
+        widget.convUpdated.connect(self.convUpdated)
         item.setSizeHint(widget.sizeHint())
         item.setData(Qt.UserRole, id)
         self.insertItem(0, item)
