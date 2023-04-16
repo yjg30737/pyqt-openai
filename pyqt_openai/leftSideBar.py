@@ -67,8 +67,6 @@ class LeftSideBar(QWidget):
         self.__convListWidget.changed.connect(self.changed)
         self.__convListWidget.convUpdated.connect(self.convUpdated)
 
-        self.__convListWidget.setAlternatingRowColors(True)
-
         lay = QVBoxLayout()
         lay.addWidget(topWidget)
         lay.addWidget(self.__convListWidget)

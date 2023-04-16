@@ -21,13 +21,8 @@ class ConvItemWidget(QWidget):
     def __initUi(self, text):
         self.__topicLbl = QLabel(text)
 
-        self.__dateLbl = QLabel()
-        self.__dateLbl.setFont(QFont('Arial', 9))
-        self.refreshTime()
-
         lay = QVBoxLayout()
         lay.addWidget(self.__topicLbl)
-        lay.addWidget(self.__dateLbl)
         lay.setContentsMargins(0, 0, 0, 0)
 
         leftWidget = QWidget()
@@ -47,7 +42,7 @@ class ConvItemWidget(QWidget):
 
         lay = QVBoxLayout()
         lay.addWidget(self.__btnWidget)
-        lay.setAlignment(Qt.AlignCenter)
+        lay.setAlignment(Qt.AlignCenter | Qt.AlignRight)
         lay.setContentsMargins(0, 0, 0, 0)
 
         rightWidget = QWidget()
@@ -84,12 +79,6 @@ class ConvItemWidget(QWidget):
             text = dialog.getText()
             self.__topicLbl.setText(text)
             self.convUpdated.emit(self.__id, text)
-            self.refreshTime()
-
-    def refreshTime(self):
-        updated_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        self.__dateLbl.setText(f'Last updated: {updated_time}')
-
 
 class ConvListWidget(QListWidget):
     changed = Signal(QListWidgetItem)
