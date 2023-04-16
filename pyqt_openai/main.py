@@ -20,6 +20,7 @@ from pyqt_openai.apiData import ModelData
 from pyqt_openai.modelTable import ModelTable
 from pyqt_openai.svgButton import SvgButton
 from pyqt_openai.svgLabel import SvgLabel
+from pyqt_openai.sqlite import SqliteDatabase
 
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
 QCoreApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)  # HighDPI support
@@ -111,6 +112,8 @@ class OpenAIChatBot(QMainWindow):
         self.__initUi()
 
     def __initVal(self):
+        self.__db = SqliteDatabase()
+        self.__c = self.__db.getCursor()
         self.__engine = "gpt-3.5-turbo"
         self.__temperature = 0.0
         self.__max_tokens = 256
@@ -133,7 +136,8 @@ class OpenAIChatBot(QMainWindow):
         else:
             self.__settings_struct.setValue('API_KEY', '')
 
-        self.__initConvHistoryJson()
+        if self.__isConvHistoryJsonExists():
+            self.__migrateJsonToSqlite()
 
         # "remember past conv" feature
         if self.__settings_struct.contains('REMEMBER_PAST_CONVERSATION'):
@@ -147,37 +151,24 @@ class OpenAIChatBot(QMainWindow):
             with open('conv.json', 'w') as f:
                 json.dump({}, f)
 
-    def __initConvHistoryJson(self):
-        # init json file
-        if os.path.exists('conv_history.json'):
-            try:
-                with open('conv_history.json', 'r') as f:
-                    data = json.load(f)
-            except json.decoder.JSONDecodeError as e:
-                reply = QMessageBox.critical(self, 'Error',
-                                             'The contents of the JSON file(conv_history.json) are not valid.\n'
-                                             'Would you like to create a new JSON file?',
-                                             QMessageBox.Yes | QMessageBox.No)
-                if reply == QMessageBox.Yes:
-                    os.remove('conv_history.json')
-                    self.__initConvHistoryJson()
-        else:
-            with open('conv_history.json', 'w') as f:
-                init_data = {
-                    'each_conv_lst': []
-                }
-                f.write(json.dumps(init_data))
+    def __isConvHistoryJsonExists(self):
+        return os.path.exists('conv_history.json')
+
+    def __migrateJsonToSqlite(self):
+        self.__db.convertJsonIntoSql()
+        os.remove('conv_history.json')
 
     def __initUi(self):
         self.setWindowTitle('PyQt OpenAI Chatbot')
         self.setWindowIcon(QIcon('ico/openai.svg'))
 
         self.__leftSideBarWidget = LeftSideBar()
-        self.__leftSideBarWidget.initHistory()
+        self.__leftSideBarWidget.initHistory(self.__db)
         self.__leftSideBarWidget.added.connect(self.__addConv)
         self.__leftSideBarWidget.changed.connect(self.__changeConv)
         self.__leftSideBarWidget.deleted.connect(self.__deleteConv)
-        self.__leftSideBarWidget.propUpdated.connect(self.__updateProp)
+        self.__leftSideBarWidget.convUpdated.connect(self.__updateConv)
+        self.__leftSideBarWidget.export.connect(self.__export)
 
         self.__prompt = Prompt()
 
@@ -189,7 +180,7 @@ class OpenAIChatBot(QMainWindow):
         self.__lineEdit.returnPressed.connect(self.__chat)
 
         self.__browser = ChatBrowser()
-        self.__browser.convUpdated.connect(self.__updateProp)
+        self.__browser.convUnitUpdated.connect(self.__updateConvUnit)
 
         lay = QHBoxLayout()
         lay.addWidget(self.__aiTypeCmbBox)
@@ -709,61 +700,40 @@ class OpenAIChatBot(QMainWindow):
             self.__findDataLineEdit.setText(filename)
             self.__fineTuningBtn.setEnabled(True)
 
-    def __addConv(self):
-        cur_id = 0
-        with open('conv_history.json', 'r') as f:
-            data = json.load(f)
-
-        with open('conv_history.json', 'w') as f:
-            lst = data['each_conv_lst']
-            cur_id = max(lst, key=lambda x: x["id"])["id"]+1 if len(lst) > 0 else 0
-            data['each_conv_lst'].append({ 'id': cur_id, 'title': 'New Chat', 'conv_data': [] })
-            f.write(json.dumps(data) + '\n')
-
-        self.__browser.resetChatWidget(cur_id)
-        self.__leftSideBarWidget.addToList(cur_id)
-        self.__lineEdit.setFocus()
-
     def __changeConv(self, item: QListWidgetItem):
         # If a 'change' event occurs but there are no items, it should mean that list is empty
         # so reset conv_history.json
         if item:
             id = item.data(Qt.UserRole)
-            with open('conv_history.json', 'r') as f:
-                data = json.load(f)
-                lst = data['each_conv_lst']
-                obj = list(filter(lambda x: x["id"] == id, lst))[0]
-                self.__browser.replaceConv(id, obj['conv_data'])
+            conv = self.__db.selectConvUnit(id)
+            self.__browser.replaceConv(id, conv)
         else:
             self.__browser.resetChatWidget(0)
-            os.remove('conv_history.json')
-            self.__initConvHistoryJson()
 
-    # TODO implement the feature
-    def __updateProp(self, id, conv_unit=None, title=None):
-        with open('conv_history.json', 'r') as f:
-            data = json.load(f)
+    def __addConv(self):
+        self.__db.insertConv('New Chat')
+        cur_id = self.__c.lastrowid
+        self.__browser.resetChatWidget(cur_id)
+        self.__leftSideBarWidget.addToList(cur_id)
+        self.__lineEdit.setFocus()
 
-        with open('conv_history.json', 'w') as f:
-            lst = data['each_conv_lst']
-            obj = list(filter(lambda x: x["id"] == id, lst))[0]
-            if title:
-                obj['title'] = title
-            if conv_unit:
-                obj['conv_data'].append(conv_unit)
-            json.dump(data, f)
+    def __updateConv(self, id, title=None):
+        if title:
+            self.__db.updateConv(id, title)
 
     def __deleteConv(self, id_lst):
-        print(id_lst)
-        with open('conv_history.json', 'r') as f:
-            data = json.load(f)
+        for id in id_lst:
+            self.__db.deleteConv(id)
 
-        with open('conv_history.json', 'w') as f:
-            lst = data['each_conv_lst']
-            obj_to_delete = list(filter(lambda x: x["id"] in id_lst, lst))
-            for obj in obj_to_delete:
-                lst.remove(obj)
-            json.dump(data, f)
+    def __export(self, ids):
+        filename = QFileDialog.getSaveFileName(self, 'Save', os.path.expanduser('~'), 'SQLite DB file (*.db)')
+        if filename[0]:
+            filename = filename[0]
+            self.__db.export(ids, filename)
+
+    def __updateConvUnit(self, id, user_f, conv_unit=None):
+        if conv_unit:
+            self.__db.insertConvUnit(id, user_f, conv_unit)
 
     def __fineTuning(self):
         if platform.system() == 'Windows':

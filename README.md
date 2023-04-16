@@ -4,7 +4,7 @@
 </p>
 Example of using OpenAI with PyQt (Python cross-platform GUI toolkit)
 
-This shows an example of using OpenAI with PyQt as a chatbot. 
+This shows an example of using OpenAI with PyQt as a chatbot.
 
 The OpenAI model this package uses is the <a href="https://platform.openai.com/docs/models/gpt-3-5">gpt-3.5-turbo</a> model(which is nearly as functional as <b>ChatGPT</b>) by default.
 
@@ -14,15 +14,27 @@ You can select other model with the combobox on the sidebar at the right side of
 
 An internet connection is required.
 
+## Note
+Some of the features are still being tested(e.g. save button at the left side bar, fine-tuning).
+
 ## Requirements
-* PyQt5 >= 5.14
-* aiohttp - It needs to be installed for the current version of OpenAI.
+* qtpy - the package allowing you to write code that works with both PyQt and PySide
+* PyQt5 >= 5.14 or PySide6
 * openai
+* aiohttp - It needs to be installed for the current version of OpenAI.
 
 ## Preview
-This is using GPT-3.5 turbo model.
+This is using GPT-3.5 turbo model by default.
 
-![image](https://user-images.githubusercontent.com/55078043/226176448-57ea6ef1-3672-44ff-a27b-4b42e2c5e357.png)
+### Homepage
+![image](https://user-images.githubusercontent.com/55078043/230718379-d8f85397-74e9-483a-8686-5ce59ead70a3.png)
+<b>You have to write your openai api key inside the red box.</b> see [How to play](#how-to-play)
+
+### Conversation preview
+#### Image
+![image](https://user-images.githubusercontent.com/55078043/230718925-bc36693b-1ad6-472f-ab08-63517e3a433f.png)
+#### Video
+https://user-images.githubusercontent.com/55078043/230719180-3e665a05-959c-4b49-b693-7046a538630e.mp4
 
 ## How to play
 1. git clone ~
@@ -50,11 +62,19 @@ python setup.py install
 That will install the openai.
 
 ## TODO list
-* <s>logging</s>
-* fine-tuning (with JSONL) - currently working
-* Add the fine-tuned model in combo box
-* Sync the fine-tunes, analysis (with wanDB)
+* fine-tuning (with JSONL), Add the fine-tuned model in combo box <a href="https://github.com/yjg30737/pyqt-openai/tree/feature/fine-tuning">(branch)</a> - maybe i ditch this and use LlamaIndex instead because using fine-tuning costs a lot of money, if user used a paid account
+* support PyQt6, PySide2, PySide6 <a href="https://github.com/yjg30737/pyqt-openai/tree/feature/qtpy">(branch)</a>
 * show the explanation of every model and terms related to AI (e.g. temperature, topp..)
-* <s>Basic style</s>
-* highlight the source
-* Add the basic example sources of making deep learning model with PyTorch
+* show the left side bar to manage the past conversation <a href="https://github.com/yjg30737/pyqt-openai/tree/feature/leftsidebar">(branch)</a>
+* highlight the source (eventually)
+* make the itemClicked signal of a QListWidget be called only when the user clicks on the checkbox of a QListWidgetItem
+* saving the conversation data with json -> sqlite3
+* show reason when the chat input is disabled for some reasons
+* add the basic example sources of making deep learning model with PyTorch (eventually)
+
+## See Also
+* <a href="https://learn.microsoft.com/en-us/azure/cognitive-services/openai/overview">Azure OpenAI service</a>
+* <a href="https://openai.com/waitlist/gpt-4-api">join gpt4 waitlist</a>
+* <a href="https://https://openai.com/waitlist/plugins">join chatgpt plugins waitlist</a>
+* You can join pyqt-openai's <a href="https://discord.gg/cHekprskVE">Discord Server</a> to have a conversation about it or AI-related stuff. This channel is extremely new so currently there is nothing 😥 I will move the "See Also" list above to my Discord Server since it looks like a news feed page or something. 
+

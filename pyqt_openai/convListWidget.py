@@ -10,7 +10,7 @@ from pyqt_openai.svgButton import SvgButton
 
 class ConvItemWidget(QWidget):
     btnClicked = Signal(QListWidgetItem)
-    propUpdated = Signal(int, str, str)
+    convUpdated = Signal(int, str)
 
     def __init__(self, text: str, item: QListWidgetItem, id):
         super().__init__()
@@ -21,13 +21,8 @@ class ConvItemWidget(QWidget):
     def __initUi(self, text):
         self.__topicLbl = QLabel(text)
 
-        self.__dateLbl = QLabel()
-        self.__dateLbl.setFont(QFont('Arial', 9))
-        self.refreshTime()
-
         lay = QVBoxLayout()
         lay.addWidget(self.__topicLbl)
-        lay.addWidget(self.__dateLbl)
         lay.setContentsMargins(0, 0, 0, 0)
 
         leftWidget = QWidget()
@@ -47,7 +42,7 @@ class ConvItemWidget(QWidget):
 
         lay = QVBoxLayout()
         lay.addWidget(self.__btnWidget)
-        lay.setAlignment(Qt.AlignCenter)
+        lay.setAlignment(Qt.AlignCenter | Qt.AlignRight)
         lay.setContentsMargins(0, 0, 0, 0)
 
         rightWidget = QWidget()
@@ -63,6 +58,8 @@ class ConvItemWidget(QWidget):
         # to avoid BUG (if there is nothing in qt bug report, i'll report by myself)
         # i don't know this was fixed or not in PySide6 so i will check it out FIXME
         self.__topicLbl.setFont(QApplication.font())
+
+        self.setAutoFillBackground(True)
 
     def text(self):
         return self.__topicLbl.text()
@@ -81,17 +78,11 @@ class ConvItemWidget(QWidget):
         if reply == QDialog.Accepted:
             text = dialog.getText()
             self.__topicLbl.setText(text)
-            self.propUpdated.emit(self.__id, None, text)
-            self.refreshTime()
-
-    def refreshTime(self):
-        updated_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        self.__dateLbl.setText(f'Last updated: {updated_time}')
-
+            self.convUpdated.emit(self.__id, text)
 
 class ConvListWidget(QListWidget):
     changed = Signal(QListWidgetItem)
-    propUpdated = Signal(int, str, str)
+    convUpdated = Signal(int, str)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -106,34 +97,33 @@ class ConvListWidget(QListWidget):
         item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
         item.setCheckState(Qt.Unchecked)
         widget = ConvItemWidget(text, item, id)
-        widget.propUpdated.connect(self.propUpdated)
+        widget.convUpdated.connect(self.convUpdated)
         item.setSizeHint(widget.sizeHint())
         item.setData(Qt.UserRole, id)
         self.insertItem(0, item)
         self.setItemWidget(item, widget)
 
     def __clicked(self, item):
-        if item.listWidget().itemWidget(item) != None:
-            if item.checkState() == Qt.Checked:
-                item.setCheckState(Qt.Unchecked)
-            else:
-                item.setCheckState(Qt.Checked)
-    
+        potentialChkBoxWidgetInItem = QApplication.widgetAt(self.cursor().pos())
+        if isinstance(potentialChkBoxWidgetInItem, QWidget) and potentialChkBoxWidgetInItem.children():
+            if isinstance(potentialChkBoxWidgetInItem.children()[0], ConvItemWidget):
+                if item.listWidget().itemWidget(item) != None:
+                    if item.checkState() == Qt.Checked:
+                        item.setCheckState(Qt.Unchecked)
+                    else:
+                        item.setCheckState(Qt.Checked)
+
     def toggleState(self, state):
         for i in range(self.count()):
             item = self.item(i)
             if item.checkState() != state:
                 item.setCheckState(state)
 
-    # TODO refactoring getCheckedRows, getCheckedRowsIds, getUncheckedRows
-    def getCheckedRows(self):
-        return self.__getFlagRows(Qt.Checked)
-
     def getCheckedRowsIds(self):
         return self.__getFlagRows(Qt.Checked, is_id=True)
 
-    def getUncheckedRows(self):
-        return self.__getFlagRows(Qt.Unchecked)
+    def getUncheckedRowsIds(self):
+        return self.__getFlagRows(Qt.Unchecked, is_id=True)
 
     def __getFlagRows(self, flag: Qt.CheckState, is_id: bool = False):
         flag_lst = []
