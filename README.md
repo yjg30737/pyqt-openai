@@ -8,7 +8,7 @@ This shows an example of using OpenAI with PyQt as a chatbot.
 
 The major advantage of this package is that you don't need to know other language aside from Python.
 
-This is  
+If you want to interact with good old desktop software, this is for you.
 
 The OpenAI model this package uses is the <a href="https://platform.openai.com/docs/models/gpt-3-5">gpt-3.5-turbo</a> model(which is nearly as functional as <b>ChatGPT</b>) by default.
 
