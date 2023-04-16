@@ -122,7 +122,36 @@ class SqliteDatabase:
                                           id_fk INTEGER,
                                           is_user INTEGER,
                                           conv TEXT,
+                                          update_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
+                                          insert_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
                                           FOREIGN KEY (id_fk) REFERENCES {self.__conv_tb_nm}(id) ON DELETE CASCADE)''')
+
+                # insert trigger
+                self.__c.execute(f'''
+                    CREATE TRIGGER conv_tb_updated_by_unit_inserted_tr{id_fk}
+                    AFTER INSERT ON {self.__conv_unit_tb_nm}{id_fk}
+                    BEGIN
+                      UPDATE {self.__conv_tb_nm} SET update_dt = CURRENT_TIMESTAMP WHERE id = NEW.id_fk;
+                    END
+                ''')
+
+                # update trigger
+                self.__c.execute(f'''
+                    CREATE TRIGGER conv_tb_updated_by_unit_updated_tr{id_fk}
+                    AFTER UPDATE ON {self.__conv_unit_tb_nm}{id_fk}
+                    BEGIN
+                      UPDATE {self.__conv_tb_nm} SET update_dt = CURRENT_TIMESTAMP WHERE id = NEW.id_fk;
+                    END
+                ''')
+
+                # delete trigger
+                self.__c.execute(f'''
+                    CREATE TRIGGER conv_tb_updated_by_unit_deleted_tr{id_fk}
+                    AFTER DELETE ON {self.__conv_unit_tb_nm}{id_fk}
+                    BEGIN
+                      UPDATE {self.__conv_tb_nm} SET update_dt = CURRENT_TIMESTAMP WHERE id = OLD.id_fk;
+                    END
+                ''')
                 # Commit the transaction
                 self.__conn.commit()
         except sqlite3.Error as e:

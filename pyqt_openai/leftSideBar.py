@@ -89,6 +89,7 @@ class LeftSideBar(QWidget):
         rows = self.__convListWidget.getCheckedRowsIds()
         self.__convListWidget.removeCheckedRows()
         self.deleted.emit(rows)
+        self.__allCheckBox.setChecked(False)
 
     def __saveClicked(self):
         print('save')
