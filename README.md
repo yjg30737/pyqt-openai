@@ -14,6 +14,8 @@ The OpenAI model this package uses is the <a href="https://platform.openai.com/d
 
 Image generation feature available since v0.0.16. You can see the detail in <a href="https://platform.openai.com/docs/guides/images/introduction">official OpenAI</a> site. Currently this feature is very basic now.
 
+This is using <b>sqlite</b> as a database.
+
 You can select other model with the combobox on the sidebar at the right side of the window.
 
 An internet connection is required.
