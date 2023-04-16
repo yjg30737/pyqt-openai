@@ -130,15 +130,11 @@ class ConvListWidget(QListWidget):
             if item.checkState() != state:
                 item.setCheckState(state)
 
-    # TODO refactoring getCheckedRows, getCheckedRowsIds, getUncheckedRows
-    def getCheckedRows(self):
-        return self.__getFlagRows(Qt.Checked)
-
     def getCheckedRowsIds(self):
         return self.__getFlagRows(Qt.Checked, is_id=True)
 
-    def getUncheckedRows(self):
-        return self.__getFlagRows(Qt.Unchecked)
+    def getUncheckedRowsIds(self):
+        return self.__getFlagRows(Qt.Unchecked, is_id=True)
 
     def __getFlagRows(self, flag: Qt.CheckState, is_id: bool = False):
         flag_lst = []

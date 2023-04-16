@@ -14,6 +14,7 @@ class LeftSideBar(QWidget):
     changed = Signal(QListWidgetItem)
     deleted = Signal(list)
     convUpdated = Signal(int, str)
+    export = Signal(list)
 
     def __init__(self):
         super().__init__()
@@ -92,7 +93,7 @@ class LeftSideBar(QWidget):
         self.__allCheckBox.setChecked(False)
 
     def __saveClicked(self):
-        print('save')
+        self.export.emit(self.__convListWidget.getUncheckedRowsIds())
 
     def __stateChanged(self, f):
         self.__convListWidget.toggleState(f)

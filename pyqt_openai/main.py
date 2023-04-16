@@ -168,6 +168,7 @@ class OpenAIChatBot(QMainWindow):
         self.__leftSideBarWidget.changed.connect(self.__changeConv)
         self.__leftSideBarWidget.deleted.connect(self.__deleteConv)
         self.__leftSideBarWidget.convUpdated.connect(self.__updateConv)
+        self.__leftSideBarWidget.export.connect(self.__export)
 
         self.__prompt = Prompt()
 
@@ -723,6 +724,12 @@ class OpenAIChatBot(QMainWindow):
     def __deleteConv(self, id_lst):
         for id in id_lst:
             self.__db.deleteConv(id)
+
+    def __export(self, ids):
+        filename = QFileDialog.getSaveFileName(self, 'Save', os.path.expanduser('~'), 'SQLite DB file (*.db)')
+        if filename[0]:
+            filename = filename[0]
+            self.__db.export(ids, filename)
 
     def __updateConvUnit(self, id, user_f, conv_unit=None):
         if conv_unit:

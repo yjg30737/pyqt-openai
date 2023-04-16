@@ -1,4 +1,4 @@
-import sqlite3, json
+import sqlite3, json, shutil
 
 
 class SqliteDatabase:
@@ -14,6 +14,7 @@ class SqliteDatabase:
         self.__createConv()
 
     def __initVal(self):
+        self.__db_filename = 'conv.db'
         self.__conv_tb_nm = 'conv_tb'
         self.__conv_tb_tr_nm = 'conv_tr'
         self.__conv_unit_tb_nm = 'conv_unit_tb'
@@ -21,7 +22,7 @@ class SqliteDatabase:
     def __initDb(self):
         try:
             # Connect to the database (create a new file if it doesn't exist)
-            self.__conn = sqlite3.connect('conv.db')
+            self.__conn = sqlite3.connect(self.__db_filename)
             self.__conn.execute('PRAGMA foreign_keys = ON;')
             self.__conn.commit()
 
@@ -173,6 +174,21 @@ class SqliteDatabase:
         except sqlite3.Error as e:
             print(f"An error occurred while inserting into the table: {e}")
             raise
+
+    def export(self, ids, saved_filename):
+        shutil.copy2(self.__db_filename, saved_filename)
+        conn = sqlite3.connect(saved_filename)
+
+        placeholders = ','.join('?' for _ in ids)
+        cursor = conn.cursor()
+        for i in range(len(ids)):
+            delete_conv_q = f"DELETE FROM {self.__conv_tb_nm} WHERE id in ({placeholders})"
+            cursor.execute(delete_conv_q, ids)
+            drop_conv_unit_tb_q = f"DROP TABLE {self.__conv_unit_tb_nm}{ids[i]}"
+            cursor.execute(drop_conv_unit_tb_q)
+            conn.commit()
+
+        conn.close()
 
     def convertJsonIntoSql(self):
         try:
