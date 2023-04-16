@@ -13,7 +13,8 @@ class LeftSideBar(QWidget):
     added = Signal()
     changed = Signal(QListWidgetItem)
     deleted = Signal(list)
-    propUpdated = Signal(int, str, str)
+    convUpdated = Signal(int, str)
+    export = Signal(list)
 
     def __init__(self):
         super().__init__()
@@ -34,7 +35,7 @@ class LeftSideBar(QWidget):
 
         self.__addBtn.setToolTip('Add')
         self.__delBtn.setToolTip('Delete')
-        self.__saveBtn.setToolTip('Save (testing)')
+        self.__saveBtn.setToolTip('Save')
 
         self.__addBtn.clicked.connect(self.__addClicked)
         self.__delBtn.clicked.connect(self.__deleteClicked)
@@ -64,9 +65,7 @@ class LeftSideBar(QWidget):
 
         self.__convListWidget = ConvListWidget()
         self.__convListWidget.changed.connect(self.changed)
-        self.__convListWidget.propUpdated.connect(self.propUpdated)
-
-        self.__convListWidget.setAlternatingRowColors(True)
+        self.__convListWidget.convUpdated.connect(self.convUpdated)
 
         lay = QVBoxLayout()
         lay.addWidget(topWidget)
@@ -89,9 +88,10 @@ class LeftSideBar(QWidget):
         rows = self.__convListWidget.getCheckedRowsIds()
         self.__convListWidget.removeCheckedRows()
         self.deleted.emit(rows)
+        self.__allCheckBox.setChecked(False)
 
     def __saveClicked(self):
-        print('save')
+        self.export.emit(self.__convListWidget.getUncheckedRowsIds())
 
     def __stateChanged(self, f):
         self.__convListWidget.toggleState(f)
@@ -102,14 +102,11 @@ class LeftSideBar(QWidget):
             widget = self.__convListWidget.itemWidget(item)
             item.setHidden(False if text.lower() in widget.text().lower() else True)
 
-    def initHistory(self):
-        with open('conv_history.json', 'r') as f:
-            try:
-                data = json.load(f).get('each_conv_lst', '')
-                if data:
-                    for obj in data:
-                        self.__convListWidget.addConv(obj['title'], obj['id'])
-                else:
-                    raise Exception
-            except Exception as e:
-                print(e)
+    def initHistory(self, db):
+        try:
+            conv_lst = db.selectAllConv()
+            for conv in conv_lst:
+                id, title = conv[0], conv[1]
+                self.__convListWidget.addConv(title, id)
+        except Exception as e:
+            print(e)
