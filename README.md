@@ -6,6 +6,10 @@ Example of using OpenAI with PyQt (Python cross-platform GUI toolkit)
 
 This shows an example of using OpenAI with PyQt as a chatbot.
 
+The major advantage of this package is that you don't need to know other language aside from Python.
+
+This is  
+
 The OpenAI model this package uses is the <a href="https://platform.openai.com/docs/models/gpt-3-5">gpt-3.5-turbo</a> model(which is nearly as functional as <b>ChatGPT</b>) by default.
 
 Image generation feature available since v0.0.16. You can see the detail in <a href="https://platform.openai.com/docs/guides/images/introduction">official OpenAI</a> site. Currently this feature is very basic now.
