@@ -2,9 +2,12 @@
 <p align="center">
   <img src="https://user-images.githubusercontent.com/55078043/229002952-9afe57de-b0b6-400f-9628-b8e0044d3f7b.png">
 </p>
+
 Example of using OpenAI with PyQt (Python cross-platform GUI toolkit)
 
 This shows an example of using OpenAI with PyQt as a chatbot.
+
+Even though this project has become too huge to be called an 'example'.
 
 The major advantage of this package is that you don't need to know other language aside from Python.
 
@@ -27,9 +30,9 @@ You can join pyqt-openai's <a href="https://discord.gg/cHekprskVE">Discord Serve
 Some of the features are still being tested.
 
 ## Feature
-* basically this is desktop application version of ChatGPT
-- text streaming (enable by default, you can disable it)
-- AI remembers past conversation
+* basically this is <b>desktop application version of ChatGPT</b>
+  * text streaming (enable by default, you can disable it)
+  * AI remembers past conversation
 * you can save the conversation history with sqlite database
 * support image generation with DALL-E
 * you can test any models, including gpt3.5
