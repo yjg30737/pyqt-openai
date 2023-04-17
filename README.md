@@ -26,6 +26,12 @@ You can join pyqt-openai's <a href="https://discord.gg/cHekprskVE">Discord Serve
 ## Note
 Some of the features are still being tested.
 
+## Feature
+* basically this is desktop application version of ChatGPT
+* you can save the conversation history with sqlite database
+* support image generation with DALL-E
+* you can test any models, including gpt3.5
+
 ## Requirements
 * qtpy - the package allowing you to write code that works with both PyQt and PySide
 * PyQt5 >= 5.14 or PySide6
