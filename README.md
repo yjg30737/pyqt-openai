@@ -20,7 +20,7 @@ You can select other model with the combobox on the sidebar at the right side of
 
 An internet connection is required.
 
-## Discord Channel
+## Contact
 You can join pyqt-openai's <a href="https://discord.gg/cHekprskVE">Discord Server</a> to have a conversation about it or AI-related stuff 🙂
 
 ## Note
@@ -28,9 +28,13 @@ Some of the features are still being tested.
 
 ## Feature
 * basically this is desktop application version of ChatGPT
+- text streaming (enable by default, you can disable it)
+- AI remembers past conversation
 * you can save the conversation history with sqlite database
 * support image generation with DALL-E
 * you can test any models, including gpt3.5
+* you can run this in background application
+* you can make window stack on top or control its transparency 
 
 ## Requirements
 * qtpy - the package allowing you to write code that works with both PyQt and PySide
@@ -77,14 +81,16 @@ That will install the openai.
 
 ## TODO list
 * redesign the right side bar
-* making prompt generator
-* supporting MidJourney
+* prompt generator
+* support MidJourney or Stable Diffusion or both
 * show the explanation of every model and terms related to AI (e.g. temperature, topp..)
-* highlight the source (eventually)
-* using SQLAlchemy (maybe not)
+* save conversation history with other format (xlsx, csv, etc.)
+* tokenizer
+* highlight the source (optional, eventually)
+* support multiple language
+* use SQLAlchemy (maybe not)
 * show reason when the chat input is disabled for some reasons
 * add the basic example sources of making deep learning model with PyTorch (eventually)
-* support multiple language
 
 ## See Also
 * <a href="https://learn.microsoft.com/en-us/azure/cognitive-services/openai/overview">Azure OpenAI service</a>
