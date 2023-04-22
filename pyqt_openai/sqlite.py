@@ -14,10 +14,21 @@ class SqliteDatabase:
         self.__createConv()
 
     def __initVal(self):
+        # db names
         self.__db_filename = 'conv.db'
+        self.__info_tb_nm = 'info_tb'
         self.__conv_tb_nm = 'conv_tb'
         self.__conv_tb_tr_nm = 'conv_tr'
         self.__conv_unit_tb_nm = 'conv_unit_tb'
+
+        # field default value
+        self.__engine = "gpt-3.5-turbo"
+        self.__temperature = 0.0
+        self.__max_tokens = 256
+        self.__top_p = 1.0
+        self.__frequency_penalty = 0.0
+        self.__presence_penalty = 0.0
+        self.__stream = True
 
     def __initDb(self):
         try:
@@ -27,8 +38,61 @@ class SqliteDatabase:
             self.__conn.commit()
 
             self.__c = self.__conn.cursor()
+            self.__createInfo()
         except sqlite3.Error as e:
             print(f"An error occurred while connecting to the database: {e}")
+            raise
+
+    def __createInfo(self):
+        try:
+            # Check if the table exists
+            self.__c.execute(f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{self.__info_tb_nm}'")
+            if self.__c.fetchone()[0] == 1:
+                # each conv table already exists
+                pass
+            else:
+                # Create a table with update_dt and insert_dt columns
+                self.__c.execute(f'''CREATE TABLE {self.__info_tb_nm}
+                             (id INTEGER PRIMARY KEY,
+                              cur_engine VARCHAR(50) DEFAULT '{self.__engine}',
+                              cur_temperature INTEGER DEFAULT {self.__temperature},
+                              cur_max_tokens INTEGER DEFAULT {self.__max_tokens},
+                              cur_top_p INTEGER DEFAULT {self.__top_p},
+                              cur_frequency_penalty INTEGER DEFAULT {self.__frequency_penalty},
+                              cur_presence_penalty INTEGER DEFAULT {self.__presence_penalty},
+                              cur_stream BOOL DEFAULT {self.__stream},
+                              update_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
+                              insert_dt DATETIME DEFAULT CURRENT_TIMESTAMP)''')
+
+                # Commit the transaction
+                self.__conn.commit()
+
+                # insert default record
+                self.__c.execute(f'''INSERT INTO {self.__info_tb_nm}
+                                    (
+                                        cur_engine,
+                                        cur_temperature,
+                                        cur_max_tokens,
+                                        cur_top_p,
+                                        cur_frequency_penalty,
+                                        cur_presence_penalty,
+                                        cur_stream
+                                    ) VALUES
+                                    (
+                                        ?,?,?,?,?,?,?
+                                    )
+                                 ''', (self.__engine,
+                                        self.__temperature,
+                                        self.__max_tokens,
+                                        self.__top_p,
+                                        self.__frequency_penalty,
+                                        self.__presence_penalty,
+                                        self.__stream,))
+                print(self.__c.lastrowid)
+                # Commit the transaction
+                self.__conn.commit()
+        except sqlite3.Error as e:
+            print(f"An error occurred while creating the table: {e}")
             raise
 
     def __createConv(self):
@@ -229,3 +293,7 @@ class SqliteDatabase:
     def __exit__(self, exc_type, exc_val, exc_tb):
         # Close the connection
         self.__conn.close()
+
+
+with SqliteDatabase() as f:
+    pass
