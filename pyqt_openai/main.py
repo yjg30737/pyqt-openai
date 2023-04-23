@@ -13,14 +13,12 @@ from qtpy.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QWidget, QSpl
     QFileDialog, QToolBar, QWidgetAction, QHBoxLayout, QAction, QMenu, \
     QSystemTrayIcon, QMessageBox, QSizePolicy, QLabel, QListWidgetItem, QLineEdit, QPushButton
 
-from pyqt_openai.apiData import getModelEndpoint, getLatestModel
+from pyqt_openai.apiData import getModelEndpoint
 from pyqt_openai.clickableTooltip import ClickableTooltip
 from pyqt_openai.leftSideBar import LeftSideBar
 from pyqt_openai.apiData import ModelData
-from pyqt_openai.modelTable import ModelTable
-from pyqt_openai.rightSideBar import RightSideBar
+from pyqt_openai.right_sidebar.rightSideBar import RightSideBar
 from pyqt_openai.svgButton import SvgButton
-from pyqt_openai.svgLabel import SvgLabel
 from pyqt_openai.sqlite import SqliteDatabase
 
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)

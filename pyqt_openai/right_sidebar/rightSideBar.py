@@ -1,7 +1,10 @@
-import openai, os, requests, platform, subprocess
+import openai
+import os
+import platform
+import subprocess
 from qtpy.QtCore import Qt, QSettings
-from qtpy.QtGui import QFont, QColor
-from qtpy.QtWidgets import QVBoxLayout, QWidget, QComboBox, QSpinBox, \
+from qtpy.QtGui import QFont
+from qtpy.QtWidgets import QTabWidget, QVBoxLayout, QGridLayout, QWidget, QComboBox, QSpinBox, \
     QFormLayout, QDoubleSpinBox, QPushButton, QHBoxLayout, QGroupBox, QLineEdit, QLabel, QCheckBox, QFileDialog
 
 from pyqt_openai.apiData import getLatestModel
