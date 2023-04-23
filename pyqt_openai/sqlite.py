@@ -21,14 +21,17 @@ class SqliteDatabase:
         self.__conv_tb_tr_nm = 'conv_tr'
         self.__conv_unit_tb_nm = 'conv_unit_tb'
 
-        # field default value
+        # default value of each properties based on https://platform.openai.com/docs/api-reference/chat/create
+        # these are default values of gpt3.5
+        # some of the properties such as "stream" set to be true for making it like chatgpt
+        # todo make default value dict for each model - maybe not, because it can be changed
         self.__attr_default_value = {
             'engine': "gpt-3.5-turbo",
-            'temperature': 0.0,
+            'temperature': 1,
             'max_tokens': 256,
-            'top_p': 1.0,
-            'frequency_penalty': 0.0,
-            'presence_penalty': 0.0,
+            'top_p': 1,
+            'frequency_penalty': 0,
+            'presence_penalty': 0,
             'stream': True
         }
 

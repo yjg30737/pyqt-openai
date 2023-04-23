@@ -417,6 +417,16 @@ class OpenAIChatBot(QMainWindow):
                         {"role": "assistant", "content": self.__browser.getAllText()},
                         {"role": "user", "content": self.__lineEdit.toPlainText()},
                     ],
+                    'temperature': self.__temperature,
+
+                    # won't use max_tokens, this is set to infinite by default
+                    # and i can't find any reason why should i limit the tokens currently
+                    # https://platform.openai.com/docs/api-reference/chat/create
+                    # 'max_tokens': self.__max_tokens,
+
+                    'top_p': self.__top_p,
+                    'frequency_penalty': self.__frequency_penalty,
+                    'presence_penalty': self.__presence_penalty,
                     'stream': self.__stream,
                 }
             else:
@@ -435,11 +445,14 @@ class OpenAIChatBot(QMainWindow):
                 "n": 1,
                 "size": "1024x1024"
             }
-        self.__lineEdit.setEnabled(False)
         if self.__leftSideBarWidget.isCurrentConvExists():
             pass
         else:
             self.__addConv()
+
+        self.__lineEdit.setEnabled(False)
+        self.__leftSideBarWidget.setEnabled(False)
+
         self.__browser.showLabel(self.__lineEdit.toPlainText(), True, False, False)
 
         self.__t = OpenAIThread(self.__engine, openai_arg, idx, self.__remember_past_conv)
@@ -451,6 +464,7 @@ class OpenAIChatBot(QMainWindow):
 
     def __afterGenerated(self):
         self.__lineEdit.setEnabled(True)
+        self.__leftSideBarWidget.setEnabled(True)
         self.__lineEdit.setFocus()
         if not self.isVisible():
             self.__notifierWidget = NotifierWidget()
