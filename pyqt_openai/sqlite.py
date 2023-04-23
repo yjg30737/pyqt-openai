@@ -22,13 +22,15 @@ class SqliteDatabase:
         self.__conv_unit_tb_nm = 'conv_unit_tb'
 
         # field default value
-        self.__engine = "gpt-3.5-turbo"
-        self.__temperature = 0.0
-        self.__max_tokens = 256
-        self.__top_p = 1.0
-        self.__frequency_penalty = 0.0
-        self.__presence_penalty = 0.0
-        self.__stream = True
+        self.__attr_default_value = {
+            'engine': "gpt-3.5-turbo",
+            'temperature': 0.0,
+            'max_tokens': 256,
+            'top_p': 1.0,
+            'frequency_penalty': 0.0,
+            'presence_penalty': 0.0,
+            'stream': True
+        }
 
     def __initDb(self):
         try:
@@ -54,13 +56,13 @@ class SqliteDatabase:
                 # Create a table with update_dt and insert_dt columns
                 self.__c.execute(f'''CREATE TABLE {self.__info_tb_nm}
                              (id INTEGER PRIMARY KEY,
-                              cur_engine VARCHAR(50) DEFAULT '{self.__engine}',
-                              cur_temperature INTEGER DEFAULT {self.__temperature},
-                              cur_max_tokens INTEGER DEFAULT {self.__max_tokens},
-                              cur_top_p INTEGER DEFAULT {self.__top_p},
-                              cur_frequency_penalty INTEGER DEFAULT {self.__frequency_penalty},
-                              cur_presence_penalty INTEGER DEFAULT {self.__presence_penalty},
-                              cur_stream BOOL DEFAULT {self.__stream},
+                              engine VARCHAR(50) DEFAULT '{self.__attr_default_value['engine']}',
+                              temperature INTEGER DEFAULT {self.__attr_default_value['temperature']},
+                              max_tokens INTEGER DEFAULT {self.__attr_default_value['max_tokens']},
+                              top_p INTEGER DEFAULT {self.__attr_default_value['top_p']},
+                              frequency_penalty INTEGER DEFAULT {self.__attr_default_value['frequency_penalty']},
+                              presence_penalty INTEGER DEFAULT {self.__attr_default_value['presence_penalty']},
+                              stream BOOL DEFAULT {self.__attr_default_value['stream']},
                               update_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
                               insert_dt DATETIME DEFAULT CURRENT_TIMESTAMP)''')
 
@@ -70,25 +72,18 @@ class SqliteDatabase:
                 # insert default record
                 self.__c.execute(f'''INSERT INTO {self.__info_tb_nm}
                                     (
-                                        cur_engine,
-                                        cur_temperature,
-                                        cur_max_tokens,
-                                        cur_top_p,
-                                        cur_frequency_penalty,
-                                        cur_presence_penalty,
-                                        cur_stream
+                                        engine,
+                                        temperature,
+                                        max_tokens,
+                                        top_p,
+                                        frequency_penalty,
+                                        presence_penalty,
+                                        stream
                                     ) VALUES
                                     (
-                                        ?,?,?,?,?,?,?
+                                        {','.join(['?' for _ in range(len(self.__attr_default_value))])}
                                     )
-                                 ''', (self.__engine,
-                                        self.__temperature,
-                                        self.__max_tokens,
-                                        self.__top_p,
-                                        self.__frequency_penalty,
-                                        self.__presence_penalty,
-                                        self.__stream,))
-                print(self.__c.lastrowid)
+                                 ''', tuple(self.__attr_default_value.values()))
                 # Commit the transaction
                 self.__conn.commit()
         except sqlite3.Error as e:
@@ -124,26 +119,85 @@ class SqliteDatabase:
             print(f"An error occurred while creating the table: {e}")
             raise
 
+    def selectAllInfo(self):
+        """
+        select all info
+        """
+        try:
+            # filter bool type fields
+            bool_type_column = [row[1] for row in self.__c.execute(f'PRAGMA table_info({self.__info_tb_nm})').fetchall() if row[2] == 'BOOL']
+
+            # Execute the SELECT statement
+            self.__c.execute(f'SELECT {",".join(list(self.__attr_default_value.keys()))} FROM {self.__info_tb_nm}')
+
+            # Get the column names
+            column_names = [description[0] for description in self.__c.description]
+
+            rows = self.__c.fetchall()
+
+            info_dict_arr = []
+
+            # Get the rows with field names and values
+            for row in rows:
+                info_dict = {}
+                for i, value in enumerate(row):
+                    if column_names[i] in bool_type_column:
+                        value = True if value == 1 else False
+                    info_dict[column_names[i]] = value
+                info_dict_arr.append(info_dict)
+
+            return info_dict_arr
+        except sqlite3.Error as e:
+            print(f"An error occurred while creating the table: {e}")
+            raise
+
+    def selectInfo(self, id):
+        """
+        select specific info
+        """
+        try:
+            # filter bool type fields
+            bool_type_column = [row[1] for row in self.__c.execute(f'PRAGMA table_info({self.__info_tb_nm})').fetchall() if row[2] == 'BOOL']
+
+            # Execute the SELECT statement
+            self.__c.execute(f'SELECT {",".join(list(self.__attr_default_value.keys()))} FROM {self.__info_tb_nm} WHERE id={id}')
+
+            # Get the column names
+            column_names = [description[0] for description in self.__c.description]
+
+            row = self.__c.fetchone()
+
+            info_dict = {}
+            for i, value in enumerate(row):
+                if column_names[i] in bool_type_column:
+                    value = True if value == 1 else False
+                info_dict[column_names[i]] = value
+
+            return info_dict
+        except sqlite3.Error as e:
+            print(f"An error occurred while creating the table: {e}")
+            raise
+
     def selectAllConv(self):
         """
-        select all
+        select all conv
         """
         try:
             self.__c.execute(f'SELECT * FROM {self.__conv_tb_nm}')
             return self.__c.fetchall()
         except sqlite3.Error as e:
-            print(f"An error occurred while creating the table: {e}")
+            print(f"An error occurred: {e}")
             raise
 
     def selectConv(self, id):
         """
-        select specific row
+        select specific conv
         """
         try:
             self.__c.execute(f'SELECT * FROM {self.__conv_tb_nm} WHERE id={id}')
             return self.__c.fetchone()
         except sqlite3.Error as e:
-            print(f"An error occurred while creating the table: {e}")
+            print(f"An error occurred: {e}")
             raise
 
     def insertConv(self, name):
@@ -155,7 +209,7 @@ class SqliteDatabase:
             self.__conn.commit()
             self.__createConvUnit(new_id)
         except sqlite3.Error as e:
-            print(f"An error occurred while inserting into the table: {e}")
+            print(f"An error occurred: {e}")
             raise
 
     def updateConv(self, id, name):
@@ -163,7 +217,7 @@ class SqliteDatabase:
             self.__c.execute(f'UPDATE {self.__conv_tb_nm} SET name=(?) WHERE id={id}', (name,))
             self.__conn.commit()
         except sqlite3.Error as e:
-            print(f"An error occurred while inserting into the table: {e}")
+            print(f"An error occurred: {e}")
             raise
 
     def deleteConv(self, id):
@@ -171,7 +225,7 @@ class SqliteDatabase:
             self.__c.execute(f'DELETE FROM {self.__conv_tb_nm} WHERE id={id}')
             self.__conn.commit()
         except sqlite3.Error as e:
-            print(f"An error occurred while inserting into the table: {e}")
+            print(f"An error occurred: {e}")
             raise
 
     def __createConvUnit(self, id_fk):
@@ -220,7 +274,7 @@ class SqliteDatabase:
                 # Commit the transaction
                 self.__conn.commit()
         except sqlite3.Error as e:
-            print(f"An error occurred while inserting into the table: {e}")
+            print(f"An error occurred: {e}")
             raise
 
     def selectConvUnit(self, id):
@@ -236,7 +290,7 @@ class SqliteDatabase:
             # Commit the transaction
             self.__conn.commit()
         except sqlite3.Error as e:
-            print(f"An error occurred while inserting into the table: {e}")
+            print(f"An error occurred: {e}")
             raise
 
     def export(self, ids, saved_filename):
@@ -272,7 +326,7 @@ class SqliteDatabase:
                         # Commit the transaction
                         self.__conn.commit()
         except sqlite3.Error as e:
-            print(f"An error occurred while inserting into the table: {e}")
+            print(f"An error occurred: {e}")
             raise
 
     def getCursor(self):
@@ -293,7 +347,3 @@ class SqliteDatabase:
     def __exit__(self, exc_type, exc_val, exc_tb):
         # Close the connection
         self.__conn.close()
-
-
-with SqliteDatabase() as f:
-    pass
