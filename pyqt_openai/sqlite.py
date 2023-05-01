@@ -16,24 +16,55 @@ class SqliteDatabase:
     def __initVal(self):
         # db names
         self.__db_filename = 'conv.db'
-        self.__info_tb_nm = 'info_tb'
+
+        # conv table names
         self.__conv_tb_nm = 'conv_tb'
         self.__conv_tb_tr_nm = 'conv_tr'
         self.__conv_unit_tb_nm = 'conv_unit_tb'
 
+        # info table names
+        self.__info_tb_nm = 'info_tb'
+        self.__completion_info_tb_nm = 'info_completion_tb'
+        self.__image_info_tb_nm = 'image_info_tb'
+
+        # model type (chat, image, etc.)
+        self.__model_type = 1
+
         # default value of each properties based on https://platform.openai.com/docs/api-reference/chat/create
-        # these are default values of gpt3.5
-        # some of the properties such as "stream" set to be true for making it like chatgpt
-        # todo make default value dict for each model - maybe not, because it can be changed
-        self.__attr_default_value = {
+        # GPT-3.5(ChatGPT), GPT-4
+        self.__chat_default_value = {
             'engine': "gpt-3.5-turbo",
-            'temperature': 1,
-            'max_tokens': 256,
+            'temperature': 0.7,
+            # -1 means infinite, not currently used in this application
+            'max_tokens': -1,
             'top_p': 1,
             'frequency_penalty': 0,
             'presence_penalty': 0,
             'stream': True
         }
+
+        # GPT-3, etc.
+        self.__completion_default_value = {
+            'engine': "text-davinci-003",
+            'temperature': 0.7,
+            'max_tokens': 4096,
+            'top_p': 1,
+            'frequency_penalty': 0,
+            'presence_penalty': 0,
+        }
+
+        # DALL-E, Midjourney, Stable Diffusion
+        self.__image_default_value = {
+            'engine': "DALL-E",
+            'n': 1,
+            'width': 1024,
+            'height': 1024,
+            # 'response_format':
+        }
+
+        self.__each_info_dict = {1: [self.__info_tb_nm, self.__chat_default_value],
+                                 2: [self.__completion_info_tb_nm, self.__completion_default_value],
+                                 3: [self.__image_info_tb_nm, self.__image_default_value], }
 
     def __initDb(self):
         try:
@@ -48,47 +79,119 @@ class SqliteDatabase:
             print(f"An error occurred while connecting to the database: {e}")
             raise
 
+    def __createChat(self):
+        # Check if the table exists
+        self.__c.execute(f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{self.__info_tb_nm}'")
+        if self.__c.fetchone()[0] == 1:
+            pass
+        else:
+            self.__c.execute(f'''CREATE TABLE {self.__info_tb_nm}
+                                     (id INTEGER PRIMARY KEY,
+                                      engine VARCHAR(50) DEFAULT '{self.__chat_default_value['engine']}',
+                                      temperature INTEGER DEFAULT {self.__chat_default_value['temperature']},
+                                      max_tokens INTEGER DEFAULT {self.__chat_default_value['max_tokens']},
+                                      top_p INTEGER DEFAULT {self.__chat_default_value['top_p']},
+                                      frequency_penalty INTEGER DEFAULT {self.__chat_default_value['frequency_penalty']},
+                                      presence_penalty INTEGER DEFAULT {self.__chat_default_value['presence_penalty']},
+                                      stream BOOL DEFAULT {self.__chat_default_value['stream']},
+
+                                      update_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
+                                      insert_dt DATETIME DEFAULT CURRENT_TIMESTAMP)''')
+
+            # Commit the transaction
+            self.__conn.commit()
+
+            # insert default record
+            self.__c.execute(f'''INSERT INTO {self.__info_tb_nm}
+                                            (
+                                                engine,
+                                                temperature,
+                                                max_tokens,
+                                                top_p,
+                                                frequency_penalty,
+                                                presence_penalty,
+                                                stream
+                                            ) VALUES
+                                            (
+                                                {','.join(['?' for _ in range(len(self.__chat_default_value))])}
+                                            )
+                                         ''', tuple(self.__chat_default_value.values()))
+
+    def __createCompletion(self):
+        # Check if the table exists
+        self.__c.execute(f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{self.__completion_info_tb_nm}'")
+        if self.__c.fetchone()[0] == 1:
+            pass
+        else:
+            self.__c.execute(f'''CREATE TABLE {self.__completion_info_tb_nm}
+                                             (id INTEGER PRIMARY KEY,
+                                              engine VARCHAR(50) DEFAULT '{self.__completion_default_value['engine']}',
+                                              temperature INTEGER DEFAULT {self.__completion_default_value['temperature']},
+                                              max_tokens INTEGER DEFAULT {self.__completion_default_value['max_tokens']},
+                                              top_p INTEGER DEFAULT {self.__completion_default_value['top_p']},
+                                              frequency_penalty INTEGER DEFAULT {self.__completion_default_value['frequency_penalty']},
+                                              presence_penalty INTEGER DEFAULT {self.__completion_default_value['presence_penalty']},
+
+                                              update_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
+                                              insert_dt DATETIME DEFAULT CURRENT_TIMESTAMP)''')
+
+            # Commit the transaction
+            self.__conn.commit()
+
+            # insert default record
+            self.__c.execute(f'''INSERT INTO {self.__completion_info_tb_nm}
+                                                    (
+                                                        engine,
+                                                        temperature,
+                                                        max_tokens,
+                                                        top_p,
+                                                        frequency_penalty,
+                                                        presence_penalty
+                                                    ) VALUES
+                                                    (
+                                                        {','.join(['?' for _ in range(len(self.__completion_default_value))])}
+                                                    )
+                                                 ''', tuple(self.__completion_default_value.values()))
+
+    def __createImage(self):
+        # Check if the table exists
+        self.__c.execute(f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{self.__image_info_tb_nm}'")
+        if self.__c.fetchone()[0] == 1:
+            pass
+        else:
+            self.__c.execute(f'''CREATE TABLE {self.__image_info_tb_nm}
+                                             (id INTEGER PRIMARY KEY,
+                                              engine VARCHAR(50) DEFAULT '{self.__image_default_value['engine']}',
+                                              n INTEGER DEFAULT {self.__image_default_value['n']},
+                                              width INTEGER DEFAULT {self.__image_default_value['width']},
+                                              height INTEGER DEFAULT {self.__image_default_value['height']},  
+
+                                              update_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
+                                              insert_dt DATETIME DEFAULT CURRENT_TIMESTAMP)''')
+
+            # Commit the transaction
+            self.__conn.commit()
+
+            # insert default record
+            self.__c.execute(f'''INSERT INTO {self.__image_info_tb_nm}
+                                                    (
+                                                        engine,
+                                                        n,
+                                                        width,
+                                                        height
+                                                    ) VALUES
+                                                    (
+                                                        {','.join(['?' for _ in range(len(self.__image_default_value))])}
+                                                    )
+                                                 ''', tuple(self.__image_default_value.values()))
+
     def __createInfo(self):
         try:
-            # Check if the table exists
-            self.__c.execute(f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{self.__info_tb_nm}'")
-            if self.__c.fetchone()[0] == 1:
-                # each conv table already exists
-                pass
-            else:
-                # Create a table with update_dt and insert_dt columns
-                self.__c.execute(f'''CREATE TABLE {self.__info_tb_nm}
-                             (id INTEGER PRIMARY KEY,
-                              engine VARCHAR(50) DEFAULT '{self.__attr_default_value['engine']}',
-                              temperature INTEGER DEFAULT {self.__attr_default_value['temperature']},
-                              max_tokens INTEGER DEFAULT {self.__attr_default_value['max_tokens']},
-                              top_p INTEGER DEFAULT {self.__attr_default_value['top_p']},
-                              frequency_penalty INTEGER DEFAULT {self.__attr_default_value['frequency_penalty']},
-                              presence_penalty INTEGER DEFAULT {self.__attr_default_value['presence_penalty']},
-                              stream BOOL DEFAULT {self.__attr_default_value['stream']},
-                              update_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
-                              insert_dt DATETIME DEFAULT CURRENT_TIMESTAMP)''')
-
-                # Commit the transaction
-                self.__conn.commit()
-
-                # insert default record
-                self.__c.execute(f'''INSERT INTO {self.__info_tb_nm}
-                                    (
-                                        engine,
-                                        temperature,
-                                        max_tokens,
-                                        top_p,
-                                        frequency_penalty,
-                                        presence_penalty,
-                                        stream
-                                    ) VALUES
-                                    (
-                                        {','.join(['?' for _ in range(len(self.__attr_default_value))])}
-                                    )
-                                 ''', tuple(self.__attr_default_value.values()))
-                # Commit the transaction
-                self.__conn.commit()
+            self.__createChat()
+            self.__createCompletion()
+            self.__createImage()
+            # Commit the transaction
+            self.__conn.commit()
         except sqlite3.Error as e:
             print(f"An error occurred while creating the table: {e}")
             raise
@@ -125,13 +228,14 @@ class SqliteDatabase:
     def selectAllInfo(self):
         """
         select all info
+        FIXME
         """
         try:
             # filter bool type fields
             bool_type_column = [row[1] for row in self.__c.execute(f'PRAGMA table_info({self.__info_tb_nm})').fetchall() if row[2] == 'BOOL']
 
             # Execute the SELECT statement
-            self.__c.execute(f'SELECT {",".join(list(self.__attr_default_value.keys()))} FROM {self.__info_tb_nm}')
+            self.__c.execute(f'SELECT {",".join(list(self.__chat_default_value.keys()))} FROM {self.__info_tb_nm}')
 
             # Get the column names
             column_names = [description[0] for description in self.__c.description]
@@ -154,16 +258,20 @@ class SqliteDatabase:
             print(f"An error occurred while creating the table: {e}")
             raise
 
-    def selectInfo(self, id):
+    def selectInfo(self, id=None):
         """
         select specific info
+        default value is 1 (chat - gpt3.5, gpt4, etc.)
         """
         try:
+            # default value is 1 (chat - gpt3.5, gpt4, etc.)
+            id = id if id else self.__model_type
+
             # filter bool type fields
-            bool_type_column = [row[1] for row in self.__c.execute(f'PRAGMA table_info({self.__info_tb_nm})').fetchall() if row[2] == 'BOOL']
+            bool_type_column = [row[1] for row in self.__c.execute(f'PRAGMA table_info({self.__each_info_dict[id][0]})').fetchall() if row[2] == 'BOOL']
 
             # Execute the SELECT statement
-            self.__c.execute(f'SELECT {",".join(list(self.__attr_default_value.keys()))} FROM {self.__info_tb_nm} WHERE id={id}')
+            self.__c.execute(f'SELECT {",".join(list(self.__each_info_dict[id][1].keys()))} FROM {self.__each_info_dict[id][0]}')
 
             # Get the column names
             column_names = [description[0] for description in self.__c.description]
@@ -179,6 +287,14 @@ class SqliteDatabase:
             return info_dict
         except sqlite3.Error as e:
             print(f"An error occurred while creating the table: {e}")
+            raise
+
+    def updateInfo(self, id, field, value):
+        try:
+            self.__c.execute(f'UPDATE {self.__each_info_dict[id][0]} SET {field}=(?) WHERE id=1', (value,))
+            self.__conn.commit()
+        except sqlite3.Error as e:
+            print(f"An error occurred: {e}")
             raise
 
     def selectAllConv(self):
@@ -296,6 +412,13 @@ class SqliteDatabase:
             print(f"An error occurred: {e}")
             raise
 
+    def setModelType(self, model_type: int):
+        """
+        :param model_type: it starts from 1
+        :return:
+        """
+        self.__model_type = model_type
+
     def export(self, ids, saved_filename):
         shutil.copy2(self.__db_filename, saved_filename)
         conn = sqlite3.connect(saved_filename)
@@ -350,3 +473,7 @@ class SqliteDatabase:
     def __exit__(self, exc_type, exc_val, exc_tb):
         # Close the connection
         self.__conn.close()
+
+
+with SqliteDatabase() as f:
+    pass

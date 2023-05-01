@@ -17,6 +17,7 @@ from pyqt_openai.apiData import getModelEndpoint
 from pyqt_openai.clickableTooltip import ClickableTooltip
 from pyqt_openai.leftSideBar import LeftSideBar
 from pyqt_openai.apiData import ModelData
+from pyqt_openai.prompt.promptGeneratorWidget import PromptGeneratorWidget
 from pyqt_openai.right_sidebar.rightSideBar import RightSideBar
 from pyqt_openai.svgButton import SvgButton
 from pyqt_openai.sqlite import SqliteDatabase
@@ -42,17 +43,26 @@ class OpenAIThread(QThread):
     replyGenerated = Signal(str, bool, bool, bool)
     streamFinished = Signal()
 
-    def __init__(self, model, openai_arg, idx, remember_f, *args, **kwargs):
+    def __init__(self, model, openai_arg, is_img, remember_f, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.__model = model
         self.__endpoint = getModelEndpoint(model)
         self.__openai_arg = openai_arg
         self.__remember_f = remember_f
-        self.__idx = idx
+        self.__is_img = is_img
 
     def run(self):
         try:
-            if self.__idx == 0:
+            if self.__is_img:
+                response = openai.Image.create(
+                    **self.__openai_arg
+                )
+
+                # TODO get a lot of images
+                image_url = response['data'][0]['url']
+
+                self.replyGenerated.emit(image_url, False, False, True)
+            else:
                 if self.__endpoint == '/v1/chat/completions':
                     response = openai.ChatCompletion.create(
                            **self.__openai_arg
@@ -89,14 +99,6 @@ class OpenAIThread(QThread):
                             f.write(json.dumps(conv) + '\n')
 
                     self.replyGenerated.emit(response_text, False, False, False)
-            elif self.__idx == 1:
-                response = openai.Image.create(
-                    **self.__openai_arg
-                )
-
-                image_url = response['data'][0]['url']
-
-                self.replyGenerated.emit(image_url, False, False, True)
         except openai.error.InvalidRequestError as e:
             print(e)
             self.replyGenerated.emit('<p style="color:red">Your request was rejected as a result of our safety system.<br/>'
@@ -114,18 +116,6 @@ class OpenAIChatBot(QMainWindow):
     def __initVal(self):
         # db
         self.__db = SqliteDatabase()
-        self.__c = self.__db.getCursor()
-
-        # default info is 1
-        self.__info_dict = self.__db.selectInfo(1)
-
-        self.__engine = self.__info_dict['engine']
-        self.__temperature = self.__info_dict['temperature']
-        self.__max_tokens = self.__info_dict['max_tokens']
-        self.__top_p = self.__info_dict['top_p']
-        self.__frequency_penalty = self.__info_dict['frequency_penalty']
-        self.__presence_penalty = self.__info_dict['presence_penalty']
-        self.__stream = self.__info_dict['stream']
 
         # managing with ini file or something else
         self.__ini_etc_dict = {}
@@ -140,6 +130,7 @@ class OpenAIChatBot(QMainWindow):
 
         self.__settings_struct = QSettings('pyqt_openai.ini', QSettings.IniFormat)
 
+        # make it compatible with version which was used json file as a database
         if self.__isConvHistoryJsonExists():
             self.__migrateJsonToSqlite()
 
@@ -149,6 +140,7 @@ class OpenAIChatBot(QMainWindow):
         else:
             self.__settings_struct.setValue('REMEMBER_PAST_CONVERSATION', '0')
 
+        # don't care about this - just saving past conversation in gpt 3 and below
         if os.path.exists('conv.json'):
             pass
         else:
@@ -171,7 +163,7 @@ class OpenAIChatBot(QMainWindow):
         self.__prompt = Prompt()
         self.__lineEdit = self.__prompt.getTextEdit()
 
-        self.__rightSidebarWidget = RightSideBar(self.__info_dict, self.__ini_etc_dict, self.__modelData, self.__browser, self.__lineEdit)
+        self.__rightSidebarWidget = RightSideBar(self.__db, self.__ini_etc_dict, self.__modelData)
 
         self.__leftSideBarWidget.initHistory(self.__db)
         self.__leftSideBarWidget.added.connect(self.__addConv)
@@ -180,25 +172,21 @@ class OpenAIChatBot(QMainWindow):
         self.__leftSideBarWidget.convUpdated.connect(self.__updateConv)
         self.__leftSideBarWidget.export.connect(self.__export)
 
-        self.__aiTypeCmbBox = QComboBox()
-        self.__aiTypeCmbBox.addItems(['Text/Code Completion', 'Image Generation'])
-
         self.__lineEdit.setPlaceholderText('Write some text...')
         self.__lineEdit.returnPressed.connect(self.__chat)
 
         self.__browser.convUnitUpdated.connect(self.__updateConvUnit)
 
         lay = QHBoxLayout()
-        lay.addWidget(self.__aiTypeCmbBox)
         lay.addWidget(self.__prompt)
         lay.setSpacing(0)
         lay.setContentsMargins(0, 0, 0, 0)
 
-        self.__aiTypeCmbBox.setMaximumHeight(self.__prompt.sizeHint().height())
-
         self.__queryWidget = QWidget()
         self.__queryWidget.setLayout(lay)
         self.__queryWidget.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
+
+        self.__promptGeneratorWidget = PromptGeneratorWidget()
 
         lay = QVBoxLayout()
         lay.addWidget(self.__browser)
@@ -229,7 +217,8 @@ class OpenAIChatBot(QMainWindow):
         mainWidget.addWidget(self.__leftSideBarWidget)
         mainWidget.addWidget(chatWidget)
         mainWidget.addWidget(self.__rightSidebarWidget)
-        mainWidget.setSizes([150, 700, 150])
+        mainWidget.addWidget(self.__promptGeneratorWidget)
+        mainWidget.setSizes([100, 700, 100, 100])
         mainWidget.setChildrenCollapsible(False)
         mainWidget.setHandleWidth(2)
         mainWidget.setStyleSheet(
@@ -289,6 +278,16 @@ class OpenAIChatBot(QMainWindow):
         self.__settingBtn.setChecked(True)
         self.__settingBtn.setChecked(False)
 
+        self.__promptAction = QWidgetAction(self)
+        self.__promptBtn = SvgButton()
+        self.__promptBtn.setIcon('ico/prompt.svg')
+        self.__promptAction.setDefaultWidget(self.__promptBtn)
+        self.__promptBtn.toggled.connect(self.__promptGeneratorWidget.setVisible)
+        self.__promptBtn.setToolTip('Prompt Generator')
+        self.__promptBtn.setCheckable(True)
+        self.__promptBtn.setChecked(True)
+        self.__promptBtn.setChecked(False)
+
         self.__transparentAction = QWidgetAction(self)
         self.__transparentSpinBox = QSpinBox()
         self.__transparentSpinBox.setRange(0, 100)
@@ -338,6 +337,7 @@ class OpenAIChatBot(QMainWindow):
         toolbar.addAction(self.__stackAction)
         toolbar.addAction(self.__sideBarAction)
         toolbar.addAction(self.__settingAction)
+        toolbar.addAction(self.__promptAction)
         toolbar.addAction(self.__transparentAction)
         toolbar.addAction(self.__apiAction)
         toolbar.setLayout(lay)
@@ -392,13 +392,21 @@ class OpenAIChatBot(QMainWindow):
             self.__apiCheckPreviewLbl.setStyleSheet("color: {}".format(QColor(255, 0, 0).name()))
             self.__apiCheckPreviewLbl.setText('API key is invalid')
             self.__lineEdit.setEnabled(False)
+            print(e)
         finally:
             self.__apiCheckPreviewLbl.show()
 
     def __chat(self):
-        idx = self.__aiTypeCmbBox.currentIndex()
+        info_dict = self.__db.selectInfo()
+        is_img = info_dict['engine'] in ['DALL-E', 'midjourney', 'stable_diffusion']
         openai_arg = ''
-        if idx == 0:
+        if is_img:
+            openai_arg = {
+                "prompt": self.__lineEdit.toPlainText(),
+                "n": info_dict['n'],
+                "size": f"{info_dict['width']}x{info_dict['height']}"
+            }
+        else:
             if self.__remember_past_conv:
                 convs = []
                 with open('conv.json', 'r') as f:
@@ -406,43 +414,30 @@ class OpenAIChatBot(QMainWindow):
                         conv = json.loads(line.strip())
                         convs.append(conv)
             # TODO refactoring
-            if self.__engine in ['gpt-3.5-turbo', 'gpt-3.5-turbo-0301']:
+            if info_dict['engine'] in ['gpt-3.5-turbo', 'gpt-3.5-turbo-0301']:
                 # "assistant" below is for making the AI remember the last question
                 openai_arg = {
-                    'model': self.__engine,
+                    'model': info_dict['engine'],
                     'messages': [
                         {"role": "system", "content": "You are a helpful assistant."},
                         {"role": "assistant", "content": self.__browser.getAllText()},
                         {"role": "user", "content": self.__lineEdit.toPlainText()},
                     ],
-                    'temperature': self.__temperature,
+                    # 'temperature': info_dict['temperature'],
 
                     # won't use max_tokens, this is set to infinite by default
                     # and i can't find any reason why should i limit the tokens currently
                     # https://platform.openai.com/docs/api-reference/chat/create
                     # 'max_tokens': self.__max_tokens,
 
-                    'top_p': self.__top_p,
-                    'frequency_penalty': self.__frequency_penalty,
-                    'presence_penalty': self.__presence_penalty,
-                    'stream': self.__stream,
+                    # 'top_p': info_dict['top_p'],
+                    # 'frequency_penalty': info_dict['frequency_penalty'],
+                    # 'presence_penalty': info_dict['presence_penalty'],
+
+                    'stream': info_dict['stream'],
                 }
             else:
-                openai_arg = {
-                    'engine': self.__engine,
-                    'prompt': self.__lineEdit.toPlainText(),
-                    'temperature': self.__temperature,
-                    'max_tokens': self.__max_tokens,
-                    'top_p': self.__top_p,
-                    'frequency_penalty': self.__frequency_penalty,
-                    'presence_penalty': self.__presence_penalty,
-                }
-        elif idx == 1:
-            openai_arg = {
-                "prompt": self.__lineEdit.toPlainText(),
-                "n": 1,
-                "size": "1024x1024"
-            }
+                openai_arg = info_dict
         if self.__leftSideBarWidget.isCurrentConvExists():
             pass
         else:
@@ -453,7 +448,7 @@ class OpenAIChatBot(QMainWindow):
 
         self.__browser.showLabel(self.__lineEdit.toPlainText(), True, False, False)
 
-        self.__t = OpenAIThread(self.__engine, openai_arg, idx, self.__remember_past_conv)
+        self.__t = OpenAIThread(info_dict['engine'], openai_arg, is_img, self.__remember_past_conv)
         self.__t.replyGenerated.connect(self.__browser.showLabel)
         self.__t.streamFinished.connect(self.__browser.streamFinished)
         self.__lineEdit.clear()
@@ -465,7 +460,7 @@ class OpenAIChatBot(QMainWindow):
         self.__leftSideBarWidget.setEnabled(True)
         self.__lineEdit.setFocus()
         if not self.isVisible():
-            self.__notifierWidget = NotifierWidget()
+            self.__notifierWidget = NotifierWidget(informative_text='Response 👌', detailed_text='Click this!')
             self.__notifierWidget.show()
             self.__notifierWidget.doubleClicked.connect(self.show)
 
@@ -506,7 +501,7 @@ class OpenAIChatBot(QMainWindow):
 
     def __addConv(self):
         self.__db.insertConv('New Chat')
-        cur_id = self.__c.lastrowid
+        cur_id = self.__db.getCursor().lastrowid
         self.__browser.resetChatWidget(cur_id)
         self.__leftSideBarWidget.addToList(cur_id)
         self.__lineEdit.setFocus()
