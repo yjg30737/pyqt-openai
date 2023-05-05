@@ -18,7 +18,7 @@ from pyqt_openai.clickableTooltip import ClickableTooltip
 from pyqt_openai.leftSideBar import LeftSideBar
 from pyqt_openai.apiData import ModelData
 from pyqt_openai.prompt.promptGeneratorWidget import PromptGeneratorWidget
-from pyqt_openai.right_sidebar.rightSideBar import RightSideBar
+from pyqt_openai.right_sidebar.aiPlaygroundWidget import AIPlaygroundWidget
 from pyqt_openai.svgButton import SvgButton
 from pyqt_openai.sqlite import SqliteDatabase
 
@@ -163,8 +163,6 @@ class OpenAIChatBot(QMainWindow):
         self.__prompt = Prompt()
         self.__lineEdit = self.__prompt.getTextEdit()
 
-        self.__rightSidebarWidget = RightSideBar(self.__db, self.__ini_etc_dict, self.__modelData)
-
         self.__leftSideBarWidget.initHistory(self.__db)
         self.__leftSideBarWidget.added.connect(self.__addConv)
         self.__leftSideBarWidget.changed.connect(self.__changeConv)
@@ -186,14 +184,33 @@ class OpenAIChatBot(QMainWindow):
         self.__queryWidget.setLayout(lay)
         self.__queryWidget.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
 
-        self.__promptGeneratorWidget = PromptGeneratorWidget()
-
         lay = QVBoxLayout()
         lay.addWidget(self.__browser)
         lay.addWidget(self.__queryWidget)
         lay.setSpacing(0)
+        lay.setContentsMargins(0, 0, 0, 0)
         chatWidget = QWidget()
         chatWidget.setLayout(lay)
+
+        self.__aiPlaygroundWidget = AIPlaygroundWidget(self.__db, self.__ini_etc_dict, self.__modelData)
+
+        self.__promptGeneratorWidget = PromptGeneratorWidget()
+
+        self.__rightSideBar = QSplitter()
+        self.__rightSideBar.setOrientation(Qt.Vertical)
+        self.__rightSideBar.addWidget(self.__aiPlaygroundWidget)
+        self.__rightSideBar.addWidget(self.__promptGeneratorWidget)
+        self.__rightSideBar.setSizes([600, 400])
+        self.__rightSideBar.setChildrenCollapsible(False)
+        self.__rightSideBar.setHandleWidth(2)
+        self.__rightSideBar.setStyleSheet(
+        '''
+        QSplitter::handle:vertical
+        {
+            background: #CCC;
+            height: 1px;
+        }
+        ''')
 
         # background app
         menu = QMenu()
@@ -216,9 +233,8 @@ class OpenAIChatBot(QMainWindow):
         mainWidget = QSplitter()
         mainWidget.addWidget(self.__leftSideBarWidget)
         mainWidget.addWidget(chatWidget)
-        mainWidget.addWidget(self.__rightSidebarWidget)
-        mainWidget.addWidget(self.__promptGeneratorWidget)
-        mainWidget.setSizes([100, 700, 100, 100])
+        mainWidget.addWidget(self.__rightSideBar)
+        mainWidget.setSizes([100, 500, 400])
         mainWidget.setChildrenCollapsible(False)
         mainWidget.setHandleWidth(2)
         mainWidget.setStyleSheet(
@@ -271,7 +287,7 @@ class OpenAIChatBot(QMainWindow):
         self.__settingAction = QWidgetAction(self)
         self.__settingBtn = SvgButton()
         self.__settingBtn.setIcon('ico/setting.svg')
-        self.__settingBtn.toggled.connect(self.__rightSidebarWidget.setVisible)
+        self.__settingBtn.toggled.connect(self.__aiPlaygroundWidget.setVisible)
         self.__settingAction.setDefaultWidget(self.__settingBtn)
         self.__settingBtn.setToolTip('Settings')
         self.__settingBtn.setCheckable(True)
@@ -382,7 +398,7 @@ class OpenAIChatBot(QMainWindow):
                 self.__setApiKey(api_key)
                 self.__settings_struct.setValue('API_KEY', api_key)
 
-                self.__rightSidebarWidget.setModelInfoByModel(True)
+                self.__aiPlaygroundWidget.setModelInfoByModel(True)
 
                 self.__apiCheckPreviewLbl.setStyleSheet("color: {}".format(QColor(0, 200, 0).name()))
                 self.__apiCheckPreviewLbl.setText('API key is valid')
@@ -419,7 +435,7 @@ class OpenAIChatBot(QMainWindow):
                 openai_arg = {
                     'model': info_dict['engine'],
                     'messages': [
-                        {"role": "system", "content": "You are a helpful assistant."},
+                        {"role": "system", "content": info_dict['system']},
                         {"role": "assistant", "content": self.__browser.getAllText()},
                         {"role": "user", "content": self.__lineEdit.toPlainText()},
                     ],

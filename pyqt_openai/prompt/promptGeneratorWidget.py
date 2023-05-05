@@ -1,7 +1,7 @@
 import pyperclip
 
 from qtpy.QtWidgets import QApplication, QTextBrowser, QWidget, QTextEdit, QLabel, QVBoxLayout, QLineEdit, \
-    QFormLayout, QTableWidget, QPushButton, QTabWidget
+    QFormLayout, QTableWidget, QPushButton, QTabWidget, QScrollArea
 
 from qtpy.QtGui import QTextCursor
 
@@ -9,7 +9,7 @@ from pyqt_openai.prompt.propPage import PropPage
 from pyqt_openai.prompt.templatePage import TemplatePage
 
 
-class PromptGeneratorWidget(QWidget):
+class PromptGeneratorWidget(QScrollArea):
     def __init__(self):
         super().__init__()
         self.__initUi()
@@ -42,7 +42,13 @@ class PromptGeneratorWidget(QWidget):
         lay.addWidget(self.__prompt)
         lay.addWidget(copyBtn)
 
-        self.setLayout(lay)
+        mainWidget = QWidget()
+        mainWidget.setLayout(lay)
+
+        self.setWidget(mainWidget)
+        self.setWidgetResizable(True)
+
+        self.setStyleSheet('QScrollArea { border: 0 }')
 
     def __textChanged(self, prompt_text):
         self.__prompt.clear()
@@ -50,10 +56,3 @@ class PromptGeneratorWidget(QWidget):
 
     def __copy(self):
         pyperclip.copy(self.__prompt.toPlainText())
-
-
-if __name__ == '__main__':
-    app = QApplication([])
-    window = PromptGeneratorWidget()
-    window.show()
-    app.exec_()

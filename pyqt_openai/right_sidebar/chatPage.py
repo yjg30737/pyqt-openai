@@ -1,5 +1,5 @@
 from qtpy.QtWidgets import QWidget, QComboBox, QTextEdit, QLabel, QVBoxLayout, QApplication, QCheckBox, QDoubleSpinBox, \
-    QSpinBox
+    QSpinBox, QPushButton
 
 from pyqt_openai.apiData import getChatModel
 from pyqt_openai.sqlite import SqliteDatabase
@@ -33,9 +33,11 @@ class ChatPage(QWidget):
         self.__ini_etc_dict = ini_etc_dict
 
     def __initUi(self):
-        systemlbl = QLabel('System (working)')
-        systemTextEdit = QTextEdit()
-        systemTextEdit.setText('You are a helpful assistant.')
+        systemlbl = QLabel('System')
+        self.__systemTextEdit = QTextEdit()
+        self.__systemTextEdit.setText('You are a helpful assistant.')
+        saveSystemBtn = QPushButton('Save System')
+        saveSystemBtn.clicked.connect(self.__saveSystem)
         modelCmbBox = QComboBox()
         modelCmbBox.addItems(getChatModel())
         modelCmbBox.currentTextChanged.connect(self.__modelChanged)
@@ -87,12 +89,17 @@ class ChatPage(QWidget):
 
         lay = QVBoxLayout()
         lay.addWidget(systemlbl)
-        lay.addWidget(systemTextEdit)
+        lay.addWidget(self.__systemTextEdit)
+        lay.addWidget(saveSystemBtn)
         lay.addWidget(modelCmbBox)
         lay.addWidget(streamChkBox)
         lay.addWidget(finishReasonChkBox)
 
         self.setLayout(lay)
+
+    def __saveSystem(self):
+        self.__info_dict['system'] = self.__systemTextEdit.toPlainText()
+        self.__db.updateInfo(1, 'system', self.__info_dict['system'])
 
     def __modelChanged(self, v):
         self.__info_dict['engine'] = v

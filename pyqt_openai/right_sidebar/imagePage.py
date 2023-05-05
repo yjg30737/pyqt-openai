@@ -1,10 +1,10 @@
 from qtpy.QtWidgets import QWidget, QComboBox, QTextEdit, QLabel, QVBoxLayout, QApplication, QCheckBox, QFormLayout, \
-    QSpinBox
+    QSpinBox, QScrollArea
 
 from pyqt_openai.sqlite import SqliteDatabase
 
 
-class ImagePage(QWidget):
+class ImagePage(QScrollArea):
     def __init__(self, db: SqliteDatabase):
         super().__init__()
         self.__initVal(db)
@@ -31,7 +31,11 @@ class ImagePage(QWidget):
         lay.addRow('Total', nSpinBox)
         lay.addRow('Size', sizeCmbBox)
 
-        self.setLayout(lay)
+        mainWidget = QWidget()
+        mainWidget.setLayout(lay)
+
+        self.setWidget(mainWidget)
+        self.setWidgetResizable(True)
 
     def __nChanged(self, v):
         self.__db.updateInfo(3, 'n', v)

@@ -34,6 +34,7 @@ class SqliteDatabase:
         # GPT-3.5(ChatGPT), GPT-4
         self.__chat_default_value = {
             'engine': "gpt-3.5-turbo",
+            'system': "You are a helpful assistant.",
             'temperature': 0.7,
             # -1 means infinite, not currently used in this application
             'max_tokens': -1,
@@ -83,11 +84,21 @@ class SqliteDatabase:
         # Check if the table exists
         self.__c.execute(f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{self.__info_tb_nm}'")
         if self.__c.fetchone()[0] == 1:
-            pass
+            # Check if each column already exists in the table
+            existing_columns = [row[1] for row in self.__c.execute(f"PRAGMA table_info({self.__info_tb_nm});")]
+            new_columns = [col for col in self.__chat_default_value.keys() if col not in existing_columns]
+            # Add the new columns if they don't already exist
+            # TODO specify the type
+            for col in new_columns:
+                d_value = self.__chat_default_value[col]
+                if isinstance(self.__chat_default_value[col], str):
+                    d_value = f'"{d_value}"' if len(self.__chat_default_value[col].split()) > 0 else d_value
+                self.__c.execute(f"ALTER TABLE {self.__info_tb_nm} ADD COLUMN {col} DEFAULT {d_value}")
         else:
             self.__c.execute(f'''CREATE TABLE {self.__info_tb_nm}
                                      (id INTEGER PRIMARY KEY,
                                       engine VARCHAR(50) DEFAULT '{self.__chat_default_value['engine']}',
+                                      engine TEXT DEFAULT '{self.__chat_default_value['system']}',
                                       temperature INTEGER DEFAULT {self.__chat_default_value['temperature']},
                                       max_tokens INTEGER DEFAULT {self.__chat_default_value['max_tokens']},
                                       top_p INTEGER DEFAULT {self.__chat_default_value['top_p']},
@@ -105,6 +116,7 @@ class SqliteDatabase:
             self.__c.execute(f'''INSERT INTO {self.__info_tb_nm}
                                             (
                                                 engine,
+                                                system,
                                                 temperature,
                                                 max_tokens,
                                                 top_p,
