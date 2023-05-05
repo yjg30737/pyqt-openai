@@ -14,7 +14,7 @@ setup(
     author_email='yjg30737@gmail.com',
     license='MIT',
     packages=find_packages(),
-    package_data={'pyqt_openai.ico': ['close.svg', 'openai.svg', 'help.svg', 'sidebar.svg', 'download.svg', 'stackontop.svg', 'add.svg', 'delete.svg', 'setting.svg', 'search.svg']},
+    package_data={'pyqt_openai.ico': ['close.svg', 'openai.svg', 'help.svg', 'sidebar.svg', 'prompt.svg', 'download.svg', 'stackontop.svg', 'add.svg', 'delete.svg', 'setting.svg', 'search.svg']},
     description='PyQt OpenAI example',
     url='https://github.com/yjg30737/pyqt-openai.git',
     long_description_content_type='text/markdown',
@@ -25,5 +25,6 @@ setup(
         'qtpy',
         'aiohttp',
         'openai',
+        'pyperclip'
     ]
 )

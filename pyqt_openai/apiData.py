@@ -17,17 +17,37 @@ ENDPOINT_DICT = {
 }
 
 def getModelEndpoint(model):
+    print(model)
     for k, v in ENDPOINT_DICT.items():
         endpoint_group = list(v)
         if model in endpoint_group:
             return k
 
+# legacy
 def getLatestModel():
     return ['gpt-3.5-turbo',
             'gpt-3.5-turbo-0301',
             'text-davinci-003',
             'text-davinci-002',
             'code-davinci-002']
+
+# new
+def getCompletionModel():
+    return [
+        'text-davinci-003',
+        'text-davinci-002',
+        'text-curie-001',
+        'text-babbage-001',
+        'text-ada-001'
+    ]
+
+def getChatModel():
+    return [
+        'gpt-3.5-turbo',
+        'gpt-3.5-turbo-0301',
+        'gpt-4',
+        'gpt-4-32k',
+    ]
 
 # dynamic
 class ModelData:
@@ -36,7 +56,11 @@ class ModelData:
         self.__modelList = []
 
     def setModelData(self):
-        self.__modelList = openai.Model.list()['data']
+        """
+        this is only used in completion type, so subtract chat model from it
+        :return:
+        """
+        self.__modelList = list(filter(lambda x: x['id'] not in getChatModel(), openai.Model.list()['data']))
 
     def getModelData(self):
         return self.__modelList
