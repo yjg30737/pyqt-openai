@@ -33,6 +33,7 @@ Some of the features are still being tested.
 * basically this is <b>desktop application version of ChatGPT</b>
   * text streaming (enable by default, you can disable it)
   * AI remembers past conversation
+* support GPT-4
 * you can save the conversation history with sqlite database
 * support prompt generator
 * support image generation with DALL-E
