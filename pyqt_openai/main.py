@@ -298,9 +298,9 @@ class OpenAIChatBot(QMainWindow):
         self.__customizeAction = QWidgetAction(self)
         self.__customizeBtn = SvgButton()
         self.__customizeBtn.setIcon('ico/customize.svg')
-        self.__customizeBtn.toggled.connect(self.__executeCustomizeDialog)
+        self.__customizeBtn.clicked.connect(self.__executeCustomizeDialog)
         self.__customizeAction.setDefaultWidget(self.__customizeBtn)
-        self.__customizeBtn.setToolTip('Customize')
+        self.__customizeBtn.setToolTip('Customize (working)')
 
         self.__promptAction = QWidgetAction(self)
         self.__promptBtn = SvgButton()
@@ -501,7 +501,6 @@ class OpenAIChatBot(QMainWindow):
         reply = dialog.exec()
         if reply == QDialog.Accepted:
             pass
-        print('__executeCustomizeDialog')
 
     def __setTransparency(self, v):
         self.setWindowOpacity(v / 100)
