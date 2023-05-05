@@ -13,13 +13,13 @@ The major advantage of this package is that you don't need to know other languag
 
 If you want to study openai with Python-only good old desktop software, this is for you.
 
-The OpenAI model this package uses is the <a href="https://platform.openai.com/docs/models/gpt-3-5">gpt-3.5-turbo</a> model(which is nearly as functional as <b>ChatGPT</b>) by default.
+The OpenAI model this package uses is the <a href="https://platform.openai.com/docs/models/gpt-3-5">gpt-3.5-turbo</a> model(which is nearly as functional as <b>ChatGPT</b>) by default. You can use gpt-4 as well.
 
 Image generation feature available since v0.0.16. You can see the detail in <a href="https://platform.openai.com/docs/guides/images/introduction">official OpenAI</a> site. Currently this feature is very basic now.
 
 This is using <b>sqlite</b> as a database.
 
-You can select other model with the combobox on the sidebar at the right side of the window.
+You can select the model at the right side bar.
 
 An internet connection is required.
 
@@ -34,10 +34,11 @@ Some of the features are still being tested.
   * text streaming (enable by default, you can disable it)
   * AI remembers past conversation
 * you can save the conversation history with sqlite database
+* support prompt generator
 * support image generation with DALL-E
 * you can test any models, including gpt3.5
 * you can run this in background application
-* you can make window stack on top or control its transparency 
+* you can make window stack on top or control its transparency
 
 ## Requirements
 * qtpy - the package allowing you to write code that works with both PyQt and PySide
@@ -48,14 +49,21 @@ Some of the features are still being tested.
 This is using GPT-3.5 turbo model by default.
 
 ### Homepage
-![image](https://user-images.githubusercontent.com/55078043/230718379-d8f85397-74e9-483a-8686-5ce59ead70a3.png)
+![image](https://user-images.githubusercontent.com/55078043/236583808-f43403f7-2b8f-483b-9271-b78ab8a1eb73.png)
 <b>You have to write your openai api key inside the red box.</b> see [How to play](#how-to-play)
 
+### Overview
+![image](https://user-images.githubusercontent.com/55078043/236584269-99c76ea5-4cec-44f7-8283-e502a182264d.png)
+
 ### Conversation preview
-#### Image
-![image](https://user-images.githubusercontent.com/55078043/230718925-bc36693b-1ad6-472f-ab08-63517e3a433f.png)
-#### Video
-https://user-images.githubusercontent.com/55078043/230719180-3e665a05-959c-4b49-b693-7046a538630e.mp4
+#### Preview Image
+![image](https://user-images.githubusercontent.com/55078043/236583716-a18b30b0-7b67-412e-b633-7daa8e41b525.png)
+#### Preview Video
+https://user-images.githubusercontent.com/55078043/236583883-8e9732a3-1223-4b28-85f1-f60d8b2d6ced.mp4
+
+### Prompt Generator
+https://user-images.githubusercontent.com/55078043/236584481-b7bb5246-6bf4-4343-ba6c-a343bb11cda7.mp4
+So sorry to weak preview, but i have a lot of idea about this prompt generator! Just wait. 
 
 ## How to play
 1. git clone ~
@@ -83,9 +91,7 @@ python setup.py install
 That will install the openai.
 
 ## TODO list
-* redesign the right side bar
-* prompt generator
-* support MidJourney or Stable Diffusion or both
+* support Stable Diffusion
 * show the explanation of every model and terms related to AI (e.g. temperature, topp..)
 * save conversation history with other format (xlsx, csv, etc.)
 * tokenizer
@@ -97,6 +103,6 @@ That will install the openai.
 
 ## See Also
 * <a href="https://learn.microsoft.com/en-us/azure/cognitive-services/openai/overview">Azure OpenAI service</a>
-* <a href="https://openai.com/waitlist/gpt-4-api">join gpt4 waitlist</a>
+* <a href="https://openai.com/waitlist/gpt-4-api">join gpt4 waitlist</a> - i took 1 month to get access from it
 * <a href="https://https://openai.com/waitlist/plugins">join chatgpt plugins waitlist</a>
 
