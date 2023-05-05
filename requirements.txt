@@ -2,4 +2,5 @@ PyQt5>=5.14
 qtpy
 aiohttp
 openai
+pyperclip
 

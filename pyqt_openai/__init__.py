@@ -1,1 +1,1 @@
-from pyqt_openai.main import *
+from pyqt_openai import *
