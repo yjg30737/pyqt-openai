@@ -63,6 +63,7 @@ https://user-images.githubusercontent.com/55078043/236583883-8e9732a3-1223-4b28-
 
 ### Prompt Generator
 https://user-images.githubusercontent.com/55078043/236584481-b7bb5246-6bf4-4343-ba6c-a343bb11cda7.mp4
+
 So sorry to weak preview, but i have a lot of idea about this prompt generator! Just wait. 
 
 ## How to play
