@@ -9,12 +9,13 @@ from notifier import NotifierWidget
 
 from qtpy.QtCore import Qt, QCoreApplication, QThread, QSettings, QEvent, Signal
 from qtpy.QtGui import QGuiApplication, QFont, QIcon, QColor, QCursor
-from qtpy.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QWidget, QSplitter, QComboBox, QSpinBox, \
+from qtpy.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QWidget, QSplitter, QDialog, QSpinBox, \
     QFileDialog, QToolBar, QWidgetAction, QHBoxLayout, QAction, QMenu, \
     QSystemTrayIcon, QMessageBox, QSizePolicy, QLabel, QListWidgetItem, QLineEdit, QPushButton
 
 from pyqt_openai.apiData import getModelEndpoint
 from pyqt_openai.clickableTooltip import ClickableTooltip
+from pyqt_openai.customizeDialog import CustomizeDialog
 from pyqt_openai.leftSideBar import LeftSideBar
 from pyqt_openai.apiData import ModelData
 from pyqt_openai.prompt.promptGeneratorWidget import PromptGeneratorWidget
@@ -275,12 +276,12 @@ class OpenAIChatBot(QMainWindow):
         self.__stackAction.setDefaultWidget(self.__stackBtn)
         self.__stackBtn.setToolTip('Always On Top')
 
-        self.__sideBarAction = QWidgetAction(self)
+        self.__leftSideBarAction = QWidgetAction(self)
         self.__sideBarBtn = SvgButton()
         self.__sideBarBtn.setIcon('ico/sidebar.svg')
         self.__sideBarBtn.setCheckable(True)
         self.__sideBarBtn.toggled.connect(self.__leftSideBarWidget.setVisible)
-        self.__sideBarAction.setDefaultWidget(self.__sideBarBtn)
+        self.__leftSideBarAction.setDefaultWidget(self.__sideBarBtn)
         self.__sideBarBtn.setToolTip('Chat List')
         self.__sideBarBtn.setChecked(True)
 
@@ -293,6 +294,13 @@ class OpenAIChatBot(QMainWindow):
         self.__settingBtn.setCheckable(True)
         self.__settingBtn.setChecked(True)
         self.__settingBtn.setChecked(False)
+
+        self.__customizeAction = QWidgetAction(self)
+        self.__customizeBtn = SvgButton()
+        self.__customizeBtn.setIcon('ico/customize.svg')
+        self.__customizeBtn.toggled.connect(self.__executeCustomizeDialog)
+        self.__customizeAction.setDefaultWidget(self.__customizeBtn)
+        self.__customizeBtn.setToolTip('Customize')
 
         self.__promptAction = QWidgetAction(self)
         self.__promptBtn = SvgButton()
@@ -351,9 +359,10 @@ class OpenAIChatBot(QMainWindow):
         toolbar = QToolBar()
         lay = QHBoxLayout()
         toolbar.addAction(self.__stackAction)
-        toolbar.addAction(self.__sideBarAction)
+        toolbar.addAction(self.__leftSideBarAction)
         toolbar.addAction(self.__settingAction)
         toolbar.addAction(self.__promptAction)
+        toolbar.addAction(self.__customizeAction)
         toolbar.addAction(self.__transparentAction)
         toolbar.addAction(self.__apiAction)
         toolbar.setLayout(lay)
@@ -486,6 +495,13 @@ class OpenAIChatBot(QMainWindow):
         else:
             self.setWindowFlags(self.windowFlags() & ~Qt.WindowStaysOnTopHint)
         self.show()
+
+    def __executeCustomizeDialog(self):
+        dialog = CustomizeDialog()
+        reply = dialog.exec()
+        if reply == QDialog.Accepted:
+            pass
+        print('__executeCustomizeDialog')
 
     def __setTransparency(self, v):
         self.setWindowOpacity(v / 100)
