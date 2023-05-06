@@ -29,16 +29,22 @@ You can join pyqt-openai's <a href="https://discord.gg/cHekprskVE">Discord Serve
 ## Note
 Some of the features are still being tested.
 
+I recommend to install sqlite management software. It's not necessary to run this app (obviously), but it's good practice to manage database about conversation history with AI and to know how this works.
+
 ## Feature
 * basically this is <b>desktop application version of ChatGPT</b>
   * text streaming (enable by default, you can disable it)
   * AI remembers past conversation
-* support GPT-4
-* you can save the conversation history with sqlite database
+* conversation management
+  * add & delete conversations
+  * save conversations
+  * rename conversation
+  * everything above is saved in an SQLite database file named conv.db.
+* support GPT-4 and every other models below GPT3
 * support prompt generator
 * support image generation with DALL-E
-* you can test any models, including gpt3.5
 * you can run this in background application
+  * notification will pop up when response is generated
 * you can make window stack on top or control its transparency
 
 ## Requirements
