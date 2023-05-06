@@ -159,8 +159,8 @@ class FindPathWidget(QWidget):
         return self.__directory
 
 class CustomizeDialog(QDialog):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.__initVal()
         self.__initUi()
 
@@ -170,7 +170,7 @@ class CustomizeDialog(QDialog):
     def __initUi(self):
         self.setWindowTitle('Customize (working)')
         self.setWindowIcon(QIcon('ico/openai.svg'))
-        self.setWindowFlags(Qt.WindowCloseButtonHint)
+        self.setWindowFlags(Qt.Window | Qt.WindowCloseButtonHint)
 
         homePageGraphicsView = SingleImageGraphicsView()
 

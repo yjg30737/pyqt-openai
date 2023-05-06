@@ -439,7 +439,7 @@ class OpenAIChatBot(QMainWindow):
                         conv = json.loads(line.strip())
                         convs.append(conv)
             # TODO refactoring
-            if info_dict['engine'] in ['gpt-3.5-turbo', 'gpt-3.5-turbo-0301']:
+            if info_dict['engine'] in ['gpt-3.5-turbo', 'gpt-3.5-turbo-0301', 'gpt-4']:
                 # "assistant" below is for making the AI remember the last question
                 openai_arg = {
                     'model': info_dict['engine'],
@@ -497,7 +497,7 @@ class OpenAIChatBot(QMainWindow):
         self.show()
 
     def __executeCustomizeDialog(self):
-        dialog = CustomizeDialog()
+        dialog = CustomizeDialog(self)
         reply = dialog.exec()
         if reply == QDialog.Accepted:
             pass
@@ -507,7 +507,7 @@ class OpenAIChatBot(QMainWindow):
 
     def closeEvent(self, e):
         message = 'The window has been closed. Would you like to continue running this app in the background?'
-        closeMessageBox = QMessageBox()
+        closeMessageBox = QMessageBox(self)
         closeMessageBox.setWindowTitle('Wait!')
         closeMessageBox.setText(message)
         closeMessageBox.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
