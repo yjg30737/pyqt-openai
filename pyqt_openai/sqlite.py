@@ -98,7 +98,7 @@ class SqliteDatabase:
             self.__c.execute(f'''CREATE TABLE {self.__info_tb_nm}
                                      (id INTEGER PRIMARY KEY,
                                       engine VARCHAR(50) DEFAULT '{self.__chat_default_value['engine']}',
-                                      engine TEXT DEFAULT '{self.__chat_default_value['system']}',
+                                      system TEXT DEFAULT '{self.__chat_default_value['system']}',
                                       temperature INTEGER DEFAULT {self.__chat_default_value['temperature']},
                                       max_tokens INTEGER DEFAULT {self.__chat_default_value['max_tokens']},
                                       top_p INTEGER DEFAULT {self.__chat_default_value['top_p']},
