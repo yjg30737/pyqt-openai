@@ -1,6 +1,8 @@
-from PyQt5.QtWidgets import QHeaderView, QTableWidgetItem, QAbstractItemView
-from qtpy.QtWidgets import QWidget, QTableWidget, QVBoxLayout
-from qtpy.QtCore import Signal
+from qtpy.QtWidgets import QWidget, QDialog, QTableWidget, QVBoxLayout, QHBoxLayout, QHeaderView, QTableWidgetItem, QAbstractItemView
+from qtpy.QtCore import Signal, Qt
+
+from pyqt_openai.inputDialog import InputDialog
+from pyqt_openai.svgButton import SvgButton
 
 
 class TemplatePage(QWidget):
@@ -11,6 +13,24 @@ class TemplatePage(QWidget):
         self.__initUi()
 
     def __initUi(self):
+        self.__addBtn = SvgButton()
+        self.__delBtn = SvgButton()
+
+        self.__addBtn.setIcon('ico/add.svg')
+        self.__delBtn.setIcon('ico/delete.svg')
+
+        self.__addBtn.clicked.connect(self.__add)
+        self.__delBtn.clicked.connect(self.__delete)
+
+        lay = QHBoxLayout()
+        lay.addWidget(self.__addBtn)
+        lay.addWidget(self.__delBtn)
+        lay.setAlignment(Qt.AlignRight)
+        lay.setContentsMargins(0, 0, 0, 0)
+
+        topWidget = QWidget()
+        topWidget.setLayout(lay)
+
         # this template has to be connected with db
         # QSqlTableModel
         self.__templateTable = QTableWidget()
@@ -43,6 +63,7 @@ class TemplatePage(QWidget):
             self.__templateTable.setItem(i, 1, QTableWidgetItem('topic or skill'))
 
         lay = QVBoxLayout()
+        lay.addWidget(topWidget)
         lay.addWidget(self.__templateTable)
 
         self.setLayout(lay)
@@ -51,3 +72,21 @@ class TemplatePage(QWidget):
         content = self.__templateTable.item(new_item.row(), 0).text() if new_item.column() == 1 else new_item.text()
         variable = self.__templateTable.item(new_item.row(), 1).text()
         self.updated.emit(content, variable)
+
+    def __add(self):
+        dialog = InputDialog('Content', '')
+        reply = dialog.exec()
+        if reply == QDialog.Accepted:
+            text = dialog.getText()
+            self.__templateTable.setRowCount(self.__templateTable.rowCount()+1)
+            item1 = QTableWidgetItem(text)
+            item1.setTextAlignment(Qt.AlignCenter)
+            self.__templateTable.setItem(self.__templateTable.rowCount()-1, 0, item1)
+
+            item2 = QTableWidgetItem('')
+            item2.setTextAlignment(Qt.AlignCenter)
+            self.__templateTable.setItem(self.__templateTable.rowCount()-1, 1, item2)
+
+    def __delete(self):
+        for i in sorted(set([i.row() for i in self.__templateTable.selectedIndexes()]), reverse=True):
+            self.__templateTable.removeRow(i)
