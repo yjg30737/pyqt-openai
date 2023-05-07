@@ -41,7 +41,8 @@ I recommend to install sqlite management software. It's not necessary to run thi
   * rename conversation
   * everything above is saved in an SQLite database file named conv.db.
 * support GPT-4 and every other models below GPT3
-* support prompt generator
+* support prompt generator (manageable)
+* support beginning and ending part of the prompt
 * support image generation with DALL-E
 * you can run this in background application
   * notification will pop up when response is generated
@@ -53,14 +54,14 @@ I recommend to install sqlite management software. It's not necessary to run thi
 * openai
 
 ## Preview
-This is using GPT-3.5 turbo model by default.
+This is using GPT-3.5 turbo model by default. 
 
 ### Homepage
-![image](https://user-images.githubusercontent.com/55078043/236583808-f43403f7-2b8f-483b-9271-b78ab8a1eb73.png)
+![image](https://user-images.githubusercontent.com/55078043/236657804-bf299150-961a-4f80-9820-b45401f8bb7c.png)
 <b>You have to write your openai api key inside the red box.</b> see [How to play](#how-to-play)
 
 ### Overview
-![image](https://user-images.githubusercontent.com/55078043/236584269-99c76ea5-4cec-44f7-8283-e502a182264d.png)
+![image](https://user-images.githubusercontent.com/55078043/236657785-69825ff8-8cce-4759-8468-4630010edd5b.png)
 
 ### Conversation preview
 #### Preview Image
@@ -69,7 +70,10 @@ This is using GPT-3.5 turbo model by default.
 https://user-images.githubusercontent.com/55078043/236583883-8e9732a3-1223-4b28-85f1-f60d8b2d6ced.mp4
 
 ### Prompt Generator
+#### Preview 1 (v0.1.22)
 https://user-images.githubusercontent.com/55078043/236584481-b7bb5246-6bf4-4343-ba6c-a343bb11cda7.mp4
+#### Preview 2 (v0.1.3)
+https://user-images.githubusercontent.com/55078043/236658468-9947a417-99b3-4e44-8849-a676308a0239.mp4
 
 So sorry to weak preview, but i have a lot of idea about this prompt generator! Just wait. 
 

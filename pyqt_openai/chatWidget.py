@@ -5,7 +5,9 @@ import requests
 
 from qtpy.QtCore import Qt, Signal
 from qtpy.QtGui import QPixmap, QFont
-from qtpy.QtWidgets import QScrollArea, QVBoxLayout, QWidget, QLabel, QHBoxLayout, QTextEdit, QStackedWidget
+from qtpy.QtWidgets import QScrollArea, QVBoxLayout, QToolButton, QMenu, QAction, QWidget, QLabel, QHBoxLayout, QTextEdit, QStackedWidget
+
+from pyqt_openai.svgToolButton import SvgToolButton
 
 
 class ChatBrowser(QScrollArea):
@@ -102,8 +104,7 @@ class ChatBrowser(QScrollArea):
                 if lay.itemAt(i) and lay.itemAt(i).widget():
                     widget = lay.itemAt(i).widget()
                     if isinstance(widget, QLabel):
-                        prefix = 'User' if i % 2 == 0 else 'AI'
-                        all_text_lst.append(f'{prefix}: {widget.text()}')
+                        all_text_lst.append(widget.text())
 
         return '\n'.join(all_text_lst)
 
@@ -178,26 +179,136 @@ class TextEditPrompt(QTextEdit):
             return super().keyPressEvent(e)
 
 
+class TextEditPropmtGroup(QWidget):
+    textChanged = Signal()
+
+    def __init__(self):
+        super().__init__()
+        self.__initUi()
+
+    def __initUi(self):
+        self.__beginningTextEdit = TextEditPrompt()
+        self.__beginningTextEdit.textChanged.connect(self.textChanged)
+        self.__beginningTextEdit.setPlaceholderText('Beginning')
+
+        self.__textEdit = TextEditPrompt()
+        self.__textEdit.textChanged.connect(self.textChanged)
+        self.__textEdit.setPlaceholderText('Write some text...')
+
+        self.__endingTextEdit = TextEditPrompt()
+        self.__endingTextEdit.textChanged.connect(self.textChanged)
+        self.__endingTextEdit.setPlaceholderText('Ending')
+
+        self.__beginningTextEdit.setVisible(False)
+        self.__endingTextEdit.setVisible(False)
+
+        self.__textGroup = [self.__beginningTextEdit, self.__textEdit, self.__endingTextEdit]
+
+        lay = QVBoxLayout()
+        for w in self.__textGroup:
+            lay.addWidget(w)
+        lay.setContentsMargins(0, 0, 0, 0)
+        lay.setSpacing(0)
+
+        self.setLayout(lay)
+
+    def adjustHeight(self) -> int:
+        """
+        adjust overall height of text edit group based on their contents and return adjusted height
+        :return:
+        """
+        groupHeight = 0
+        for w in self.__textGroup:
+            document = w.document()
+            height = document.size().height()
+            overallHeight = int(height+document.documentMargin())
+            w.setMaximumHeight(overallHeight)
+            groupHeight += overallHeight
+        return groupHeight
+
+    def getGroup(self):
+        return self.__textGroup
+
+    def getContent(self):
+        b = self.__textGroup[0].toPlainText().strip()
+        m = self.__textGroup[1].toPlainText().strip()
+        e = self.__textGroup[2].toPlainText().strip()
+
+        content = ''
+        if b:
+            content = b + '\n'
+        content += m
+        if e:
+            content += '\n' + e
+
+        return content
+
 class Prompt(QWidget):
     def __init__(self):
         super().__init__()
         self.__initUi()
 
     def __initUi(self):
-        self.__textEdit = TextEditPrompt()
-        self.__textEdit.textChanged.connect(self.updateHeight)
+        self.__textEditGroup = TextEditPropmtGroup()
+        self.__textEditGroup.textChanged.connect(self.updateHeight)
+
+        settingsBtn = SvgToolButton()
+        settingsBtn.setIcon('ico/vertical_three_dots.svg')
+        settingsBtn.setToolTip('Prompt Settings')
+
+        # Create the menu
+        menu = QMenu(self)
+
+        # Create the actions
+        beginningAction = QAction("Show Beginning", self)
+        beginningAction.setShortcut('Ctrl+B')
+        beginningAction.setCheckable(True)
+        beginningAction.toggled.connect(self.__showBeginning)
+
+        endingAction = QAction("Show Ending", self)
+        endingAction.setShortcut('Ctrl+E')
+        endingAction.setCheckable(True)
+        endingAction.toggled.connect(self.__showEnding)
+
+        # Add the actions to the menu
+        menu.addAction(beginningAction)
+        menu.addAction(endingAction)
+
+        # Connect the button to the menu
+        settingsBtn.setMenu(menu)
+        settingsBtn.setPopupMode(QToolButton.InstantPopup)
+
+        lay = QVBoxLayout()
+        lay.addWidget(settingsBtn)
+        lay.setContentsMargins(1, 1, 1, 1)
+        lay.setAlignment(Qt.AlignBottom)
+
+        rightWidget = QWidget()
+        rightWidget.setLayout(lay)
+
         lay = QHBoxLayout()
-        lay.addWidget(self.__textEdit)
+        lay.addWidget(self.__textEditGroup)
+        lay.addWidget(rightWidget)
         lay.setContentsMargins(0, 0, 0, 0)
+        lay.setSpacing(0)
         self.setLayout(lay)
         self.updateHeight()
 
     def updateHeight(self):
-        document = self.__textEdit.document()
-        height = document.size().height()
-        self.setMaximumHeight(int(height+document.documentMargin()))
+        overallHeight = self.__textEditGroup.adjustHeight()
+        self.setMaximumHeight(overallHeight)
 
     def getTextEdit(self):
-        return self.__textEdit
+        return self.__textEditGroup.getGroup()[1]
+
+    def getContent(self):
+        return self.__textEditGroup.getContent()
+
+    def __showBeginning(self, f):
+        self.__textEditGroup.getGroup()[0].setVisible(f)
+
+    def __showEnding(self, f):
+        self.__textEditGroup.getGroup()[-1].setVisible(f)
+
 
 
