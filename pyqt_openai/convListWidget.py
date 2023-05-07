@@ -73,7 +73,7 @@ class ConvItemWidget(QWidget):
         return super().leaveEvent(e)
 
     def __btnClicked(self):
-        dialog = InputDialog('Rename', self.__topicLbl.text())
+        dialog = InputDialog('Rename', self.__topicLbl.text(), self)
         reply = dialog.exec()
         if reply == QDialog.Accepted:
             text = dialog.getText()

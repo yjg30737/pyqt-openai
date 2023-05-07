@@ -1,15 +1,17 @@
 from qtpy.QtWidgets import QDialog, QVBoxLayout, QLineEdit, QFrame, QPushButton, QHBoxLayout, QWidget
 from qtpy.QtCore import Qt
+from qtpy.QtGui import QIcon
 
 
 class InputDialog(QDialog):
-    def __init__(self, title, text):
-        super().__init__()
+    def __init__(self, title, text, parent=None):
+        super().__init__(parent)
         self.__initUi(title, text)
 
     def __initUi(self, title, text):
         self.setWindowTitle(title)
-        self.setWindowFlags(Qt.WindowCloseButtonHint)
+        self.setWindowIcon(QIcon('ico/openai.svg'))
+        self.setWindowFlags(Qt.Window | Qt.WindowCloseButtonHint)
 
         self.__newName = QLineEdit(text)
         self.__newName.textChanged.connect(self.__setAccept)
