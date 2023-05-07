@@ -104,8 +104,7 @@ class ChatBrowser(QScrollArea):
                 if lay.itemAt(i) and lay.itemAt(i).widget():
                     widget = lay.itemAt(i).widget()
                     if isinstance(widget, QLabel):
-                        prefix = 'User' if i % 2 == 0 else 'AI'
-                        all_text_lst.append(f'{prefix}: {widget.text()}')
+                        all_text_lst.append(widget.text())
 
         return '\n'.join(all_text_lst)
 
@@ -262,9 +261,12 @@ class Prompt(QWidget):
 
         # Create the actions
         beginningAction = QAction("Show Beginning", self)
+        beginningAction.setShortcut('Ctrl+B')
         beginningAction.setCheckable(True)
         beginningAction.toggled.connect(self.__showBeginning)
+
         endingAction = QAction("Show Ending", self)
+        endingAction.setShortcut('Ctrl+E')
         endingAction.setCheckable(True)
         endingAction.toggled.connect(self.__showEnding)
 
