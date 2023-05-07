@@ -41,7 +41,8 @@ I recommend to install sqlite management software. It's not necessary to run thi
   * rename conversation
   * everything above is saved in an SQLite database file named conv.db.
 * support GPT-4 and every other models below GPT3
-* support prompt generator
+* support prompt generator (manageable)
+* support beginning and ending part of the prompt
 * support image generation with DALL-E
 * you can run this in background application
   * notification will pop up when response is generated
@@ -69,7 +70,10 @@ This is using GPT-3.5 turbo model by default.
 https://user-images.githubusercontent.com/55078043/236583883-8e9732a3-1223-4b28-85f1-f60d8b2d6ced.mp4
 
 ### Prompt Generator
+#### Preview 1 (v0.1.22)
 https://user-images.githubusercontent.com/55078043/236584481-b7bb5246-6bf4-4343-ba6c-a343bb11cda7.mp4
+#### Preview 2 (v0.1.3)
+https://user-images.githubusercontent.com/55078043/236658468-9947a417-99b3-4e44-8849-a676308a0239.mp4
 
 So sorry to weak preview, but i have a lot of idea about this prompt generator! Just wait. 
 
