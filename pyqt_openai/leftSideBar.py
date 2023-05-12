@@ -31,7 +31,7 @@ class LeftSideBar(QWidget):
 
         self.__addBtn.setIcon('ico/add.svg')
         self.__delBtn.setIcon('ico/delete.svg')
-        self.__saveBtn.setIcon('ico/download.svg')
+        self.__saveBtn.setIcon('ico/save.svg')
 
         self.__addBtn.setToolTip('Add')
         self.__delBtn.setToolTip('Delete')
