@@ -1,41 +1,27 @@
-import inspect
-import json, webbrowser
+import json
+import openai
+import os
+import webbrowser
 
-import openai, requests, os
+import requests
+from PyQt5.QtCore import Qt, QSettings, QEvent
+from PyQt5.QtGui import QFont, QColor, QCursor
+from PyQt5.QtWidgets import QHBoxLayout, QLabel, QWidget, QPushButton, QSizePolicy, QVBoxLayout, QFrame, QSplitter, \
+    QListWidgetItem, QFileDialog, QLineEdit
 
-from chatWidget import Prompt, ChatBrowser
-
-from notifier import NotifierWidget
-
-from qtpy.QtCore import Qt, QCoreApplication, QThread, QSettings, QEvent, Signal
-from qtpy.QtGui import QGuiApplication, QFont, QIcon, QColor, QCursor
-from qtpy.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QWidget, QSplitter, QDialog, QSpinBox, \
-    QFileDialog, QToolBar, QWidgetAction, QHBoxLayout, QAction, QMenu, \
-    QSystemTrayIcon, QMessageBox, QSizePolicy, QLabel, QListWidgetItem, QLineEdit, QPushButton
-
-from pyqt_openai.apiData import getModelEndpoint
-
-from pyqt_openai.openAiThread import OpenAIThread
-from pyqt_openai.clickableTooltip import ClickableTooltip
-from pyqt_openai.customizeDialog import CustomizeDialog
-from pyqt_openai.leftSideBar import LeftSideBar
 from pyqt_openai.apiData import ModelData
+from pyqt_openai.chatWidget import Prompt, ChatBrowser
+from pyqt_openai.clickableTooltip import ClickableTooltip
+from pyqt_openai.leftSideBar import LeftSideBar
+from pyqt_openai.notifier import NotifierWidget
+from pyqt_openai.openAiThread import OpenAIThread
 from pyqt_openai.prompt.promptGeneratorWidget import PromptGeneratorWidget
 from pyqt_openai.right_sidebar.aiPlaygroundWidget import AIPlaygroundWidget
-from pyqt_openai.svgButton import SvgButton
 from pyqt_openai.sqlite import SqliteDatabase
-
-QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
-QCoreApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)  # HighDPI support
-# qt version should be above 5.14
-# todo check the qt version with qtpy
-if os.environ['QT_API'] == 'pyqt5' or os.environ['QT_API'] != 'pyside6':
-    QGuiApplication.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
-
-QApplication.setFont(QFont('Arial', 12))
+from pyqt_openai.svgButton import SvgButton
 
 
-class OpenAIChatBot(QMainWindow):
+class OpenAIChatBotWidget(QWidget):
     def __init__(self):
         super().__init__()
         self.__initVal()
@@ -64,7 +50,8 @@ class OpenAIChatBot(QMainWindow):
 
         # "remember past conv" feature
         if self.__settings_struct.contains('REMEMBER_PAST_CONVERSATION'):
-            self.__remember_past_conv = True if self.__settings_struct.value('REMEMBER_PAST_CONVERSATION') == '1' else False
+            self.__remember_past_conv = True if self.__settings_struct.value(
+                'REMEMBER_PAST_CONVERSATION') == '1' else False
         else:
             self.__settings_struct.setValue('REMEMBER_PAST_CONVERSATION', '0')
 
@@ -83,13 +70,74 @@ class OpenAIChatBot(QMainWindow):
         os.remove('conv_history.json')
 
     def __initUi(self):
-        self.setWindowTitle('PyQt OpenAI Chatbot')
-        self.setWindowIcon(QIcon('ico/openai.svg'))
-
         self.__leftSideBarWidget = LeftSideBar()
         self.__browser = ChatBrowser()
         self.__prompt = Prompt()
         self.__lineEdit = self.__prompt.getTextEdit()
+        self.__aiPlaygroundWidget = AIPlaygroundWidget(self.__db, self.__ini_etc_dict, self.__modelData)
+        self.__promptGeneratorWidget = PromptGeneratorWidget()
+
+        self.__sideBarBtn = SvgButton()
+        self.__sideBarBtn.setIcon('ico/sidebar.svg')
+        self.__sideBarBtn.setCheckable(True)
+        self.__sideBarBtn.setToolTip('Chat List')
+        self.__sideBarBtn.setChecked(True)
+        self.__sideBarBtn.toggled.connect(self.__leftSideBarWidget.setVisible)
+
+        self.__settingBtn = SvgButton()
+        self.__settingBtn.setIcon('ico/setting.svg')
+        self.__settingBtn.setToolTip('Settings')
+        self.__settingBtn.setCheckable(True)
+        self.__settingBtn.setChecked(True)
+        self.__settingBtn.setChecked(False)
+        self.__settingBtn.toggled.connect(self.__aiPlaygroundWidget.setVisible)
+
+        self.__promptBtn = SvgButton()
+        self.__promptBtn.setIcon('ico/prompt.svg')
+        self.__promptBtn.setToolTip('Prompt Generator')
+        self.__promptBtn.setCheckable(True)
+        self.__promptBtn.setChecked(True)
+        self.__promptBtn.setChecked(False)
+        self.__promptBtn.toggled.connect(self.__promptGeneratorWidget.setVisible)
+
+        self.__apiCheckPreviewLbl = QLabel()
+        self.__apiCheckPreviewLbl.setFont(QFont('Arial', 10))
+
+        apiLbl = QLabel('API')
+
+        self.__apiLineEdit = QLineEdit()
+        self.__apiLineEdit.setPlaceholderText('Write your API Key...')
+        self.__apiLineEdit.returnPressed.connect(self.__setApi)
+        self.__apiLineEdit.setEchoMode(QLineEdit.Password)
+
+        apiBtn = QPushButton('Use')
+        apiBtn.clicked.connect(self.__setApi)
+
+        lay = QHBoxLayout()
+        lay.addWidget(apiLbl)
+        lay.addWidget(self.__apiLineEdit)
+        lay.addWidget(apiBtn)
+        lay.addWidget(self.__apiCheckPreviewLbl)
+        lay.setContentsMargins(0, 0, 0, 0)
+
+        apiWidget = QWidget()
+        apiWidget.setLayout(lay)
+
+        lay = QHBoxLayout()
+        lay.addWidget(self.__sideBarBtn)
+        lay.addWidget(self.__settingBtn)
+        lay.addWidget(self.__promptBtn)
+        lay.addWidget(apiWidget)
+        lay.setContentsMargins(2, 2, 2, 2)
+        lay.setAlignment(Qt.AlignLeft)
+
+        self.__menuWidget = QWidget()
+        self.__menuWidget.setLayout(lay)
+        self.__menuWidget.setMaximumHeight(self.__menuWidget.sizeHint().height())
+
+        sep = QFrame()
+        sep.setFrameShape(QFrame.HLine)
+        sep.setFrameShadow(QFrame.Sunken)
 
         self.__leftSideBarWidget.initHistory(self.__db)
         self.__leftSideBarWidget.added.connect(self.__addConv)
@@ -116,12 +164,9 @@ class OpenAIChatBot(QMainWindow):
         lay.addWidget(self.__queryWidget)
         lay.setSpacing(0)
         lay.setContentsMargins(0, 0, 0, 0)
+
         chatWidget = QWidget()
         chatWidget.setLayout(lay)
-
-        self.__aiPlaygroundWidget = AIPlaygroundWidget(self.__db, self.__ini_etc_dict, self.__modelData)
-
-        self.__promptGeneratorWidget = PromptGeneratorWidget()
 
         self.__rightSideBar = QSplitter()
         self.__rightSideBar.setOrientation(Qt.Vertical)
@@ -131,31 +176,14 @@ class OpenAIChatBot(QMainWindow):
         self.__rightSideBar.setChildrenCollapsible(False)
         self.__rightSideBar.setHandleWidth(2)
         self.__rightSideBar.setStyleSheet(
-        '''
-        QSplitter::handle:vertical
-        {
-            background: #CCC;
-            height: 1px;
-        }
-        ''')
+            '''
+            QSplitter::handle:vertical
+            {
+                background: #CCC;
+                height: 1px;
+            }
+            ''')
 
-        # background app
-        menu = QMenu()
-
-        action = QAction("Quit", self)
-        action.setIcon(QIcon('ico/close.svg'))
-
-        action.triggered.connect(app.quit)
-
-        menu.addAction(action)
-
-        tray_icon = QSystemTrayIcon(app)
-        tray_icon.setIcon(QIcon('ico/openai.svg'))
-        tray_icon.activated.connect(self.__activated)
-
-        tray_icon.setContextMenu(menu)
-
-        tray_icon.show()
 
         mainWidget = QSplitter()
         mainWidget.addWidget(self.__leftSideBarWidget)
@@ -173,9 +201,13 @@ class OpenAIChatBot(QMainWindow):
         }
         ''')
 
-        # set action and toolbar
-        self.__setActions()
-        self.__setToolBar()
+        lay = QVBoxLayout()
+        lay.addWidget(self.__menuWidget)
+        lay.addWidget(sep)
+        lay.addWidget(mainWidget)
+        lay.setContentsMargins(0, 0, 0, 0)
+        lay.setSpacing(0)
+        self.setLayout(lay)
 
         # load ini file
         self.__loadApiKeyInIni()
@@ -188,114 +220,7 @@ class OpenAIChatBot(QMainWindow):
             self.__lineEdit.setEnabled(False)
             self.__apiCheckPreviewLbl.hide()
 
-        self.setCentralWidget(mainWidget)
-        self.resize(1024, 768)
-
         self.__lineEdit.setFocus()
-
-    def __setActions(self):
-        self.__stackAction = QWidgetAction(self)
-        self.__stackBtn = SvgButton()
-        self.__stackBtn.setIcon('ico/stackontop.svg')
-        self.__stackBtn.setCheckable(True)
-        self.__stackBtn.toggled.connect(self.__stackToggle)
-        self.__stackAction.setDefaultWidget(self.__stackBtn)
-        self.__stackBtn.setToolTip('Always On Top')
-
-        self.__leftSideBarAction = QWidgetAction(self)
-        self.__sideBarBtn = SvgButton()
-        self.__sideBarBtn.setIcon('ico/sidebar.svg')
-        self.__sideBarBtn.setCheckable(True)
-        self.__sideBarBtn.toggled.connect(self.__leftSideBarWidget.setVisible)
-        self.__leftSideBarAction.setDefaultWidget(self.__sideBarBtn)
-        self.__sideBarBtn.setToolTip('Chat List')
-        self.__sideBarBtn.setChecked(True)
-
-        self.__settingAction = QWidgetAction(self)
-        self.__settingBtn = SvgButton()
-        self.__settingBtn.setIcon('ico/setting.svg')
-        self.__settingBtn.toggled.connect(self.__aiPlaygroundWidget.setVisible)
-        self.__settingAction.setDefaultWidget(self.__settingBtn)
-        self.__settingBtn.setToolTip('Settings')
-        self.__settingBtn.setCheckable(True)
-        self.__settingBtn.setChecked(True)
-        self.__settingBtn.setChecked(False)
-
-        self.__customizeAction = QWidgetAction(self)
-        self.__customizeBtn = SvgButton()
-        self.__customizeBtn.setIcon('ico/customize.svg')
-        self.__customizeBtn.clicked.connect(self.__executeCustomizeDialog)
-        self.__customizeAction.setDefaultWidget(self.__customizeBtn)
-        self.__customizeBtn.setToolTip('Customize (working)')
-
-        self.__promptAction = QWidgetAction(self)
-        self.__promptBtn = SvgButton()
-        self.__promptBtn.setIcon('ico/prompt.svg')
-        self.__promptAction.setDefaultWidget(self.__promptBtn)
-        self.__promptBtn.toggled.connect(self.__promptGeneratorWidget.setVisible)
-        self.__promptBtn.setToolTip('Prompt Generator')
-        self.__promptBtn.setCheckable(True)
-        self.__promptBtn.setChecked(True)
-        self.__promptBtn.setChecked(False)
-
-        self.__transparentAction = QWidgetAction(self)
-        self.__transparentSpinBox = QSpinBox()
-        self.__transparentSpinBox.setRange(0, 100)
-        self.__transparentSpinBox.setValue(100)
-        self.__transparentSpinBox.valueChanged.connect(self.__setTransparency)
-        self.__transparentSpinBox.setToolTip('Set Transparency of Window')
-
-        lay = QHBoxLayout()
-        lay.addWidget(QLabel('Window Transparency'))
-        lay.addWidget(self.__transparentSpinBox)
-
-        transparencyActionWidget = QWidget()
-        transparencyActionWidget.setLayout(lay)
-        self.__transparentAction.setDefaultWidget(transparencyActionWidget)
-
-        self.__apiCheckPreviewLbl = QLabel('API key is valid')
-        self.__apiCheckPreviewLbl.setFont(QFont('Arial', 10))
-
-        self.__apiAction = QWidgetAction(self)
-        apiLbl = QLabel('API')
-
-        self.__apiLineEdit = QLineEdit()
-        self.__apiLineEdit.setPlaceholderText('Write your API Key...')
-        self.__apiLineEdit.returnPressed.connect(self.__setApi)
-        self.__apiLineEdit.setEchoMode(QLineEdit.Password)
-
-        apiBtn = QPushButton('Use')
-        apiBtn.clicked.connect(self.__setApi)
-
-        lay = QHBoxLayout()
-        lay.addWidget(apiLbl)
-        lay.addWidget(self.__apiLineEdit)
-        lay.addWidget(apiBtn)
-        lay.addWidget(self.__apiCheckPreviewLbl)
-
-        apiWidget = QWidget()
-        apiWidget.setLayout(lay)
-        self.__apiAction.setDefaultWidget(apiWidget)
-
-    def __activated(self, reason):
-        if reason == 3:
-            self.show()
-
-    def __setToolBar(self):
-        toolbar = QToolBar()
-        lay = QHBoxLayout()
-        toolbar.addAction(self.__stackAction)
-        toolbar.addAction(self.__leftSideBarAction)
-        toolbar.addAction(self.__settingAction)
-        toolbar.addAction(self.__promptAction)
-        toolbar.addAction(self.__customizeAction)
-        toolbar.addAction(self.__transparentAction)
-        toolbar.addAction(self.__apiAction)
-        toolbar.setLayout(lay)
-        toolbar.setMovable(False)
-        self.addToolBar(toolbar)
-        # QToolbar's layout can't be set spacing with lay.setSpacing so i've just did this instead
-        toolbar.setStyleSheet('QToolBar { spacing: 2px; }')
 
     def eventFilter(self, source, event):
         if event.type() == QEvent.ToolTip and source.toolTip():
@@ -304,6 +229,9 @@ class OpenAIChatBot(QMainWindow):
             toolTip.linkActivated.connect(self.toolTipLinkClicked)
             return True
         return super().eventFilter(source, event)
+
+    def showAiToolBar(self, f):
+        self.__menuWidget.setVisible(f)
 
     def toolTipLinkClicked(self, url):
         webbrowser.open(url)
@@ -415,36 +343,6 @@ class OpenAIChatBot(QMainWindow):
             self.__notifierWidget.show()
             self.__notifierWidget.doubleClicked.connect(self.show)
 
-    def __stackToggle(self, f):
-        if f:
-            self.setWindowFlags(self.windowFlags() | Qt.WindowStaysOnTopHint)
-        else:
-            self.setWindowFlags(self.windowFlags() & ~Qt.WindowStaysOnTopHint)
-        self.show()
-
-    def __executeCustomizeDialog(self):
-        dialog = CustomizeDialog(self)
-        reply = dialog.exec()
-        if reply == QDialog.Accepted:
-            pass
-
-    def __setTransparency(self, v):
-        self.setWindowOpacity(v / 100)
-
-    def closeEvent(self, e):
-        message = 'The window has been closed. Would you like to continue running this app in the background?'
-        closeMessageBox = QMessageBox(self)
-        closeMessageBox.setWindowTitle('Wait!')
-        closeMessageBox.setText(message)
-        closeMessageBox.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
-        reply = closeMessageBox.exec()
-        # Yes
-        if reply == 16384:
-            e.accept()
-        # No
-        elif reply == 65536:
-            app.quit()
-        return super().closeEvent(e)
 
     def __changeConv(self, item: QListWidgetItem):
         # If a 'change' event occurs but there are no items, it should mean that list is empty
@@ -455,6 +353,7 @@ class OpenAIChatBot(QMainWindow):
             self.__browser.replaceConv(id, conv)
         else:
             self.__browser.resetChatWidget(0)
+
 
     def __addConv(self):
         self.__db.insertConv('New Chat')
@@ -467,9 +366,11 @@ class OpenAIChatBot(QMainWindow):
         if title:
             self.__db.updateConv(id, title)
 
+
     def __deleteConv(self, id_lst):
         for id in id_lst:
             self.__db.deleteConv(id)
+
 
     def __export(self, ids):
         filename = QFileDialog.getSaveFileName(self, 'Save', os.path.expanduser('~'), 'SQLite DB file (*.db)')
@@ -477,16 +378,7 @@ class OpenAIChatBot(QMainWindow):
             filename = filename[0]
             self.__db.export(ids, filename)
 
+
     def __updateConvUnit(self, id, user_f, conv_unit=None):
         if conv_unit:
             self.__db.insertConvUnit(id, user_f, conv_unit)
-
-
-if __name__ == "__main__":
-    import sys
-
-    app = QApplication(sys.argv)
-    app.setQuitOnLastWindowClosed(False)
-    w = OpenAIChatBot()
-    w.show()
-    sys.exit(app.exec())

@@ -5,8 +5,8 @@ from qtpy.QtWidgets import QGraphicsColorizeEffect, QWidget, qApp, QPushButton
 
 
 class SvgButton(QPushButton):
-    def __init__(self, base_widget: QWidget = None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, base_widget: QWidget = None, parent=None):
+        super().__init__(parent)
         self.__baseWidget = base_widget
         self.__initVal()
         self.__styleInit()

@@ -15,7 +15,7 @@ setup(
     license='MIT',
     packages=find_packages(),
     package_data={'pyqt_openai.ico': ['close.svg', 'openai.svg', 'help.svg', 'customize.svg', 'user.svg',
-                                      'sidebar.svg', 'prompt.svg', 'download.svg', 'stackontop.svg',
+                                      'sidebar.svg', 'prompt.svg', 'save.svg', 'stackontop.svg',
                                       'add.svg', 'delete.svg', 'setting.svg', 'search.svg',
                                       'vertical_three_dots.svg']},
     description='PyQt OpenAI example',
