@@ -66,6 +66,9 @@ class ImageGeneratingToolWidget(QWidget):
     def showAiToolBar(self, f):
         self.__menuWidget.setVisible(f)
 
+    def setAIEnabled(self, f):
+        self.__leftSideBarWidget.setEnabled(f)
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

@@ -1,13 +1,11 @@
 import json
-import openai
 import os
 import webbrowser
 
-import requests
 from qtpy.QtCore import Qt, QSettings, QEvent
-from qtpy.QtGui import QFont, QColor, QCursor
-from qtpy.QtWidgets import QHBoxLayout, QLabel, QWidget, QPushButton, QSizePolicy, QVBoxLayout, QFrame, QSplitter, \
-    QListWidgetItem, QFileDialog, QLineEdit
+from qtpy.QtGui import QCursor
+from qtpy.QtWidgets import QHBoxLayout, QWidget, QSizePolicy, QVBoxLayout, QFrame, QSplitter, \
+    QListWidgetItem, QFileDialog
 
 from pyqt_openai.apiData import ModelData
 from pyqt_openai.chatWidget import Prompt, ChatBrowser
@@ -100,34 +98,10 @@ class OpenAIChatBotWidget(QWidget):
         self.__promptBtn.setChecked(False)
         self.__promptBtn.toggled.connect(self.__promptGeneratorWidget.setVisible)
 
-        self.__apiCheckPreviewLbl = QLabel()
-        self.__apiCheckPreviewLbl.setFont(QFont('Arial', 10))
-
-        apiLbl = QLabel('API')
-
-        self.__apiLineEdit = QLineEdit()
-        self.__apiLineEdit.setPlaceholderText('Write your API Key...')
-        self.__apiLineEdit.returnPressed.connect(self.__setApi)
-        self.__apiLineEdit.setEchoMode(QLineEdit.Password)
-
-        apiBtn = QPushButton('Use')
-        apiBtn.clicked.connect(self.__setApi)
-
-        lay = QHBoxLayout()
-        lay.addWidget(apiLbl)
-        lay.addWidget(self.__apiLineEdit)
-        lay.addWidget(apiBtn)
-        lay.addWidget(self.__apiCheckPreviewLbl)
-        lay.setContentsMargins(0, 0, 0, 0)
-
-        apiWidget = QWidget()
-        apiWidget.setLayout(lay)
-
         lay = QHBoxLayout()
         lay.addWidget(self.__sideBarBtn)
         lay.addWidget(self.__settingBtn)
         lay.addWidget(self.__promptBtn)
-        lay.addWidget(apiWidget)
         lay.setContentsMargins(2, 2, 2, 2)
         lay.setAlignment(Qt.AlignLeft)
 
@@ -209,17 +183,6 @@ class OpenAIChatBotWidget(QWidget):
         lay.setSpacing(0)
         self.setLayout(lay)
 
-        # load ini file
-        self.__loadApiKeyInIni()
-
-        # check if loaded API_KEY from ini file is not empty
-        if openai.api_key:
-            self.__setApi()
-        # if it is empty
-        else:
-            self.__lineEdit.setEnabled(False)
-            self.__apiCheckPreviewLbl.hide()
-
         self.__lineEdit.setFocus()
 
     def eventFilter(self, source, event):
@@ -230,50 +193,17 @@ class OpenAIChatBotWidget(QWidget):
             return True
         return super().eventFilter(source, event)
 
+    def setModelInfoByModel(self, f):
+        self.__aiPlaygroundWidget.setModelInfoByModel(f)
+
     def showAiToolBar(self, f):
         self.__menuWidget.setVisible(f)
 
     def toolTipLinkClicked(self, url):
         webbrowser.open(url)
 
-    def __setApiKey(self, api_key):
-        # for script
-        openai.api_key = api_key
-        # for subprocess (mostly)
-        os.environ['OPENAI_API_KEY'] = api_key
-        # for showing to the user
-        self.__apiLineEdit.setText(api_key)
-
-    def __loadApiKeyInIni(self):
-        # this api key should be yours
-        if self.__settings_struct.contains('API_KEY'):
-            self.__setApiKey(self.__settings_struct.value('API_KEY'))
-        else:
-            self.__settings_struct.setValue('API_KEY', '')
-
-    def __setApi(self):
-        try:
-            api_key = self.__apiLineEdit.text()
-            response = requests.get('https://api.openai.com/v1/engines', headers={'Authorization': f'Bearer {api_key}'})
-            f = response.status_code == 200
-            self.__lineEdit.setEnabled(f)
-            if f:
-                self.__setApiKey(api_key)
-                self.__settings_struct.setValue('API_KEY', api_key)
-
-                self.__aiPlaygroundWidget.setModelInfoByModel(True)
-
-                self.__apiCheckPreviewLbl.setStyleSheet("color: {}".format(QColor(0, 200, 0).name()))
-                self.__apiCheckPreviewLbl.setText('API key is valid')
-            else:
-                raise Exception
-        except Exception as e:
-            self.__apiCheckPreviewLbl.setStyleSheet("color: {}".format(QColor(255, 0, 0).name()))
-            self.__apiCheckPreviewLbl.setText('API key is invalid')
-            self.__lineEdit.setEnabled(False)
-            print(e)
-        finally:
-            self.__apiCheckPreviewLbl.show()
+    def setAIEnabled(self, f):
+        self.__lineEdit.setEnabled(f)
 
     def __chat(self):
         info_dict = self.__db.selectInfo()
