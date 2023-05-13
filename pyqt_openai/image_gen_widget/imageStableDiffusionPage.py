@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget, QFormLayout, QSpinBox, QComboBox, QLabel, QTextEdit
+from qtpy.QtWidgets import QWidget, QFormLayout, QSpinBox, QComboBox, QLabel, QTextEdit
 
 
 class ImageStableDiffusionPage(QWidget):

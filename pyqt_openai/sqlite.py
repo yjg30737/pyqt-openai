@@ -25,9 +25,8 @@ class SqliteDatabase:
         # info table names
         self.__info_tb_nm = 'info_tb'
         self.__completion_info_tb_nm = 'info_completion_tb'
-        self.__image_info_tb_nm = 'image_info_tb'
 
-        # model type (chat, image, etc.)
+        # model type (chat, etc.)
         self.__model_type = 1
 
         # default value of each properties based on https://platform.openai.com/docs/api-reference/chat/create
@@ -54,7 +53,7 @@ class SqliteDatabase:
             'presence_penalty': 0,
         }
 
-        # DALL-E, Midjourney, Stable Diffusion
+        # DALL-E
         self.__image_default_value = {
             'engine': "DALL-E",
             'n': 1,
@@ -64,8 +63,7 @@ class SqliteDatabase:
         }
 
         self.__each_info_dict = {1: [self.__info_tb_nm, self.__chat_default_value],
-                                 2: [self.__completion_info_tb_nm, self.__completion_default_value],
-                                 3: [self.__image_info_tb_nm, self.__image_default_value], }
+                                 2: [self.__completion_info_tb_nm, self.__completion_default_value], }
 
     def __initDb(self):
         try:
@@ -165,43 +163,10 @@ class SqliteDatabase:
                                                     )
                                                  ''', tuple(self.__completion_default_value.values()))
 
-    def __createImage(self):
-        # Check if the table exists
-        self.__c.execute(f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{self.__image_info_tb_nm}'")
-        if self.__c.fetchone()[0] == 1:
-            pass
-        else:
-            self.__c.execute(f'''CREATE TABLE {self.__image_info_tb_nm}
-                                             (id INTEGER PRIMARY KEY,
-                                              engine VARCHAR(50) DEFAULT '{self.__image_default_value['engine']}',
-                                              n INTEGER DEFAULT {self.__image_default_value['n']},
-                                              width INTEGER DEFAULT {self.__image_default_value['width']},
-                                              height INTEGER DEFAULT {self.__image_default_value['height']},  
-
-                                              update_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
-                                              insert_dt DATETIME DEFAULT CURRENT_TIMESTAMP)''')
-
-            # Commit the transaction
-            self.__conn.commit()
-
-            # insert default record
-            self.__c.execute(f'''INSERT INTO {self.__image_info_tb_nm}
-                                                    (
-                                                        engine,
-                                                        n,
-                                                        width,
-                                                        height
-                                                    ) VALUES
-                                                    (
-                                                        {','.join(['?' for _ in range(len(self.__image_default_value))])}
-                                                    )
-                                                 ''', tuple(self.__image_default_value.values()))
-
     def __createInfo(self):
         try:
             self.__createChat()
             self.__createCompletion()
-            self.__createImage()
             # Commit the transaction
             self.__conn.commit()
         except sqlite3.Error as e:

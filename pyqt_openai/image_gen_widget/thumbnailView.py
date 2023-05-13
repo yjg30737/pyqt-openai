@@ -1,8 +1,8 @@
 import os
 
-from PyQt5.QtCore import Qt, QPointF
-from PyQt5.QtGui import QPixmap, QColor, QBrush, QLinearGradient
-from PyQt5.QtWidgets import QGraphicsScene, QGraphicsView, QApplication, QWidget, QHBoxLayout, QFileDialog, QCheckBox, \
+from qtpy.QtCore import Qt, QPointF
+from qtpy.QtGui import QPixmap, QColor, QBrush, QLinearGradient
+from qtpy.QtWidgets import QGraphicsScene, QGraphicsView, QApplication, QWidget, QHBoxLayout, QFileDialog, QCheckBox, \
     QGraphicsProxyWidget
 
 from pyqt_openai.svgButton import SvgButton

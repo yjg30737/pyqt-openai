@@ -4,9 +4,9 @@ import os
 import webbrowser
 
 import requests
-from PyQt5.QtCore import Qt, QSettings, QEvent
-from PyQt5.QtGui import QFont, QColor, QCursor
-from PyQt5.QtWidgets import QHBoxLayout, QLabel, QWidget, QPushButton, QSizePolicy, QVBoxLayout, QFrame, QSplitter, \
+from qtpy.QtCore import Qt, QSettings, QEvent
+from qtpy.QtGui import QFont, QColor, QCursor
+from qtpy.QtWidgets import QHBoxLayout, QLabel, QWidget, QPushButton, QSizePolicy, QVBoxLayout, QFrame, QSplitter, \
     QListWidgetItem, QFileDialog, QLineEdit
 
 from pyqt_openai.apiData import ModelData

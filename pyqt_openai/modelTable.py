@@ -1,4 +1,4 @@
-from PyQt5.QtGui import QBrush, QColor
+from qtpy.QtGui import QBrush, QColor
 from qtpy.QtWidgets import QTableWidget, QHeaderView, QTableWidgetItem, QAbstractItemView
 from qtpy.QtCore import Qt
 

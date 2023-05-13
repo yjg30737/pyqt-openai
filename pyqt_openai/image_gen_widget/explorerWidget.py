@@ -1,7 +1,7 @@
-from PyQt5.QtWidgets import QGridLayout, QWidget, QScrollArea, \
+from qtpy.QtWidgets import QGridLayout, QWidget, QScrollArea, \
     QSizePolicy
 
-from pyqt_openai.test.mainWindow.image_gen_widget.thumbnailView import ThumbnailView
+from pyqt_openai.image_gen_widget.thumbnailView import ThumbnailView
 
 
 class ExplorerWidget(QScrollArea):

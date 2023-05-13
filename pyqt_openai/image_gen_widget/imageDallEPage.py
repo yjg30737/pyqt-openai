@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget, QComboBox, QSpinBox, QFormLayout, QTextEdit, QLabel
+from qtpy.QtWidgets import QWidget, QComboBox, QSpinBox, QFormLayout, QTextEdit, QLabel
 
 
 class ImageDallEPage(QWidget):

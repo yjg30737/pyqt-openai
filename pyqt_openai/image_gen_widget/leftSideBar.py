@@ -1,7 +1,7 @@
-from PyQt5.QtWidgets import QWidget, QTabWidget, QVBoxLayout
+from qtpy.QtWidgets import QWidget, QTabWidget, QVBoxLayout
 
-from pyqt_openai.test.mainWindow.image_gen_widget.imageDallEPage import ImageDallEPage
-from pyqt_openai.test.mainWindow.image_gen_widget.imageStableDiffusionPage import ImageStableDiffusionPage
+from pyqt_openai.image_gen_widget.imageDallEPage import ImageDallEPage
+from pyqt_openai.image_gen_widget.imageStableDiffusionPage import ImageStableDiffusionPage
 
 
 class LeftSideBar(QWidget):
