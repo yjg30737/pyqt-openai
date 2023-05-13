@@ -1,7 +1,10 @@
-from qtpy.QtWidgets import QWidget, QFormLayout, QSpinBox, QComboBox, QLabel, QTextEdit
+from qtpy.QtWidgets import QWidget, QPushButton, QFormLayout, QSpinBox, QComboBox, QLabel, QPlainTextEdit
+from qtpy.QtCore import Signal
 
 
 class ImageStableDiffusionPage(QWidget):
+    submit = Signal(str)
+
     def __init__(self):
         super().__init__()
         self.__initUi()
@@ -14,13 +17,19 @@ class ImageStableDiffusionPage(QWidget):
         sizeCmbBox = QComboBox()
         sizeCmbBox.addItems(['256x256', '512x512', '1024x1024'])
 
-        promptWidget = QTextEdit()
+        self.__promptWidget = QPlainTextEdit()
+        submitBtn = QPushButton('Submit')
+        submitBtn.clicked.connect(self.__submit)
 
         lay = QFormLayout()
         lay.addRow('Total', nSpinBox)
         lay.addRow('Size', sizeCmbBox)
-
         lay.addRow(QLabel('Prompt'))
-        lay.addRow(promptWidget)
+        lay.addRow(self.__promptWidget)
+        lay.addRow(submitBtn)
 
         self.setLayout(lay)
+
+    def __submit(self):
+        prompt_text = self.__promptWidget.toPlainText()
+        self.submit.emit(prompt_text)

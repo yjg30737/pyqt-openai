@@ -32,15 +32,18 @@ class RightWidget(QWidget):
             }
             ''')
 
-        self.__homeWidget = QLabel('Home')
-        self.__homeWidget.setAlignment(Qt.AlignCenter)
-        self.__homeWidget.setFont(QFont('Arial', 32))
+        homeWidget = QLabel('Home')
+        homeWidget.setAlignment(Qt.AlignCenter)
+        homeWidget.setFont(QFont('Arial', 32))
 
-        mainWidget = QStackedWidget()
-        mainWidget.addWidget(self.__homeWidget)
-        mainWidget.addWidget(imageWidget)
+        self.__mainWidget = QStackedWidget()
+        self.__mainWidget.addWidget(homeWidget)
+        self.__mainWidget.addWidget(imageWidget)
 
         lay = QGridLayout()
-        lay.addWidget(mainWidget)
+        lay.addWidget(self.__mainWidget)
         lay.setContentsMargins(0, 0, 0, 0)
         self.setLayout(lay)
+
+    def showResult(self, prompt_text):
+        self.__mainWidget.setCurrentIndex(1)

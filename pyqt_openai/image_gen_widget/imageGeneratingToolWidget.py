@@ -1,13 +1,12 @@
 import sys
 
 from qtpy.QtCore import Qt
-from qtpy.QtWidgets import QApplication, QGridLayout, QWidget
+from qtpy.QtWidgets import QApplication, QHBoxLayout, QVBoxLayout, QFrame, QWidget
 from qtpy.QtWidgets import QSplitter
 
-from pyqt_openai.image_gen_widget.explorerWidget import ExplorerWidget
 from pyqt_openai.image_gen_widget.leftSideBar import LeftSideBar
 from pyqt_openai.image_gen_widget.rightWidget import RightWidget
-from pyqt_openai.image_gen_widget.thumbnailView import ThumbnailView
+from pyqt_openai.svgButton import SvgButton
 
 
 class ImageGeneratingToolWidget(QWidget):
@@ -16,12 +15,33 @@ class ImageGeneratingToolWidget(QWidget):
         self.__initUi()
 
     def __initUi(self):
-        leftSideBar = LeftSideBar()
-
+        self.__leftSideBarWidget = LeftSideBar()
         rightWidget = RightWidget()
 
+        self.__leftSideBarWidget.submit.connect(rightWidget.showResult)
+
+        self.__sideBarBtn = SvgButton()
+        self.__sideBarBtn.setIcon('ico/sidebar.svg')
+        self.__sideBarBtn.setCheckable(True)
+        self.__sideBarBtn.setToolTip('Chat List')
+        self.__sideBarBtn.setChecked(True)
+        self.__sideBarBtn.toggled.connect(self.__leftSideBarWidget.setVisible)
+
+        lay = QHBoxLayout()
+        lay.addWidget(self.__sideBarBtn)
+        lay.setContentsMargins(2, 2, 2, 2)
+        lay.setAlignment(Qt.AlignLeft)
+
+        self.__menuWidget = QWidget()
+        self.__menuWidget.setLayout(lay)
+        self.__menuWidget.setMaximumHeight(self.__menuWidget.sizeHint().height())
+
+        sep = QFrame()
+        sep.setFrameShape(QFrame.HLine)
+        sep.setFrameShadow(QFrame.Sunken)
+
         mainWidget = QSplitter()
-        mainWidget.addWidget(leftSideBar)
+        mainWidget.addWidget(self.__leftSideBarWidget)
         mainWidget.addWidget(rightWidget)
         mainWidget.setSizes([300, 700])
         mainWidget.setChildrenCollapsible(False)
@@ -35,11 +55,16 @@ class ImageGeneratingToolWidget(QWidget):
         }
         ''')
 
-        lay = QGridLayout()
+        lay = QVBoxLayout()
+        lay.addWidget(self.__menuWidget)
+        lay.addWidget(sep)
         lay.addWidget(mainWidget)
-        lay.setContentsMargins(2, 2, 2, 2)
+        lay.setContentsMargins(0, 0, 0, 0)
+        lay.setSpacing(0)
         self.setLayout(lay)
 
+    def showAiToolBar(self, f):
+        self.__menuWidget.setVisible(f)
 
 
 if __name__ == "__main__":
