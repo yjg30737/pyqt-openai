@@ -1,7 +1,7 @@
 import sys
 
 from qtpy.QtCore import Qt, Signal
-from qtpy.QtWidgets import QApplication, QHBoxLayout, QVBoxLayout, QFrame, QWidget, QPushButton, QFileDialog
+from qtpy.QtWidgets import QApplication, QHBoxLayout, QVBoxLayout, QFrame, QWidget
 from qtpy.QtWidgets import QSplitter
 
 from pyqt_openai.image_gen_widget.leftSideBar import LeftSideBar
@@ -21,7 +21,8 @@ class ImageGeneratingToolWidget(QWidget):
         self.__leftSideBarWidget.notifierWidgetActivated.connect(self.notifierWidgetActivated)
 
         self.__rightWidget = RightWidget()
-        self.__leftSideBarWidget.submit.connect(self.__rightWidget.showResult)
+        self.__leftSideBarWidget.submitDallE.connect(self.__rightWidget.showDallEResult)
+        self.__leftSideBarWidget.submitSd.connect(self.__rightWidget.showSdResult)
 
         self.__sideBarBtn = SvgButton()
         self.__sideBarBtn.setIcon('ico/sidebar.svg')
@@ -66,23 +67,13 @@ class ImageGeneratingToolWidget(QWidget):
         }
         ''')
 
-        testWidget = QPushButton()
-        testWidget.clicked.connect(self.chooseImage)
-
         lay = QVBoxLayout()
         lay.addWidget(self.__menuWidget)
         lay.addWidget(sep)
         lay.addWidget(mainWidget)
-        lay.addWidget(testWidget)
         lay.setContentsMargins(0, 0, 0, 0)
         lay.setSpacing(0)
         self.setLayout(lay)
-
-    def chooseImage(self):
-        filename = QFileDialog.getOpenFileName(self, 'Find', '', 'Image Files (*.png)')
-        if filename[0]:
-            filename = filename[0]
-            self.__rightWidget.getExplorerWidget().addFilename(filename)
 
     def showAiToolBar(self, f):
         self.__menuWidget.setVisible(f)

@@ -47,13 +47,24 @@ class RightWidget(QWidget):
         lay.setContentsMargins(0, 0, 0, 0)
         self.setLayout(lay)
 
-    def showResult(self, url):
+    def showDallEResult(self, url):
         self.__mainWidget.setCurrentIndex(1)
-        self.showImage(url)
+        self.showImage(url, True)
 
-    def showImage(self, image_url):
-        content = self.__currentImageView.setUrl(image_url)
-        self.__explorerWidget.addContent(content)
+    def showSdResult(self, image_bin):
+        self.__mainWidget.setCurrentIndex(1)
+        self.showImage(image_bin, False)
+
+    def showImage(self, arg, f: bool):
+        """
+        f=True means DALL-E
+        f=False means SD
+        """
+        if f:
+            arg = self.__currentImageView.setUrl(arg)
+        else:
+            self.__currentImageView.setContent(arg)
+        self.__explorerWidget.addContent(arg)
 
     def getExplorerWidget(self):
         return self.__explorerWidget

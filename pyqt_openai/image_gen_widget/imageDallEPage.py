@@ -24,7 +24,7 @@ class DallEThread(QThread):
 
 
 class ImageDallEPage(QWidget):
-    submit = Signal(str)
+    submitDallE = Signal(str)
     notifierWidgetActivated = Signal()
     # class name: ImageDatabase
     # file name: imageDb
