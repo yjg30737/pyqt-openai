@@ -1,7 +1,7 @@
 import sys
 
 from qtpy.QtCore import Qt, Signal
-from qtpy.QtWidgets import QApplication, QHBoxLayout, QVBoxLayout, QFrame, QWidget
+from qtpy.QtWidgets import QApplication, QHBoxLayout, QVBoxLayout, QFrame, QWidget, QPushButton, QFileDialog
 from qtpy.QtWidgets import QSplitter
 
 from pyqt_openai.image_gen_widget.leftSideBar import LeftSideBar
@@ -20,8 +20,8 @@ class ImageGeneratingToolWidget(QWidget):
         self.__leftSideBarWidget = LeftSideBar()
         self.__leftSideBarWidget.notifierWidgetActivated.connect(self.notifierWidgetActivated)
 
-        rightWidget = RightWidget()
-        self.__leftSideBarWidget.submit.connect(rightWidget.showResult)
+        self.__rightWidget = RightWidget()
+        self.__leftSideBarWidget.submit.connect(self.__rightWidget.showResult)
 
         self.__sideBarBtn = SvgButton()
         self.__sideBarBtn.setIcon('ico/sidebar.svg')
@@ -35,7 +35,7 @@ class ImageGeneratingToolWidget(QWidget):
         self.__historyBtn.setCheckable(True)
         self.__historyBtn.setToolTip('History')
         self.__historyBtn.setChecked(True)
-        self.__historyBtn.toggled.connect(rightWidget.getExplorerWidget().setVisible)
+        self.__historyBtn.toggled.connect(self.__rightWidget.getExplorerWidget().setVisible)
 
         lay = QHBoxLayout()
         lay.addWidget(self.__sideBarBtn)
@@ -53,7 +53,7 @@ class ImageGeneratingToolWidget(QWidget):
 
         mainWidget = QSplitter()
         mainWidget.addWidget(self.__leftSideBarWidget)
-        mainWidget.addWidget(rightWidget)
+        mainWidget.addWidget(self.__rightWidget)
         mainWidget.setSizes([300, 700])
         mainWidget.setChildrenCollapsible(False)
         mainWidget.setHandleWidth(2)
@@ -66,13 +66,23 @@ class ImageGeneratingToolWidget(QWidget):
         }
         ''')
 
+        testWidget = QPushButton()
+        testWidget.clicked.connect(self.chooseImage)
+
         lay = QVBoxLayout()
         lay.addWidget(self.__menuWidget)
         lay.addWidget(sep)
         lay.addWidget(mainWidget)
+        lay.addWidget(testWidget)
         lay.setContentsMargins(0, 0, 0, 0)
         lay.setSpacing(0)
         self.setLayout(lay)
+
+    def chooseImage(self):
+        filename = QFileDialog.getOpenFileName(self, 'Find', '', 'Image Files (*.png)')
+        if filename[0]:
+            filename = filename[0]
+            self.__rightWidget.getExplorerWidget().addFilename(filename)
 
     def showAiToolBar(self, f):
         self.__menuWidget.setVisible(f)

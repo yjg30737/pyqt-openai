@@ -3,7 +3,7 @@ import requests
 
 from qtpy.QtCore import Qt, QPointF
 from qtpy.QtGui import QPixmap, QColor, QBrush, QLinearGradient
-from qtpy.QtWidgets import QGraphicsScene, QGraphicsView, QApplication, QWidget, QHBoxLayout, QFileDialog, QCheckBox, \
+from qtpy.QtWidgets import QGraphicsScene, QGraphicsPixmapItem, QGraphicsView, QApplication, QWidget, QHBoxLayout, QFileDialog, QCheckBox, \
     QGraphicsProxyWidget
 
 from pyqt_openai.svgButton import SvgButton
@@ -19,7 +19,7 @@ class ThumbnailView(QGraphicsView):
     def __initVal(self):
         self._scene = QGraphicsScene()
         self._p = QPixmap()
-        self._item = ''
+        self._item = QGraphicsPixmapItem()
 
     def __initUi(self):
         self.__setControlWidget()
@@ -56,25 +56,32 @@ class ThumbnailView(QGraphicsView):
 
         self.__controlWidget.hide()
 
-    def setFilename(self, filename: str):
-        self._p = QPixmap(filename)
-        self._scene = QGraphicsScene()
+    def __refreshSceneAndView(self):
         self._item = self._scene.addPixmap(self._p)
-
         self.setScene(self._scene)
-        self.fitInView(self._item, self.__aspectRatioMode)
+        self.fitInView(self.sceneRect(), self.__aspectRatioMode)
+
+    def setFilename(self, filename: str):
+        self._scene.removeItem(self._item)
+        self._p = QPixmap(filename)
+        self.__refreshSceneAndView()
 
     def setUrl(self, url):
+        self._scene.removeItem(self._item)
         response = requests.get(url)
         self._p.loadFromData(response.content)
-        # item = QGraphicsPixmapItem(p)
-        self._scene.addPixmap(self._p)
+        self.__refreshSceneAndView()
+        return response.content
+
+    def setContent(self, content):
+        self._scene.removeItem(self._item)
+        self._p.loadFromData(content)
+        self.__refreshSceneAndView()
 
     def setAspectRatioMode(self, mode):
         self.__aspectRatioMode = mode
 
     def __copy(self):
-        print('copy')
         QApplication.clipboard().setPixmap(self._p)
 
     def __save(self):

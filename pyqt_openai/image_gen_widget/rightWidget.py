@@ -15,7 +15,6 @@ class RightWidget(QWidget):
 
     def __initUi(self):
         self.__currentImageView = ThumbnailView()
-        self.__currentImageView.setFilename('Billy Eillish.png')
         self.__explorerWidget = ExplorerWidget()
 
         imageWidget = QSplitter()
@@ -39,8 +38,8 @@ class RightWidget(QWidget):
         homeWidget.setFont(QFont('Arial', 32))
 
         self.__mainWidget = QStackedWidget()
+        # self.__mainWidget.addWidget(homeWidget)
         self.__mainWidget.addWidget(imageWidget)
-        self.__mainWidget.addWidget(homeWidget)
 
         lay = QGridLayout()
         lay.addWidget(self.__mainWidget)
@@ -52,7 +51,8 @@ class RightWidget(QWidget):
         self.showImage(url)
 
     def showImage(self, image_url):
-        self.__currentImageView.setUrl(image_url)
+        content = self.__currentImageView.setUrl(image_url)
+        self.__explorerWidget.addContent(content)
 
     def getExplorerWidget(self):
         return self.__explorerWidget

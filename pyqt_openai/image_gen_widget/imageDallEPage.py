@@ -79,7 +79,6 @@ class ImageDallEPage(QWidget):
             "size": self.__sizeCmbBox.currentText()
         }
         self.__t = DallEThread(openai_arg)
-        self.__promptWidget.clear()
         self.__submitBtn.setEnabled(False)
         self.__t.start()
         self.__t.replyGenerated.connect(self.__afterGenerated)
