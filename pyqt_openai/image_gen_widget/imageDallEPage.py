@@ -18,10 +18,9 @@ class DallEThread(QThread):
             **self.__openai_arg
         )
 
-        # TODO get a lot of images
-        image_url = response['data'][0]['url']
-
-        self.replyGenerated.emit(image_url)
+        for image_data in response['data']:
+            image_url = image_data['url']
+            self.replyGenerated.emit(image_url)
 
 
 class ImageDallEPage(QWidget):
