@@ -40,15 +40,17 @@ class ExplorerWidget(QScrollArea):
         # Insert the new widget in the top-left corner
         lay.addWidget(widget, 0, 0)
 
-    def addContent(self, content):
-        thumbnail = ThumbnailView()
-        thumbnail.setContent(content)
-        thumbnail.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self.insertWidgetAsFirst(thumbnail)
-
-    def addFilename(self, filename):
+    def __addThumbnail(self):
         thumbnail = ThumbnailView()
         thumbnail.clicked.connect(self.clicked)
-        thumbnail.setFilename(filename)
         thumbnail.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.insertWidgetAsFirst(thumbnail)
+        return thumbnail
+
+    def addContent(self, content):
+        thumbnail = self.__addThumbnail()
+        thumbnail.setContent(content)
+
+    def addFilename(self, filename):
+        thumbnail = self.__addThumbnail()
+        thumbnail.setFilename(filename)

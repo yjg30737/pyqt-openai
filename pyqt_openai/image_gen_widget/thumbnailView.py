@@ -14,7 +14,6 @@ class ThumbnailView(QGraphicsView):
 
     def __init__(self):
         super().__init__()
-        self.__aspectRatioMode = Qt.KeepAspectRatio
         self.__initVal()
         self.__initUi()
 
@@ -22,6 +21,7 @@ class ThumbnailView(QGraphicsView):
         self._scene = QGraphicsScene()
         self._p = QPixmap()
         self._item = QGraphicsPixmapItem()
+        self.__aspectRatioMode = Qt.KeepAspectRatio
 
     def __initUi(self):
         self.__setControlWidget()
@@ -60,28 +60,28 @@ class ThumbnailView(QGraphicsView):
 
     def __refreshSceneAndView(self):
         self._item = self._scene.addPixmap(self._p)
-        self.setScene(self._scene)
         self.fitInView(self.sceneRect(), self.__aspectRatioMode)
+        self.setScene(self._scene)
 
     def setFilename(self, filename: str):
-        self._scene.removeItem(self._item)
+        self._scene = QGraphicsScene()
         self._p = QPixmap(filename)
         self.__refreshSceneAndView()
 
     def setUrl(self, url):
-        self._scene.removeItem(self._item)
+        self._scene = QGraphicsScene()
         response = requests.get(url)
         self._p.loadFromData(response.content)
         self.__refreshSceneAndView()
         return response.content
 
     def setContent(self, content):
-        self._scene.removeItem(self._item)
+        self._scene = QGraphicsScene()
         self._p.loadFromData(content)
         self.__refreshSceneAndView()
 
     def setPixmap(self, pixmap):
-        self._scene.removeItem(self._item)
+        self._scene = QGraphicsScene()
         self._p = pixmap
         self.__refreshSceneAndView()
 
@@ -114,6 +114,7 @@ class ThumbnailView(QGraphicsView):
     def resizeEvent(self, e):
         if self._item.pixmap().width():
             self.fitInView(self.sceneRect(), self.__aspectRatioMode)
+            self.setScene(self._scene)
         return super().resizeEvent(e)
 
     def mousePressEvent(self, e):
