@@ -16,6 +16,7 @@ class RightWidget(QWidget):
     def __initUi(self):
         self.__currentImageView = ThumbnailView()
         self.__explorerWidget = ExplorerWidget()
+        self.__explorerWidget.clicked.connect(self.__currentImageView.setPixmap)
 
         imageWidget = QSplitter()
         imageWidget.setOrientation(Qt.Vertical)

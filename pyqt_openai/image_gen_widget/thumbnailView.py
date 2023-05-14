@@ -1,7 +1,7 @@
 import os
 import requests
 
-from qtpy.QtCore import Qt, QPointF
+from qtpy.QtCore import Qt, QPointF, Signal
 from qtpy.QtGui import QPixmap, QColor, QBrush, QLinearGradient
 from qtpy.QtWidgets import QGraphicsScene, QGraphicsPixmapItem, QGraphicsView, QApplication, QWidget, QHBoxLayout, QFileDialog, QCheckBox, \
     QGraphicsProxyWidget
@@ -10,6 +10,8 @@ from pyqt_openai.svgButton import SvgButton
 
 
 class ThumbnailView(QGraphicsView):
+    clicked = Signal(QPixmap)
+
     def __init__(self):
         super().__init__()
         self.__aspectRatioMode = Qt.KeepAspectRatio
@@ -78,6 +80,11 @@ class ThumbnailView(QGraphicsView):
         self._p.loadFromData(content)
         self.__refreshSceneAndView()
 
+    def setPixmap(self, pixmap):
+        self._scene.removeItem(self._item)
+        self._p = pixmap
+        self.__refreshSceneAndView()
+
     def setAspectRatioMode(self, mode):
         self.__aspectRatioMode = mode
 
@@ -92,9 +99,10 @@ class ThumbnailView(QGraphicsView):
 
     def enterEvent(self, e):
         # Show the button when the mouse enters the view
-        self.__controlWidget.move(self.rect().x(), self.rect().y())
-        self.setForegroundBrush(self.__brush)
-        self.__controlWidget.show()
+        if self._item.pixmap().width():
+            self.__controlWidget.move(self.rect().x(), self.rect().y())
+            self.setForegroundBrush(self.__brush)
+            self.__controlWidget.show()
         return super().enterEvent(e)
 
     def leaveEvent(self, e):
@@ -104,6 +112,10 @@ class ThumbnailView(QGraphicsView):
         return super().leaveEvent(e)
 
     def resizeEvent(self, e):
-        if self._item:
+        if self._item.pixmap().width():
             self.fitInView(self.sceneRect(), self.__aspectRatioMode)
         return super().resizeEvent(e)
+
+    def mousePressEvent(self, e):
+        self.clicked.emit(self._p)
+        return super().mousePressEvent(e)

@@ -1,11 +1,14 @@
+from qtpy.QtGui import QPixmap
 from qtpy.QtWidgets import QGridLayout, QWidget, QScrollArea, \
     QSizePolicy
-from qtpy.QtCore import Qt
+from qtpy.QtCore import Qt, Signal
 
 from pyqt_openai.image_gen_widget.thumbnailView import ThumbnailView
 
 
 class ExplorerWidget(QScrollArea):
+    clicked = Signal(QPixmap)
+
     def __init__(self):
         super().__init__()
         self.__initUi()
@@ -45,6 +48,7 @@ class ExplorerWidget(QScrollArea):
 
     def addFilename(self, filename):
         thumbnail = ThumbnailView()
+        thumbnail.clicked.connect(self.clicked)
         thumbnail.setFilename(filename)
         thumbnail.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.insertWidgetAsFirst(thumbnail)
