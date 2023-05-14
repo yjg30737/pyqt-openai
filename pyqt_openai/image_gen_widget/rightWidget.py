@@ -16,12 +16,12 @@ class RightWidget(QWidget):
     def __initUi(self):
         self.__currentImageView = ThumbnailView()
         self.__currentImageView.setFilename('Billy Eillish.png')
-        explorerWidget = ExplorerWidget()
+        self.__explorerWidget = ExplorerWidget()
 
         imageWidget = QSplitter()
         imageWidget.setOrientation(Qt.Vertical)
         imageWidget.addWidget(self.__currentImageView)
-        imageWidget.addWidget(explorerWidget)
+        imageWidget.addWidget(self.__explorerWidget)
         imageWidget.setSizes([700, 300])
         imageWidget.setChildrenCollapsible(False)
         imageWidget.setHandleWidth(2)
@@ -39,8 +39,8 @@ class RightWidget(QWidget):
         homeWidget.setFont(QFont('Arial', 32))
 
         self.__mainWidget = QStackedWidget()
-        self.__mainWidget.addWidget(homeWidget)
         self.__mainWidget.addWidget(imageWidget)
+        self.__mainWidget.addWidget(homeWidget)
 
         lay = QGridLayout()
         lay.addWidget(self.__mainWidget)
@@ -52,12 +52,7 @@ class RightWidget(QWidget):
         self.showImage(url)
 
     def showImage(self, image_url):
-        chatLbl = QLabel()
-        response = requests.get(image_url)
-        pixmap = QPixmap()
-        pixmap.loadFromData(response.content)
-        pixmap = pixmap.scaled(chatLbl.width(), chatLbl.height())
-        self.__currentImageView.setFilename()
-        chatLbl.setPixmap(pixmap)
-        chatLbl.setStyleSheet('QLabel { background-color: #DDD; padding: 1em }')
+        self.__currentImageView.setUrl(image_url)
 
+    def getExplorerWidget(self):
+        return self.__explorerWidget

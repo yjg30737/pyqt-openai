@@ -7,6 +7,7 @@ from pyqt_openai.image_gen_widget.imageStableDiffusionPage import ImageStableDif
 
 class LeftSideBar(QWidget):
     submit = Signal(str)
+    notifierWidgetActivated = Signal()
 
     def __init__(self):
         super().__init__()
@@ -14,7 +15,9 @@ class LeftSideBar(QWidget):
 
     def __initUi(self):
         w1 = ImageDallEPage()
+        w1.notifierWidgetActivated.connect(self.notifierWidgetActivated)
         w2 = ImageStableDiffusionPage()
+        w2.notifierWidgetActivated.connect(self.notifierWidgetActivated)
 
         w1.submit.connect(self.submit)
         w2.submit.connect(self.submit)

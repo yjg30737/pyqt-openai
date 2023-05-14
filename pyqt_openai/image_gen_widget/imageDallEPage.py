@@ -26,6 +26,7 @@ class DallEThread(QThread):
 
 class ImageDallEPage(QWidget):
     submit = Signal(str)
+    notifierWidgetActivated = Signal()
     # class name: ImageDatabase
     # file name: imageDb
 
@@ -81,10 +82,12 @@ class ImageDallEPage(QWidget):
         self.__promptWidget.clear()
         self.__submitBtn.setEnabled(False)
         self.__t.start()
-        self.__t.replyGenerated(self.submit.emit)
-        self.__t.finished.connect(self.__afterGenerated)
+        self.__t.replyGenerated.connect(self.__afterGenerated)
 
-    def __afterGenerated(self):
+    def __afterGenerated(self, image_url):
+        self.submit.emit(image_url)
         if not self.isVisible():
             self.__notifierWidget = NotifierWidget(informative_text='Response 👌', detailed_text='Click this!')
+            self.__notifierWidget.show()
+            self.__notifierWidget.doubleClicked.connect(self.notifierWidgetActivated)
         self.__submitBtn.setEnabled(True)

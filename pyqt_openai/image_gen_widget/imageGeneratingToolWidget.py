@@ -1,6 +1,6 @@
 import sys
 
-from qtpy.QtCore import Qt
+from qtpy.QtCore import Qt, Signal
 from qtpy.QtWidgets import QApplication, QHBoxLayout, QVBoxLayout, QFrame, QWidget
 from qtpy.QtWidgets import QSplitter
 
@@ -10,25 +10,36 @@ from pyqt_openai.svgButton import SvgButton
 
 
 class ImageGeneratingToolWidget(QWidget):
+    notifierWidgetActivated = Signal()
+
     def __init__(self):
         super().__init__()
         self.__initUi()
 
     def __initUi(self):
         self.__leftSideBarWidget = LeftSideBar()
-        rightWidget = RightWidget()
+        self.__leftSideBarWidget.notifierWidgetActivated.connect(self.notifierWidgetActivated)
 
+        rightWidget = RightWidget()
         self.__leftSideBarWidget.submit.connect(rightWidget.showResult)
 
         self.__sideBarBtn = SvgButton()
         self.__sideBarBtn.setIcon('ico/sidebar.svg')
         self.__sideBarBtn.setCheckable(True)
-        self.__sideBarBtn.setToolTip('Chat List')
+        self.__sideBarBtn.setToolTip('Settings')
         self.__sideBarBtn.setChecked(True)
         self.__sideBarBtn.toggled.connect(self.__leftSideBarWidget.setVisible)
 
+        self.__historyBtn = SvgButton()
+        self.__historyBtn.setIcon('ico/history.svg')
+        self.__historyBtn.setCheckable(True)
+        self.__historyBtn.setToolTip('History')
+        self.__historyBtn.setChecked(True)
+        self.__historyBtn.toggled.connect(rightWidget.getExplorerWidget().setVisible)
+
         lay = QHBoxLayout()
         lay.addWidget(self.__sideBarBtn)
+        lay.addWidget(self.__historyBtn)
         lay.setContentsMargins(2, 2, 2, 2)
         lay.setAlignment(Qt.AlignLeft)
 

@@ -267,7 +267,6 @@ class OpenAIChatBotWidget(QWidget):
             self.__notifierWidget.show()
             self.__notifierWidget.doubleClicked.connect(self.notifierWidgetActivated)
 
-
     def __changeConv(self, item: QListWidgetItem):
         # If a 'change' event occurs but there are no items, it should mean that list is empty
         # so reset conv_history.json

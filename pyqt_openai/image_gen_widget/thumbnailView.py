@@ -1,4 +1,5 @@
 import os
+import requests
 
 from qtpy.QtCore import Qt, QPointF
 from qtpy.QtGui import QPixmap, QColor, QBrush, QLinearGradient
@@ -62,6 +63,12 @@ class ThumbnailView(QGraphicsView):
 
         self.setScene(self._scene)
         self.fitInView(self._item, self.__aspectRatioMode)
+
+    def setUrl(self, url):
+        response = requests.get(url)
+        self._p.loadFromData(response.content)
+        # item = QGraphicsPixmapItem(p)
+        self._scene.addPixmap(self._p)
 
     def setAspectRatioMode(self, mode):
         self.__aspectRatioMode = mode
