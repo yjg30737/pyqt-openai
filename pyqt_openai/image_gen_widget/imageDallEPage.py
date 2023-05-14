@@ -1,5 +1,27 @@
+import openai
+
 from qtpy.QtWidgets import QWidget, QPushButton, QComboBox, QPlainTextEdit, QSpinBox, QFormLayout, QTextEdit, QLabel
-from qtpy.QtCore import Signal
+from qtpy.QtCore import Signal, QThread
+
+from pyqt_openai.notifier import NotifierWidget
+
+
+class DallEThread(QThread):
+    replyGenerated = Signal(str)
+
+    def __init__(self, openai_arg, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.__openai_arg = openai_arg
+
+    def run(self):
+        response = openai.Image.create(
+            **self.__openai_arg
+        )
+
+        # TODO get a lot of images
+        image_url = response['data'][0]['url']
+
+        self.replyGenerated.emit(image_url)
 
 
 class ImageDallEPage(QWidget):
@@ -13,26 +35,25 @@ class ImageDallEPage(QWidget):
         self.__initUi()
 
     def __initUi(self):
-        # modelCmbBox.addItems(['DALL-E', 'Midjourney', 'Stable Diffusion'])
-        nSpinBox = QSpinBox()
-        nSpinBox.setRange(1, 10)
-        # nSpinBox.setValue(self.__info_dict['n'])
-        # nSpinBox.valueChanged.connect(self.__nChanged)
-        sizeCmbBox = QComboBox()
-        sizeCmbBox.addItems(['256x256', '512x512', '1024x1024'])
-        # sizeCmbBox.setCurrentText(f"{self.__info_dict['width']}x{self.__info_dict['height']}")
-        sizeCmbBox.currentTextChanged.connect(self.__sizeChanged)
+        self.__nSpinBox = QSpinBox()
+        self.__nSpinBox.setRange(1, 10)
+        # self.__nSpinBox.setValue(self.__info_dict['n'])
+        # self.__nSpinBox.valueChanged.connect(self.__nChanged)
+        self.__sizeCmbBox = QComboBox()
+        self.__sizeCmbBox.addItems(['256x256', '512x512', '1024x1024'])
+        # self.__sizeCmbBox.setCurrentText(f"{self.__info_dict['width']}x{self.__info_dict['height']}")
+        self.__sizeCmbBox.currentTextChanged.connect(self.__sizeChanged)
 
         self.__promptWidget = QPlainTextEdit()
-        submitBtn = QPushButton('Submit')
-        submitBtn.clicked.connect(self.__submit)
+        self.__submitBtn = QPushButton('Submit')
+        self.__submitBtn.clicked.connect(self.__submit)
 
         lay = QFormLayout()
-        lay.addRow('Total', nSpinBox)
-        lay.addRow('Size', sizeCmbBox)
+        lay.addRow('Total', self.__nSpinBox)
+        lay.addRow('Size', self.__sizeCmbBox)
         lay.addRow(QLabel('Prompt'))
         lay.addRow(self.__promptWidget)
-        lay.addRow(submitBtn)
+        lay.addRow(self.__submitBtn)
 
         self.setLayout(lay)
 
@@ -46,6 +67,24 @@ class ImageDallEPage(QWidget):
         # self.__db.updateInfo(3, 'height', height)
 
     def __submit(self):
-        promptText = self.__promptWidget.toPlainText()
+        # openai_arg = {
+        #     "prompt": self.__prompt.getContent(),
+        #     "n": info_dict['n'],
+        #     "size": f"{info_dict['width']}x{info_dict['height']}"
+        # }
+        openai_arg = {
+            "prompt": self.__promptWidget.toPlainText(),
+            "n": self.__nSpinBox.value(),
+            "size": self.__sizeCmbBox.currentText()
+        }
+        self.__t = DallEThread(openai_arg)
+        self.__promptWidget.clear()
+        self.__submitBtn.setEnabled(False)
+        self.__t.start()
+        self.__t.replyGenerated(self.submit.emit)
+        self.__t.finished.connect(self.__afterGenerated)
 
-        self.submit.emit(promptText)
+    def __afterGenerated(self):
+        if not self.isVisible():
+            self.__notifierWidget = NotifierWidget(informative_text='Response 👌', detailed_text='Click this!')
+        self.__submitBtn.setEnabled(True)

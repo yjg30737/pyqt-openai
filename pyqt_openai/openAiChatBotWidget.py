@@ -2,7 +2,7 @@ import json
 import os
 import webbrowser
 
-from qtpy.QtCore import Qt, QSettings, QEvent
+from qtpy.QtCore import Qt, QSettings, QEvent, Signal
 from qtpy.QtGui import QCursor
 from qtpy.QtWidgets import QHBoxLayout, QWidget, QSizePolicy, QVBoxLayout, QFrame, QSplitter, \
     QListWidgetItem, QFileDialog
@@ -20,6 +20,8 @@ from pyqt_openai.svgButton import SvgButton
 
 
 class OpenAIChatBotWidget(QWidget):
+    notifierWidgetActivated = Signal()
+
     def __init__(self):
         super().__init__()
         self.__initVal()
@@ -207,46 +209,38 @@ class OpenAIChatBotWidget(QWidget):
 
     def __chat(self):
         info_dict = self.__db.selectInfo()
-        is_img = info_dict['engine'] in ['DALL-E', 'midjourney', 'stable_diffusion']
         openai_arg = ''
-        if is_img:
+        if self.__remember_past_conv:
+            convs = []
+            with open('conv.json', 'r') as f:
+                for line in f:
+                    conv = json.loads(line.strip())
+                    convs.append(conv)
+        # TODO refactoring
+        if info_dict['engine'] in ['gpt-3.5-turbo', 'gpt-3.5-turbo-0301', 'gpt-4']:
+            # "assistant" below is for making the AI remember the last question
             openai_arg = {
-                "prompt": self.__prompt.getContent(),
-                "n": info_dict['n'],
-                "size": f"{info_dict['width']}x{info_dict['height']}"
+                'model': info_dict['engine'],
+                'messages': [
+                    {"role": "system", "content": info_dict['system']},
+                    {"role": "assistant", "content": self.__browser.getAllText()},
+                    {"role": "user", "content": self.__prompt.getContent()},
+                ],
+                # 'temperature': info_dict['temperature'],
+
+                # won't use max_tokens, this is set to infinite by default
+                # and i can't find any reason why should i limit the tokens currently
+                # https://platform.openai.com/docs/api-reference/chat/create
+                # 'max_tokens': self.__max_tokens,
+
+                # 'top_p': info_dict['top_p'],
+                # 'frequency_penalty': info_dict['frequency_penalty'],
+                # 'presence_penalty': info_dict['presence_penalty'],
+
+                'stream': info_dict['stream'],
             }
         else:
-            if self.__remember_past_conv:
-                convs = []
-                with open('conv.json', 'r') as f:
-                    for line in f:
-                        conv = json.loads(line.strip())
-                        convs.append(conv)
-            # TODO refactoring
-            if info_dict['engine'] in ['gpt-3.5-turbo', 'gpt-3.5-turbo-0301', 'gpt-4']:
-                # "assistant" below is for making the AI remember the last question
-                openai_arg = {
-                    'model': info_dict['engine'],
-                    'messages': [
-                        {"role": "system", "content": info_dict['system']},
-                        {"role": "assistant", "content": self.__browser.getAllText()},
-                        {"role": "user", "content": self.__prompt.getContent()},
-                    ],
-                    # 'temperature': info_dict['temperature'],
-
-                    # won't use max_tokens, this is set to infinite by default
-                    # and i can't find any reason why should i limit the tokens currently
-                    # https://platform.openai.com/docs/api-reference/chat/create
-                    # 'max_tokens': self.__max_tokens,
-
-                    # 'top_p': info_dict['top_p'],
-                    # 'frequency_penalty': info_dict['frequency_penalty'],
-                    # 'presence_penalty': info_dict['presence_penalty'],
-
-                    'stream': info_dict['stream'],
-                }
-            else:
-                openai_arg = info_dict
+            openai_arg = info_dict
         if self.__leftSideBarWidget.isCurrentConvExists():
             pass
         else:
@@ -255,9 +249,9 @@ class OpenAIChatBotWidget(QWidget):
         self.__lineEdit.setEnabled(False)
         self.__leftSideBarWidget.setEnabled(False)
 
-        self.__browser.showLabel(self.__prompt.getContent(), True, False, False)
+        self.__browser.showLabel(self.__prompt.getContent(), True, False)
 
-        self.__t = OpenAIThread(info_dict['engine'], openai_arg, is_img, self.__remember_past_conv)
+        self.__t = OpenAIThread(info_dict['engine'], openai_arg, self.__remember_past_conv)
         self.__t.replyGenerated.connect(self.__browser.showLabel)
         self.__t.streamFinished.connect(self.__browser.streamFinished)
         self.__lineEdit.clear()
@@ -271,7 +265,7 @@ class OpenAIChatBotWidget(QWidget):
         if not self.isVisible():
             self.__notifierWidget = NotifierWidget(informative_text='Response 👌', detailed_text='Click this!')
             self.__notifierWidget.show()
-            self.__notifierWidget.doubleClicked.connect(self.show)
+            self.__notifierWidget.doubleClicked.connect(self.notifierWidgetActivated)
 
 
     def __changeConv(self, item: QListWidgetItem):

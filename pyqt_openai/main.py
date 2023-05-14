@@ -36,6 +36,7 @@ class MainWindow(QMainWindow):
         self.setWindowIcon(QIcon('ico/openai.svg'))
 
         self.__openAiChatBotWidget = OpenAIChatBotWidget()
+        self.__openAiChatBotWidget.notifierWidgetActivated.connect(self.show)
         self.__imageGeneratingToolWidget = ImageGeneratingToolWidget()
         self.__mainWidget = QStackedWidget()
         self.__mainWidget.addWidget(self.__openAiChatBotWidget)

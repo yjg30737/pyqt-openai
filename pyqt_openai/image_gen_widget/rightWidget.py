@@ -1,4 +1,6 @@
-from qtpy.QtGui import QFont
+import requests
+
+from qtpy.QtGui import QFont, QPixmap
 from qtpy.QtWidgets import QWidget, QLabel, QGridLayout, QStackedWidget, QSplitter
 from qtpy.QtCore import Qt
 
@@ -12,13 +14,13 @@ class RightWidget(QWidget):
         self.__initUi()
 
     def __initUi(self):
-        currentImageView = ThumbnailView()
-        currentImageView.setFilename('Billy Eillish.png')
+        self.__currentImageView = ThumbnailView()
+        self.__currentImageView.setFilename('Billy Eillish.png')
         explorerWidget = ExplorerWidget()
 
         imageWidget = QSplitter()
         imageWidget.setOrientation(Qt.Vertical)
-        imageWidget.addWidget(currentImageView)
+        imageWidget.addWidget(self.__currentImageView)
         imageWidget.addWidget(explorerWidget)
         imageWidget.setSizes([700, 300])
         imageWidget.setChildrenCollapsible(False)
@@ -45,5 +47,17 @@ class RightWidget(QWidget):
         lay.setContentsMargins(0, 0, 0, 0)
         self.setLayout(lay)
 
-    def showResult(self, prompt_text):
+    def showResult(self, url):
         self.__mainWidget.setCurrentIndex(1)
+        self.showImage(url)
+
+    def showImage(self, image_url):
+        chatLbl = QLabel()
+        response = requests.get(image_url)
+        pixmap = QPixmap()
+        pixmap.loadFromData(response.content)
+        pixmap = pixmap.scaled(chatLbl.width(), chatLbl.height())
+        self.__currentImageView.setFilename()
+        chatLbl.setPixmap(pixmap)
+        chatLbl.setStyleSheet('QLabel { background-color: #DDD; padding: 1em }')
+
