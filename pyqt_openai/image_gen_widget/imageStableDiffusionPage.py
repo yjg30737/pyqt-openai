@@ -1,15 +1,14 @@
-import os, warnings, requests
+import os
+import warnings
 
-from qtpy.QtGui import QFont
-from stability_sdk import client
 import stability_sdk.interfaces.gooseai.generation.generation_pb2 as generation
-
-from qtpy.QtWidgets import QWidget, QLineEdit, QVBoxLayout, QGroupBox, QPushButton, QFormLayout, QSpinBox, QComboBox, QLabel, QPlainTextEdit
 from qtpy.QtCore import Signal, QThread, QSettings
+from qtpy.QtWidgets import QWidget, QLineEdit, QVBoxLayout, QHBoxLayout, QGroupBox, QPushButton, QFormLayout, QSpinBox, QComboBox, \
+    QLabel, QPlainTextEdit
+from stability_sdk import client
 
 from pyqt_openai.notifier import NotifierWidget
-
-from PyQt5.QtWidgets import QGroupBox, QHBoxLayout, QLabel
+from pyqt_openai.svgLabel import SvgLabel
 
 # Our Host URL should not be prepended with "https" nor should it have a trailing slash.
 os.environ['STABILITY_HOST'] = 'grpc.stability.ai:443'
@@ -72,14 +71,28 @@ class ImageStableDiffusionPage(QWidget):
 
     def __initUi(self):
         sdApiGrpBox = QGroupBox()
-        sdApiGrpBox.setTitle('Stable Diffusion API')
+        sdApiGrpBox.setTitle('DreamStudio API')
+
         self.__apiLineEdit = QLineEdit()
-        self.__apiLineEdit.setPlaceholderText('Write your Stable Diffusion API Key...')
+        self.__apiLineEdit.setPlaceholderText('Write your DreamStudio API Key...')
         self.__apiLineEdit.textChanged.connect(self.__enableSubmitBtn)
         self.__apiLineEdit.setEchoMode(QLineEdit.Password)
-        apiNoteLbl = QLabel('※ The validity of the API will be checked when you submit the form below.')
-        lay = QVBoxLayout()
+
+        whatIsDreamStudioLbl = SvgLabel()
+        whatIsDreamStudioLbl.setSvgFile('ico/help.svg')
+        whatIsDreamStudioLbl.setToolTip('DreamStudio is a service which make it enable anyone to access the image generation tool\n without the need for software installation, coding knowledge, or a heavy-duty local GPU.')
+
+        lay = QHBoxLayout()
         lay.addWidget(self.__apiLineEdit)
+        lay.addWidget(whatIsDreamStudioLbl)
+        lay.setContentsMargins(0, 0, 0, 0)
+        sdApiInputWidget = QWidget()
+        sdApiInputWidget.setLayout(lay)
+
+        apiNoteLbl = QLabel('※ The validity of the API will be checked when you submit the form below.')
+
+        lay = QVBoxLayout()
+        lay.addWidget(sdApiInputWidget)
         lay.addWidget(apiNoteLbl)
         sdApiGrpBox.setLayout(lay)
 

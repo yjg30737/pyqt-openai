@@ -9,7 +9,6 @@ from qtpy.QtWidgets import QHBoxLayout, QWidget, QSizePolicy, QVBoxLayout, QFram
 
 from pyqt_openai.apiData import ModelData
 from pyqt_openai.chatWidget import Prompt, ChatBrowser
-from pyqt_openai.clickableTooltip import ClickableTooltip
 from pyqt_openai.leftSideBar import LeftSideBar
 from pyqt_openai.notifier import NotifierWidget
 from pyqt_openai.openAiThread import OpenAIThread
@@ -186,14 +185,6 @@ class OpenAIChatBotWidget(QWidget):
         self.setLayout(lay)
 
         self.__lineEdit.setFocus()
-
-    def eventFilter(self, source, event):
-        if event.type() == QEvent.ToolTip and source.toolTip():
-            toolTip = ClickableTooltip.showText(
-                QCursor.pos(), source.toolTip(), source)
-            toolTip.linkActivated.connect(self.toolTipLinkClicked)
-            return True
-        return super().eventFilter(source, event)
 
     def setModelInfoByModel(self, f):
         self.__aiPlaygroundWidget.setModelInfoByModel(f)
