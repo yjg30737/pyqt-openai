@@ -83,7 +83,7 @@ class ImageDallEPage(QWidget):
         self.__t.replyGenerated.connect(self.__afterGenerated)
 
     def __afterGenerated(self, image_url):
-        self.submit.emit(image_url)
+        self.submitDallE.emit(image_url)
         if not self.isVisible():
             self.__notifierWidget = NotifierWidget(informative_text='Response 👌', detailed_text='Click this!')
             self.__notifierWidget.show()

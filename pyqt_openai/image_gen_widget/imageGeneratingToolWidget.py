@@ -31,8 +31,8 @@ class ImageGeneratingToolWidget(QWidget):
         self.__viewWidget = ViewWidget()
         self.__rightSideBarWidget = RightSideBar()
         self.__rightSideBarWidget.notifierWidgetActivated.connect(self.notifierWidgetActivated)
-        self.__rightSideBarWidget.submitDallE.connect(self.__viewWidget.showDallEResult)
-        self.__rightSideBarWidget.submitSd.connect(self.__viewWidget.showSdResult)
+        self.__rightSideBarWidget.submitDallE.connect(self.__setResult)
+        self.__rightSideBarWidget.submitSd.connect(self.__setResult)
 
         self.__sideBarBtn = SvgButton()
         self.__sideBarBtn.setIcon('ico/sidebar.svg')
@@ -107,7 +107,7 @@ class ImageGeneratingToolWidget(QWidget):
             model = dialog.getModel()
             text = dialog.getText()
             # cur_id = self.__db.getCursor().lastrowid
-            self.__leftSideBarWidget.addImageGroup(model, text, 0 )
+            self.__leftSideBarWidget.addImageGroup(model, text, 0)
         print('addImageGroup')
 
     def __deleteImageGroup(self):
@@ -115,6 +115,16 @@ class ImageGeneratingToolWidget(QWidget):
 
     def __exportImageGroup(self):
         print('exportImageGroup')
+
+    def __setResult(self, arg):
+        # DALL-E
+        if isinstance(arg, str):
+            self.__viewWidget.showDallEResult(arg)
+            self.__leftSideBarWidget.addImageGroup('DALL-E', 'New Image Group', 0)
+        # SD
+        elif isinstance(arg, bytes):
+            self.__viewWidget.showSdResult(arg)
+            self.__leftSideBarWidget.addImageGroup('Stable Diffusion', 'New Image Group', 0)
 
 
 if __name__ == "__main__":
