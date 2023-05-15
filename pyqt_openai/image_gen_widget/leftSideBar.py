@@ -76,8 +76,8 @@ class LeftSideBar(QWidget):
     def __addClicked(self):
         self.added.emit()
 
-    def addImageGroup(self, model, text, id):
-        self.__imageListWidget.addImage(model, text, id)
+    def addImageGroup(self, id):
+        self.__imageListWidget.addImage('New Chat', id)
         self.__imageListWidget.setCurrentRow(0)
     # 
     # def isCurrentImageExists(self):

@@ -7,9 +7,9 @@ from qtpy.QtWidgets import QApplication, QLabel, QHBoxLayout, QVBoxLayout, QFram
 from qtpy.QtWidgets import QSplitter
 
 from pyqt_openai.image_gen_widget.leftSideBar import LeftSideBar
-from pyqt_openai.image_gen_widget.newImageGroupDialog import NewImageGroupDialog
 from pyqt_openai.image_gen_widget.rightSideBar import RightSideBar
 from pyqt_openai.image_gen_widget.viewWidget import ViewWidget
+from pyqt_openai.inputDialog import InputDialog
 from pyqt_openai.svgButton import SvgButton
 
 
@@ -101,13 +101,11 @@ class ImageGeneratingToolWidget(QWidget):
         self.__rightSideBarWidget.setEnabled(f)
 
     def __addImageGroup(self):
-        dialog = NewImageGroupDialog(self)
-        reply = dialog.exec()
-        if reply == QDialog.Accepted:
-            model = dialog.getModel()
-            text = dialog.getText()
-            # cur_id = self.__db.getCursor().lastrowid
-            self.__leftSideBarWidget.addImageGroup(model, text, 0)
+        self.__db.insertConv('New Chat')
+        cur_id = self.__db.getCursor().lastrowid
+        self.__browser.resetChatWidget(cur_id)
+        self.__leftSideBarWidget.addImageGroup(cur_id)
+        self.__lineEdit.setFocus()
         print('addImageGroup')
 
     def __deleteImageGroup(self):

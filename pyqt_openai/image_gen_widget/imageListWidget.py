@@ -12,20 +12,17 @@ class ImageItemWidget(QWidget):
     btnClicked = Signal(QListWidgetItem)
     imageUpdated = Signal(int, str)
 
-    def __init__(self, model: str, text: str, item: QListWidgetItem, id):
+    def __init__(self, text: str, item: QListWidgetItem, id):
         super().__init__()
         self.__item = item
         self.__id = id
-        self.__initUi(model, text)
+        self.__initUi(text)
 
-    def __initUi(self, model, text):
+    def __initUi(self, text):
         self.__topicLbl = QLabel(text)
-        self.__modelLbl = QLabel(f'Model: {model}')
-        self.__modelLbl.setFont(QFont('Arial', 8))
 
         lay = QVBoxLayout()
         lay.addWidget(self.__topicLbl)
-        lay.addWidget(self.__modelLbl)
         lay.setContentsMargins(0, 0, 0, 0)
 
         leftWidget = QWidget()
@@ -96,11 +93,11 @@ class ImageListWidget(QListWidget):
         self.itemClicked.connect(self.__clicked)
         self.currentItemChanged.connect(self.changed)
 
-    def addImage(self, model: str, text: str, id: int):
+    def addImage(self, text: str, id: int):
         item = QListWidgetItem()
         item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
         item.setCheckState(Qt.Unchecked)
-        widget = ImageItemWidget(model, text, item, id)
+        widget = ImageItemWidget(text, item, id)
         widget.imageUpdated.connect(self.imageUpdated)
         item.setSizeHint(widget.sizeHint())
         item.setData(Qt.UserRole, id)

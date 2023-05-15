@@ -23,8 +23,8 @@ class SqliteDatabase:
         self.__image_unit_tb_nm = 'image_unit_tb'
 
         # info table names
-        self.__info_tb_nm = 'info_tb'
-        self.__completion_info_tb_nm = 'info_completion_tb'
+        self.__dall_e_info_tb_nm = 'dall_e_info_tb'
+        self.__stable_diffusion_info_tb_nm = 'stable_diffusion_tb'
 
         # model type (chat, etc.)
         self.__model_type = 1
@@ -40,8 +40,8 @@ class SqliteDatabase:
         
         # SD
         self.__image_sd_default_value = {
-            'height': '512',
-            'width': '512',
+            'height': 512,
+            'width': 512,
             'steps': 30,
             'samples': 1,
             'cfg_scale': 7,
@@ -50,8 +50,8 @@ class SqliteDatabase:
             'seed': 0, # random
         }
         
-        self.__each_info_dict = {1: [self.__info_tb_nm, self.__image_dall_e_default_value],
-                                 2: [self.__completion_info_tb_nm, self.__image_sd_default_value], }
+        self.__each_info_dict = {1: [self.__dall_e_info_tb_nm, self.__image_dall_e_default_value],
+                                 2: [self.__stable_diffusion_info_tb_nm, self.__image_sd_default_value], }
 
     def __initDb(self):
         try:
@@ -66,32 +66,26 @@ class SqliteDatabase:
             print(f"An error occurred while connecting to the database: {e}")
             raise
 
-    def __createChat(self):
+    def __createDallE(self):
         # Check if the table exists
-        self.__c.execute(f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{self.__info_tb_nm}'")
+        self.__c.execute(f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{self.__dall_e_info_tb_nm}'")
         if self.__c.fetchone()[0] == 1:
             # Check if each column already exists in the table
-            existing_columns = [row[1] for row in self.__c.execute(f"PRAGMA table_info({self.__info_tb_nm});")]
-            new_columns = [col for col in self.__chat_default_value.keys() if col not in existing_columns]
+            existing_columns = [row[1] for row in self.__c.execute(f"PRAGMA table_info({self.__dall_e_info_tb_nm});")]
+            new_columns = [col for col in self.__image_dall_e_default_value.keys() if col not in existing_columns]
             # Add the new columns if they don't already exist
             # TODO specify the type
             for col in new_columns:
-                d_value = self.__chat_default_value[col]
-                if isinstance(self.__chat_default_value[col], str):
-                    d_value = f'"{d_value}"' if len(self.__chat_default_value[col].split()) > 0 else d_value
-                self.__c.execute(f"ALTER TABLE {self.__info_tb_nm} ADD COLUMN {col} DEFAULT {d_value}")
+                d_value = self.__image_dall_e_default_value[col]
+                if isinstance(self.__image_dall_e_default_value[col], str):
+                    d_value = f'"{d_value}"' if len(self.__image_dall_e_default_value[col].split()) > 0 else d_value
+                self.__c.execute(f"ALTER TABLE {self.__dall_e_info_tb_nm} ADD COLUMN {col} DEFAULT {d_value}")
         else:
-            self.__c.execute(f'''CREATE TABLE {self.__info_tb_nm}
+            self.__c.execute(f'''CREATE TABLE {self.__dall_e_info_tb_nm}
                                      (id INTEGER PRIMARY KEY,
-                                      engine VARCHAR(50) DEFAULT '{self.__chat_default_value['engine']}',
-                                      system TEXT DEFAULT '{self.__chat_default_value['system']}',
-                                      temperature INTEGER DEFAULT {self.__chat_default_value['temperature']},
-                                      max_tokens INTEGER DEFAULT {self.__chat_default_value['max_tokens']},
-                                      top_p INTEGER DEFAULT {self.__chat_default_value['top_p']},
-                                      frequency_penalty INTEGER DEFAULT {self.__chat_default_value['frequency_penalty']},
-                                      presence_penalty INTEGER DEFAULT {self.__chat_default_value['presence_penalty']},
-                                      stream BOOL DEFAULT {self.__chat_default_value['stream']},
-
+                                      n TEXT DEFAULT '{self.__image_dall_e_default_value['n']}',
+                                      width INTEGER DEFAULT {self.__image_dall_e_default_value['width']},
+                                      height INTEGER DEFAULT {self.__image_dall_e_default_value['height']},
                                       update_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
                                       insert_dt DATETIME DEFAULT CURRENT_TIMESTAMP)''')
 
@@ -99,37 +93,34 @@ class SqliteDatabase:
             self.__conn.commit()
 
             # insert default record
-            self.__c.execute(f'''INSERT INTO {self.__info_tb_nm}
+            self.__c.execute(f'''INSERT INTO {self.__dall_e_info_tb_nm}
                                             (
-                                                engine,
-                                                system,
-                                                temperature,
-                                                max_tokens,
-                                                top_p,
-                                                frequency_penalty,
-                                                presence_penalty,
-                                                stream
+                                                n,
+                                                width,
+                                                height
                                             ) VALUES
                                             (
-                                                {','.join(['?' for _ in range(len(self.__chat_default_value))])}
+                                                {','.join(['?' for _ in range(len(self.__image_dall_e_default_value))])}
                                             )
-                                         ''', tuple(self.__chat_default_value.values()))
+                                         ''', tuple(self.__image_dall_e_default_value.values()))
 
-    def __createCompletion(self):
+    def __createStableDiffusion(self):
         # Check if the table exists
-        self.__c.execute(f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{self.__completion_info_tb_nm}'")
+        self.__c.execute(f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{self.__stable_diffusion_info_tb_nm}'")
         if self.__c.fetchone()[0] == 1:
             pass
         else:
-            self.__c.execute(f'''CREATE TABLE {self.__completion_info_tb_nm}
-                                             (id INTEGER PRIMARY KEY,
-                                              engine VARCHAR(50) DEFAULT '{self.__completion_default_value['engine']}',
-                                              temperature INTEGER DEFAULT {self.__completion_default_value['temperature']},
-                                              max_tokens INTEGER DEFAULT {self.__completion_default_value['max_tokens']},
-                                              top_p INTEGER DEFAULT {self.__completion_default_value['top_p']},
-                                              frequency_penalty INTEGER DEFAULT {self.__completion_default_value['frequency_penalty']},
-                                              presence_penalty INTEGER DEFAULT {self.__completion_default_value['presence_penalty']},
-
+            self.__c.execute(f'''CREATE TABLE {self.__stable_diffusion_info_tb_nm}
+                                             (
+                                                id INTEGER PRIMARY KEY,
+                                                height INTEGER DEFAULT '{self.__image_sd_default_value['height']},
+                                                width INTEGER DEFAULT '{self.__image_sd_default_value['width']},
+                                                steps INTEGER DEFAULT '{self.__image_sd_default_value['steps']},
+                                                samples INTEGER DEFAULT '{self.__image_sd_default_value['samples']},
+                                                cfg_scale INTEGER DEFAULT '{self.__image_sd_default_value['cfg_scale']},
+                                                engine VARCHAR(50) DEFAULT '{self.__image_sd_default_value['engine']},
+                                                sampler VARCHAR(50) DEFAULT '{self.__image_sd_default_value['sampler']},
+                                                seed INTEGER DEFAULT '{self.__image_sd_default_value['seed']},
                                               update_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
                                               insert_dt DATETIME DEFAULT CURRENT_TIMESTAMP)''')
 
@@ -137,24 +128,26 @@ class SqliteDatabase:
             self.__conn.commit()
 
             # insert default record
-            self.__c.execute(f'''INSERT INTO {self.__completion_info_tb_nm}
+            self.__c.execute(f'''INSERT INTO {self.__stable_diffusion_info_tb_nm}
                                                     (
+                                                        height,
+                                                        width,
+                                                        steps,
+                                                        samples,
+                                                        cfg_scale,
                                                         engine,
-                                                        temperature,
-                                                        max_tokens,
-                                                        top_p,
-                                                        frequency_penalty,
-                                                        presence_penalty
+                                                        sampler,
+                                                        seed
                                                     ) VALUES
                                                     (
-                                                        {','.join(['?' for _ in range(len(self.__completion_default_value))])}
+                                                        {','.join(['?' for _ in range(len(self.__image_sd_default_value))])}
                                                     )
-                                                 ''', tuple(self.__completion_default_value.values()))
+                                                 ''', tuple(self.__image_sd_default_value.values()))
 
     def __createInfo(self):
         try:
-            self.__createChat()
-            self.__createCompletion()
+            self.__createDallE()
+            self.__createStableDiffusion()
             # Commit the transaction
             self.__conn.commit()
         except sqlite3.Error as e:
@@ -197,10 +190,10 @@ class SqliteDatabase:
         """
         try:
             # filter bool type fields
-            bool_type_column = [row[1] for row in self.__c.execute(f'PRAGMA table_info({self.__info_tb_nm})').fetchall() if row[2] == 'BOOL']
+            bool_type_column = [row[1] for row in self.__c.execute(f'PRAGMA table_info({self.__dall_e_info_tb_nm})').fetchall() if row[2] == 'BOOL']
 
             # Execute the SELECT statement
-            self.__c.execute(f'SELECT {",".join(list(self.__chat_default_value.keys()))} FROM {self.__info_tb_nm}')
+            self.__c.execute(f'SELECT {",".join(list(self.__image_dall_e_default_value.keys()))} FROM {self.__dall_e_info_tb_nm}')
 
             # Get the column names
             column_names = [description[0] for description in self.__c.description]
@@ -224,12 +217,7 @@ class SqliteDatabase:
             raise
 
     def selectInfo(self, id=None):
-        """
-        select specific info
-        default value is 1 (chat - gpt3.5, gpt4, etc.)
-        """
         try:
-            # default value is 1 (chat - gpt3.5, gpt4, etc.)
             id = id if id else self.__model_type
 
             # filter bool type fields
