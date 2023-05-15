@@ -8,7 +8,7 @@ from pyqt_openai.image_gen_widget.explorerWidget import ExplorerWidget
 from pyqt_openai.image_gen_widget.thumbnailView import ThumbnailView
 
 
-class RightWidget(QWidget):
+class ViewWidget(QWidget):
     def __init__(self):
         super().__init__()
         self.__initUi()

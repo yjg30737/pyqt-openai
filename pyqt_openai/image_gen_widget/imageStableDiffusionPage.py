@@ -178,8 +178,20 @@ class ImageStableDiffusionPage(QWidget):
 
         self.setLayout(lay)
 
+        self.__loadApiKeyInIni()
+
     def __enableSubmitBtn(self):
+        f = self.__apiLineEdit.text().strip() != ''
         self.__submitBtn.setEnabled(self.__apiLineEdit.text().strip() != '')
+        if f:
+            self.__settings_struct.setValue('SD_API_KEY', self.__apiLineEdit.text().strip())
+
+    def __loadApiKeyInIni(self):
+        # this api key should be yours
+        if self.__settings_struct.contains('SD_API_KEY'):
+            self.__apiLineEdit.setText(self.__settings_struct.value('SD_API_KEY'))
+        else:
+            self.__settings_struct.setValue('SD_API_KEY', '')
 
     def __submit(self):
         stability_api = client.StabilityInference(

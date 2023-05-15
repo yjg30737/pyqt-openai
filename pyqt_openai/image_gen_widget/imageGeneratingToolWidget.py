@@ -1,11 +1,13 @@
 import sys
 
+from qtpy.QtGui import QFont
 from qtpy.QtCore import Qt, Signal
-from qtpy.QtWidgets import QApplication, QHBoxLayout, QVBoxLayout, QFrame, QWidget
+from qtpy.QtWidgets import QApplication, QLabel, QHBoxLayout, QVBoxLayout, QFrame, QWidget
 from qtpy.QtWidgets import QSplitter
 
 from pyqt_openai.image_gen_widget.leftSideBar import LeftSideBar
-from pyqt_openai.image_gen_widget.rightWidget import RightWidget
+from pyqt_openai.image_gen_widget.rightSideBar import RightSideBar
+from pyqt_openai.image_gen_widget.viewWidget import ViewWidget
 from pyqt_openai.svgButton import SvgButton
 
 
@@ -18,16 +20,17 @@ class ImageGeneratingToolWidget(QWidget):
 
     def __initUi(self):
         self.__leftSideBarWidget = LeftSideBar()
-        self.__leftSideBarWidget.notifierWidgetActivated.connect(self.notifierWidgetActivated)
 
-        self.__rightWidget = RightWidget()
-        self.__leftSideBarWidget.submitDallE.connect(self.__rightWidget.showDallEResult)
-        self.__leftSideBarWidget.submitSd.connect(self.__rightWidget.showSdResult)
+        self.__viewWidget = ViewWidget()
+        self.__rightSideBarWidget = RightSideBar()
+        self.__rightSideBarWidget.notifierWidgetActivated.connect(self.notifierWidgetActivated)
+        self.__rightSideBarWidget.submitDallE.connect(self.__viewWidget.showDallEResult)
+        self.__rightSideBarWidget.submitSd.connect(self.__viewWidget.showSdResult)
 
         self.__sideBarBtn = SvgButton()
         self.__sideBarBtn.setIcon('ico/sidebar.svg')
         self.__sideBarBtn.setCheckable(True)
-        self.__sideBarBtn.setToolTip('Settings')
+        self.__sideBarBtn.setToolTip('Chat List')
         self.__sideBarBtn.setChecked(True)
         self.__sideBarBtn.toggled.connect(self.__leftSideBarWidget.setVisible)
 
@@ -36,10 +39,18 @@ class ImageGeneratingToolWidget(QWidget):
         self.__historyBtn.setCheckable(True)
         self.__historyBtn.setToolTip('History')
         self.__historyBtn.setChecked(True)
-        self.__historyBtn.toggled.connect(self.__rightWidget.getExplorerWidget().setVisible)
+        self.__historyBtn.toggled.connect(self.__viewWidget.getExplorerWidget().setVisible)
+
+        self.__settingBtn = SvgButton()
+        self.__settingBtn.setIcon('ico/setting.svg')
+        self.__settingBtn.setCheckable(True)
+        self.__settingBtn.setToolTip('Settings')
+        self.__settingBtn.setChecked(True)
+        self.__settingBtn.toggled.connect(self.__rightSideBarWidget.setVisible)
 
         lay = QHBoxLayout()
         lay.addWidget(self.__sideBarBtn)
+        lay.addWidget(self.__settingBtn)
         lay.addWidget(self.__historyBtn)
         lay.setContentsMargins(2, 2, 2, 2)
         lay.setAlignment(Qt.AlignLeft)
@@ -54,8 +65,9 @@ class ImageGeneratingToolWidget(QWidget):
 
         mainWidget = QSplitter()
         mainWidget.addWidget(self.__leftSideBarWidget)
-        mainWidget.addWidget(self.__rightWidget)
-        mainWidget.setSizes([300, 700])
+        mainWidget.addWidget(self.__viewWidget)
+        mainWidget.addWidget(self.__rightSideBarWidget)
+        mainWidget.setSizes([100, 700, 200])
         mainWidget.setChildrenCollapsible(False)
         mainWidget.setHandleWidth(2)
         mainWidget.setStyleSheet(
@@ -79,7 +91,7 @@ class ImageGeneratingToolWidget(QWidget):
         self.__menuWidget.setVisible(f)
 
     def setAIEnabled(self, f):
-        self.__leftSideBarWidget.setEnabled(f)
+        self.__rightSideBarWidget.setEnabled(f)
 
 
 if __name__ == "__main__":
