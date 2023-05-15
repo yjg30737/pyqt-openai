@@ -22,8 +22,8 @@ class LeftSideBar(QWidget):
 
     def __initUi(self):
         searchBar = SearchBar()
-        # searchBar.searched.connect(self.__search)
-        searchBar.setPlaceHolder('Search the Imageersation...')
+        searchBar.searched.connect(self.__search)
+        searchBar.setPlaceHolder('Search the image group...')
 
         self.__addBtn = SvgButton()
         self.__delBtn = SvgButton()
@@ -37,12 +37,12 @@ class LeftSideBar(QWidget):
         self.__delBtn.setToolTip('Delete')
         self.__saveBtn.setToolTip('Save')
 
-        # self.__addBtn.clicked.connect(self.__addClicked)
-        # self.__delBtn.clicked.connect(self.__deleteClicked)
-        # self.__saveBtn.clicked.connect(self.__saveClicked)
+        self.__addBtn.clicked.connect(self.__addClicked)
+        self.__delBtn.clicked.connect(self.__deleteClicked)
+        self.__saveBtn.clicked.connect(self.__saveClicked)
 
         self.__allCheckBox = QCheckBox('Check All')
-        # self.__allCheckBox.stateChanged.connect(self.__stateChanged)
+        self.__allCheckBox.stateChanged.connect(self.__stateChanged)
 
         lay = QHBoxLayout()
         lay.addWidget(self.__allCheckBox)
@@ -73,34 +73,33 @@ class LeftSideBar(QWidget):
 
         self.setLayout(lay)
 
-    # def __addClicked(self):
-    #     self.added.emit()
-    # 
-    # def addToList(self, id):
-    #     self.__imageListWidget.addImage('New Chat', id)
-    #     self.__imageListWidget.setCurrentRow(0)
+    def __addClicked(self):
+        self.added.emit()
+
+    def addImageGroup(self, model, text, id):
+        self.__imageListWidget.addImage(model, text, id)
+        self.__imageListWidget.setCurrentRow(0)
     # 
     # def isCurrentImageExists(self):
     #     return self.__imageListWidget.count() > 0 and self.__imageListWidget.currentItem()
     # 
-    # def __deleteClicked(self):
-    #     # get the ID of row, not actual index (because list is in a stacked form)
-    #     rows = self.__imageListWidget.getCheckedRowsIds()
-    #     self.__imageListWidget.removeCheckedRows()
-    #     self.deleted.emit(rows)
-    #     self.__allCheckBox.setChecked(False)
+    def __deleteClicked(self):
+        # get the ID of row, not actual index (because list is in a stacked form)
+        rows = self.__imageListWidget.getCheckedRowsIds()
+        self.__imageListWidget.removeCheckedRows()
+        self.deleted.emit(rows)
+        self.__allCheckBox.setChecked(False)
+    def __saveClicked(self):
+        self.export.emit(self.__imageListWidget.getUncheckedRowsIds())
     # 
-    # def __saveClicked(self):
-    #     self.export.emit(self.__imageListWidget.getUncheckedRowsIds())
+    def __stateChanged(self, f):
+        self.__imageListWidget.toggleState(f)
     # 
-    # def __stateChanged(self, f):
-    #     self.__imageListWidget.toggleState(f)
-    # 
-    # def __search(self, text):
-    #     for i in range(self.__imageListWidget.count()):
-    #         item = self.__imageListWidget.item(i)
-    #         widget = self.__imageListWidget.itemWidget(item)
-    #         item.setHidden(False if text.lower() in widget.text().lower() else True)
+    def __search(self, text):
+        for i in range(self.__imageListWidget.count()):
+            item = self.__imageListWidget.item(i)
+            widget = self.__imageListWidget.itemWidget(item)
+            item.setHidden(False if text.lower() in widget.text().lower() else True)
     # 
     # def initHistory(self, db):
     #     try:

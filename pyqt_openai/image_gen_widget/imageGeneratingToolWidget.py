@@ -1,11 +1,13 @@
 import sys
 
+from PyQt5.QtWidgets import QDialog
 from qtpy.QtGui import QFont
 from qtpy.QtCore import Qt, Signal
 from qtpy.QtWidgets import QApplication, QLabel, QHBoxLayout, QVBoxLayout, QFrame, QWidget
 from qtpy.QtWidgets import QSplitter
 
 from pyqt_openai.image_gen_widget.leftSideBar import LeftSideBar
+from pyqt_openai.image_gen_widget.newImageGroupDialog import NewImageGroupDialog
 from pyqt_openai.image_gen_widget.rightSideBar import RightSideBar
 from pyqt_openai.image_gen_widget.viewWidget import ViewWidget
 from pyqt_openai.svgButton import SvgButton
@@ -20,6 +22,11 @@ class ImageGeneratingToolWidget(QWidget):
 
     def __initUi(self):
         self.__leftSideBarWidget = LeftSideBar()
+        self.__leftSideBarWidget.added.connect(self.__addImageGroup)
+        self.__leftSideBarWidget.deleted.connect(self.__deleteImageGroup)
+        # changed
+        # imageUpdated
+        self.__leftSideBarWidget.export.connect(self.__exportImageGroup)
 
         self.__viewWidget = ViewWidget()
         self.__rightSideBarWidget = RightSideBar()
@@ -92,6 +99,22 @@ class ImageGeneratingToolWidget(QWidget):
 
     def setAIEnabled(self, f):
         self.__rightSideBarWidget.setEnabled(f)
+
+    def __addImageGroup(self):
+        dialog = NewImageGroupDialog(self)
+        reply = dialog.exec()
+        if reply == QDialog.Accepted:
+            model = dialog.getModel()
+            text = dialog.getText()
+            # cur_id = self.__db.getCursor().lastrowid
+            self.__leftSideBarWidget.addImageGroup(model, text, 0 )
+        print('addImageGroup')
+
+    def __deleteImageGroup(self):
+        print('deleteImageGroup')
+
+    def __exportImageGroup(self):
+        print('exportImageGroup')
 
 
 if __name__ == "__main__":

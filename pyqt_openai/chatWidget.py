@@ -82,7 +82,6 @@ class ChatBrowser(QScrollArea):
             self.verticalScrollBar().setSliderPosition(self.verticalScrollBar().maximum())
         return super().event(e)
 
-    # TODO distinguish the image response
     def getAllText(self):
         all_text_lst = []
         lay = self.getChatWidget().layout()
