@@ -81,7 +81,7 @@ class PropPage(QWidget):
             self.updated.emit(prompt_text)
 
     def __add(self):
-        dialog = InputDialog('Name', '')
+        dialog = InputDialog('Name', '', self)
         reply = dialog.exec()
         if reply == QDialog.Accepted:
             text = dialog.getText()

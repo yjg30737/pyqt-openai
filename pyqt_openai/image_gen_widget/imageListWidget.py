@@ -8,9 +8,9 @@ from pyqt_openai.inputDialog import InputDialog
 from pyqt_openai.svgButton import SvgButton
 
 
-class ConvItemWidget(QWidget):
+class ImageItemWidget(QWidget):
     btnClicked = Signal(QListWidgetItem)
-    convUpdated = Signal(int, str)
+    imageUpdated = Signal(int, str)
 
     def __init__(self, text: str, item: QListWidgetItem, id):
         super().__init__()
@@ -78,11 +78,12 @@ class ConvItemWidget(QWidget):
         if reply == QDialog.Accepted:
             text = dialog.getText()
             self.__topicLbl.setText(text)
-            self.convUpdated.emit(self.__id, text)
+            self.imageUpdated.emit(self.__id, text)
 
-class ConvListWidget(QListWidget):
+
+class ImageListWidget(QListWidget):
     changed = Signal(QListWidgetItem)
-    convUpdated = Signal(int, str)
+    imageUpdated = Signal(int, str)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -92,12 +93,12 @@ class ConvListWidget(QListWidget):
         self.itemClicked.connect(self.__clicked)
         self.currentItemChanged.connect(self.changed)
 
-    def addConv(self, text: str, id: int):
+    def addImage(self, text: str, id: int):
         item = QListWidgetItem()
         item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
         item.setCheckState(Qt.Unchecked)
-        widget = ConvItemWidget(text, item, id)
-        widget.convUpdated.connect(self.convUpdated)
+        widget = ImageItemWidget(text, item, id)
+        widget.imageUpdated.connect(self.imageUpdated)
         item.setSizeHint(widget.sizeHint())
         item.setData(Qt.UserRole, id)
         self.insertItem(0, item)
@@ -106,7 +107,7 @@ class ConvListWidget(QListWidget):
     def __clicked(self, item):
         potentialChkBoxWidgetInItem = QApplication.widgetAt(self.cursor().pos())
         if isinstance(potentialChkBoxWidgetInItem, QWidget) and potentialChkBoxWidgetInItem.children():
-            if isinstance(potentialChkBoxWidgetInItem.children()[0], ConvItemWidget):
+            if isinstance(potentialChkBoxWidgetInItem.children()[0], ImageItemWidget):
                 if item.listWidget().itemWidget(item) != None:
                     if item.checkState() == Qt.Checked:
                         item.setCheckState(Qt.Unchecked)
