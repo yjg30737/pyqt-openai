@@ -36,7 +36,7 @@ Some of the features are still being tested.
 I recommend to install sqlite management software. It's not necessary to run this app (obviously), but it's good practice to manage database about conversation history with AI and to know how this works.
 
 ## Feature
-* basically this is <b>desktop application version of ChatGPT</b>
+* basically this is <b>desktop application version of ChatGPT</b> with image generation tool. 
   * text streaming (enable by default, you can disable it)
   * AI remembers past conversation
 * conversation management
