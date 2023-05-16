@@ -63,7 +63,7 @@ I recommend to install sqlite management software. It's not necessary to run thi
 This is using GPT-3.5 turbo model by default. 
 
 ### Homepage
-#### Note: Some of these previews are not the latest.
+#### Note: Some of these previews are not the latest. This package is keep updating rapidly, so i maybe not afford to change each preview every single time. Please understand this 😅
 ![image](https://user-images.githubusercontent.com/55078043/236657804-bf299150-961a-4f80-9820-b45401f8bb7c.png)
 <b>You have to write your openai api key inside the red box.</b> see [How to play](#how-to-play)
 
