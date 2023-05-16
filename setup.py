@@ -28,6 +28,7 @@ setup(
         'qtpy',
         'aiohttp',
         'openai',
-        'pyperclip'
+        'pyperclip',
+        'stability_sdk'
     ]
 )
