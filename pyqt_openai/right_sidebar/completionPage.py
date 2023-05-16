@@ -46,8 +46,7 @@ class CompletionPage(QWidget):
         seeEveryModelCheckBoxLbl = SvgLabel()
         seeEveryModelCheckBoxLbl.setSvgFile('ico/help.svg')
         seeEveryModelCheckBoxLbl.setToolTip(
-            '''Check this box to show all models, including obsolete ones. If you don\'t check this, combobox lists <a href="https://platform.openai.com/docs/models/gpt-3-5">latest models.</a>''')
-        seeEveryModelCheckBoxLbl.installEventFilter(self)
+            '''Check this box to show all models, including obsolete ones. \nIf you don\'t check this, combobox lists latest models.''')
 
         lay = QHBoxLayout()
         lay.addWidget(seeEveryModelCheckBox)

@@ -43,27 +43,14 @@ class ChatBrowser(QScrollArea):
     def getChatWidget(self):
         return self.__chatWidget
 
-    def showLabel(self, text, user_f, stream_f, image_f):
-        if image_f:
-            self.showImage(text, user_f)
-        else:
-            self.showText(text, stream_f, user_f)
+    def showLabel(self, text, user_f, stream_f):
+        self.showText(text, stream_f, user_f)
         if not stream_f:
             # change user_f type from bool to int to insert in db
             self.convUnitUpdated.emit(self.__cur_id, int(user_f), text)
 
     def streamFinished(self):
         self.convUnitUpdated.emit(self.__cur_id, 0, self.getLastResponse())
-
-    def showImage(self, image_url, user_f):
-        chatLbl = QLabel()
-        response = requests.get(image_url)
-        pixmap = QPixmap()
-        pixmap.loadFromData(response.content)
-        pixmap = pixmap.scaled(chatLbl.width(), chatLbl.height())
-        chatLbl.setPixmap(pixmap)
-        chatLbl.setStyleSheet('QLabel { background-color: #DDD; padding: 1em }')
-        self.getChatWidget().layout().addWidget(chatLbl)
 
     def showText(self, text, stream_f, user_f):
         if self.widget().currentWidget() == self.__chatWidget:
@@ -95,7 +82,6 @@ class ChatBrowser(QScrollArea):
             self.verticalScrollBar().setSliderPosition(self.verticalScrollBar().maximum())
         return super().event(e)
 
-    # TODO distinguish the image response
     def getAllText(self):
         all_text_lst = []
         lay = self.getChatWidget().layout()

@@ -74,7 +74,7 @@ class TemplatePage(QWidget):
         self.updated.emit(content, variable)
 
     def __add(self):
-        dialog = InputDialog('Content', '')
+        dialog = InputDialog('Content', '', self)
         reply = dialog.exec()
         if reply == QDialog.Accepted:
             text = dialog.getText()
