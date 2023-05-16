@@ -5,7 +5,7 @@
 
 Example of using OpenAI with PyQt (Python cross-platform GUI toolkit)
 
-This shows an example of using OpenAI with PyQt as a chatbot.
+This shows an example of using OpenAI with PyQt as a chatbot and using DALL-E or Stable Diffusion as a image generation tool.
 
 Even though this project has become too huge to be called an 'example'.
 
@@ -15,7 +15,11 @@ If you want to study openai with Python-only good old desktop software, this is 
 
 The OpenAI model this package uses is the <a href="https://platform.openai.com/docs/models/gpt-3-5">gpt-3.5-turbo</a> model(which is nearly as functional as <b>ChatGPT</b>) by default. You can use gpt-4 as well.
 
-Image generation feature available since v0.0.16. You can see the detail in <a href="https://platform.openai.com/docs/guides/images/introduction">official OpenAI</a> site. Currently this feature is very basic now.
+Image generation feature(DALL-E and Stable Diffusion) available since v0.1.4.
+
+<b>Stable Diffusion</b> used [DreamStudio API](https://dreamstudio.ai/). This is not entirely free like stable-diffusion-webgui. 
+
+But this is very lightweight and more accessible. don't need CUDA, torch, expansive PC, anything.
 
 This is using <b>sqlite</b> as a database.
 
