@@ -111,7 +111,8 @@ python setup.py install
 That will install the openai.
 
 ## TODO list
-* support Stable Diffusion
+* auto-complete prompt command
+* DB for images (to further experiement of both DALL-E and Stable Diffusion or other image generation engine)
 * show the explanation of every model and terms related to AI (e.g. temperature, topp..)
 * save conversation history with other format (xlsx, csv, etc.)
 * tokenizer
