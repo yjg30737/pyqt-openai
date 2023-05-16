@@ -43,20 +43,23 @@ I recommend to install sqlite management software. It's not necessary to run thi
 * support GPT-4 and every other models below GPT3
 * support prompt generator (manageable)
 * support beginning and ending part of the prompt
-* support image generation with DALL-E
 * you can run this in background application
   * notification will pop up when response is generated
 * you can make window stack on top or control its transparency
+* image generation (DALL-E, Stable Diffusion with DreamStudio API)
 
 ## Requirements
 * qtpy - the package allowing you to write code that works with both PyQt and PySide
 * PyQt5 >= 5.14 or PySide6
 * openai
+* pyperclip - to copy prompt template from prompt generator
+* stability_sdk - for Stable Diffusion
 
 ## Preview
 This is using GPT-3.5 turbo model by default. 
 
 ### Homepage
+#### Note: Some of these previews are not the latest.
 ![image](https://user-images.githubusercontent.com/55078043/236657804-bf299150-961a-4f80-9820-b45401f8bb7c.png)
 <b>You have to write your openai api key inside the red box.</b> see [How to play](#how-to-play)
 
@@ -75,7 +78,12 @@ https://user-images.githubusercontent.com/55078043/236584481-b7bb5246-6bf4-4343-
 #### Preview 2 (v0.1.3)
 https://user-images.githubusercontent.com/55078043/236658468-9947a417-99b3-4e44-8849-a676308a0239.mp4
 
-So sorry to weak preview, but i have a lot of idea about this prompt generator! Just wait. 
+So sorry to weak preview, but i have a lot of idea about this prompt generator! Just wait.
+
+#### Image Generation
+![image](https://github.com/yjg30737/pyqt-openai/assets/55078043/6fd4143f-1d32-4cfc-9182-991fad6f3757)
+
+Again, weak preview (i just gave prompt text as "A" which is pathetic) but please consider this is very first version of sd image generation (v0.1.4) so just wait
 
 ## How to play
 1. git clone ~
