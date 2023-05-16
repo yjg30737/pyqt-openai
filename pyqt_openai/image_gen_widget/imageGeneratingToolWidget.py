@@ -21,7 +21,9 @@ class ImageGeneratingToolWidget(QWidget):
         self.__initUi()
 
     def __initUi(self):
+        # TODO
         self.__leftSideBarWidget = LeftSideBar()
+        self.__leftSideBarWidget.setVisible(False)
         self.__leftSideBarWidget.added.connect(self.__addImageGroup)
         self.__leftSideBarWidget.deleted.connect(self.__deleteImageGroup)
         # changed
@@ -56,7 +58,7 @@ class ImageGeneratingToolWidget(QWidget):
         self.__settingBtn.toggled.connect(self.__rightSideBarWidget.setVisible)
 
         lay = QHBoxLayout()
-        lay.addWidget(self.__sideBarBtn)
+        # lay.addWidget(self.__sideBarBtn)
         lay.addWidget(self.__settingBtn)
         lay.addWidget(self.__historyBtn)
         lay.setContentsMargins(2, 2, 2, 2)
@@ -118,11 +120,12 @@ class ImageGeneratingToolWidget(QWidget):
         # DALL-E
         if isinstance(arg, str):
             self.__viewWidget.showDallEResult(arg)
-            self.__leftSideBarWidget.addImageGroup('DALL-E', 'New Image Group', 0)
+            # TODO
+            # self.__leftSideBarWidget.addImageGroup('DALL-E', 'New Image Group', 0)
         # SD
         elif isinstance(arg, bytes):
             self.__viewWidget.showSdResult(arg)
-            self.__leftSideBarWidget.addImageGroup('Stable Diffusion', 'New Image Group', 0)
+            # self.__leftSideBarWidget.addImageGroup('Stable Diffusion', 'New Image Group', 0)
 
 
 if __name__ == "__main__":
