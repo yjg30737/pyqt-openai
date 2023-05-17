@@ -256,9 +256,15 @@ class Prompt(QWidget):
         endingAction.setCheckable(True)
         endingAction.toggled.connect(self.__showEnding)
 
+        supportPromptCommandAction = QAction('Support Prompt Command', self)
+        supportPromptCommandAction.setShortcut('Ctrl+Shift+P')
+        supportPromptCommandAction.setCheckable(True)
+        supportPromptCommandAction.toggled.connect(self.__supportPromptCommand)
+
         # Add the actions to the menu
         menu.addAction(beginningAction)
         menu.addAction(endingAction)
+        menu.addAction(supportPromptCommandAction)
 
         # Connect the button to the menu
         settingsBtn.setMenu(menu)
@@ -295,6 +301,9 @@ class Prompt(QWidget):
 
     def __showEnding(self, f):
         self.__textEditGroup.getGroup()[-1].setVisible(f)
+
+    def __supportPromptCommand(self, f):
+        print(f)
 
 
 
