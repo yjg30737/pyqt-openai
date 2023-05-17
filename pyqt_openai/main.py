@@ -7,6 +7,7 @@ from qtpy.QtWidgets import QMainWindow, QToolBar, QHBoxLayout, QDialog, QLineEdi
     QMessageBox, QCheckBox
 from qtpy.QtCore import Qt, QCoreApplication, QSettings
 
+from pyqt_openai.aboutDialog import AboutDialog
 from pyqt_openai.customizeDialog import CustomizeDialog
 from pyqt_openai.svgButton import SvgButton
 from pyqt_openai.image_gen_widget.imageGeneratingToolWidget import ImageGeneratingToolWidget
@@ -240,7 +241,8 @@ class MainWindow(QMainWindow):
             self.__apiCheckPreviewLbl.show()
 
     def __showAboutDialog(self):
-        print('__showAboutDialog')
+        aboutDialog = AboutDialog()
+        aboutDialog.exec()
 
     def __stackToggle(self, f):
         if f:
