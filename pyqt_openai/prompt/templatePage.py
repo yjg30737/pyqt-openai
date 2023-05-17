@@ -35,8 +35,8 @@ class TemplatePage(QWidget):
         # QSqlTableModel
         self.__templateTable = QTableWidget()
         self.__templateTable.setColumnCount(2)
-        self.__templateTable.setHorizontalHeaderLabels(['Content', 'Variables'])
-        self.__templateTable.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
+        self.__templateTable.setHorizontalHeaderLabels(['Name', 'Content'])
+        self.__templateTable.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
         self.__templateTable.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.__templateTable.currentItemChanged.connect(self.__rowChanged)
 
@@ -58,9 +58,11 @@ class TemplatePage(QWidget):
         self.__templateTable.setRowCount(len(sampleTemplateItems))
         for i in range(len(sampleTemplateItems)):
             content = sampleTemplateItems[i]
-            self.__templateTable.setItem(i, 0, QTableWidgetItem(content))
+            content_item = QTableWidgetItem(f'Sample {i}')
+            content_item.setTextAlignment(Qt.AlignCenter)
+            self.__templateTable.setItem(i, 0, content_item)
+            self.__templateTable.setItem(i, 1, QTableWidgetItem(content))
             # variable = content.find()
-            self.__templateTable.setItem(i, 1, QTableWidgetItem('topic or skill'))
 
         lay = QVBoxLayout()
         lay.addWidget(topWidget)
@@ -69,23 +71,24 @@ class TemplatePage(QWidget):
         self.setLayout(lay)
 
     def __rowChanged(self, new_item: QTableWidgetItem, old_item: QTableWidgetItem):
-        content = self.__templateTable.item(new_item.row(), 0).text() if new_item.column() == 1 else new_item.text()
-        variable = self.__templateTable.item(new_item.row(), 1).text()
-        self.updated.emit(content, variable)
+        name = self.__templateTable.item(new_item.row(), 0).text()
+        content = self.__templateTable.item(new_item.row(), 1).text() if new_item.column() == 0 else new_item.text()
+        self.updated.emit(content, name)
 
     def __add(self):
-        dialog = InputDialog('Content', '', self)
+        dialog = InputDialog('Name', '', self)
         reply = dialog.exec()
         if reply == QDialog.Accepted:
             text = dialog.getText()
             self.__templateTable.setRowCount(self.__templateTable.rowCount()+1)
+
             item1 = QTableWidgetItem(text)
             item1.setTextAlignment(Qt.AlignCenter)
             self.__templateTable.setItem(self.__templateTable.rowCount()-1, 0, item1)
 
-            item2 = QTableWidgetItem('')
-            item2.setTextAlignment(Qt.AlignCenter)
-            self.__templateTable.setItem(self.__templateTable.rowCount()-1, 1, item2)
+            item1 = QTableWidgetItem('')
+            item1.setTextAlignment(Qt.AlignCenter)
+            self.__templateTable.setItem(self.__templateTable.rowCount()-1, 1, item1)
 
     def __delete(self):
         for i in sorted(set([i.row() for i in self.__templateTable.selectedIndexes()]), reverse=True):

@@ -1,9 +1,5 @@
 import pyperclip
-
-from qtpy.QtWidgets import QApplication, QTextBrowser, QWidget, QTextEdit, QLabel, QVBoxLayout, QLineEdit, \
-    QFormLayout, QTableWidget, QPushButton, QTabWidget, QScrollArea
-
-from qtpy.QtGui import QTextCursor
+from qtpy.QtWidgets import QTextBrowser, QWidget, QLabel, QVBoxLayout, QPushButton, QTabWidget, QScrollArea
 
 from pyqt_openai.prompt.propPage import PropPage
 from pyqt_openai.prompt.templatePage import TemplatePage
