@@ -10,7 +10,6 @@ class AboutDialog(QDialog):
 
     def __initUi(self):
         self.setWindowTitle('About')
-        self.setWindowIcon(QIcon('ico/openai.svg'))
         self.setWindowFlags(Qt.Window | Qt.WindowCloseButtonHint)
 
         self.__okBtn = QPushButton('OK')
