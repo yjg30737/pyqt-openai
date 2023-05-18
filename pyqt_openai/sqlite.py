@@ -219,7 +219,7 @@ class SqliteDatabase:
 
             self.insertPropPromptGroup('Default')
 
-    def createDefaultPropPromptAttribute(self, id_fk):
+    def createDefaultPropPromptAttributes(self, id_fk):
         self.__c.execute(
             f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{self.__prop_prompt_unit_tb_nm}{id_fk}'")
         if self.__c.fetchone()[0] == 1:
@@ -242,6 +242,40 @@ class SqliteDatabase:
             for obj in self.__prop_prompt_unit_default_value:
                 lst = [id_fk] + list(tuple(obj.values()))
                 self.__c.execute(f"INSERT INTO {self.__prop_prompt_unit_tb_nm}{id_fk} (id_fk, name, text) VALUES (?, ?, ?)", tuple(lst))
+
+    def selectPropPromptAttribute(self, id):
+        try:
+            self.__c.execute(f'SELECT * FROM {self.__prop_prompt_unit_tb_nm}{id}')
+            return self.__c.fetchall()
+        except sqlite3.Error as e:
+            print(f"An error occurred: {e}")
+            raise
+
+    def insertPropPromptAttribute(self, id, name):
+        try:
+            # Insert a row into the table
+            self.__c.execute(f'INSERT INTO {self.__prop_prompt_unit_tb_nm}{id} (id_fk, name) VALUES (?, ?)', (id, name,))
+            # Commit the transaction
+            self.__conn.commit()
+        except sqlite3.Error as e:
+            print(f"An error occurred: {e}")
+            raise
+
+    def updatePropPromptAttribute(self, p_id, id, name, text):
+        try:
+            self.__c.execute(f'UPDATE {self.__prop_prompt_unit_tb_nm}{p_id} SET name=?, text=? WHERE id={id}', (name, text))
+            self.__conn.commit()
+        except sqlite3.Error as e:
+            print(f"An error occurred: {e}")
+            raise
+
+    def deletePropPromptAttribute(self, p_id, id):
+        try:
+            self.__c.execute(f'DELETE FROM {self.__prop_prompt_unit_tb_nm}{p_id} WHERE id={id}')
+            self.__conn.commit()
+        except sqlite3.Error as e:
+            print(f"An error occurred: {e}")
+            raise
 
     def selectPropPromptGroup(self):
         try:
@@ -267,7 +301,7 @@ class SqliteDatabase:
             # Commit the transaction
             self.__conn.commit()
             # insert default attributes
-            self.createDefaultPropPromptAttribute(new_id)
+            self.createDefaultPropPromptAttributes(new_id)
         except sqlite3.Error as e:
             print(f"An error occurred: {e}")
             raise
@@ -308,6 +342,13 @@ class SqliteDatabase:
             for obj in self.__template_prompt_default_value:
                 self.__c.execute(f"INSERT INTO {self.__template_prompt_tb_nm} (name, text) VALUES (?, ?)", tuple(obj.values()))
 
+    def selectTemplatePrompt(self):
+        try:
+            self.__c.execute(f'SELECT * FROM {self.__prop_prompt_group_tb_nm}')
+            return self.__c.fetchall()
+        except sqlite3.Error as e:
+            print(f"An error occurred: {e}")
+            raise
 
     def insertTemplatePrompt(self, name):
         try:
@@ -317,8 +358,6 @@ class SqliteDatabase:
             new_id = self.__c.lastrowid
             # Commit the transaction
             self.__conn.commit()
-            # insert default attributes
-            self.createDefaultPropPromptAttribute(new_id)
         except sqlite3.Error as e:
             print(f"An error occurred: {e}")
             raise
@@ -345,7 +384,8 @@ class SqliteDatabase:
             # chat and completion information
             self.__createChat()
             self.__createCompletion()
-            # prompt information (default)
+
+            # prompt information
             self.__createPropPromptGroup()
             self.__createTemplatePrompt()
 
