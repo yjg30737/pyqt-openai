@@ -30,7 +30,7 @@ class SqliteDatabase:
         self.__prop_prompt_group_tb_nm = 'prop_prompt_grp_tb'
         self.__prop_prompt_unit_tb_nm = 'prop_prompt_unit_tb'
 
-        self.__template_prompt_grp_tb_nm = 'template_prompt_grp_tb'
+        self.__template_prompt_tb_nm = 'template_prompt_tb'
 
         # model type (chat, etc.)
         self.__model_type = 1
@@ -288,13 +288,13 @@ class SqliteDatabase:
             print(f"An error occurred: {e}")
             raise
 
-    def __createTemplatePromptInfo(self):
+    def __createTemplatePrompt(self):
         self.__c.execute(
-            f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{self.__template_prompt_grp_tb_nm}'")
+            f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{self.__template_prompt_tb_nm}'")
         if self.__c.fetchone()[0] == 1:
             pass
         else:
-            self.__c.execute(f'''CREATE TABLE {self.__template_prompt_grp_tb_nm}
+            self.__c.execute(f'''CREATE TABLE {self.__template_prompt_tb_nm}
                                                  (id INTEGER PRIMARY KEY,
                                                   name VARCHAR(50),
                                                   text TEXT,
@@ -306,7 +306,39 @@ class SqliteDatabase:
 
             # insert default template set
             for obj in self.__template_prompt_default_value:
-                self.__c.execute(f"INSERT INTO {self.__template_prompt_grp_tb_nm} (name, text) VALUES (?, ?)", tuple(obj.values()))
+                self.__c.execute(f"INSERT INTO {self.__template_prompt_tb_nm} (name, text) VALUES (?, ?)", tuple(obj.values()))
+
+
+    def insertTemplatePrompt(self, name):
+        try:
+            # Insert a row into the table
+            self.__c.execute(f"INSERT INTO {self.__template_prompt_tb_nm} (name, text) VALUES (?, ?)",
+                             (name, ''))
+            new_id = self.__c.lastrowid
+            # Commit the transaction
+            self.__conn.commit()
+            # insert default attributes
+            self.createDefaultPropPromptAttribute(new_id)
+        except sqlite3.Error as e:
+            print(f"An error occurred: {e}")
+            raise
+
+    def updateTemplatePrompt(self, id, name, text):
+        try:
+            self.__c.execute(f'UPDATE {self.__template_prompt_tb_nm} SET name=(?) '
+                             f'text=(?) WHERE id={id}', (name, text))
+            self.__conn.commit()
+        except sqlite3.Error as e:
+            print(f"An error occurred: {e}")
+            raise
+
+    def deleteTemplatePrompt(self, id):
+        try:
+            self.__c.execute(f'DELETE FROM {self.__template_prompt_tb_nm} WHERE id={id}')
+            self.__conn.commit()
+        except sqlite3.Error as e:
+            print(f"An error occurred: {e}")
+            raise
 
     def __createInfo(self):
         try:
@@ -315,7 +347,7 @@ class SqliteDatabase:
             self.__createCompletion()
             # prompt information (default)
             self.__createPropPromptGroup()
-            self.__createTemplatePromptInfo()
+            self.__createTemplatePrompt()
 
             # Commit the transaction
             self.__conn.commit()
