@@ -1,6 +1,21 @@
-from PyQt5.QtGui import QIcon, QPixmap
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QDialog, QPushButton, QHBoxLayout, QWidget, QVBoxLayout, QLabel
+from qtpy.QtCore import Qt, QUrl
+from qtpy.QtGui import QPixmap, QDesktopServices
+from qtpy.QtWidgets import QDialog, QPushButton, QHBoxLayout, QWidget, QVBoxLayout, QLabel
+
+from pyqt_openai.svgLabel import SvgLabel
+
+
+class ClickableLabel(SvgLabel):
+    def __init__(self):
+        super().__init__()
+        self.__url = '127.0.0.1'
+
+    def setUrl(self, url):
+        self.__url = url
+
+    def mouseReleaseEvent(self, QMouseEvent):
+        if QMouseEvent.button() == Qt.LeftButton:
+            QDesktopServices.openUrl(QUrl(self.__url))
 
 
 class AboutDialog(QDialog):
@@ -22,14 +37,24 @@ class AboutDialog(QDialog):
         expWidget = QLabel()
         expWidget.setText('''
         <h1>pyqt-openai</h1>
-        <p>Version below 1</p>
-        <p>Powered by PyQt</p>
+        <p>Powered by qtpy</p>
         ''')
         expWidget.setAlignment(Qt.AlignTop)
+
+        self.__githubLbl = ClickableLabel()
+        self.__githubLbl.setSvgFile('ico/github.svg')
+        self.__githubLbl.setUrl('https://github.com/yjg30737/pyqt-openai')
+
+        self.__discordLbl = ClickableLabel()
+        self.__discordLbl.setSvgFile('ico/discord.svg')
+        self.__discordLbl.setUrl('https://discord.gg/cHekprskVE')
+        self.__discordLbl.setFixedSize(22, 19)
 
         lay = QHBoxLayout()
         lay.addWidget(logoLbl)
         lay.addWidget(expWidget)
+        lay.addWidget(self.__githubLbl)
+        lay.addWidget(self.__discordLbl)
 
         topWidget = QWidget()
         topWidget.setLayout(lay)
