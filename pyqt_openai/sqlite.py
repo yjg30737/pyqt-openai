@@ -26,6 +26,12 @@ class SqliteDatabase:
         self.__info_tb_nm = 'info_tb'
         self.__completion_info_tb_nm = 'info_completion_tb'
 
+        # prompt table
+        self.__prop_prompt_group_tb_nm = 'prop_prompt_grp_tb'
+        self.__prop_prompt_unit_tb_nm = 'prop_prompt_unit_tb'
+
+        self.__template_prompt_grp_tb_nm = 'template_prompt_grp_tb'
+
         # model type (chat, etc.)
         self.__model_type = 1
 
@@ -64,6 +70,38 @@ class SqliteDatabase:
 
         self.__each_info_dict = {1: [self.__info_tb_nm, self.__chat_default_value],
                                  2: [self.__completion_info_tb_nm, self.__completion_default_value], }
+
+        self.__prop_prompt_unit_default_value = [{'name': 'Task', 'text': ''},
+                                                 {'name': 'Topic', 'text': ''},
+                                                 {'name': 'Style', 'text': ''},
+                                                 {'name': 'Tone', 'text': ''},
+                                                 {'name': 'Audience', 'text': ''},
+                                                 {'name': 'Length', 'text': ''},
+                                                 {'name': 'Form', 'text': ''}]
+
+        # based on Alex Brogan's prompt example
+        self.__template_prompt_default_value = [
+            {'name': 'Sample 1',
+             'text': 'Identify the 20% of [topic or skill] that will yield 80% of the desired results and provide a focused learning plan to master it.'},
+             {'name': 'Sample 2',
+              'text': 'Explain [topic or skill] in the simplest terms possible as if teaching it to a complete beginner. Identify gaps in my understanding and suggest resources to fill them.'},
+              {'name': 'Sample 3',
+               'text': 'Create a study plan that mixes different topics or skills within [subject area] to help me develop a more robust understanding and facilitate connections between them.'},
+               {'name': 'Sample 4',
+                'text': 'Design a spaced repetition schedule for me to effectively review [topic or skill] over time, ensuring better retention and recall.'},
+                {'name': 'Sample 5',
+                 'text': 'Help me create mental models or analogies to better understand and remember key concepts in [topic or skill].'},
+                 {'name': 'Sample 6',
+                  'text': 'Suggest various learning resources (e.g., videos, books, podcasts, interactive exercises) for [topic or skill] that cater to different learning styles.'},
+                  {'name': 'Sample 7',
+                   'text': 'Provide me with a series of challenging questions or problems related to [topic or skill] to test my understanding and improve long-term retention.'},
+                   {'name': 'Sample 8',
+                    'text': 'Transform key concepts or lessons from [topic or skill] into engaging stories or narratives to help me better remember and understand the material.'},
+                    {'name': 'Sample 9',
+                     'text': 'Design a deliberate practice routine for [topic or skill], focusing on my weaknesses and providing regular feedback for improvement.'},
+                     {'name': 'Sample 10',
+                      'text': 'Guide me through a visualization exercise to help me internalize [topic or skill] and imagine myself succesfully applying it in real-life situations.'}
+        ]
 
     def __initDb(self):
         try:
@@ -163,10 +201,81 @@ class SqliteDatabase:
                                                     )
                                                  ''', tuple(self.__completion_default_value.values()))
 
+    def __createPropPromptGroupInfo(self):
+        self.__c.execute(
+            f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{self.__prop_prompt_group_tb_nm}'")
+        if self.__c.fetchone()[0] == 1:
+            pass
+        else:
+            self.__c.execute(f'''CREATE TABLE {self.__prop_prompt_group_tb_nm}
+                                                 (id INTEGER PRIMARY KEY,
+                                                  name VARCHAR(50),
+                                                  
+                                                  update_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
+                                                  insert_dt DATETIME DEFAULT CURRENT_TIMESTAMP)''')
+
+            # Commit the transaction
+            self.__conn.commit()
+
+            # insert default property group
+            self.__c.execute(f"INSERT INTO {self.__prop_prompt_group_tb_nm} (name) VALUES ('Default')")
+
+            # insert default attributes
+            self.createDefaultPropPromptAttribute(1)
+
+    def createDefaultPropPromptAttribute(self, id_fk):
+        self.__c.execute(
+            f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{self.__prop_prompt_unit_tb_nm}{id_fk}'")
+        if self.__c.fetchone()[0] == 1:
+            pass
+        else:
+            self.__c.execute(f'''CREATE TABLE {self.__prop_prompt_unit_tb_nm}{id_fk}
+                                                             (id INTEGER PRIMARY KEY,
+                                                              id_fk INTEGER,
+                                                              name VARCHAR(50),
+                                                              text TEXT,
+                                                              update_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
+                                                              insert_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
+                                                              FOREIGN KEY (id_fk) REFERENCES {self.__prop_prompt_group_tb_nm}(id)
+                                                              ON DELETE CASCADE)''')
+
+            # Commit the transaction
+            self.__conn.commit()
+
+            # insert default property group
+            for obj in self.__prop_prompt_unit_default_value:
+                lst = [id_fk] + list(tuple(obj.values()))
+                self.__c.execute(f"INSERT INTO {self.__prop_prompt_unit_tb_nm}{id_fk} (id_fk, name, text) VALUES (?, ?, ?)", tuple(lst))
+
+    def __createTemplatePromptInfo(self):
+        self.__c.execute(
+            f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{self.__template_prompt_grp_tb_nm}'")
+        if self.__c.fetchone()[0] == 1:
+            pass
+        else:
+            self.__c.execute(f'''CREATE TABLE {self.__template_prompt_grp_tb_nm}
+                                                 (id INTEGER PRIMARY KEY,
+                                                  name VARCHAR(50),
+                                                  text TEXT,
+                                                  update_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
+                                                  insert_dt DATETIME DEFAULT CURRENT_TIMESTAMP)''')
+
+            # Commit the transaction
+            self.__conn.commit()
+
+            # insert default template set
+            for obj in self.__template_prompt_default_value:
+                self.__c.execute(f"INSERT INTO {self.__template_prompt_grp_tb_nm} (name, text) VALUES (?, ?)", tuple(obj.values()))
+
     def __createInfo(self):
         try:
+            # chat and completion information
             self.__createChat()
             self.__createCompletion()
+            # prompt information (default)
+            self.__createPropPromptGroupInfo()
+            self.__createTemplatePromptInfo()
+
             # Commit the transaction
             self.__conn.commit()
         except sqlite3.Error as e:
@@ -450,7 +559,3 @@ class SqliteDatabase:
     def __exit__(self, exc_type, exc_val, exc_tb):
         # Close the connection
         self.__conn.close()
-
-
-with SqliteDatabase() as f:
-    pass
