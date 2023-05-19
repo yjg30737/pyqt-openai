@@ -3,21 +3,22 @@ from qtpy.QtWidgets import QTableWidget, QSizePolicy, QSpacerItem, QStackedWidge
     QVBoxLayout, QWidget, QDialog, QListWidget, QListWidgetItem, QApplication, QSplitter, QGridLayout
 
 from pyqt_openai.inputDialog import InputDialog
+from pyqt_openai.sqlite import SqliteDatabase
 from pyqt_openai.svgButton import SvgButton
 
 
 class PropGroupList(QWidget):
-    added = Signal(str)
+    added = Signal(int)
     deleted = Signal(int)
     currentRowChanged = Signal(int)
 
-    def __init__(self):
+    def __init__(self, db: SqliteDatabase):
         super().__init__()
-        self.__initVal()
+        self.__initVal(db)
         self.__initUi()
 
-    def __initVal(self):
-        self.__defaultPromptItemArr = ['Default']
+    def __initVal(self, db):
+        self.__db = db
 
     def __initUi(self):
         self.__addBtn = SvgButton()
@@ -40,9 +41,17 @@ class PropGroupList(QWidget):
         topWidget = QWidget()
         topWidget.setLayout(lay)
 
+        defaultPropPromptGroupArr = self.__db.selectPropPromptGroup()
+
         self.__propList = QListWidget()
-        self.__propList.addItems(self.__defaultPromptItemArr)
-        self.__propList.currentRowChanged.connect(self.currentRowChanged)
+
+        # TODO abcd
+        for group in defaultPropPromptGroupArr:
+            item = QListWidgetItem()
+            item.setData(Qt.UserRole, group[0])
+            item.setText(group[1])
+            self.__propList.addItem(item)
+        self.__propList.currentRowChanged.connect(self.__currentRowChanged)
 
         lay = QVBoxLayout()
         lay.addWidget(topWidget)
@@ -58,16 +67,23 @@ class PropGroupList(QWidget):
         reply = dialog.exec()
         if reply == QDialog.Accepted:
             text = dialog.getText()
-            item = QListWidgetItem(text)
+            id = self.__db.insertPropPromptGroup(text)
+            item = QListWidgetItem()
+            item.setData(Qt.UserRole, id)
+            item.setText(text)
             self.__propList.addItem(item)
-            self.added.emit(text)
             self.__propList.setCurrentItem(item)
+            self.added.emit(id)
+
+    def __currentRowChanged(self, r_idx):
+        self.currentRowChanged.emit(self.__propList.item(r_idx).data(Qt.UserRole))
 
     def __delete(self):
         i = self.__propList.currentRow()
         item = self.__propList.takeItem(i)
-        print(item.text())
-        self.deleted.emit(i)
+        id = item.data(Qt.UserRole)
+        self.__db.deletePropPromptGroup(id)
+        self.deleted.emit(id)
 
 
 class PropTable(QWidget):
@@ -76,20 +92,16 @@ class PropTable(QWidget):
     """
     updated = Signal(str)
 
-    def __init__(self, title):
+    def __init__(self, db: SqliteDatabase, id):
         super().__init__()
-        self.__initVal(title)
+        self.__initVal(db, id)
         self.__initUi()
 
-    def __initVal(self, title):
-        self.__title = title
-        self.__defaultPromptPropArr = [{'name': 'Task', 'value': ''},
-                                       {'name': 'Topic', 'value': ''},
-                                       {'name': 'Style', 'value': ''},
-                                       {'name': 'Tone', 'value': ''},
-                                       {'name': 'Audience', 'value': ''},
-                                       {'name': 'Length', 'value': ''},
-                                       {'name': 'Form', 'value': ''}]
+    def __initVal(self, db, id):
+        self.__db = db
+
+        self.__title = self.__db.selectPropPromptGroupId(id)[1]
+        self.__previousPromptPropArr = self.__db.selectPropPromptAttribute(id)
 
     def __initUi(self):
         self.__addBtn = SvgButton()
@@ -114,15 +126,16 @@ class PropTable(QWidget):
 
         self.__table = QTableWidget()
         self.__table.setColumnCount(2)
-        self.__table.setRowCount(len(self.__defaultPromptPropArr))
+        self.__table.setRowCount(len(self.__previousPromptPropArr))
         self.__table.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
         self.__table.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.__table.setHorizontalHeaderLabels(['Name', 'Value'])
 
-        for i in range(len(self.__defaultPromptPropArr)):
-            name = self.__defaultPromptPropArr[i]['name']
-            value = self.__defaultPromptPropArr[i]['value']
+        for i in range(len(self.__previousPromptPropArr)):
+            name = self.__previousPromptPropArr[i][2]
+            value = self.__previousPromptPropArr[i][3]
             item1 = QTableWidgetItem(name)
+            item1.setData(Qt.UserRole, self.__previousPromptPropArr[i][0])
             item2 = QTableWidgetItem(value)
 
             item1.setTextAlignment(Qt.AlignCenter)
@@ -170,17 +183,21 @@ class PropTable(QWidget):
 class PropPage(QWidget):
     updated = Signal(str)
 
-    def __init__(self):
+    def __init__(self, db: SqliteDatabase):
         super().__init__()
+        self.__initVal(db)
         self.__initUi()
 
+    def __initVal(self, db):
+        self.__db = db
+
     def __initUi(self):
-        leftWidget = PropGroupList()
+        leftWidget = PropGroupList(self.__db)
         leftWidget.added.connect(self.__propGroupAdded)
         leftWidget.deleted.connect(self.__propGroupDeleted)
         leftWidget.currentRowChanged.connect(self.__showProp)
 
-        propTable = PropTable('Default')
+        propTable = PropTable(self.__db, id=1)
         propTable.updated.connect(self.updated)
 
         self.__rightWidget = QStackedWidget()
@@ -197,17 +214,19 @@ class PropPage(QWidget):
 
         self.setLayout(lay)
 
-    def __propGroupAdded(self, title):
-        propTable = PropTable(title)
+    def __propGroupAdded(self, id):
+        propTable = PropTable(self.__db, id)
         propTable.updated.connect(self.updated)
         self.__rightWidget.addWidget(propTable)
 
     def __propGroupDeleted(self, n):
-        w = self.__rightWidget.widget(n)
+        # n-1 because the index starts with zero
+        w = self.__rightWidget.widget(n-1)
         self.__rightWidget.removeWidget(w)
 
     def __showProp(self, n):
-        self.__rightWidget.setCurrentIndex(n)
+        # n-1 because the index starts with zero
+        self.__rightWidget.setCurrentIndex(n-1)
 
 
 if __name__ == "__main__":

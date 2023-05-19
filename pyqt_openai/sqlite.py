@@ -235,13 +235,13 @@ class SqliteDatabase:
                                                               FOREIGN KEY (id_fk) REFERENCES {self.__prop_prompt_group_tb_nm}(id)
                                                               ON DELETE CASCADE)''')
 
-            # Commit the transaction
-            self.__conn.commit()
+        # insert default property group
+        for obj in self.__prop_prompt_unit_default_value:
+            lst = [id_fk] + list(tuple(obj.values()))
+            self.__c.execute(f"INSERT INTO {self.__prop_prompt_unit_tb_nm}{id_fk} (id_fk, name, text) VALUES (?, ?, ?)", tuple(lst))
 
-            # insert default property group
-            for obj in self.__prop_prompt_unit_default_value:
-                lst = [id_fk] + list(tuple(obj.values()))
-                self.__c.execute(f"INSERT INTO {self.__prop_prompt_unit_tb_nm}{id_fk} (id_fk, name, text) VALUES (?, ?, ?)", tuple(lst))
+        # Commit the transaction
+        self.__conn.commit()
 
     def selectPropPromptAttribute(self, id):
         try:
@@ -302,6 +302,8 @@ class SqliteDatabase:
             self.__conn.commit()
             # insert default attributes
             self.createDefaultPropPromptAttributes(new_id)
+            # TODO abcd make others insert statement return like this
+            return new_id
         except sqlite3.Error as e:
             print(f"An error occurred: {e}")
             raise
