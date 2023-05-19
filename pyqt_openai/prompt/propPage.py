@@ -1,6 +1,7 @@
 from qtpy.QtCore import Signal, Qt
-from qtpy.QtWidgets import QTableWidget, QSizePolicy, QSpacerItem, QStackedWidget, QLabel, QAbstractItemView, QTableWidgetItem, QHeaderView, QHBoxLayout, \
-    QVBoxLayout, QWidget, QDialog, QListWidget, QListWidgetItem, QApplication, QSplitter, QGridLayout
+from qtpy.QtWidgets import QTableWidget, QSizePolicy, QPushButton, QSpacerItem, QStackedWidget, QLabel, \
+    QAbstractItemView, QTableWidgetItem, QHeaderView, QHBoxLayout, \
+    QVBoxLayout, QWidget, QDialog, QListWidget, QListWidgetItem, QApplication, QSplitter
 
 from pyqt_openai.inputDialog import InputDialog
 from pyqt_openai.sqlite import SqliteDatabase
@@ -99,9 +100,10 @@ class PropTable(QWidget):
 
     def __initVal(self, db, id):
         self.__db = db
+        self.__id = id
 
-        self.__title = self.__db.selectPropPromptGroupId(id)[1]
-        self.__previousPromptPropArr = self.__db.selectPropPromptAttribute(id)
+        self.__title = self.__db.selectPropPromptGroupId(self.__id)[1]
+        self.__previousPromptPropArr = self.__db.selectPropPromptAttribute(self.__id)
 
     def __initUi(self):
         self.__addBtn = SvgButton()
@@ -145,7 +147,8 @@ class PropTable(QWidget):
             self.__table.setItem(i, 0, item1)
             self.__table.setItem(i, 1, item2)
 
-        self.__table.itemChanged.connect(self.__itemChanged)
+        self.__table.itemChanged.connect(self.__generatePropPrompt)
+        self.__table.itemChanged.connect(self.__saveChangedPropPrompt)
 
         lay = QVBoxLayout()
         lay.addWidget(topWidget)
@@ -154,21 +157,34 @@ class PropTable(QWidget):
 
         self.setLayout(lay)
 
-    def __itemChanged(self, item: QTableWidgetItem):
+    def __generatePropPrompt(self, item: QTableWidgetItem):
         if item.column() == 1:
             prompt_text = ''
             for i in range(self.__table.rowCount()):
-                if self.__table.item(i, 1).text().strip():
-                    prompt_text += f'{self.__table.item(i, 0).text()}: {self.__table.item(i, 1).text()}\n'
+                name = self.__table.item(i, 0).text()
+                value = self.__table.item(i, 1).text()
+                if value.strip():
+                    prompt_text += f'{name}: {value}\n'
             self.updated.emit(prompt_text)
+
+    def __saveChangedPropPrompt(self, item: QTableWidgetItem):
+        name = self.__table.item(item.row(), 0)
+        id = name.data(Qt.UserRole)
+        name = name.text()
+        value = self.__table.item(item.row(), 1).text()
+        print(name, value, id)
+        self.__db.updatePropPromptAttribute(self.__id, id, name, value)
 
     def __add(self):
         dialog = InputDialog('Name', '', self)
         reply = dialog.exec()
         if reply == QDialog.Accepted:
-            text = dialog.getText()
+            self.__table.itemChanged.disconnect(self.__saveChangedPropPrompt)
+
+            name = dialog.getText()
             self.__table.setRowCount(self.__table.rowCount()+1)
-            item1 = QTableWidgetItem(text)
+
+            item1 = QTableWidgetItem(name)
             item1.setTextAlignment(Qt.AlignCenter)
             self.__table.setItem(self.__table.rowCount()-1, 0, item1)
 
@@ -176,9 +192,16 @@ class PropTable(QWidget):
             item2.setTextAlignment(Qt.AlignCenter)
             self.__table.setItem(self.__table.rowCount()-1, 1, item2)
 
+            id = self.__db.insertPropPromptAttribute(self.__id, name)
+            item1.setData(Qt.UserRole, id)
+
+            self.__table.itemChanged.connect(self.__saveChangedPropPrompt)
+
     def __delete(self):
         for i in sorted(set([i.row() for i in self.__table.selectedIndexes()]), reverse=True):
+            id = self.__table.item(i, 0).data(Qt.UserRole)
             self.__table.removeRow(i)
+            self.__db.deletePropPromptAttribute(self.__id, id)
 
 
 class PropPage(QWidget):
@@ -212,7 +235,7 @@ class PropPage(QWidget):
         mainWidget.setChildrenCollapsible(False)
         mainWidget.setSizes([300, 700])
 
-        lay = QGridLayout()
+        lay = QVBoxLayout()
         lay.addWidget(mainWidget)
 
         self.setLayout(lay)

@@ -255,8 +255,10 @@ class SqliteDatabase:
         try:
             # Insert a row into the table
             self.__c.execute(f'INSERT INTO {self.__prop_prompt_unit_tb_nm}{id} (id_fk, name) VALUES (?, ?)', (id, name,))
+            new_id = self.__c.lastrowid
             # Commit the transaction
             self.__conn.commit()
+            return new_id
         except sqlite3.Error as e:
             print(f"An error occurred: {e}")
             raise
@@ -360,6 +362,7 @@ class SqliteDatabase:
             new_id = self.__c.lastrowid
             # Commit the transaction
             self.__conn.commit()
+            return new_id
         except sqlite3.Error as e:
             print(f"An error occurred: {e}")
             raise
