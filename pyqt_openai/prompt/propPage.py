@@ -172,7 +172,6 @@ class PropTable(QWidget):
         id = name.data(Qt.UserRole)
         name = name.text()
         value = self.__table.item(item.row(), 1).text()
-        print(name, value, id)
         self.__db.updatePropPromptAttribute(self.__id, id, name, value)
 
     def __add(self):
@@ -252,12 +251,3 @@ class PropPage(QWidget):
 
     def __showProp(self, n):
         self.__rightWidget.setCurrentIndex(n)
-
-
-if __name__ == "__main__":
-    import sys
-
-    app = QApplication(sys.argv)
-    w = PropPage()
-    w.show()
-    sys.exit(app.exec_())

@@ -7,6 +7,7 @@ from qtpy.QtCore import Qt, Signal
 from qtpy.QtGui import QPixmap, QFont
 from qtpy.QtWidgets import QScrollArea, QVBoxLayout, QToolButton, QMenu, QAction, QWidget, QLabel, QHBoxLayout, QTextEdit, QStackedWidget
 
+from pyqt_openai.sqlite import SqliteDatabase
 from pyqt_openai.svgToolButton import SvgToolButton
 
 
@@ -168,9 +169,14 @@ class TextEditPrompt(QTextEdit):
 class TextEditPropmtGroup(QWidget):
     textChanged = Signal()
 
-    def __init__(self):
+    def __init__(self, db: SqliteDatabase):
         super().__init__()
+        self.__initVal(db)
         self.__initUi()
+
+    def __initVal(self, db):
+        self.__db = db
+        self.__command_f = False
 
     def __initUi(self):
         self.__beginningTextEdit = TextEditPrompt()
@@ -197,6 +203,14 @@ class TextEditPropmtGroup(QWidget):
         lay.setSpacing(0)
 
         self.setLayout(lay)
+
+    def setCommandEnabled(self, f: bool):
+        self.__command_f = f
+        if self.__command_f:
+            print(self.__db.selectPropPromptGroup())
+            print(self.__db.selectTemplatePrompt())
+        else:
+            print('nothing')
 
     def adjustHeight(self) -> int:
         """
@@ -229,13 +243,18 @@ class TextEditPropmtGroup(QWidget):
 
         return content
 
+
 class Prompt(QWidget):
-    def __init__(self):
+    def __init__(self, db: SqliteDatabase):
         super().__init__()
+        self.__initVal(db)
         self.__initUi()
 
+    def __initVal(self, db):
+        self.__db = db
+
     def __initUi(self):
-        self.__textEditGroup = TextEditPropmtGroup()
+        self.__textEditGroup = TextEditPropmtGroup(self.__db)
         self.__textEditGroup.textChanged.connect(self.updateHeight)
 
         settingsBtn = SvgToolButton()
@@ -303,7 +322,6 @@ class Prompt(QWidget):
         self.__textEditGroup.getGroup()[-1].setVisible(f)
 
     def __supportPromptCommand(self, f):
-        print(f)
-
+        self.__textEditGroup.setCommandEnabled(f)
 
 
