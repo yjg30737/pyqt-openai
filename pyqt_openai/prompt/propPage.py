@@ -27,8 +27,8 @@ class PropGroupList(QWidget):
         self.__addBtn.setIcon('ico/add.svg')
         self.__delBtn.setIcon('ico/delete.svg')
 
-        self.__addBtn.clicked.connect(self.__add)
-        self.__delBtn.clicked.connect(self.__delete)
+        self.__addBtn.clicked.connect(self.__addGroup)
+        self.__delBtn.clicked.connect(self.__deleteGroup)
 
         lay = QHBoxLayout()
         lay.addWidget(QLabel('Property Group'))
@@ -47,11 +47,11 @@ class PropGroupList(QWidget):
 
         # TODO abcd
         for group in defaultPropPromptGroupArr:
-            item = QListWidgetItem()
-            item.setData(Qt.UserRole, group[0])
-            item.setText(group[1])
-            self.__propList.addItem(item)
-        self.__propList.currentRowChanged.connect(self.__currentRowChanged)
+            id = group[0]
+            name = group[1]
+            self.__addGroupItem(id, name)
+
+        self.__propList.currentRowChanged.connect(self.currentRowChanged)
 
         lay = QVBoxLayout()
         lay.addWidget(topWidget)
@@ -62,28 +62,28 @@ class PropGroupList(QWidget):
 
         self.__propList.setCurrentRow(0)
 
-    def __add(self):
+    def __addGroupItem(self, id, name):
+        item = QListWidgetItem()
+        item.setData(Qt.UserRole, id)
+        item.setText(name)
+        self.__propList.addItem(item)
+        self.__propList.setCurrentItem(item)
+        self.added.emit(id)
+
+    def __addGroup(self):
         dialog = InputDialog('Add', '', self)
         reply = dialog.exec()
         if reply == QDialog.Accepted:
-            text = dialog.getText()
-            id = self.__db.insertPropPromptGroup(text)
-            item = QListWidgetItem()
-            item.setData(Qt.UserRole, id)
-            item.setText(text)
-            self.__propList.addItem(item)
-            self.__propList.setCurrentItem(item)
-            self.added.emit(id)
+            name = dialog.getText()
+            id = self.__db.insertPropPromptGroup(name)
+            self.__addGroupItem(id, name)
 
-    def __currentRowChanged(self, r_idx):
-        self.currentRowChanged.emit(self.__propList.item(r_idx).data(Qt.UserRole))
-
-    def __delete(self):
+    def __deleteGroup(self):
         i = self.__propList.currentRow()
         item = self.__propList.takeItem(i)
         id = item.data(Qt.UserRole)
         self.__db.deletePropPromptGroup(id)
-        self.deleted.emit(id)
+        self.deleted.emit(i)
 
 
 class PropTable(QWidget):
@@ -134,11 +134,12 @@ class PropTable(QWidget):
         for i in range(len(self.__previousPromptPropArr)):
             name = self.__previousPromptPropArr[i][2]
             value = self.__previousPromptPropArr[i][3]
+
             item1 = QTableWidgetItem(name)
             item1.setData(Qt.UserRole, self.__previousPromptPropArr[i][0])
-            item2 = QTableWidgetItem(value)
-
             item1.setTextAlignment(Qt.AlignCenter)
+
+            item2 = QTableWidgetItem(value)
             item2.setTextAlignment(Qt.AlignCenter)
 
             self.__table.setItem(i, 0, item1)
@@ -190,6 +191,7 @@ class PropPage(QWidget):
 
     def __initVal(self, db):
         self.__db = db
+        self.__previousPropGroups = self.__db.selectPropPromptGroup()
 
     def __initUi(self):
         leftWidget = PropGroupList(self.__db)
@@ -197,11 +199,12 @@ class PropPage(QWidget):
         leftWidget.deleted.connect(self.__propGroupDeleted)
         leftWidget.currentRowChanged.connect(self.__showProp)
 
-        propTable = PropTable(self.__db, id=1)
-        propTable.updated.connect(self.updated)
-
         self.__rightWidget = QStackedWidget()
-        self.__rightWidget.addWidget(propTable)
+
+        for group in self.__previousPropGroups:
+            propTable = PropTable(self.__db, id=group[0])
+            propTable.updated.connect(self.updated)
+            self.__rightWidget.addWidget(propTable)
 
         mainWidget = QSplitter()
         mainWidget.addWidget(leftWidget)
@@ -218,15 +221,14 @@ class PropPage(QWidget):
         propTable = PropTable(self.__db, id)
         propTable.updated.connect(self.updated)
         self.__rightWidget.addWidget(propTable)
+        self.__rightWidget.setCurrentWidget(propTable)
 
     def __propGroupDeleted(self, n):
-        # n-1 because the index starts with zero
-        w = self.__rightWidget.widget(n-1)
+        w = self.__rightWidget.widget(n)
         self.__rightWidget.removeWidget(w)
 
     def __showProp(self, n):
-        # n-1 because the index starts with zero
-        self.__rightWidget.setCurrentIndex(n-1)
+        self.__rightWidget.setCurrentIndex(n)
 
 
 if __name__ == "__main__":
