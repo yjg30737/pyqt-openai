@@ -348,7 +348,7 @@ class SqliteDatabase:
 
     def selectTemplatePrompt(self):
         try:
-            self.__c.execute(f'SELECT * FROM {self.__prop_prompt_group_tb_nm}')
+            self.__c.execute(f'SELECT * FROM {self.__template_prompt_tb_nm}')
             return self.__c.fetchall()
         except sqlite3.Error as e:
             print(f"An error occurred: {e}")
@@ -369,8 +369,7 @@ class SqliteDatabase:
 
     def updateTemplatePrompt(self, id, name, text):
         try:
-            self.__c.execute(f'UPDATE {self.__template_prompt_tb_nm} SET name=(?) '
-                             f'text=(?) WHERE id={id}', (name, text))
+            self.__c.execute(f'UPDATE {self.__template_prompt_tb_nm} SET name=(?), text=(?) WHERE id={id}', (name, text))
             self.__conn.commit()
         except sqlite3.Error as e:
             print(f"An error occurred: {e}")
