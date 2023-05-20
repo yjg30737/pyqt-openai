@@ -55,6 +55,7 @@ An internet connection is required.
   * notification will pop up when response is generated
 * you can make window stack on top or control its transparency
 * image generation (DALL-E, Stable Diffusion with DreamStudio API)
+* you can copy and download the image if you want. just hover the mouse cursor over the image.
 
 ## Requirements
 * qtpy - the package allowing you to write code that works with both PyQt and PySide
