@@ -71,10 +71,10 @@ class OpenAIChatBotWidget(QWidget):
     def __initUi(self):
         self.__leftSideBarWidget = LeftSideBar()
         self.__browser = ChatBrowser()
-        self.__prompt = Prompt()
+        self.__prompt = Prompt(self.__db)
         self.__lineEdit = self.__prompt.getTextEdit()
         self.__aiPlaygroundWidget = AIPlaygroundWidget(self.__db, self.__ini_etc_dict, self.__modelData)
-        self.__promptGeneratorWidget = PromptGeneratorWidget()
+        self.__promptGeneratorWidget = PromptGeneratorWidget(self.__db)
 
         self.__sideBarBtn = SvgButton()
         self.__sideBarBtn.setIcon('ico/sidebar.svg')
