@@ -27,13 +27,16 @@ You can select the model at the right side bar.
 
 An internet connection is required.
 
-## Contact
-You can join pyqt-openai's <a href="https://discord.gg/cHekprskVE">Discord Server</a> to have a conversation about it or AI-related stuff 🙂
-
-## Note
-Some of the features are still being tested.
-
-I recommend to install sqlite management software. It's not necessary to run this app (obviously), but it's good practice to manage database about conversation history with AI and to know how this works.
+## Table of Contents
+* [Feature](#feature)
+* [Requirements](#requirements)
+* [Preview](#preview)
+* [How to Install](#how-to-install)
+* [Usage](#usage)
+* [Troubleshooting](#troubleshooting)
+* [Contact](#contact)
+* [Note](#note)
+* [See Also](#see-also)
 
 ## Feature
 * basically this is <b>desktop application version of ChatGPT</b> with image generation tool. 
@@ -45,7 +48,8 @@ I recommend to install sqlite management software. It's not necessary to run thi
   * rename conversation
   * everything above is saved in an SQLite database file named conv.db.
 * support GPT-4 and every other models below GPT3
-* support prompt generator (manageable)
+* support prompt generator (manageable, autosaved in database)
+* support slash commands
 * support beginning and ending part of the prompt
 * you can run this in background application
   * notification will pop up when response is generated
@@ -77,35 +81,31 @@ This is using GPT-3.5 turbo model by default.
 https://user-images.githubusercontent.com/55078043/236583883-8e9732a3-1223-4b28-85f1-f60d8b2d6ced.mp4
 
 ### Prompt Generator
-#### Preview 1 (v0.1.22)
-https://user-images.githubusercontent.com/55078043/236584481-b7bb5246-6bf4-4343-ba6c-a343bb11cda7.mp4
-#### Preview 2 (v0.1.3)
-https://user-images.githubusercontent.com/55078043/236658468-9947a417-99b3-4e44-8849-a676308a0239.mp4
-
-So sorry to weak preview, but i have a lot of idea about this prompt generator! Just wait.
+https://github.com/yjg30737/pyqt-openai/assets/55078043/2f351442-1e8c-4ba2-b5fe-4391df6250ff
 
 #### Image Generation
-![image](https://github.com/yjg30737/pyqt-openai/assets/55078043/6fd4143f-1d32-4cfc-9182-991fad6f3757)
+#### Preview
+![image](https://github.com/yjg30737/pyqt-openai/assets/55078043/d0903a76-bf4f-4900-bfea-89da6f072c9d)
 
-Again, weak preview (i just gave prompt text as "A" which is pathetic) but please consider this is very first version of sd image generation (v0.1.4) so just wait
-
-## How to play
-1. git clone ~
-2. from the root directory, type "cd pyqt_openai"
-3. You should put your api key in the line edit. You can get it in <a href="https://platform.openai.com/account/api-keys">official site</a> of openai. Sign up and log in before you get it. <b>By the way, this is free trial, not permanently free. See <a href="https://platform.openai.com/account/billing/overview">this</a> after you have logged in.</b>
+## How to Install
+1. open command propmt of your OS.
+2. git clone ~
+3. from the root directory, type "cd pyqt_openai"
+4. pip install -r requirements.txt
+5. You should put your api key in the line edit. You can get it in <a href="https://platform.openai.com/account/api-keys">official site</a> of openai. Sign up and log in before you get it.
 
 Be sure, this is a very important API key that belongs to you only, so you should remember it and keep it secure.
 
-4. python main.py
+6. python main.py
 
-If installation doesn't work, check the troubleshooting below.
+If installation doesn't work, you can contact me with bring up new issue in issue tab or check the troubleshooting below even it is only about very specific error. 
 
 ## Troubleshooting
 If you see this error while installing the openai package
 ```
 subprocess-exited-with-error
 ```
-you can shout a curse word and just download the package itself from <a href="https://pypi.org/project/openai/#files">pypi</a>. 
+download the package itself from <a href="https://pypi.org/project/openai/#files">pypi</a>. 
 
 Unzip it, access the package directory, type 
 ```
@@ -114,8 +114,15 @@ python setup.py install
 
 That will install the openai.
 
+Note: I don't know this can happen in newer version of openai as well, so tell me if you know about something
+
+## Contact
+You can join pyqt-openai's <a href="https://discord.gg/cHekprskVE">Discord Server</a> to have a conversation about it or AI-related stuff 🙂
+
+## Note
+I recommend to install sqlite management software. It's not necessary to run this app (obviously), but it's good practice to manage database about conversation history with AI and to know how this works.
+
 ## TODO list
-* auto-complete prompt command
 * DB for images (to further experiement of both DALL-E and Stable Diffusion or other image generation engine)
 * show the explanation of every model and terms related to AI (e.g. temperature, topp..)
 * save conversation history with other format (xlsx, csv, etc.)
