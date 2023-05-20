@@ -2,8 +2,7 @@ import json
 import os
 import webbrowser
 
-from qtpy.QtCore import Qt, QSettings, QEvent, Signal
-from qtpy.QtGui import QCursor
+from qtpy.QtCore import Qt, QSettings, Signal
 from qtpy.QtWidgets import QHBoxLayout, QWidget, QSizePolicy, QVBoxLayout, QFrame, QSplitter, \
     QListWidgetItem, QFileDialog
 
@@ -88,7 +87,6 @@ class OpenAIChatBotWidget(QWidget):
         self.__settingBtn.setToolTip('Settings')
         self.__settingBtn.setCheckable(True)
         self.__settingBtn.setChecked(True)
-        self.__settingBtn.setChecked(False)
         self.__settingBtn.toggled.connect(self.__aiPlaygroundWidget.setVisible)
 
         self.__promptBtn = SvgButton()
@@ -96,7 +94,6 @@ class OpenAIChatBotWidget(QWidget):
         self.__promptBtn.setToolTip('Prompt Generator')
         self.__promptBtn.setCheckable(True)
         self.__promptBtn.setChecked(True)
-        self.__promptBtn.setChecked(False)
         self.__promptBtn.toggled.connect(self.__promptGeneratorWidget.setVisible)
 
         lay = QHBoxLayout()

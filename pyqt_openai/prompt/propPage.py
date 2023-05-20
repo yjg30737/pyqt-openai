@@ -1,7 +1,7 @@
-from qtpy.QtCore import Signal, Qt
-from qtpy.QtWidgets import QTableWidget, QSizePolicy, QPushButton, QSpacerItem, QStackedWidget, QLabel, \
+from qtpy.QtCore import Signal, Qt, QEvent
+from qtpy.QtWidgets import QTableWidget, QLineEdit, QSizePolicy, QSpacerItem, QStackedWidget, QLabel, \
     QAbstractItemView, QTableWidgetItem, QHeaderView, QHBoxLayout, \
-    QVBoxLayout, QWidget, QDialog, QListWidget, QListWidgetItem, QApplication, QSplitter
+    QVBoxLayout, QWidget, QDialog, QListWidget, QListWidgetItem, QSplitter
 
 from pyqt_openai.inputDialog import InputDialog
 from pyqt_openai.sqlite import SqliteDatabase
@@ -53,6 +53,7 @@ class PropGroupList(QWidget):
             self.__addGroupItem(id, name)
 
         self.__propList.currentRowChanged.connect(self.currentRowChanged)
+        self.__propList.itemChanged.connect(self.__itemChanged)
 
         lay = QVBoxLayout()
         lay.addWidget(topWidget)
@@ -65,6 +66,7 @@ class PropGroupList(QWidget):
 
     def __addGroupItem(self, id, name):
         item = QListWidgetItem()
+        item.setFlags(item.flags() | Qt.ItemIsEditable)
         item.setData(Qt.UserRole, id)
         item.setText(name)
         self.__propList.addItem(item)
@@ -85,6 +87,10 @@ class PropGroupList(QWidget):
         id = item.data(Qt.UserRole)
         self.__db.deletePropPromptGroup(id)
         self.deleted.emit(i)
+
+    def __itemChanged(self, item):
+        id = item.data(Qt.UserRole)
+        self.__db.updatePropPromptGroup(id, item.text())
 
 
 class PropTable(QWidget):
