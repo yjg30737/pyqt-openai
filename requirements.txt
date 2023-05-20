@@ -4,4 +4,6 @@ qtpy
 aiohttp
 openai
 pyperclip
+stability_sdk
+
 

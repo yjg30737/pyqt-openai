@@ -10,7 +10,6 @@ class InputDialog(QDialog):
 
     def __initUi(self, title, text):
         self.setWindowTitle(title)
-        self.setWindowIcon(QIcon('ico/openai.svg'))
         self.setWindowFlags(Qt.Window | Qt.WindowCloseButtonHint)
 
         self.__newName = QLineEdit(text)

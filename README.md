@@ -5,7 +5,7 @@
 
 Example of using OpenAI with PyQt (Python cross-platform GUI toolkit)
 
-This shows an example of using OpenAI with PyQt as a chatbot.
+This shows an example of using OpenAI with PyQt as a chatbot and using DALL-E or Stable Diffusion as a image generation tool.
 
 Even though this project has become too huge to be called an 'example'.
 
@@ -15,7 +15,11 @@ If you want to study openai with Python-only good old desktop software, this is 
 
 The OpenAI model this package uses is the <a href="https://platform.openai.com/docs/models/gpt-3-5">gpt-3.5-turbo</a> model(which is nearly as functional as <b>ChatGPT</b>) by default. You can use gpt-4 as well.
 
-Image generation feature available since v0.0.16. You can see the detail in <a href="https://platform.openai.com/docs/guides/images/introduction">official OpenAI</a> site. Currently this feature is very basic now.
+Image generation feature(DALL-E and Stable Diffusion) available since v0.1.4.
+
+<b>Stable Diffusion</b> used [DreamStudio API](https://dreamstudio.ai/). This is not entirely free like stable-diffusion-webgui. 
+
+But this is very lightweight and more accessible. don't need CUDA, torch, expansive PC, anything.
 
 This is using <b>sqlite</b> as a database.
 
@@ -32,7 +36,7 @@ Some of the features are still being tested.
 I recommend to install sqlite management software. It's not necessary to run this app (obviously), but it's good practice to manage database about conversation history with AI and to know how this works.
 
 ## Feature
-* basically this is <b>desktop application version of ChatGPT</b>
+* basically this is <b>desktop application version of ChatGPT</b> with image generation tool. 
   * text streaming (enable by default, you can disable it)
   * AI remembers past conversation
 * conversation management
@@ -43,20 +47,23 @@ I recommend to install sqlite management software. It's not necessary to run thi
 * support GPT-4 and every other models below GPT3
 * support prompt generator (manageable)
 * support beginning and ending part of the prompt
-* support image generation with DALL-E
 * you can run this in background application
   * notification will pop up when response is generated
 * you can make window stack on top or control its transparency
+* image generation (DALL-E, Stable Diffusion with DreamStudio API)
 
 ## Requirements
 * qtpy - the package allowing you to write code that works with both PyQt and PySide
 * PyQt5 >= 5.14 or PySide6
 * openai
+* pyperclip - to copy prompt template from prompt generator
+* stability_sdk - for Stable Diffusion
 
 ## Preview
 This is using GPT-3.5 turbo model by default. 
 
 ### Homepage
+#### Note: Some of these previews are not the latest.
 ![image](https://user-images.githubusercontent.com/55078043/236657804-bf299150-961a-4f80-9820-b45401f8bb7c.png)
 <b>You have to write your openai api key inside the red box.</b> see [How to play](#how-to-play)
 
@@ -75,7 +82,12 @@ https://user-images.githubusercontent.com/55078043/236584481-b7bb5246-6bf4-4343-
 #### Preview 2 (v0.1.3)
 https://user-images.githubusercontent.com/55078043/236658468-9947a417-99b3-4e44-8849-a676308a0239.mp4
 
-So sorry to weak preview, but i have a lot of idea about this prompt generator! Just wait. 
+So sorry to weak preview, but i have a lot of idea about this prompt generator! Just wait.
+
+#### Image Generation
+![image](https://github.com/yjg30737/pyqt-openai/assets/55078043/6fd4143f-1d32-4cfc-9182-991fad6f3757)
+
+Again, weak preview (i just gave prompt text as "A" which is pathetic) but please consider this is very first version of sd image generation (v0.1.4) so just wait
 
 ## How to play
 1. git clone ~
@@ -103,7 +115,8 @@ python setup.py install
 That will install the openai.
 
 ## TODO list
-* support Stable Diffusion
+* auto-complete prompt command
+* DB for images (to further experiement of both DALL-E and Stable Diffusion or other image generation engine)
 * show the explanation of every model and terms related to AI (e.g. temperature, topp..)
 * save conversation history with other format (xlsx, csv, etc.)
 * tokenizer

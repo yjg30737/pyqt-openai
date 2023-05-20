@@ -169,7 +169,6 @@ class CustomizeDialog(QDialog):
 
     def __initUi(self):
         self.setWindowTitle('Customize (working)')
-        self.setWindowIcon(QIcon('ico/openai.svg'))
         self.setWindowFlags(Qt.Window | Qt.WindowCloseButtonHint)
 
         homePageGraphicsView = SingleImageGraphicsView()
