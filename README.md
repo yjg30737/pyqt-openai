@@ -32,7 +32,6 @@ An internet connection is required.
 * [Requirements](#requirements)
 * [Preview](#preview)
 * [How to Install](#how-to-install)
-* [Usage](#usage)
 * [Troubleshooting](#troubleshooting)
 * [Contact](#contact)
 * [Note](#note)
@@ -51,6 +50,7 @@ An internet connection is required.
 * support prompt generator (manageable, autosaved in database)
 * support slash commands
 * support beginning and ending part of the prompt
+![image](https://github.com/yjg30737/pyqt-openai/assets/55078043/c9ca84af-0088-4435-854d-7feca9e2e663)
 * you can run this in background application
   * notification will pop up when response is generated
 * you can make window stack on top or control its transparency
