@@ -69,6 +69,9 @@ An internet connection is required.
 ![image](https://github.com/yjg30737/pyqt-openai/assets/55078043/51667298-2c3f-4846-a8c9-ec56331b8361)
 <b>You have to write your openai api key inside the red box.</b> see [How to install](#how-to-install)
 
+## Preview
+This is using GPT-3.5 turbo model by default. 
+
 You can change screen between text chatbot and image generating tool screen.
 ![image](https://github.com/yjg30737/pyqt-openai/assets/55078043/78260aaf-2626-4267-9309-07655cab2061)
 
