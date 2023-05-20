@@ -30,7 +30,7 @@ An internet connection is required.
 ## Table of Contents
 * [Feature](#feature)
 * [Requirements](#requirements)
-* [Preview](#preview)
+* [Preview & Usage](#preview-usage)
 * [How to Install](#how-to-install)
 * [Troubleshooting](#troubleshooting)
 * [Contact](#contact)
@@ -50,7 +50,6 @@ An internet connection is required.
 * support prompt generator (manageable, autosaved in database)
 * support slash commands
 * support beginning and ending part of the prompt
-![image](https://github.com/yjg30737/pyqt-openai/assets/55078043/c9ca84af-0088-4435-854d-7feca9e2e663)
 * you can run this in background application
   * notification will pop up when response is generated
 * you can make window stack on top or control its transparency
@@ -64,10 +63,9 @@ An internet connection is required.
 * pyperclip - to copy prompt template from prompt generator
 * stability_sdk - for Stable Diffusion
 
-## Preview
-This is using GPT-3.5 turbo model by default. 
-
+## Preview & Usage
 ### Overview
+#### Note: Some of these previews are not the latest.
 ![image](https://github.com/yjg30737/pyqt-openai/assets/55078043/51667298-2c3f-4846-a8c9-ec56331b8361)
 <b>You have to write your openai api key inside the red box.</b> see [How to install](#how-to-install)
 
@@ -75,13 +73,14 @@ You can change screen between text chatbot and image generating tool screen.
 ![image](https://github.com/yjg30737/pyqt-openai/assets/55078043/78260aaf-2626-4267-9309-07655cab2061)
 
 ### Conversation preview
-#### Preview Image
-![image](https://user-images.githubusercontent.com/55078043/236583716-a18b30b0-7b67-412e-b633-7daa8e41b525.png)
-#### Preview Video
 https://user-images.githubusercontent.com/55078043/236583883-8e9732a3-1223-4b28-85f1-f60d8b2d6ced.mp4
 
 ### Prompt Generator
 https://github.com/yjg30737/pyqt-openai/assets/55078043/2f351442-1e8c-4ba2-b5fe-4391df6250ff
+
+You can use the additional prompt feature by "prompt menu" right next to input field.
+
+![image](https://github.com/yjg30737/pyqt-openai/assets/55078043/c9ca84af-0088-4435-854d-7feca9e2e663)
 
 #### Image Generation
 #### Preview
