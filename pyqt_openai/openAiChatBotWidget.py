@@ -88,7 +88,6 @@ class OpenAIChatBotWidget(QWidget):
         self.__settingBtn.setToolTip('Settings')
         self.__settingBtn.setCheckable(True)
         self.__settingBtn.setChecked(True)
-        self.__settingBtn.setChecked(False)
         self.__settingBtn.toggled.connect(self.__aiPlaygroundWidget.setVisible)
 
         self.__promptBtn = SvgButton()
@@ -96,7 +95,6 @@ class OpenAIChatBotWidget(QWidget):
         self.__promptBtn.setToolTip('Prompt Generator')
         self.__promptBtn.setCheckable(True)
         self.__promptBtn.setChecked(True)
-        self.__promptBtn.setChecked(False)
         self.__promptBtn.toggled.connect(self.__promptGeneratorWidget.setVisible)
 
         lay = QHBoxLayout()
