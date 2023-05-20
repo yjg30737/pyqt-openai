@@ -2,8 +2,7 @@ import json
 import os
 import webbrowser
 
-from qtpy.QtCore import Qt, QSettings, QEvent, Signal
-from qtpy.QtGui import QCursor
+from qtpy.QtCore import Qt, QSettings, Signal
 from qtpy.QtWidgets import QHBoxLayout, QWidget, QSizePolicy, QVBoxLayout, QFrame, QSplitter, \
     QListWidgetItem, QFileDialog
 

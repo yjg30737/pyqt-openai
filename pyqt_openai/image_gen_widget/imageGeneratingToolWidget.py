@@ -1,15 +1,12 @@
 import sys
 
-from PyQt5.QtWidgets import QDialog
-from qtpy.QtGui import QFont
 from qtpy.QtCore import Qt, Signal
-from qtpy.QtWidgets import QApplication, QLabel, QHBoxLayout, QVBoxLayout, QFrame, QWidget
+from qtpy.QtWidgets import QApplication, QHBoxLayout, QVBoxLayout, QFrame, QWidget
 from qtpy.QtWidgets import QSplitter
 
 from pyqt_openai.image_gen_widget.leftSideBar import LeftSideBar
 from pyqt_openai.image_gen_widget.rightSideBar import RightSideBar
 from pyqt_openai.image_gen_widget.viewWidget import ViewWidget
-from pyqt_openai.inputDialog import InputDialog
 from pyqt_openai.svgButton import SvgButton
 
 
