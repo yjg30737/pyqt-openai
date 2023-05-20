@@ -157,15 +157,18 @@ class PropTable(QWidget):
 
         self.setLayout(lay)
 
+    def getPromptText(self):
+        prompt_text = ''
+        for i in range(self.__table.rowCount()):
+            name = self.__table.item(i, 0).text() if self.__table.item(i, 0) else ''
+            value = self.__table.item(i, 1).text() if self.__table.item(i, 1) else ''
+            if value.strip():
+                prompt_text += f'{name}: {value}\n'
+        return prompt_text
+
     def __generatePropPrompt(self, item: QTableWidgetItem):
-        if item.column() == 1:
-            prompt_text = ''
-            for i in range(self.__table.rowCount()):
-                name = self.__table.item(i, 0).text()
-                value = self.__table.item(i, 1).text()
-                if value.strip():
-                    prompt_text += f'{name}: {value}\n'
-            self.updated.emit(prompt_text)
+        prompt_text = self.getPromptText()
+        self.updated.emit(prompt_text)
 
     def __saveChangedPropPrompt(self, item: QTableWidgetItem):
         name = self.__table.item(item.row(), 0)
@@ -251,3 +254,6 @@ class PropPage(QWidget):
 
     def __showProp(self, n):
         self.__rightWidget.setCurrentIndex(n)
+        w = self.__rightWidget.currentWidget()
+        if w and isinstance(w, PropTable):
+            self.updated.emit(w.getPromptText())

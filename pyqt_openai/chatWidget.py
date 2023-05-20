@@ -1,11 +1,7 @@
-import json
-import os
-
-import requests
-
 from qtpy.QtCore import Qt, Signal
-from qtpy.QtGui import QPixmap, QFont
-from qtpy.QtWidgets import QScrollArea, QVBoxLayout, QToolButton, QMenu, QAction, QWidget, QLabel, QHBoxLayout, QTextEdit, QStackedWidget
+from qtpy.QtGui import QFont, QTextCursor
+from qtpy.QtWidgets import QScrollArea, QCompleter, QVBoxLayout, QToolButton, QMenu, QAction, QWidget, QLabel, \
+    QHBoxLayout, QTextEdit, QStackedWidget
 
 from pyqt_openai.sqlite import SqliteDatabase
 from pyqt_openai.svgToolButton import SvgToolButton
@@ -149,14 +145,81 @@ class ChatBrowser(QScrollArea):
 class TextEditPrompt(QTextEdit):
     returnPressed = Signal()
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, db: SqliteDatabase):
+        super().__init__()
+        self.__initVal(db)
         self.__initUi()
 
+    def __initVal(self, db):
+        self.__command_f = False
+        self.__completer = None
+        self.__db = db
+
     def __initUi(self):
+        self.__initPromptCommandAutocomplete()
         self.setStyleSheet('QTextEdit { border: 1px solid #AAA; } ')
 
+    def setPromptCommandAutocompletedEnabled(self, f):
+        self.__command_f = f
+
+    def __initPromptCommandAutocomplete(self):
+        p_grp = []
+        for group in self.__db.selectPropPromptGroup():
+            p_grp_attr = [attr for attr in self.__db.selectPropPromptAttribute(group[0])]
+            p_grp_value = ''
+            for attr_obj in p_grp_attr:
+                name = attr_obj[2]
+                value = attr_obj[3]
+                if value and value.strip():
+                    p_grp_value += f'{name}: {value}\n'
+            p_grp.append({'name': group[1], 'value': p_grp_value})
+
+        t_grp = [{'name': obj[1], 'value': obj[2]} for obj in self.__db.selectTemplatePrompt()]
+
+        self.__total_grp = p_grp+t_grp
+
+        # only name
+        grp_nm_arr = [obj['name'] for obj in self.__total_grp]
+
+        completer = QCompleter(grp_nm_arr)
+        completer.activated.connect(self.__activated)
+        self.setCompleter(completer)
+
+    def __activated(self, word):
+        for item in self.__total_grp:
+            if item['name'] == word:
+                v = item['value']
+                break
+        else:
+            # Handle the case when 'b' is not found
+            v = ''
+        self.textCursor().deletePreviousChar()
+        self.insertPlainText(v)
+
+    def setCompleter(self, completer):
+        if self.__completer:
+            self.__completer.activated.disconnect()
+
+        self.__completer = completer
+        self.__completer.setWidget(self)
+        self.__completer.setCompletionMode(QCompleter.PopupCompletion)
+
     def keyPressEvent(self, e):
+        if self.__command_f:
+            if self.__completer and self.__completer.popup().isVisible():
+                if e.key() in (Qt.Key_Enter, Qt.Key_Return, Qt.Key_Escape, Qt.Key_Tab, Qt.Key_Backtab):
+                    e.ignore()
+                    return
+
+            if e.key() == Qt.Key_Slash:  # Activate completer when "/" is pressed
+                self.__initPromptCommandAutocomplete()
+                cr = self.cursorRect()
+                cr.setWidth(self.__completer.popup().sizeHintForColumn(
+                    0) + self.__completer.popup().verticalScrollBar().sizeHint().width())
+                self.__completer.complete(cr)
+            else:
+                self.__completer.popup().hide()
+
         if e.key() == Qt.Key_Return or e.key() == Qt.Key_Enter:
             if e.modifiers() == Qt.ShiftModifier:
                 return super().keyPressEvent(e)
@@ -176,18 +239,17 @@ class TextEditPropmtGroup(QWidget):
 
     def __initVal(self, db):
         self.__db = db
-        self.__command_f = False
 
     def __initUi(self):
-        self.__beginningTextEdit = TextEditPrompt()
+        self.__beginningTextEdit = TextEditPrompt(self.__db)
         self.__beginningTextEdit.textChanged.connect(self.textChanged)
         self.__beginningTextEdit.setPlaceholderText('Beginning')
 
-        self.__textEdit = TextEditPrompt()
+        self.__textEdit = TextEditPrompt(self.__db)
         self.__textEdit.textChanged.connect(self.textChanged)
         self.__textEdit.setPlaceholderText('Write some text...')
 
-        self.__endingTextEdit = TextEditPrompt()
+        self.__endingTextEdit = TextEditPrompt(self.__db)
         self.__endingTextEdit.textChanged.connect(self.textChanged)
         self.__endingTextEdit.setPlaceholderText('Ending')
 
@@ -205,12 +267,8 @@ class TextEditPropmtGroup(QWidget):
         self.setLayout(lay)
 
     def setCommandEnabled(self, f: bool):
-        self.__command_f = f
-        if self.__command_f:
-            print(self.__db.selectPropPromptGroup())
-            print(self.__db.selectTemplatePrompt())
-        else:
-            print('nothing')
+        for w in self.__textGroup:
+            w.setPromptCommandAutocompletedEnabled(f)
 
     def adjustHeight(self) -> int:
         """
