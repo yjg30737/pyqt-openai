@@ -1,5 +1,7 @@
 import pyperclip
-from qtpy.QtWidgets import QTextBrowser, QWidget, QLabel, QVBoxLayout, QPushButton, QTabWidget, QScrollArea
+
+from qtpy.QtWidgets import QTextBrowser, QSplitter, QWidget, QLabel, QVBoxLayout, QPushButton, QTabWidget, QScrollArea
+from qtpy.QtCore import Qt
 
 from pyqt_openai.prompt.propPage import PropPage
 from pyqt_openai.prompt.templatePage import TemplatePage
@@ -39,14 +41,34 @@ class PromptGeneratorWidget(QScrollArea):
         lay = QVBoxLayout()
         lay.addWidget(propmtLbl)
         lay.addWidget(promptTabWidget)
+
+        topWidget = QWidget()
+        topWidget.setLayout(lay)
+
+        lay = QVBoxLayout()
         lay.addWidget(previewLbl)
         lay.addWidget(self.__prompt)
         lay.addWidget(copyBtn)
 
-        mainWidget = QWidget()
-        mainWidget.setLayout(lay)
+        bottomWidget = QWidget()
+        bottomWidget.setLayout(lay)
 
-        self.setWidget(mainWidget)
+        mainSplitter = QSplitter()
+        mainSplitter.addWidget(topWidget)
+        mainSplitter.addWidget(bottomWidget)
+        mainSplitter.setOrientation(Qt.Vertical)
+        mainSplitter.setChildrenCollapsible(False)
+        mainSplitter.setHandleWidth(2)
+        mainSplitter.setStyleSheet(
+            '''
+            QSplitter::handle:vertical
+            {
+                background: #CCC;
+                height: 1px;
+            }
+            ''')
+
+        self.setWidget(mainSplitter)
         self.setWidgetResizable(True)
 
         self.setStyleSheet('QScrollArea { border: 0 }')
