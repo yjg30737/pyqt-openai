@@ -9,6 +9,7 @@ from stability_sdk import client
 
 from pyqt_openai.notifier import NotifierWidget
 from pyqt_openai.svgLabel import SvgLabel
+from pyqt_openai.toast import Toast
 
 # Our Host URL should not be prepended with "https" nor should it have a trailing slash.
 os.environ['STABILITY_HOST'] = 'grpc.stability.ai:443'
@@ -16,20 +17,25 @@ os.environ['STABILITY_HOST'] = 'grpc.stability.ai:443'
 
 class StableDiffusionThread(QThread):
     replyGenerated = Signal(bytes)
+    errorGenerated = Signal(str)
 
     def __init__(self, answers, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.__answers = answers
 
     def run(self):
-        for resp in self.__answers:
-            for artifact in resp.artifacts:
-                if artifact.finish_reason == generation.FILTER:
-                    warnings.warn(
-                        "Your request activated the API's safety filters and could not be processed."
-                        "Please modify the prompt and try again.")
-                if artifact.type == generation.ARTIFACT_IMAGE:
-                    self.replyGenerated.emit(artifact.binary)
+        try:
+            for resp in self.__answers:
+                for artifact in resp.artifacts:
+                    if artifact.finish_reason == generation.FILTER:
+                        warnings.warn(
+                            "Your request activated the API's safety filters and could not be processed."
+                            "Please modify the prompt and try again.")
+                    if artifact.type == generation.ARTIFACT_IMAGE:
+                        self.replyGenerated.emit(artifact.binary)
+        except Exception as e:
+            self.errorGenerated.emit(str(e))
+
 
 
 class ImageStableDiffusionPage(QWidget):
@@ -225,6 +231,12 @@ class ImageStableDiffusionPage(QWidget):
         self.__submitBtn.setEnabled(False)
         self.__t.start()
         self.__t.replyGenerated.connect(self.__afterGenerated)
+        self.__t.errorGenerated.connect(self.__failToGenerate)
+
+    def __failToGenerate(self, e):
+        toast = Toast(text=e, duration=3, parent=self)
+        toast.show()
+        self.__submitBtn.setEnabled(True)
 
     def __afterGenerated(self, image_bin):
         self.submitSd.emit(image_bin)
