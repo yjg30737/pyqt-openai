@@ -6,7 +6,7 @@ from qtpy.QtWidgets import QDialog, QVBoxLayout, QLineEdit, QFrame, QPushButton,
 from pyqt_openai.sqlite import SqliteDatabase
 
 
-class PromptInputDialog(QDialog):
+class PromptGroupInputDialog(QDialog):
     def __init__(self, db: SqliteDatabase, parent=None):
         super().__init__(parent)
         self.__initVal(db)
@@ -48,11 +48,11 @@ class PromptInputDialog(QDialog):
 
         self.setLayout(lay)
 
-    def getPromptName(self):
+    def getPromptGroupName(self):
         return self.__newName.text()
 
     def __setAccept(self, text):
         m = re.search('^[a-zA-Z_]+$', text)
-        self.__db.selectPropPromptGroup()
-        self.__db.selectTemplatePromptGroup()
-        self.__okBtn.setEnabled(True if m else False)
+        names = [obj[1] for obj in self.__db.selectPropPromptGroup()+self.__db.selectTemplatePromptGroup()]
+        f = (True if m else False) and text not in names
+        self.__okBtn.setEnabled(f)
