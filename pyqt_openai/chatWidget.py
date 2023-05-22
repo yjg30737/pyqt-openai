@@ -142,6 +142,7 @@ class ChatBrowser(QScrollArea):
             self.__setLabel(conv_data[i], False, not bool(i % 2))
 
 
+
 class TextEditPrompt(QTextEdit):
     returnPressed = Signal()
 
@@ -163,6 +164,7 @@ class TextEditPrompt(QTextEdit):
         self.__command_f = f
 
     def __initPromptCommandAutocomplete(self):
+        # get prop group
         p_grp = []
         for group in self.__db.selectPropPromptGroup():
             p_grp_attr = [attr for attr in self.__db.selectPropPromptAttribute(group[0])]
@@ -174,7 +176,17 @@ class TextEditPrompt(QTextEdit):
                     p_grp_value += f'{name}: {value}\n'
             p_grp.append({'name': group[1], 'value': p_grp_value})
 
-        t_grp = [{'name': obj[1], 'value': obj[2]} for obj in self.__db.selectTemplatePrompt()]
+        # get template group
+        t_grp = []
+        for group in self.__db.selectTemplatePromptGroup():
+            t_grp_attr = [attr for attr in self.__db.selectTemplatePromptUnit(group[0])]
+            t_grp_value = ''
+            for attr_obj in t_grp_attr:
+                name = attr_obj[2]
+                value = attr_obj[3]
+                if value and value.strip():
+                    t_grp_value += f'{name}: {value}\n'
+                t_grp.append({'name': f'{attr_obj[2]}({group[1]})', 'value': t_grp_value})
 
         self.__total_grp = p_grp+t_grp
 
@@ -207,6 +219,7 @@ class TextEditPrompt(QTextEdit):
     def keyPressEvent(self, e):
         if self.__command_f:
             if self.__completer and self.__completer.popup().isVisible():
+                print(e.key() in (Qt.Key_Enter, Qt.Key_Return, Qt.Key_Escape, Qt.Key_Tab, Qt.Key_Backtab))
                 if e.key() in (Qt.Key_Enter, Qt.Key_Return, Qt.Key_Escape, Qt.Key_Tab, Qt.Key_Backtab):
                     e.ignore()
                     return
