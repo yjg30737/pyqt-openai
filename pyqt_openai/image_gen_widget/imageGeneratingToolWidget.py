@@ -100,8 +100,7 @@ class ImageGeneratingToolWidget(QWidget):
         self.__rightSideBarWidget.setEnabled(f)
 
     def __addImageGroup(self):
-        self.__db.insertConv('New Chat')
-        cur_id = self.__db.getCursor().lastrowid
+        cur_id = self.__db.insertConv('New Chat')
         self.__browser.resetChatWidget(cur_id)
         self.__leftSideBarWidget.addImageGroup(cur_id)
         self.__lineEdit.setFocus()

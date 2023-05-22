@@ -267,8 +267,7 @@ class OpenAIChatBotWidget(QWidget):
 
 
     def __addConv(self):
-        self.__db.insertConv('New Chat')
-        cur_id = self.__db.getCursor().lastrowid
+        cur_id = self.__db.insertConv('New Chat')
         self.__browser.resetChatWidget(cur_id)
         self.__leftSideBarWidget.addToList(cur_id)
         self.__lineEdit.setFocus()
@@ -288,7 +287,6 @@ class OpenAIChatBotWidget(QWidget):
         if filename[0]:
             filename = filename[0]
             self.__db.export(ids, filename)
-
 
     def __updateConvUnit(self, id, user_f, conv_unit=None):
         if conv_unit:
