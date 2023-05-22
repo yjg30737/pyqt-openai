@@ -3,6 +3,7 @@ from qtpy.QtWidgets import QWidget, QDialog, QTableWidget, QVBoxLayout, QHBoxLay
 from qtpy.QtCore import Signal, Qt
 
 from pyqt_openai.inputDialog import InputDialog
+from pyqt_openai.prompt.promptInputDialog import PromptInputDialog
 from pyqt_openai.sqlite import SqliteDatabase
 from pyqt_openai.svgButton import SvgButton
 
@@ -177,12 +178,12 @@ class TemplateTable(QWidget):
         self.__db.updateTemplatePromptUnit(self.__id, id, name, prompt)
         
     def __add(self):
-        dialog = InputDialog('Name', '', self)
+        dialog = PromptInputDialog(self.__db, self)
         reply = dialog.exec()
         if reply == QDialog.Accepted:
             self.__table.itemChanged.disconnect(self.__saveChangedTemplatePrompt)
 
-            name = dialog.getText()
+            name = dialog.getPromptName()
             self.__table.setRowCount(self.__table.rowCount()+1)
 
             item1 = QTableWidgetItem(name)
