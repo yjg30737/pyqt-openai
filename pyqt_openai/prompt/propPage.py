@@ -4,7 +4,8 @@ from qtpy.QtWidgets import QTableWidget, QLineEdit, QSizePolicy, QSpacerItem, QS
     QVBoxLayout, QWidget, QDialog, QListWidget, QListWidgetItem, QSplitter
 
 from pyqt_openai.inputDialog import InputDialog
-from pyqt_openai.prompt.promptUnitInputDialog import PromptUnitInputDialog
+from pyqt_openai.prompt.promptGroupInputDialog import PromptGroupInputDialog
+from pyqt_openai.prompt.propPromptUnitInputDialog import PropPromptUnitInputDialog
 from pyqt_openai.sqlite import SqliteDatabase
 from pyqt_openai.svgButton import SvgButton
 
@@ -75,10 +76,10 @@ class PropGroupList(QWidget):
         self.added.emit(id)
 
     def __addGroup(self):
-        dialog = PromptUnitInputDialog(self.__db, self)
+        dialog = PromptGroupInputDialog(self.__db, self)
         reply = dialog.exec()
         if reply == QDialog.Accepted:
-            name = dialog.getPromptName()
+            name = dialog.getPromptGroupName()
             id = self.__db.insertPropPromptGroup(name)
             self.__addGroupItem(id, name)
 
@@ -185,7 +186,7 @@ class PropTable(QWidget):
         self.__db.updatePropPromptAttribute(self.__id, id, name, value)
 
     def __add(self):
-        dialog = PromptUnitInputDialog(self.__db, self)
+        dialog = PropPromptUnitInputDialog(self.__db, self.__id, self)
         reply = dialog.exec()
         if reply == QDialog.Accepted:
             self.__table.itemChanged.disconnect(self.__saveChangedPropPrompt)
