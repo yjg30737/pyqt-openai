@@ -4,7 +4,7 @@ from qtpy.QtCore import Signal, Qt
 
 from pyqt_openai.inputDialog import InputDialog
 from pyqt_openai.prompt.promptGroupInputDialog import PromptGroupInputDialog
-from pyqt_openai.prompt.promptUnitInputDialog import PromptUnitInputDialog
+from pyqt_openai.prompt.templatePromptUnitInputDialog import TemplatePromptUnitInputDialog
 from pyqt_openai.sqlite import SqliteDatabase
 from pyqt_openai.svgButton import SvgButton
 
@@ -179,7 +179,7 @@ class TemplateTable(QWidget):
         self.__db.updateTemplatePromptUnit(self.__id, id, name, prompt)
         
     def __add(self):
-        dialog = PromptUnitInputDialog(self.__db, self.__id, self)
+        dialog = TemplatePromptUnitInputDialog(self.__db, self.__id, self)
         reply = dialog.exec()
         if reply == QDialog.Accepted:
             self.__table.itemChanged.disconnect(self.__saveChangedTemplatePrompt)
