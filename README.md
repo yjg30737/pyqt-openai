@@ -86,11 +86,10 @@ You can use the additional prompt feature by "prompt menu" right next to input f
 ![image](https://github.com/yjg30737/pyqt-openai/assets/55078043/d0903a76-bf4f-4900-bfea-89da6f072c9d)
 
 ## How to Install
-1. open command propmt of your OS.
-2. git clone ~
+1. git clone ~
+2. pip install -r requirements.txt
 3. from the root directory, type "cd pyqt_openai"
-4. pip install -r requirements.txt
-5. You should put your api key in the line edit. You can get it in <a href="https://platform.openai.com/account/api-keys">official site</a> of openai. Sign up and log in before you get it.
+4. You should put your api key in the line edit. You can get it in <a href="https://platform.openai.com/account/api-keys">official site</a> of openai. Sign up and log in before you get it.
 
 Be sure, this is a very important API key that belongs to you only, so you should remember it and keep it secure.
 
