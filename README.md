@@ -87,7 +87,7 @@ You can use the additional prompt feature by "prompt menu" right next to input f
 
 ## How to Install
 1. git clone ~
-2. cd pyqt_openai
+2. cd pyqt-openai
 3. pip install -r requirements.txt
 4. cd pyqt_openai
 5. You should put your api key in the line edit. You can get it in <a href="https://platform.openai.com/account/api-keys">official site</a> of openai. Sign up and log in before you get it.
