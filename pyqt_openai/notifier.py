@@ -1,5 +1,5 @@
 from qtpy.QtGui import QFont, QIcon
-from qtpy.QtWidgets import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QDesktopWidget, QSizePolicy, qApp, QPushButton, \
+from qtpy.QtWidgets import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QDesktopWidget, QSizePolicy, QApplication, QPushButton, \
     QApplication
 from qtpy.QtCore import Qt, QPoint, Signal, QTimer, QPropertyAnimation
 
