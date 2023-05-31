@@ -1,7 +1,7 @@
-from qtpy.QtGui import QFont, QIcon
-from qtpy.QtWidgets import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QDesktopWidget, QSizePolicy, qApp, QPushButton, \
-    QApplication
 from qtpy.QtCore import Qt, QPoint, Signal, QTimer, QPropertyAnimation
+from qtpy.QtGui import QFont, QIcon
+from qtpy.QtWidgets import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QDesktopWidget, QSizePolicy, QPushButton, \
+    QApplication
 
 
 class NotifierWidget(QWidget):
