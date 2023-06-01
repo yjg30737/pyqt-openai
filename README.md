@@ -87,15 +87,30 @@ You can use the additional prompt feature by "prompt menu" right next to input f
 
 ## How to Install
 1. git clone ~
-2. pip install -r requirements.txt
-3. from the root directory, type "cd pyqt_openai"
-4. You should put your api key in the line edit. You can get it in <a href="https://platform.openai.com/account/api-keys">official site</a> of openai. Sign up and log in before you get it.
+2. cd pyqt-openai
+3. pip install -r requirements.txt
+4. python setup.py install
+5. cd pyqt_openai
+6. You should put your api key in the line edit. You can get it in <a href="https://platform.openai.com/account/api-keys">official site</a> of openai. Sign up and log in before you get it.
 
 Be sure, this is a very important API key that belongs to you only, so you should remember it and keep it secure.
 
-6. python main.py
+7. python main.py
 
-If installation doesn't work, you can contact me with bring up new issue in issue tab or check the troubleshooting below even it is only about very specific error. 
+If installation doesn't work, you can contact me with bring up new issue in issue tab or check the troubleshooting below even it is only about very specific error.
+
+### Note
+If you use Linux and see this error:
+```
+qt.qpa.plugin: could not load the qt platform plugin "xcb" in "" even though it was found
+
+this application failed to start because no qt platform plugin could be initialized, reinstalling the application may fix this problem
+```
+
+run this command:
+```
+sudo apt-get install libxcb-xinerama0
+```
 
 ## Troubleshooting
 If you see this error while installing the openai package
