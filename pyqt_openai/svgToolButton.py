@@ -1,7 +1,7 @@
 import os.path, posixpath
 
 from qtpy.QtGui import QColor, QPalette, qGray
-from qtpy.QtWidgets import QGraphicsColorizeEffect, QWidget, qApp, QToolButton
+from qtpy.QtWidgets import QGraphicsColorizeEffect, QWidget, QApplication, QToolButton
 
 
 class SvgToolButton(QToolButton):
@@ -13,7 +13,7 @@ class SvgToolButton(QToolButton):
 
     def __initVal(self):
         # to set size accordance with scale
-        sc = qApp.screens()[0]
+        sc = QApplication.screens()[0]
         sc.logicalDotsPerInchChanged.connect(self.__scaleChanged)
         self.__size = sc.logicalDotsPerInch() // 4
         self.__padding = self.__border_radius = self.__size // 10
