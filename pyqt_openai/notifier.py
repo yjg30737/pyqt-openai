@@ -1,6 +1,7 @@
+from qtpy import QtGui
 from qtpy.QtCore import Qt, QPoint, Signal, QTimer, QPropertyAnimation
 from qtpy.QtGui import QFont, QIcon
-from qtpy.QtWidgets import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QDesktopWidget, QSizePolicy, QPushButton, \
+from qtpy.QtWidgets import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QSizePolicy, QPushButton, \
     QApplication
 
 
@@ -45,7 +46,7 @@ class NotifierWidget(QWidget):
         lay.addWidget(self.__btnWidget)
         lay.setContentsMargins(0, 0, 0, 0)
 
-        ag = QDesktopWidget().availableGeometry()
+        ag = QtGui.QGuiApplication.primaryScreen().availableGeometry()
 
         geo = self.geometry()
         geo.moveBottomRight(QPoint(ag.width(), ag.height()))
