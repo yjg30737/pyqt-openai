@@ -175,7 +175,7 @@ class MainWindow(QMainWindow):
         tray_icon.show()
 
     def __activated(self, reason):
-        if reason == 3:
+        if reason == QSystemTrayIcon.DoubleClick:
             self.show()
 
     def __setToolBar(self):
