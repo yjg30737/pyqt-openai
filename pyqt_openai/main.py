@@ -1,6 +1,7 @@
 import os
 import openai, requests
 
+
 from qtpy.QtGui import QGuiApplication, QFont, QIcon, QColor
 from qtpy.QtWidgets import QMainWindow, QToolBar, QHBoxLayout, QDialog, QLineEdit, QPushButton, QWidgetAction, QSpinBox, QLabel, QWidget, QApplication, \
     QComboBox, QSizePolicy, QStackedWidget, QAction, QMenu, QSystemTrayIcon, \
@@ -12,6 +13,10 @@ from pyqt_openai.customizeDialog import CustomizeDialog
 from pyqt_openai.svgButton import SvgButton
 from pyqt_openai.image_gen_widget.imageGeneratingToolWidget import ImageGeneratingToolWidget
 from pyqt_openai.openAiChatBotWidget import OpenAIChatBotWidget
+
+# for testing pyside6
+# if you use pyside6 already, you don't have to remove the #
+# os.environ['QT_API'] = 'pyside6'
 
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
 QCoreApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)  # HighDPI support

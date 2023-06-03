@@ -122,10 +122,3 @@ class ImageGeneratingToolWidget(QWidget):
         elif isinstance(arg, bytes):
             self.__viewWidget.showSdResult(arg)
             # self.__leftSideBarWidget.addImageGroup('Stable Diffusion', 'New Image Group', 0)
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    w = ImageGeneratingToolWidget()
-    w.show()
-    sys.exit(app.exec_())
