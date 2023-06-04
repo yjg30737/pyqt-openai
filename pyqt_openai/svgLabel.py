@@ -12,7 +12,6 @@ class SvgLabel(QLabel):
 
     def paintEvent(self, e):
         painter = QPainter(self)
-        painter.restore()
         if self.__renderer:
             self.__renderer.render(painter)
         return super().paintEvent(e)
