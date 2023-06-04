@@ -26,4 +26,4 @@ class CommandSuggestionWidget(QWidget):
         contentHeight = itemHeight * itemCount
         scrollbarHeight = self.__commandList.verticalScrollBar().sizeHint().height()
         totalHeight = contentHeight + itemHeight
-        self.setMaximumHeight(int(totalHeight*2) + scrollbarHeight)
+        self.setMaximumHeight(totalHeight + scrollbarHeight)
