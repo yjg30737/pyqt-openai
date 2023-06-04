@@ -140,7 +140,7 @@ class FindPathWidget(QWidget):
 
     def __find(self):
         if self.isForDirectory():
-            filename = QFileDialog.getExistingDirectory(None, 'Open Directory', '', QFileDialog.ShowDirsOnly)
+            filename = QFileDialog.getExistingDirectory(self, 'Open Directory', '', QFileDialog.ShowDirsOnly)
             if filename:
                 pass
             else:
@@ -160,6 +160,7 @@ class FindPathWidget(QWidget):
 
     def isForDirectory(self) -> bool:
         return self.__directory
+
 
 class CustomizeDialog(QDialog):
     def __init__(self, *args, **kwargs):
