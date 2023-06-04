@@ -197,7 +197,7 @@ class MainWindow(QMainWindow):
         aiTypeToolBar.addAction(self.__chooseAiAction)
 
         windowToolBar = QToolBar()
-        lay = QHBoxLayout()
+        lay = windowToolBar.layout()
         windowToolBar.addAction(self.__stackAction)
         windowToolBar.addAction(self.__customizeAction)
         windowToolBar.addAction(self.__transparentAction)
