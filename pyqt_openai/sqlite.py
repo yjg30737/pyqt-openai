@@ -397,26 +397,26 @@ class SqliteDatabase:
         self.__template_prompt_default_value_alex_brogan = {
             'name': 'Alex Brogan',
             'data': [
-            {'name': 'Sample 1',
-             'text': 'Identify the 20% of [topic or skill] that will yield 80% of the desired results and provide a focused learning plan to master it.'},
-             {'name': 'Sample 2',
-              'text': 'Explain [topic or skill] in the simplest terms possible as if teaching it to a complete beginner. Identify gaps in my understanding and suggest resources to fill them.'},
-              {'name': 'Sample 3',
-               'text': 'Create a study plan that mixes different topics or skills within [subject area] to help me develop a more robust understanding and facilitate connections between them.'},
-               {'name': 'Sample 4',
-                'text': 'Design a spaced repetition schedule for me to effectively review [topic or skill] over time, ensuring better retention and recall.'},
+                {'name': 'Sample 1',
+                 'text': 'Identify the 20% of [topic or skill] that will yield 80% of the desired results and provide a focused learning plan to master it.'},
+                {'name': 'Sample 2',
+                 'text': 'Explain [topic or skill] in the simplest terms possible as if teaching it to a complete beginner. Identify gaps in my understanding and suggest resources to fill them.'},
+                {'name': 'Sample 3',
+                 'text': 'Create a study plan that mixes different topics or skills within [subject area] to help me develop a more robust understanding and facilitate connections between them.'},
+                {'name': 'Sample 4',
+                 'text': 'Design a spaced repetition schedule for me to effectively review [topic or skill] over time, ensuring better retention and recall.'},
                 {'name': 'Sample 5',
                  'text': 'Help me create mental models or analogies to better understand and remember key concepts in [topic or skill].'},
-                 {'name': 'Sample 6',
-                  'text': 'Suggest various learning resources (e.g., videos, books, podcasts, interactive exercises) for [topic or skill] that cater to different learning styles.'},
-                  {'name': 'Sample 7',
-                   'text': 'Provide me with a series of challenging questions or problems related to [topic or skill] to test my understanding and improve long-term retention.'},
-                   {'name': 'Sample 8',
-                    'text': 'Transform key concepts or lessons from [topic or skill] into engaging stories or narratives to help me better remember and understand the material.'},
-                    {'name': 'Sample 9',
-                     'text': 'Design a deliberate practice routine for [topic or skill], focusing on my weaknesses and providing regular feedback for improvement.'},
-                     {'name': 'Sample 10',
-                      'text': 'Guide me through a visualization exercise to help me internalize [topic or skill] and imagine myself succesfully applying it in real-life situations.'},
+                {'name': 'Sample 6',
+                 'text': 'Suggest various learning resources (e.g., videos, books, podcasts, interactive exercises) for [topic or skill] that cater to different learning styles.'},
+                {'name': 'Sample 7',
+                 'text': 'Provide me with a series of challenging questions or problems related to [topic or skill] to test my understanding and improve long-term retention.'},
+                {'name': 'Sample 8',
+                 'text': 'Transform key concepts or lessons from [topic or skill] into engaging stories or narratives to help me better remember and understand the material.'},
+                {'name': 'Sample 9',
+                 'text': 'Design a deliberate practice routine for [topic or skill], focusing on my weaknesses and providing regular feedback for improvement.'},
+                {'name': 'Sample 10',
+                 'text': 'Guide me through a visualization exercise to help me internalize [topic or skill] and imagine myself succesfully applying it in real-life situations.'},
             ]
         }
 
@@ -484,7 +484,8 @@ class SqliteDatabase:
 
     def __createCompletion(self):
         # Check if the table exists
-        self.__c.execute(f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{self.__completion_info_tb_nm}'")
+        self.__c.execute(
+            f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{self.__completion_info_tb_nm}'")
         if self.__c.fetchone()[0] == 1:
             pass
         else:
@@ -527,7 +528,7 @@ class SqliteDatabase:
             self.__c.execute(f'''CREATE TABLE {self.__prop_prompt_group_tb_nm}
                                                  (id INTEGER PRIMARY KEY,
                                                   name VARCHAR(50),
-                                                  
+
                                                   update_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
                                                   insert_dt DATETIME DEFAULT CURRENT_TIMESTAMP)''')
 
@@ -617,7 +618,8 @@ class SqliteDatabase:
     def insertPropPromptAttribute(self, id, name):
         try:
             # Insert a row into the table
-            self.__c.execute(f'INSERT INTO {self.__prop_prompt_unit_tb_nm}{id} (id_fk, name) VALUES (?, ?)', (id, name,))
+            self.__c.execute(f'INSERT INTO {self.__prop_prompt_unit_tb_nm}{id} (id_fk, name) VALUES (?, ?)',
+                             (id, name,))
             new_id = self.__c.lastrowid
             # Commit the transaction
             self.__conn.commit()
@@ -628,7 +630,8 @@ class SqliteDatabase:
 
     def updatePropPromptAttribute(self, p_id, id, name, text):
         try:
-            self.__c.execute(f'UPDATE {self.__prop_prompt_unit_tb_nm}{p_id} SET name=?, text=? WHERE id={id}', (name, text))
+            self.__c.execute(f'UPDATE {self.__prop_prompt_unit_tb_nm}{p_id} SET name=?, text=? WHERE id={id}',
+                             (name, text))
             self.__conn.commit()
         except sqlite3.Error as e:
             print(f"An error occurred: {e}")
@@ -660,6 +663,23 @@ class SqliteDatabase:
 
             self.insertTemplatePromptGroup(self.__template_prompt_default_value_awesome_chatgpt_prompts)
             self.insertTemplatePromptGroup(self.__template_prompt_default_value_alex_brogan)
+
+            self.__migratePrevTemplateDataInEtcPreviousGroup()
+
+    # legacy
+    # migrate previous template table data in "__template_prompt_tb_nm" to "etc_previous" group
+    def __migratePrevTemplateDataInEtcPreviousGroup(self):
+        self.__c.execute(f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{self.__template_prompt_tb_nm}'")
+        if self.__c.fetchone()[0] == 1:
+            self.__c.execute(f"SELECT name, text FROM {self.__template_prompt_tb_nm}")
+            prev_template_data = list(map(lambda x: { 'name': x[0], 'text': x[1] }, self.__c.fetchall()))
+            self.__etc = {
+                'name': 'etc_previous',
+                'data': prev_template_data
+            }
+            self.insertTemplatePromptGroup(self.__etc)
+            self.__c.execute(f'DROP TABLE {self.__template_prompt_tb_nm}')
+            self.__conn.commit()
 
     def selectTemplatePromptGroup(self):
         try:
@@ -735,7 +755,8 @@ class SqliteDatabase:
     def selectTemplatePromptUnit(self, id):
         try:
             # TODO make every select statement check if it exists
-            self.__c.execute(f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{self.__template_prompt_tb_nm}{id}'")
+            self.__c.execute(
+                f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{self.__template_prompt_tb_nm}{id}'")
             if self.__c.fetchone()[0] == 1:
                 self.__c.execute(f'SELECT * FROM {self.__template_prompt_tb_nm}{id}')
                 return self.__c.fetchall()
@@ -760,7 +781,8 @@ class SqliteDatabase:
 
     def updateTemplatePromptUnit(self, p_id, id, name, text):
         try:
-            self.__c.execute(f'UPDATE {self.__template_prompt_tb_nm}{p_id} SET name=(?), text=(?) WHERE id={id}', (name, text))
+            self.__c.execute(f'UPDATE {self.__template_prompt_tb_nm}{p_id} SET name=(?), text=(?) WHERE id={id}',
+                             (name, text))
             self.__conn.commit()
         except sqlite3.Error as e:
             print(f"An error occurred: {e}")
@@ -826,7 +848,8 @@ class SqliteDatabase:
         """
         try:
             # filter bool type fields
-            bool_type_column = [row[1] for row in self.__c.execute(f'PRAGMA table_info({self.__info_tb_nm})').fetchall() if row[2] == 'BOOL']
+            bool_type_column = [row[1] for row in self.__c.execute(f'PRAGMA table_info({self.__info_tb_nm})').fetchall()
+                                if row[2] == 'BOOL']
 
             # Execute the SELECT statement
             self.__c.execute(f'SELECT {",".join(list(self.__chat_default_value.keys()))} FROM {self.__info_tb_nm}')
@@ -862,10 +885,13 @@ class SqliteDatabase:
             id = id if id else self.__model_type
 
             # filter bool type fields
-            bool_type_column = [row[1] for row in self.__c.execute(f'PRAGMA table_info({self.__each_info_dict[id][0]})').fetchall() if row[2] == 'BOOL']
+            bool_type_column = [row[1] for row in
+                                self.__c.execute(f'PRAGMA table_info({self.__each_info_dict[id][0]})').fetchall() if
+                                row[2] == 'BOOL']
 
             # Execute the SELECT statement
-            self.__c.execute(f'SELECT {",".join(list(self.__each_info_dict[id][1].keys()))} FROM {self.__each_info_dict[id][0]}')
+            self.__c.execute(
+                f'SELECT {",".join(list(self.__each_info_dict[id][1].keys()))} FROM {self.__each_info_dict[id][0]}')
 
             # Get the column names
             column_names = [description[0] for description in self.__c.description]
@@ -945,7 +971,8 @@ class SqliteDatabase:
     def __createConvUnit(self, id_fk):
         try:
             # Check if the table exists
-            self.__c.execute(f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{self.__conv_unit_tb_nm}{id_fk}'")
+            self.__c.execute(
+                f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{self.__conv_unit_tb_nm}{id_fk}'")
             if self.__c.fetchone()[0] == 1:
                 # each conv table already exists
                 pass
@@ -1031,6 +1058,7 @@ class SqliteDatabase:
 
         conn.close()
 
+    # legacy
     def convertJsonIntoSql(self):
         try:
             # Read data from json
