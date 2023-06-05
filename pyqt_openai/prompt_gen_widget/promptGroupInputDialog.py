@@ -52,7 +52,7 @@ class PromptGroupInputDialog(QDialog):
         return self.__newName.text()
 
     def __setAccept(self, text):
-        m = re.search('^[a-zA-Z_]+$', text)
+        m = re.search('^[a-zA-Z_0-9]+$', text)
         names = [obj[1] for obj in self.__db.selectPropPromptGroup()+self.__db.selectTemplatePromptGroup()]
         f = (True if m else False) and text not in names
         self.__okBtn.setEnabled(f)

@@ -191,7 +191,7 @@ class PropTable(QWidget):
         if reply == QDialog.Accepted:
             self.__table.itemChanged.disconnect(self.__saveChangedPropPrompt)
 
-            name = dialog.getText()
+            name = dialog.getPromptName()
             self.__table.setRowCount(self.__table.rowCount()+1)
 
             item1 = QTableWidgetItem(name)
