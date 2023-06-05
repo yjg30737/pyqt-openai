@@ -140,23 +140,27 @@ class FindPathWidget(QWidget):
 
     def __find(self):
         if self.isForDirectory():
-            dirname = QFileDialog.getExistingDirectory(None, 'Open Directory', '', QFileDialog.ShowDirsOnly)
-            if dirname:
-                self.__pathLineEdit.setText(dirname)
-                self.added.emit(dirname)
+            filename = QFileDialog.getExistingDirectory(self, 'Open Directory', '', QFileDialog.ShowDirsOnly)
+            if filename:
+                pass
+            else:
+                return
         else:
             str_exp_files_to_open = self.__ext_of_files if self.__ext_of_files else 'All Files (*.*)'
             filename = QFileDialog.getOpenFileName(self, 'Find', '', str_exp_files_to_open)
             if filename[0]:
                 filename = filename[0]
-                self.__pathLineEdit.setText(filename)
-                self.added.emit(filename)
+            else:
+                return
+        self.__pathLineEdit.setText(filename)
+        self.added.emit(filename)
 
     def setAsDirectory(self, f: bool):
         self.__directory = f
 
     def isForDirectory(self) -> bool:
         return self.__directory
+
 
 class CustomizeDialog(QDialog):
     def __init__(self, *args, **kwargs):

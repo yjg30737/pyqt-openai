@@ -3,6 +3,8 @@ from qtpy.QtGui import QFont, QTextCursor
 from qtpy.QtWidgets import QScrollArea, QCompleter, QVBoxLayout, QToolButton, QMenu, QAction, QWidget, QLabel, \
     QHBoxLayout, QTextEdit, QStackedWidget
 
+from pyqt_openai.commandCompleter import CommandCompleter
+from pyqt_openai.propmt_command_completer.commandSuggestionWidget import CommandSuggestionWidget
 from pyqt_openai.sqlite import SqliteDatabase
 from pyqt_openai.svgToolButton import SvgToolButton
 
@@ -144,93 +146,45 @@ class ChatBrowser(QScrollArea):
 
 class TextEditPrompt(QTextEdit):
     returnPressed = Signal()
+    sendSuggestionWidget = Signal(str)
 
-    def __init__(self, db: SqliteDatabase):
+    def __init__(self):
         super().__init__()
-        self.__initVal(db)
+        self.__initVal()
         self.__initUi()
 
-    def __initVal(self, db):
-        self.__command_f = False
-        self.__completer = None
-        self.__db = db
+    def __initVal(self):
+        self.__commandSuggestionEnabled = False
 
     def __initUi(self):
-        self.__initPromptCommandAutocomplete()
         self.setStyleSheet('QTextEdit { border: 1px solid #AAA; } ')
 
-    def setPromptCommandAutocompletedEnabled(self, f):
-        self.__command_f = f
-
-    def __initPromptCommandAutocomplete(self):
-        p_grp = []
-        for group in self.__db.selectPropPromptGroup():
-            p_grp_attr = [attr for attr in self.__db.selectPropPromptAttribute(group[0])]
-            p_grp_value = ''
-            for attr_obj in p_grp_attr:
-                name = attr_obj[2]
-                value = attr_obj[3]
-                if value and value.strip():
-                    p_grp_value += f'{name}: {value}\n'
-            p_grp.append({'name': group[1], 'value': p_grp_value})
-
-        t_grp = [{'name': obj[1], 'value': obj[2]} for obj in self.__db.selectTemplatePrompt()]
-
-        self.__total_grp = p_grp+t_grp
-
-        # only name
-        grp_nm_arr = [obj['name'] for obj in self.__total_grp]
-
-        completer = QCompleter(grp_nm_arr)
-        completer.activated.connect(self.__activated)
-        self.setCompleter(completer)
-
-    def __activated(self, word):
-        for item in self.__total_grp:
-            if item['name'] == word:
-                v = item['value']
-                break
-        else:
-            # Handle the case when 'b' is not found
-            v = ''
-        self.textCursor().deletePreviousChar()
-        self.insertPlainText(v)
-
-    def setCompleter(self, completer):
-        if self.__completer:
-            self.__completer.activated.disconnect()
-
-        self.__completer = completer
-        self.__completer.setWidget(self)
-        self.__completer.setCompletionMode(QCompleter.PopupCompletion)
+    def setCommandSuggestionEnabled(self, f):
+        self.__commandSuggestionEnabled = f
 
     def keyPressEvent(self, e):
-        if self.__command_f:
-            if self.__completer and self.__completer.popup().isVisible():
-                if e.key() in (Qt.Key_Enter, Qt.Key_Return, Qt.Key_Escape, Qt.Key_Tab, Qt.Key_Backtab):
-                    e.ignore()
-                    return
-
-            if e.key() == Qt.Key_Slash:  # Activate completer when "/" is pressed
-                self.__initPromptCommandAutocomplete()
-                cr = self.cursorRect()
-                cr.setWidth(self.__completer.popup().sizeHintForColumn(
-                    0) + self.__completer.popup().verticalScrollBar().sizeHint().width())
-                self.__completer.complete(cr)
-            else:
-                self.__completer.popup().hide()
+        if self.__commandSuggestionEnabled:
+            if e.key() == Qt.Key_Up:
+                self.sendSuggestionWidget.emit('up')
+            elif e.key() == Qt.Key_Down:
+                self.sendSuggestionWidget.emit('down')
 
         if e.key() == Qt.Key_Return or e.key() == Qt.Key_Enter:
             if e.modifiers() == Qt.ShiftModifier:
                 return super().keyPressEvent(e)
             else:
-                self.returnPressed.emit()
+                if self.__commandSuggestionEnabled:
+                    self.sendSuggestionWidget.emit('enter')
+                else:
+                    self.returnPressed.emit()
         else:
             return super().keyPressEvent(e)
 
 
 class TextEditPropmtGroup(QWidget):
     textChanged = Signal()
+    onUpdateSuggestion = Signal()
+    onSendKeySignalToSuggestion = Signal(str)
 
     def __init__(self, db: SqliteDatabase):
         super().__init__()
@@ -241,22 +195,29 @@ class TextEditPropmtGroup(QWidget):
         self.__db = db
 
     def __initUi(self):
-        self.__beginningTextEdit = TextEditPrompt(self.__db)
-        self.__beginningTextEdit.textChanged.connect(self.textChanged)
+        self.__beginningTextEdit = TextEditPrompt()
         self.__beginningTextEdit.setPlaceholderText('Beginning')
 
-        self.__textEdit = TextEditPrompt(self.__db)
-        self.__textEdit.textChanged.connect(self.textChanged)
+        self.__textEdit = TextEditPrompt()
         self.__textEdit.setPlaceholderText('Write some text...')
 
-        self.__endingTextEdit = TextEditPrompt(self.__db)
-        self.__endingTextEdit.textChanged.connect(self.textChanged)
+        # old code
+        # self.__textEdit.textChanged.connect(self.textChanged)
+        # self.__textEdit.sendSuggestionWidget.connect(self.__initPromptCommandAutocomplete)
+        # self.__textEdit.setPlaceholderText('Write some text...')
+
+        self.__endingTextEdit = TextEditPrompt()
         self.__endingTextEdit.setPlaceholderText('Ending')
 
+        # all false by default
         self.__beginningTextEdit.setVisible(False)
         self.__endingTextEdit.setVisible(False)
 
         self.__textGroup = [self.__beginningTextEdit, self.__textEdit, self.__endingTextEdit]
+        for w in self.__textGroup:
+            w.textChanged.connect(self.onUpdateSuggestion)
+            w.textChanged.connect(self.textChanged)
+            w.sendSuggestionWidget.connect(self.onSendKeySignalToSuggestion)
 
         lay = QVBoxLayout()
         for w in self.__textGroup:
@@ -266,9 +227,31 @@ class TextEditPropmtGroup(QWidget):
 
         self.setLayout(lay)
 
+    def executeCommand(self, item, grp):
+        command_key = item.text()
+        command = ''
+        for i in range(len(grp)):
+            if grp[i].get('name', '') == command_key:
+                command = grp[i].get('value', '')
+
+        w = self.getCurrentTextEdit()
+        if w:
+            cursor = w.textCursor()
+            cursor.deletePreviousChar()
+            cursor.select(QTextCursor.WordUnderCursor)
+            w.setTextCursor(cursor)
+            w.insertPlainText(command)
+
+            self.adjustHeight()
+
+    def getCurrentTextEdit(self):
+        for w in self.__textGroup:
+            if w.hasFocus():
+                return w
+
     def setCommandEnabled(self, f: bool):
         for w in self.__textGroup:
-            w.setPromptCommandAutocompletedEnabled(f)
+            w.setCommandSuggestionEnabled(f)
 
     def adjustHeight(self) -> int:
         """
@@ -311,9 +294,34 @@ class Prompt(QWidget):
     def __initVal(self, db):
         self.__db = db
 
+        # prompt group
+        self.__p_grp = []
+
+        # False by default
+        self.__commandEnabled = False
+
     def __initUi(self):
+        # Create the command suggestion list
+        self.__suggestionWidget = CommandSuggestionWidget()
+        self.__suggestion_list = self.__suggestionWidget.getCommandList()
+
         self.__textEditGroup = TextEditPropmtGroup(self.__db)
         self.__textEditGroup.textChanged.connect(self.updateHeight)
+
+        # set command suggestion
+        self.__textEditGroup.onUpdateSuggestion.connect(self.__updateSuggestions)
+        self.__textEditGroup.onSendKeySignalToSuggestion.connect(self.__sendKeysignalToSuggestion)
+        
+        self.__suggestion_list.itemClicked.connect(self.executeCommand)
+
+        lay = QVBoxLayout()
+        lay.addWidget(self.__suggestionWidget)
+        lay.addWidget(self.__textEditGroup)
+        lay.setContentsMargins(0, 0, 0, 0)
+        lay.setSpacing(0)
+
+        leftWidget = QWidget()
+        leftWidget.setLayout(lay)
 
         settingsBtn = SvgToolButton()
         settingsBtn.setIcon('ico/vertical_three_dots.svg')
@@ -356,16 +364,88 @@ class Prompt(QWidget):
         rightWidget.setLayout(lay)
 
         lay = QHBoxLayout()
-        lay.addWidget(self.__textEditGroup)
+        lay.addWidget(leftWidget)
         lay.addWidget(rightWidget)
         lay.setContentsMargins(0, 0, 0, 0)
         lay.setSpacing(0)
         self.setLayout(lay)
+
+        self.__suggestionWidget.setVisible(False)
+
         self.updateHeight()
+
+    def __getEveryPromptCommands(self):
+        # get prop group
+        p_grp = []
+        for group in self.__db.selectPropPromptGroup():
+            p_grp_attr = [attr for attr in self.__db.selectPropPromptAttribute(group[0])]
+            p_grp_value = ''
+            for attr_obj in p_grp_attr:
+                name = attr_obj[2]
+                value = attr_obj[3]
+                if value and value.strip():
+                    p_grp_value += f'{name}: {value}\n'
+            p_grp.append({'name': group[1], 'value': p_grp_value})
+
+        # get template group
+        t_grp = []
+        for group in self.__db.selectTemplatePromptGroup():
+            t_grp_attr = [attr for attr in self.__db.selectTemplatePromptUnit(group[0])]
+            t_grp_value = ''
+            for attr_obj in t_grp_attr:
+                name = attr_obj[2]
+                value = attr_obj[3]
+                t_grp.append({'name': f'{attr_obj[2]}({group[1]})', 'value': value})
+
+        self.__p_grp = p_grp+t_grp
+
+        # TODO will include value as well
+        return [command['name'] for command in self.__p_grp]
+
+    def __updateSuggestions(self):
+        w = self.__textEditGroup.getCurrentTextEdit()
+        if w and self.__commandEnabled:
+            input_text_chunk = w.toPlainText().split()
+            input_text_chunk_exists = len(input_text_chunk) > 0
+            self.__suggestionWidget.setVisible(input_text_chunk_exists)
+            if input_text_chunk_exists:
+                input_text_chunk = input_text_chunk[-1]
+                starts_with_f = input_text_chunk.startswith('/')
+                self.__suggestionWidget.setVisible(starts_with_f)
+                w.setCommandSuggestionEnabled(starts_with_f)
+                if starts_with_f:
+                    command_word = input_text_chunk[1:]
+
+                    # Example: Add some dummy command suggestions
+                    commands = self.__getEveryPromptCommands()
+                    filtered_commands = commands
+                    if command_word:
+                        filtered_commands = [command for command in commands if command_word.lower() in command.lower()]
+                    filtered_commands_exists_f = len(filtered_commands) > 0
+                    self.__suggestionWidget.setVisible(filtered_commands_exists_f)
+                    if filtered_commands_exists_f:
+                        # Clear previous suggestions
+                        self.__suggestion_list.clear()
+
+                        # Add the filtered suggestions to the list
+                        self.__suggestion_list.addItems(filtered_commands)
+                        self.__suggestion_list.setCurrentRow(0)
+
+    def __sendKeysignalToSuggestion(self, key):
+        if key == 'up':
+            self.__suggestion_list.setCurrentRow(max(0, self.__suggestion_list.currentRow() - 1))
+        elif key == 'down':
+            self.__suggestion_list.setCurrentRow(
+                min(self.__suggestion_list.currentRow() + 1, self.__suggestion_list.count() - 1))
+        elif key == 'enter':
+            self.executeCommand(self.__suggestion_list.currentItem())
+
+    def executeCommand(self, item):
+        self.__textEditGroup.executeCommand(item, self.__p_grp)
 
     def updateHeight(self):
         overallHeight = self.__textEditGroup.adjustHeight()
-        self.setMaximumHeight(overallHeight)
+        self.setMaximumHeight(overallHeight + self.__suggestionWidget.maximumHeight())
 
     def getTextEdit(self):
         return self.__textEditGroup.getGroup()[1]
@@ -380,6 +460,7 @@ class Prompt(QWidget):
         self.__textEditGroup.getGroup()[-1].setVisible(f)
 
     def __supportPromptCommand(self, f):
+        self.__commandEnabled = f
         self.__textEditGroup.setCommandEnabled(f)
 
 
