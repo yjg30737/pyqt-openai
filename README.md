@@ -77,6 +77,8 @@ You can change screen between text chatbot and image generating tool screen.
 #### Linux (Ubuntu)
 ![image](https://github.com/yjg30737/pyqt-openai/assets/55078043/4005c085-53f4-406f-adb0-4fb4d87d88ba)
 
+If you use MacOS, please give me the pyqt-openai screen image from it.
+
 ### Conversation
 #### Preview 1
 I recorded this preview long time ago so GUI is different from the current version, but way of operating it is pretty much the same.
