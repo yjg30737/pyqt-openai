@@ -75,8 +75,13 @@ You can change screen between text chatbot and image generating tool screen.
 ![image](https://github.com/yjg30737/pyqt-openai/assets/55078043/78260aaf-2626-4267-9309-07655cab2061)
 
 ### Conversation
-#### Video below is preview of old GUI, but way of processing respond is pretty much the same.
+#### Preview 1
+I recorded this preview long time ago so GUI is different from the current version, but way of operating it is pretty much the same.
+
 https://user-images.githubusercontent.com/55078043/236583883-8e9732a3-1223-4b28-85f1-f60d8b2d6ced.mp4
+#### Preview 2 (using prompt feature)
+
+https://github.com/yjg30737/pyqt-openai/assets/55078043/841a1505-f1cc-452e-99ab-0a9c661e6ead
 
 ### Prompt Generator
 #### How to Generate
