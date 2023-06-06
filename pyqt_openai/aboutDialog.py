@@ -51,10 +51,26 @@ class AboutDialog(QDialog):
         self.__discordLbl.setFixedSize(22, 19)
 
         lay = QHBoxLayout()
-        lay.addWidget(logoLbl)
-        lay.addWidget(expWidget)
         lay.addWidget(self.__githubLbl)
         lay.addWidget(self.__discordLbl)
+        lay.setAlignment(Qt.AlignLeft)
+        lay.setContentsMargins(0, 0, 0, 0)
+
+        linkWidget = QWidget()
+        linkWidget.setLayout(lay)
+
+        lay = QVBoxLayout()
+        lay.addWidget(expWidget)
+        lay.addWidget(linkWidget)
+        lay.setAlignment(Qt.AlignTop)
+        lay.setContentsMargins(0, 0, 0, 0)
+
+        rightWidget = QWidget()
+        rightWidget.setLayout(lay)
+
+        lay = QHBoxLayout()
+        lay.addWidget(logoLbl)
+        lay.addWidget(rightWidget)
 
         topWidget = QWidget()
         topWidget.setLayout(lay)

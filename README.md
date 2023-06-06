@@ -47,7 +47,7 @@ An internet connection is required.
   * rename conversation
   * everything above is saved in an SQLite database file named conv.db.
 * support GPT-4 and every other models below GPT3
-* support prompt generator (manageable, autosaved in database)
+* support prompt generator (manageable, autosaved in database) 
 * support slash commands
 * support beginning and ending part of the prompt
 * you can run this in background application
@@ -60,27 +60,74 @@ An internet connection is required.
 * qtpy - the package allowing you to write code that works with both PyQt and PySide
 * PyQt5 >= 5.14 or PySide6
 * openai
-* pyperclip - to copy prompt template from prompt generator
+* aiohttp - for openai dependency 
+* pyperclip - to copy prompt text from prompt generator
 * stability_sdk - for Stable Diffusion
 
 ## Preview & Usage
 ### Overview
-#### Note: Some of these previews are not the latest.
+#### Windows
 ![image](https://github.com/yjg30737/pyqt-openai/assets/55078043/51667298-2c3f-4846-a8c9-ec56331b8361)
 <b>You have to write your openai api key inside the red box.</b> see [How to install](#how-to-install)
 
 You can change screen between text chatbot and image generating tool screen.
+
 ![image](https://github.com/yjg30737/pyqt-openai/assets/55078043/78260aaf-2626-4267-9309-07655cab2061)
 
+#### Linux (Ubuntu)
+![image](https://github.com/yjg30737/pyqt-openai/assets/55078043/4005c085-53f4-406f-adb0-4fb4d87d88ba)
+
+If you use MacOS, please give me the pyqt-openai screen image from it.
+
 ### Conversation
+#### Preview 1
+I recorded this preview long time ago so GUI is different from the current version, but way of operating it is pretty much the same.
+
 https://user-images.githubusercontent.com/55078043/236583883-8e9732a3-1223-4b28-85f1-f60d8b2d6ced.mp4
+#### Preview 2 (using prompt feature)
+
+https://github.com/yjg30737/pyqt-openai/assets/55078043/841a1505-f1cc-452e-99ab-0a9c661e6ead
 
 ### Prompt Generator
-https://github.com/yjg30737/pyqt-openai/assets/55078043/2f351442-1e8c-4ba2-b5fe-4391df6250ff
+#### How to Generate
+This application has two types of prompts. One is <b>"Properties"</b> and the other one is <b>"Template"</b>. Properties are sets of attributes that are useful for forming the premises of a question. Templates are sentences that correspond to a single command. You can input a command to generate a sentence. This can be used as a question in itself.
 
-You can use the additional prompt feature by "prompt menu" right next to input field.
+Both types can be managed as groups. After cloning or installing, if you run the program immediately, you will be able to see the default group and the items included in the group, just like the screen.
+
+For properties, there is a group named "Default" that provides a set of attributes referenced <a href="https://gptforwork.com/tools/prompt-generator">here</a>.
+
+For templates, there are the "awesome_chatGPT_prompt" and "alex_brogan" (example prompt for Alex Brogan) groups provided. Any custom template items created prior to version 0.1.6 will be moved to the Miscellaneous group.
+
+![prompt_list_image](https://github.com/yjg30737/pyqt-openai/assets/55078043/ce40139a-c03f-42ef-abd8-4a610d762394)
+
+With using these prompts you can pretty much get any response you want.
+
+You can use the additional prompt feature by "prompt menu" right next to "prompt input" field.
 
 ![image](https://github.com/yjg30737/pyqt-openai/assets/55078043/c9ca84af-0088-4435-854d-7feca9e2e663)
+
+Since v0.1.6, awesome-chatgpt-prompt is included as template group by default.
+
+#### Prompt Generator Preview
+Generating the prompt (Properties)
+
+https://github.com/yjg30737/pyqt-openai/assets/55078043/e168c0e6-41b4-4ad5-95e6-3c42c9c23602
+
+I recorded using the Windows recording feature. As a result, the "Add Dialog" that prompts for entering a group name does not appear in the preview. When you add a group, you will see the Add Dialog as expected.
+
+Then, how to generate template type prompt? Click any item in the group, it will be shown in the preview.
+
+You can copy that generated text with clicking "copy" button and include it to your prompt input.
+
+If you add a property group or template group with items, you can use it as a command by typing its name to the prompt input.
+
+<b>Use prompt as a command</b>
+
+https://github.com/yjg30737/pyqt-openai/assets/55078043/df0d3923-1fbe-4dda-af6f-4e4d1e572553
+
+In this preview, i pressed the keyboard shortcut of each actions(show beginning, show ending, support prompt command) to use it rather than clicking them with mouse.
+
+I made the command suggestion GUI resemble the Discord command autocomplete popup, with which a lot of people have become accustomed.
 
 ### Image Generation
 ![image](https://github.com/yjg30737/pyqt-openai/assets/55078043/d0903a76-bf4f-4900-bfea-89da6f072c9d)
@@ -89,13 +136,12 @@ You can use the additional prompt feature by "prompt menu" right next to input f
 1. git clone ~
 2. cd pyqt-openai
 3. pip install -r requirements.txt
-4. python setup.py install
-5. cd pyqt_openai
-6. You should put your api key in the line edit. You can get it in <a href="https://platform.openai.com/account/api-keys">official site</a> of openai. Sign up and log in before you get it.
+4. cd pyqt_openai
+5. You should put your api key in the line edit. You can get it in <a href="https://platform.openai.com/account/api-keys">official site</a> of openai. Sign up and log in before you get it.
 
 Be sure, this is a very important API key that belongs to you only, so you should remember it and keep it secure.
 
-7. python main.py
+6. python main.py
 
 If installation doesn't work, you can contact me with bring up new issue in issue tab or check the troubleshooting below even it is only about very specific error.
 

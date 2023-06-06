@@ -128,9 +128,14 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
+# IntelliJ IDEA
+.idea/misc.xml
+.idea/pyqt_openai.iml
+
 # pyqt_openai
-conv.json
-conv_history.json
-conv.db
-a.py
-test/
+pyqt_openai/pyqt_openai.ini
+pyqt_openai/conv.json
+pyqt_openai/conv_history.json
+pyqt_openai/conv.db
+pyqt_openai/a.py
+pyqt_openai/test/

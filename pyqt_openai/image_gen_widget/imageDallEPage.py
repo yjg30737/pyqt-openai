@@ -4,23 +4,28 @@ from qtpy.QtWidgets import QWidget, QPushButton, QComboBox, QPlainTextEdit, QSpi
 from qtpy.QtCore import Signal, QThread
 
 from pyqt_openai.notifier import NotifierWidget
+from pyqt_openai.toast import Toast
 
 
 class DallEThread(QThread):
     replyGenerated = Signal(str)
+    errorGenerated = Signal(str)
 
     def __init__(self, openai_arg, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.__openai_arg = openai_arg
 
     def run(self):
-        response = openai.Image.create(
-            **self.__openai_arg
-        )
+        try:
+            response = openai.Image.create(
+                **self.__openai_arg
+            )
 
-        for image_data in response['data']:
-            image_url = image_data['url']
-            self.replyGenerated.emit(image_url)
+            for image_data in response['data']:
+                image_url = image_data['url']
+                self.replyGenerated.emit(image_url)
+        except Exception as e:
+            self.errorGenerated.emit(str(e))
 
 
 class ImageDallEPage(QWidget):
@@ -81,6 +86,12 @@ class ImageDallEPage(QWidget):
         self.__submitBtn.setEnabled(False)
         self.__t.start()
         self.__t.replyGenerated.connect(self.__afterGenerated)
+        self.__t.errorGenerated.connect(self.__failToGenerate)
+
+    def __failToGenerate(self, e):
+        toast = Toast(text=e, duration=3, parent=self)
+        toast.show()
+        self.__submitBtn.setEnabled(True)
 
     def __afterGenerated(self, image_url):
         self.submitDallE.emit(image_url)

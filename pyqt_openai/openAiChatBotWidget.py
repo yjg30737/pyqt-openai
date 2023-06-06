@@ -11,7 +11,7 @@ from pyqt_openai.chatWidget import Prompt, ChatBrowser
 from pyqt_openai.leftSideBar import LeftSideBar
 from pyqt_openai.notifier import NotifierWidget
 from pyqt_openai.openAiThread import OpenAIThread
-from pyqt_openai.prompt.promptGeneratorWidget import PromptGeneratorWidget
+from pyqt_openai.prompt_gen_widget.promptGeneratorWidget import PromptGeneratorWidget
 from pyqt_openai.right_sidebar.aiPlaygroundWidget import AIPlaygroundWidget
 from pyqt_openai.sqlite import SqliteDatabase
 from pyqt_openai.svgButton import SvgButton
@@ -267,8 +267,7 @@ class OpenAIChatBotWidget(QWidget):
 
 
     def __addConv(self):
-        self.__db.insertConv('New Chat')
-        cur_id = self.__db.getCursor().lastrowid
+        cur_id = self.__db.insertConv('New Chat')
         self.__browser.resetChatWidget(cur_id)
         self.__leftSideBarWidget.addToList(cur_id)
         self.__lineEdit.setFocus()
@@ -288,7 +287,6 @@ class OpenAIChatBotWidget(QWidget):
         if filename[0]:
             filename = filename[0]
             self.__db.export(ids, filename)
-
 
     def __updateConvUnit(self, id, user_f, conv_unit=None):
         if conv_unit:
