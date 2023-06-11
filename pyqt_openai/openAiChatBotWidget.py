@@ -13,6 +13,7 @@ from pyqt_openai.notifier import NotifierWidget
 from pyqt_openai.openAiThread import OpenAIThread
 from pyqt_openai.prompt_gen_widget.promptGeneratorWidget import PromptGeneratorWidget
 from pyqt_openai.right_sidebar.aiPlaygroundWidget import AIPlaygroundWidget
+from pyqt_openai.util.script import open_directory, get_generic_ext_out_of_qt_ext, conv_unit_to_txt, conv_unit_to_html
 from pyqt_openai.sqlite import SqliteDatabase
 from pyqt_openai.svgButton import SvgButton
 
@@ -260,7 +261,7 @@ class OpenAIChatBotWidget(QWidget):
         # so reset conv_history.json
         if item:
             id = item.data(Qt.UserRole)
-            conv = self.__db.selectConvUnit(id)
+            conv = self.__db.selectCertainConvHistory(id)
             self.__browser.replaceConv(id, conv)
         else:
             self.__browser.resetChatWidget(0)
@@ -276,17 +277,23 @@ class OpenAIChatBotWidget(QWidget):
         if title:
             self.__db.updateConv(id, title)
 
-
     def __deleteConv(self, id_lst):
         for id in id_lst:
             self.__db.deleteConv(id)
 
-
     def __export(self, ids):
-        filename = QFileDialog.getSaveFileName(self, 'Save', os.path.expanduser('~'), 'SQLite DB file (*.db)')
-        if filename[0]:
-            filename = filename[0]
-            self.__db.export(ids, filename)
+        file_data = QFileDialog.getSaveFileName(self, 'Save', os.path.expanduser('~'), 'SQLite DB file (*.db);;Text file (*.txt);;HTML file (*.html)')
+        if file_data[0]:
+            filename = file_data[0]
+            ext = os.path.splitext(filename)[-1] or get_generic_ext_out_of_qt_ext(file_data[1])
+            if ext == '.txt':
+                conv_unit_to_txt(self.__db, ids, filename)
+            elif ext == '.db':
+                self.__db.export(ids, filename)
+            elif ext == '.html':
+                print('todo save as html file')
+                # conv_unit_to_html(self.__db, ids, filename)
+            open_directory(os.path.dirname(filename))
 
     def __updateConvUnit(self, id, user_f, conv_unit=None):
         if conv_unit:

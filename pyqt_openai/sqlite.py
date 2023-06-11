@@ -7,15 +7,15 @@ class SqliteDatabase:
 
     if there is no functions you want to use, use ``getCursor`` instead
     """
-    def __init__(self):
+    def __init__(self, db_filename='conv.db'):
         super().__init__()
-        self.__initVal()
+        self.__initVal(db_filename)
         self.__initDb()
         self.__createConv()
 
-    def __initVal(self):
+    def __initVal(self, db_filename):
         # db names
-        self.__db_filename = 'conv.db'
+        self.__db_filename = db_filename or 'conv.db'
 
         # conv table names
         self.__conv_tb_nm = 'conv_tb'
@@ -692,9 +692,12 @@ class SqliteDatabase:
             print(f"An error occurred: {e}")
             raise
 
-    def selectConvUnit(self, id):
+    def selectCertainConv(self, id):
         self.__c.execute(f'SELECT * FROM {self.getConvUnitTableName()}{id}')
-        return [elem[3] for elem in self.__c.fetchall()]
+        return self.__c.fetchall()
+
+    def selectCertainConvHistory(self, id):
+        return [elem[3] for elem in self.selectCertainConv(id)]
 
     def insertConvUnit(self, id, user_f, conv):
         try:
