@@ -283,7 +283,7 @@ class OpenAIChatBotWidget(QWidget):
             self.__db.deleteConv(id)
 
     def __export(self, ids):
-        file_data = QFileDialog.getSaveFileName(self, 'Save', os.path.expanduser('~'), 'SQLite DB file (*.db);;Text Compressed Files (*.zip);;HTML Compressed Files (*.zip)')
+        file_data = QFileDialog.getSaveFileName(self, 'Save', os.path.expanduser('~'), 'SQLite DB file (*.db);;txt files Compressed File (*.zip);;html files Compressed File (*.zip)')
         if file_data[0]:
             filename = file_data[0]
             ext = os.path.splitext(filename)[-1] or get_generic_ext_out_of_qt_ext(file_data[1])
