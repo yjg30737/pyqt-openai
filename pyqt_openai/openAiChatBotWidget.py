@@ -7,7 +7,8 @@ from qtpy.QtWidgets import QHBoxLayout, QWidget, QSizePolicy, QVBoxLayout, QFram
     QListWidgetItem, QFileDialog
 
 from pyqt_openai.apiData import ModelData
-from pyqt_openai.chatWidget import Prompt, ChatBrowser
+from pyqt_openai.chat_widget.chatBrowser import ChatBrowser
+from pyqt_openai.chat_widget.prompt import Prompt
 from pyqt_openai.leftSideBar import LeftSideBar
 from pyqt_openai.notifier import NotifierWidget
 from pyqt_openai.openAiThread import OpenAIThread
