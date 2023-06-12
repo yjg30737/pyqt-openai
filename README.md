@@ -89,6 +89,11 @@ https://user-images.githubusercontent.com/55078043/236583883-8e9732a3-1223-4b28-
 
 https://github.com/yjg30737/pyqt-openai/assets/55078043/841a1505-f1cc-452e-99ab-0a9c661e6ead
 
+#### Conversation Save Feature
+![image](https://github.com/yjg30737/pyqt-openai/assets/55078043/908ed185-06a6-4f7a-9626-92141ba24e1a)
+
+You can save checked conversation units to SQlite db file or compressed file (zip) which contains each conversation as text/html file.
+
 ### Prompt Generator
 #### How to Generate
 This application has two types of prompts. One is <b>"Properties"</b> and the other one is <b>"Template"</b>. Properties are sets of attributes that are useful for forming the premises of a question. Templates are sentences that correspond to a single command. You can input a command to generate a sentence. This can be used as a question in itself.
