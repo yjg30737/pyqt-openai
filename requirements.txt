@@ -5,5 +5,6 @@ aiohttp
 openai
 pyperclip
 stability_sdk
+jinja2
 
 

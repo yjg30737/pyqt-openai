@@ -43,7 +43,7 @@ An internet connection is required.
   * AI remembers past conversation
 * conversation management
   * add & delete conversations
-  * save conversations
+  * save conversations - SQlite db, text files compressed file, html files compressed file (both are zip)
   * rename conversation
   * everything above is saved in an SQLite database file named conv.db.
 * support GPT-4 and every other models below GPT3
@@ -63,6 +63,7 @@ An internet connection is required.
 * aiohttp - for openai dependency 
 * pyperclip - to copy prompt text from prompt generator
 * stability_sdk - for Stable Diffusion
+* jinja2 - for saving the conversation with html file
 
 ## Preview & Usage
 ### Overview
@@ -87,6 +88,11 @@ https://user-images.githubusercontent.com/55078043/236583883-8e9732a3-1223-4b28-
 #### Preview 2 (using prompt feature)
 
 https://github.com/yjg30737/pyqt-openai/assets/55078043/841a1505-f1cc-452e-99ab-0a9c661e6ead
+
+#### Conversation Save Feature
+![image](https://github.com/yjg30737/pyqt-openai/assets/55078043/908ed185-06a6-4f7a-9626-92141ba24e1a)
+
+You can save checked conversation units to SQlite db file or compressed file (zip) which contains each conversation as text/html file.
 
 ### Prompt Generator
 #### How to Generate
@@ -135,7 +141,7 @@ I made the command suggestion GUI resemble the Discord command autocomplete popu
 ## How to Install
 1. git clone ~
 2. cd pyqt-openai
-3. pip install -r requirements.txt
+3. pip install -r requirements.txt --upgrade
 4. cd pyqt_openai
 5. You should put your api key in the line edit. You can get it in <a href="https://platform.openai.com/account/api-keys">official site</a> of openai. Sign up and log in before you get it.
 
@@ -159,6 +165,7 @@ sudo apt-get install libxcb-xinerama0
 ```
 
 ## Troubleshooting
+### subprocess-exited-with-error
 If you see this error while installing the openai package
 ```
 subprocess-exited-with-error
@@ -174,6 +181,17 @@ That will install the openai.
 
 Note: I don't know this can happen in newer version of openai as well, so tell me if you know about something
 
+### qtpy.QtBindingsNotFoundError: No Qt bindings could be found
+first, do this:
+```
+pip uninstall -r requirements.txt
+```
+second, do this:
+```
+pip install -r requirements.txt --upgrade
+```
+then it will work :)
+
 ## Contact
 You can join pyqt-openai's <a href="https://discord.gg/cHekprskVE">Discord Server</a> to have a conversation about it or AI-related stuff 🙂
 
@@ -183,7 +201,6 @@ I recommend to install sqlite management software. It's not necessary to run thi
 ## TODO list
 * DB for images (to further experiement of both DALL-E and Stable Diffusion or other image generation engine)
 * show the explanation of every model and terms related to AI (e.g. temperature, topp..)
-* save conversation history with other format (xlsx, csv, etc.)
 * tokenizer
 * highlight the source (optional, eventually)
 * support multiple language
