@@ -91,7 +91,7 @@ class LeftSideBar(QWidget):
         self.__allCheckBox.setChecked(False)
 
     def __saveClicked(self):
-        self.export.emit(self.__convListWidget.getUncheckedRowsIds())
+        self.export.emit(self.__convListWidget.getCheckedRowsIds())
 
     def __stateChanged(self, f):
         self.__convListWidget.toggleState(f)

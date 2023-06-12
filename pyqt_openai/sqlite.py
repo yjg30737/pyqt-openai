@@ -7,15 +7,15 @@ class SqliteDatabase:
 
     if there is no functions you want to use, use ``getCursor`` instead
     """
-    def __init__(self):
+    def __init__(self, db_filename='conv.db'):
         super().__init__()
-        self.__initVal()
+        self.__initVal(db_filename)
         self.__initDb()
         self.__createConv()
 
-    def __initVal(self):
+    def __initVal(self, db_filename):
         # db names
-        self.__db_filename = 'conv.db'
+        self.__db_filename = db_filename or 'conv.db'
 
         # conv table names
         self.__conv_tb_nm = 'conv_tb'
@@ -692,9 +692,12 @@ class SqliteDatabase:
             print(f"An error occurred: {e}")
             raise
 
-    def selectConvUnit(self, id):
+    def selectCertainConv(self, id):
         self.__c.execute(f'SELECT * FROM {self.getConvUnitTableName()}{id}')
-        return [elem[3] for elem in self.__c.fetchall()]
+        return self.__c.fetchall()
+
+    def selectCertainConvHistory(self, id):
+        return [elem[3] for elem in self.selectCertainConv(id)]
 
     def insertConvUnit(self, id, user_f, conv):
         try:
@@ -719,18 +722,6 @@ class SqliteDatabase:
 
     def export(self, ids, saved_filename):
         shutil.copy2(self.__db_filename, saved_filename)
-        conn = sqlite3.connect(saved_filename)
-
-        placeholders = ','.join('?' for _ in ids)
-        cursor = conn.cursor()
-        for i in range(len(ids)):
-            delete_conv_q = f"DELETE FROM {self.__conv_tb_nm} WHERE id in ({placeholders})"
-            cursor.execute(delete_conv_q, ids)
-            drop_conv_unit_tb_q = f"DROP TABLE {self.__conv_unit_tb_nm}{ids[i]}"
-            cursor.execute(drop_conv_unit_tb_q)
-            conn.commit()
-
-        conn.close()
 
     # legacy
     def convertJsonIntoSql(self):

@@ -89,8 +89,9 @@ class LeftSideBar(QWidget):
         self.__imageListWidget.removeCheckedRows()
         self.deleted.emit(rows)
         self.__allCheckBox.setChecked(False)
+
     def __saveClicked(self):
-        self.export.emit(self.__imageListWidget.getUncheckedRowsIds())
+        self.export.emit(self.__imageListWidget.getCheckedRowsIds())
     # 
     def __stateChanged(self, f):
         self.__imageListWidget.toggleState(f)

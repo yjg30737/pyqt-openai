@@ -29,6 +29,7 @@ setup(
         'aiohttp',
         'openai',
         'pyperclip',
-        'stability_sdk'
+        'stability_sdk',
+        'jinja2'
     ]
 )
