@@ -722,18 +722,6 @@ class SqliteDatabase:
 
     def export(self, ids, saved_filename):
         shutil.copy2(self.__db_filename, saved_filename)
-        conn = sqlite3.connect(saved_filename)
-
-        placeholders = ','.join('?' for _ in ids)
-        cursor = conn.cursor()
-        for i in range(len(ids)):
-            delete_conv_q = f"DELETE FROM {self.__conv_tb_nm} WHERE id in ({placeholders})"
-            cursor.execute(delete_conv_q, ids)
-            drop_conv_unit_tb_q = f"DROP TABLE {self.__conv_unit_tb_nm}{ids[i]}"
-            cursor.execute(drop_conv_unit_tb_q)
-            conn.commit()
-
-        conn.close()
 
     # legacy
     def convertJsonIntoSql(self):

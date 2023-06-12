@@ -13,7 +13,8 @@ from pyqt_openai.notifier import NotifierWidget
 from pyqt_openai.openAiThread import OpenAIThread
 from pyqt_openai.prompt_gen_widget.promptGeneratorWidget import PromptGeneratorWidget
 from pyqt_openai.right_sidebar.aiPlaygroundWidget import AIPlaygroundWidget
-from pyqt_openai.util.script import open_directory, get_generic_ext_out_of_qt_ext, conv_unit_to_txt, conv_unit_to_html
+from pyqt_openai.util.script import open_directory, get_generic_ext_out_of_qt_ext, conv_unit_to_txt, conv_unit_to_html, \
+    add_file_to_zip
 from pyqt_openai.sqlite import SqliteDatabase
 from pyqt_openai.svgButton import SvgButton
 
@@ -282,17 +283,20 @@ class OpenAIChatBotWidget(QWidget):
             self.__db.deleteConv(id)
 
     def __export(self, ids):
-        file_data = QFileDialog.getSaveFileName(self, 'Save', os.path.expanduser('~'), 'SQLite DB file (*.db);;Text file (*.txt);;HTML file (*.html)')
+        file_data = QFileDialog.getSaveFileName(self, 'Save', os.path.expanduser('~'), 'SQLite DB file (*.db);;Text Compressed Files (*.zip);;HTML Compressed Files (*.zip)')
         if file_data[0]:
             filename = file_data[0]
             ext = os.path.splitext(filename)[-1] or get_generic_ext_out_of_qt_ext(file_data[1])
-            if ext == '.txt':
-                conv_unit_to_txt(self.__db, ids, filename)
+            if ext == '.zip':
+                compressed_file_type = file_data[1].split(' ')[0].lower()
+                ext_dict = {'text': {'ext':'.txt', 'func':conv_unit_to_txt}, 'html': {'ext':'.html', 'func':conv_unit_to_html}}
+                for id in ids:
+                    title = self.__db.selectConv(id)[1]
+                    txt_filename = f'{title}{ext_dict[compressed_file_type]["ext"]}'
+                    txt_content = ext_dict[compressed_file_type]['func'](self.__db, id, title)
+                    add_file_to_zip(txt_content, txt_filename, os.path.splitext(filename)[0] + '.zip')
             elif ext == '.db':
                 self.__db.export(ids, filename)
-            elif ext == '.html':
-                print('todo save as html file')
-                # conv_unit_to_html(self.__db, ids, filename)
             open_directory(os.path.dirname(filename))
 
     def __updateConvUnit(self, id, user_f, conv_unit=None):
