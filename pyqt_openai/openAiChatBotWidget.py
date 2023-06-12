@@ -289,7 +289,7 @@ class OpenAIChatBotWidget(QWidget):
             ext = os.path.splitext(filename)[-1] or get_generic_ext_out_of_qt_ext(file_data[1])
             if ext == '.zip':
                 compressed_file_type = file_data[1].split(' ')[0].lower()
-                ext_dict = {'text': {'ext':'.txt', 'func':conv_unit_to_txt}, 'html': {'ext':'.html', 'func':conv_unit_to_html}}
+                ext_dict = {'txt': {'ext':'.txt', 'func':conv_unit_to_txt}, 'html': {'ext':'.html', 'func':conv_unit_to_html}}
                 for id in ids:
                     title = self.__db.selectConv(id)[1]
                     txt_filename = f'{title}{ext_dict[compressed_file_type]["ext"]}'
