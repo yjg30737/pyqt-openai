@@ -165,6 +165,7 @@ sudo apt-get install libxcb-xinerama0
 ```
 
 ## Troubleshooting
+### subprocess-exited-with-error
 If you see this error while installing the openai package
 ```
 subprocess-exited-with-error
@@ -179,6 +180,17 @@ python setup.py install
 That will install the openai.
 
 Note: I don't know this can happen in newer version of openai as well, so tell me if you know about something
+
+### qtpy.QtBindingsNotFoundError: No Qt bindings could be found
+first, do this:
+```
+pip uninstall -r requirements.txt
+```
+second, do this:
+```
+pip install -r requirements.txt --upgrade
+```
+then it will work :)
 
 ## Contact
 You can join pyqt-openai's <a href="https://discord.gg/cHekprskVE">Discord Server</a> to have a conversation about it or AI-related stuff 🙂
