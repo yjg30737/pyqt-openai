@@ -63,6 +63,7 @@ An internet connection is required.
 * aiohttp - for openai dependency 
 * pyperclip - to copy prompt text from prompt generator
 * stability_sdk - for Stable Diffusion
+* jinja2 - for saving the conversation with html file
 
 ## Preview & Usage
 ### Overview
