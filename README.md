@@ -43,7 +43,7 @@ An internet connection is required.
   * AI remembers past conversation
 * conversation management
   * add & delete conversations
-  * save conversations
+  * save conversations - SQlite db, text files compressed file, html files compressed file (both are zip)
   * rename conversation
   * everything above is saved in an SQLite database file named conv.db.
 * support GPT-4 and every other models below GPT3
@@ -183,7 +183,6 @@ I recommend to install sqlite management software. It's not necessary to run thi
 ## TODO list
 * DB for images (to further experiement of both DALL-E and Stable Diffusion or other image generation engine)
 * show the explanation of every model and terms related to AI (e.g. temperature, topp..)
-* save conversation history with other format (xlsx, csv, etc.)
 * tokenizer
 * highlight the source (optional, eventually)
 * support multiple language
