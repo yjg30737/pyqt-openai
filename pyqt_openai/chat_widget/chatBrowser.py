@@ -56,7 +56,7 @@ class ChatBrowser(QScrollArea):
         self.__setLabel(text, stream_f, user_f)
 
     def __setLabel(self, text, stream_f, user_f):
-        chatUnit = ChatUnit()
+        chatUnit = ChatUnit(user_f)
         chatLbl = chatUnit.getLabel()
         chatLbl.setText(text)
         chatLbl.setWordWrap(True)
