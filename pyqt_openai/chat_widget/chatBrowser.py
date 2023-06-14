@@ -3,7 +3,8 @@ from qtpy.QtGui import QFont
 from qtpy.QtWidgets import QScrollArea, QVBoxLayout, QWidget, QLabel, \
     QStackedWidget
 
-from pyqt_openai.chat_widget.chatUnit import ChatUnit
+from pyqt_openai.chat_widget.aiChatUnit import AIChatUnit
+from pyqt_openai.chat_widget.userChatUnit import UserChatUnit
 
 
 class ChatBrowser(QScrollArea):
@@ -56,23 +57,19 @@ class ChatBrowser(QScrollArea):
         self.__setLabel(text, stream_f, user_f)
 
     def __setLabel(self, text, stream_f, user_f):
-        chatUnit = ChatUnit(user_f)
-        chatLbl = chatUnit.getLabel()
-        chatLbl.setText(text)
-        chatLbl.setWordWrap(True)
-        chatLbl.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        chatUnit = QLabel()
         if user_f:
-            chatLbl.setStyleSheet('QLabel { padding: 1em }')
-            chatLbl.setAlignment(Qt.AlignRight)
+            chatUnit = UserChatUnit()
+            chatUnit.setText(text)
         else:
+            chatUnit = AIChatUnit()
             if stream_f:
                 unit = self.getChatWidget().layout().itemAt(self.getChatWidget().layout().count()-1).widget()
-                if isinstance(unit, ChatUnit) and unit.alignment() == Qt.AlignLeft:
-                    unit.setText(unit.text()+text)
+                if isinstance(unit, AIChatUnit):
+                    unit.addText(text)
                     return
-            chatLbl.setStyleSheet('QLabel { background-color: #DDD; padding: 1em }')
-            chatLbl.setAlignment(Qt.AlignLeft)
-            chatLbl.setOpenExternalLinks(True)
+            chatUnit.setText(text)
+
         self.getChatWidget().layout().addWidget(chatUnit)
 
     def event(self, e):
@@ -87,7 +84,7 @@ class ChatBrowser(QScrollArea):
             for i in range(lay.count()):
                 if lay.itemAt(i) and lay.itemAt(i).widget():
                     widget = lay.itemAt(i).widget()
-                    if isinstance(widget, ChatUnit):
+                    if isinstance(widget, AIChatUnit):
                         all_text_lst.append(widget.text())
 
         return '\n'.join(all_text_lst)
@@ -98,7 +95,7 @@ class ChatBrowser(QScrollArea):
             i = lay.count()-1
             if lay.itemAt(i) and lay.itemAt(i).widget():
                 widget = lay.itemAt(i).widget()
-                if isinstance(widget, ChatUnit):
+                if isinstance(widget, AIChatUnit):
                     return widget.text()
         return ''
 
@@ -110,7 +107,7 @@ class ChatBrowser(QScrollArea):
                 item = lay.itemAt(i)
                 if item and item.widget():
                     widget = item.widget()
-                    if isinstance(widget, ChatUnit) and i % 2 == 1:
+                    if isinstance(widget, AIChatUnit) and i % 2 == 1:
                         text_lst.append(widget.text())
             return '\n'.join(text_lst)
         else:

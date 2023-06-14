@@ -79,3 +79,9 @@ def conv_unit_to_html(db, id, title):
 def add_file_to_zip(file_content, file_name, output_zip_file):
     with zipfile.ZipFile(output_zip_file, 'a') as zipf:
         zipf.writestr(file_name, file_content)
+
+def get_language_name(text):
+    m = re.search('```([\S]+)\n*(.+)```', a, re.DOTALL)
+    lang_name = m and m.group(1) or 'Text'
+
+    return lang_name
