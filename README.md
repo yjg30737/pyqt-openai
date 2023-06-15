@@ -15,6 +15,8 @@ If you want to study openai with Python-only good old desktop software, this is 
 
 The OpenAI model this package uses is the <a href="https://platform.openai.com/docs/models/gpt-3-5">gpt-3.5-turbo</a> model(which is nearly as functional as <b>ChatGPT</b>) by default. You can use gpt-4 as well.
 
+Latest model such as gpt-3.5-turbo-0613 is also available
+
 Image generation feature(DALL-E and Stable Diffusion) available since v0.1.4.
 
 <b>Stable Diffusion</b> used [DreamStudio API](https://dreamstudio.ai/). This is not entirely free like stable-diffusion-webgui. 
@@ -41,6 +43,7 @@ An internet connection is required.
 * basically this is <b>desktop application version of ChatGPT</b> with image generation tool. 
   * text streaming (enable by default, you can disable it)
   * AI remembers past conversation
+  * support copy button
 * conversation management
   * add & delete conversations
   * save conversations - SQlite db, text files compressed file, html files compressed file (both are zip)
