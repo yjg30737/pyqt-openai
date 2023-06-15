@@ -3,7 +3,8 @@ import openai
 # static
 # https://platform.openai.com/docs/models/model-endpoint-compatibility
 ENDPOINT_DICT = {
-    '/v1/chat/completions': ['gpt-4', 'gpt-4-0314', 'gpt-4-32k', 'gpt-4-32k-0314', 'gpt-3.5-turbo', 'gpt-3.5-turbo-0301'],
+    '/v1/chat/completions': ['gpt-4', 'gpt-4-0613', 'gpt-4-32k', 'gpt-4-32k-0613',
+                             'gpt-3.5-turbo', 'gpt-3.5-turbo-0613', 'gpt-3.5-turbo-16k', 'gpt-3.5-turbo-16k-0613', 'gpt-3.5-turbo-0301'],
     '/v1/completions': [
         'text-davinci-003', 'text-davinci-002', 'text-curie-001', 'text-babbage-001', 'text-ada-001', 'davinci',
         'curie', 'babbage', 'ada'
@@ -17,19 +18,10 @@ ENDPOINT_DICT = {
 }
 
 def getModelEndpoint(model):
-    print(model)
     for k, v in ENDPOINT_DICT.items():
         endpoint_group = list(v)
         if model in endpoint_group:
             return k
-
-# legacy
-def getLatestModel():
-    return ['gpt-3.5-turbo',
-            'gpt-3.5-turbo-0301',
-            'text-davinci-003',
-            'text-davinci-002',
-            'code-davinci-002']
 
 # new
 def getCompletionModel():
@@ -42,12 +34,7 @@ def getCompletionModel():
     ]
 
 def getChatModel():
-    return [
-        'gpt-3.5-turbo',
-        'gpt-3.5-turbo-0301',
-        'gpt-4',
-        'gpt-4-32k',
-    ]
+    return ENDPOINT_DICT['/v1/chat/completions']
 
 # dynamic
 class ModelData:

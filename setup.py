@@ -9,12 +9,12 @@ with codecs.open(os.path.join(here, "README.md"), encoding="utf-8") as fh:
 
 setup(
     name='pyqt-openai',
-    version='0.1.61',
+    version='0.1.71',
     author='Jung Gyu Yoon',
     author_email='yjg30737@gmail.com',
     license='MIT',
     packages=find_packages(),
-    package_data={'pyqt_openai.ico': ['close.svg', 'openai.svg', 'discord.svg', 'github.svg', 'help.svg', 'customize.svg', 'history.svg',
+    package_data={'pyqt_openai.ico': ['close.svg', 'copy.svg', 'openai.svg', 'discord.svg', 'github.svg', 'help.svg', 'customize.svg', 'history.svg',
                                       'user.svg', 'sidebar.svg', 'prompt.svg', 'save.svg', 'stackontop.svg',
                                       'add.svg', 'delete.svg', 'setting.svg', 'search.svg',
                                       'vertical_three_dots.svg']},

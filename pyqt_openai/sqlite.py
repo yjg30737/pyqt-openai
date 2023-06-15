@@ -39,7 +39,7 @@ class SqliteDatabase:
         # default value of each properties based on https://platform.openai.com/docs/api-reference/chat/create
         # GPT-3.5(ChatGPT), GPT-4
         self.__chat_default_value = {
-            'engine': "gpt-3.5-turbo",
+            'model': "gpt-3.5-turbo",
             'system': "You are a helpful assistant.",
             'temperature': 0.7,
             # -1 means infinite, not currently used in this application
@@ -52,7 +52,7 @@ class SqliteDatabase:
 
         # GPT-3, etc.
         self.__completion_default_value = {
-            'engine': "text-davinci-003",
+            'model': "text-davinci-003",
             'temperature': 0.7,
             'max_tokens': 4096,
             'top_p': 1,
@@ -62,7 +62,7 @@ class SqliteDatabase:
 
         # DALL-E
         self.__image_default_value = {
-            'engine': "DALL-E",
+            'model': "DALL-E",
             'n': 1,
             'width': 1024,
             'height': 1024,
@@ -119,7 +119,7 @@ class SqliteDatabase:
         else:
             self.__c.execute(f'''CREATE TABLE {self.__info_tb_nm}
                                      (id INTEGER PRIMARY KEY,
-                                      engine VARCHAR(50) DEFAULT '{self.__chat_default_value['engine']}',
+                                      model VARCHAR(50) DEFAULT '{self.__chat_default_value['model']}',
                                       system TEXT DEFAULT '{self.__chat_default_value['system']}',
                                       temperature INTEGER DEFAULT {self.__chat_default_value['temperature']},
                                       max_tokens INTEGER DEFAULT {self.__chat_default_value['max_tokens']},
@@ -137,7 +137,7 @@ class SqliteDatabase:
             # insert default record
             self.__c.execute(f'''INSERT INTO {self.__info_tb_nm}
                                             (
-                                                engine,
+                                                model,
                                                 system,
                                                 temperature,
                                                 max_tokens,
@@ -160,7 +160,7 @@ class SqliteDatabase:
         else:
             self.__c.execute(f'''CREATE TABLE {self.__completion_info_tb_nm}
                                              (id INTEGER PRIMARY KEY,
-                                              engine VARCHAR(50) DEFAULT '{self.__completion_default_value['engine']}',
+                                              model VARCHAR(50) DEFAULT '{self.__completion_default_value['model']}',
                                               temperature INTEGER DEFAULT {self.__completion_default_value['temperature']},
                                               max_tokens INTEGER DEFAULT {self.__completion_default_value['max_tokens']},
                                               top_p INTEGER DEFAULT {self.__completion_default_value['top_p']},
@@ -176,7 +176,7 @@ class SqliteDatabase:
             # insert default record
             self.__c.execute(f'''INSERT INTO {self.__completion_info_tb_nm}
                                                     (
-                                                        engine,
+                                                        model,
                                                         temperature,
                                                         max_tokens,
                                                         top_p,
@@ -480,8 +480,29 @@ class SqliteDatabase:
             self.__createPropPromptGroup()
             self.__createTemplatePromptGroup()
 
+            # engine -> model
+            self.__updateColumnName(self.__info_tb_nm)
+            self.__updateColumnName(self.__completion_info_tb_nm)
+
             # Commit the transaction
             self.__conn.commit()
+        except sqlite3.Error as e:
+            print(f"An error occurred while creating the table: {e}")
+            raise
+
+    def __updateColumnName(self, tb_name):
+        try:
+            # Get the table information
+            self.__c.execute(f"PRAGMA table_info({tb_name})")
+            columns = self.__c.fetchall()
+
+            # Check if "name" column exists
+            column_exists = any(column[1] == "engine" for column in columns)
+
+            # Alter column name if it exists
+            if column_exists:
+                self.__c.execute(f"ALTER TABLE {tb_name} RENAME COLUMN engine TO model")
+                self.__conn.commit()
         except sqlite3.Error as e:
             print(f"An error occurred while creating the table: {e}")
             raise

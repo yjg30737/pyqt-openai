@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QLabel, QSpacerItem, QListWidget, QListWidgetItem, QSizePolicy, QStackedWidget, QSplitter
+from qtpy.QtWidgets import QLabel, QSpacerItem, QListWidget, QListWidgetItem, QSizePolicy, QStackedWidget, QSplitter
 from qtpy.QtWidgets import QWidget, QDialog, QTableWidget, QVBoxLayout, QHBoxLayout, QHeaderView, QTableWidgetItem, QAbstractItemView
 from qtpy.QtCore import Signal, Qt
 
