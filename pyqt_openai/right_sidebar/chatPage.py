@@ -16,7 +16,7 @@ class ChatPage(QWidget):
         self.__info_dict = self.__db.selectInfo(1)
 
         # # set each field as variable since these are being used a lot
-        # engine = info_dict['engine']
+        # model = info_dict['model']
         # temperature = info_dict['temperature']
         # max_tokens = info_dict['max_tokens']
         # top_p = info_dict['top_p']
@@ -24,12 +24,11 @@ class ChatPage(QWidget):
         # presence_penalty = info_dict['presence_penalty']
         # stream = info_dict['stream']
 
-    def __initVal(self, db, ini_etc_dict):
-        self.__setChatInfo(db)
-
         # set each field as variable since these are being used a lot
         self.__stream = self.__info_dict.get('stream', False)
 
+    def __initVal(self, db, ini_etc_dict):
+        self.__setChatInfo(db)
         self.__ini_etc_dict = ini_etc_dict
 
     def __initUi(self):
@@ -40,6 +39,7 @@ class ChatPage(QWidget):
         saveSystemBtn.clicked.connect(self.__saveSystem)
         modelCmbBox = QComboBox()
         modelCmbBox.addItems(getChatModel())
+        modelCmbBox.setCurrentText(self.__info_dict['model'])
         modelCmbBox.currentTextChanged.connect(self.__modelChanged)
 
         # temperatureSpinBox = QDoubleSpinBox()
@@ -102,9 +102,9 @@ class ChatPage(QWidget):
         self.__db.updateInfo(1, 'system', self.__info_dict['system'])
 
     def __modelChanged(self, v):
-        self.__info_dict['engine'] = v
+        self.__info_dict['model'] = v
         # self.setModelInfoByModel()
-        self.__db.updateInfo(1, 'engine', v)
+        self.__db.updateInfo(1, 'model', v)
 
     def __streamChecked(self, f):
         self.__stream = f

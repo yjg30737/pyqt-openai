@@ -6,7 +6,7 @@ from qtpy.QtCore import Qt, QSettings, Signal
 from qtpy.QtWidgets import QHBoxLayout, QWidget, QSizePolicy, QVBoxLayout, QFrame, QSplitter, \
     QListWidgetItem, QFileDialog
 
-from pyqt_openai.apiData import ModelData
+from pyqt_openai.apiData import ModelData, getChatModel
 from pyqt_openai.chat_widget.chatBrowser import ChatBrowser
 from pyqt_openai.chat_widget.prompt import Prompt
 from pyqt_openai.leftSideBar import LeftSideBar
@@ -208,10 +208,10 @@ class OpenAIChatBotWidget(QWidget):
                     conv = json.loads(line.strip())
                     convs.append(conv)
         # TODO refactoring
-        if info_dict['engine'] in ['gpt-3.5-turbo', 'gpt-3.5-turbo-0301', 'gpt-4']:
+        if info_dict['model'] in getChatModel():
             # "assistant" below is for making the AI remember the last question
             openai_arg = {
-                'model': info_dict['engine'],
+                'model': info_dict['model'],
                 'messages': [
                     {"role": "system", "content": info_dict['system']},
                     {"role": "assistant", "content": self.__browser.getAllText()},
@@ -228,7 +228,7 @@ class OpenAIChatBotWidget(QWidget):
                 # 'frequency_penalty': info_dict['frequency_penalty'],
                 # 'presence_penalty': info_dict['presence_penalty'],
 
-                'stream': info_dict['stream'],
+                'stream': True if info_dict['stream'] == 1 else False,
             }
         else:
             openai_arg = info_dict
@@ -242,7 +242,7 @@ class OpenAIChatBotWidget(QWidget):
 
         self.__browser.showLabel(self.__prompt.getContent(), True, False)
 
-        self.__t = OpenAIThread(info_dict['engine'], openai_arg, self.__remember_past_conv)
+        self.__t = OpenAIThread(info_dict['model'], openai_arg, self.__remember_past_conv)
         self.__t.replyGenerated.connect(self.__browser.showLabel)
         self.__t.streamFinished.connect(self.__browser.streamFinished)
         self.__lineEdit.clear()
