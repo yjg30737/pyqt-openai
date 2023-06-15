@@ -1,0 +1,1 @@
+from pyqt_openai.chat_widget import *

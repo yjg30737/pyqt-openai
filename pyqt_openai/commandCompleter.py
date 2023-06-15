@@ -1,6 +1,5 @@
-from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtWidgets import QWidget, QTableWidget, QHeaderView, QVBoxLayout, QLineEdit, QScrollArea, QLabel, \
-    QStyledItemDelegate, \
+from qtpy.QtCore import Qt, pyqtSignal
+from qtpy.QtWidgets import QTableWidget, QHeaderView, QScrollArea, QStyledItemDelegate, \
     QStyle, QTableWidgetItem
 
 

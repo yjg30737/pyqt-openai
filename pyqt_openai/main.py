@@ -232,7 +232,7 @@ class MainWindow(QMainWindow):
     def __setApi(self):
         try:
             api_key = self.__apiLineEdit.text()
-            response = requests.get('https://api.openai.com/v1/engines', headers={'Authorization': f'Bearer {api_key}'})
+            response = requests.get('https://api.openai.com/v1/models', headers={'Authorization': f'Bearer {api_key}'})
             f = response.status_code == 200
             self.__setAIEnabled(f)
             if f:
