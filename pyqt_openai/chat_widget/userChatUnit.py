@@ -1,7 +1,7 @@
 import pyperclip
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel
+from qtpy.QtCore import Qt
+from qtpy.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel
 
 from pyqt_openai.svgButton import SvgButton
 

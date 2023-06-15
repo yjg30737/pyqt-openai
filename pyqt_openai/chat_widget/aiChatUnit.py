@@ -2,9 +2,9 @@ import re
 
 import pyperclip
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPalette, QColor
-from PyQt5.QtWidgets import QLabel, QWidget, QVBoxLayout, QApplication, QHBoxLayout, QSpacerItem, QSizePolicy, \
+from qtpy.QtCore import Qt
+from qtpy.QtGui import QPalette, QColor
+from qtpy.QtWidgets import QLabel, QWidget, QVBoxLayout, QApplication, QHBoxLayout, QSpacerItem, QSizePolicy, \
     QTextBrowser, QAbstractScrollArea
 from pygments import highlight
 from pygments.formatters.html import HtmlFormatter
@@ -135,51 +135,61 @@ class AIChatUnit(QWidget):
                     widget.setAlignment(a0)
 
     def setText(self, text: str):
-        chunks = text.split('```')
-        for i in range(len(chunks)):
-            if i % 2 == 0:
-                lbl = QLabel(chunks[i])
+        lbl = QLabel(text)
 
-                lbl.setAlignment(Qt.AlignLeft)
-                lbl.setWordWrap(True)
-                lbl.setTextInteractionFlags(Qt.TextSelectableByMouse)
-                lbl.setOpenExternalLinks(True)
+        lbl.setAlignment(Qt.AlignLeft)
+        lbl.setWordWrap(True)
+        lbl.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        lbl.setOpenExternalLinks(True)
 
-                self.__mainWidget.layout().addWidget(lbl)
-            else:
-                browser = SourceBrowser()
+        self.__mainWidget.layout().addWidget(lbl)
 
-                lang_name = ''
-                lang_text = ''
-
-                m = re.search('([\S]+)\n*(.+)', chunks[i], re.DOTALL)
-                if m:
-                    lang_name = m.group(1)
-                    lang_text = m.group(2)
-                try:
-                    lexer = get_lexer_by_name(lang_name)
-                except Exception as e:
-                    lexer = get_lexer_by_name('Text')
-
-                # get the guessed language based on given code
-                formatter = HtmlFormatter(style='colorful')
-
-                css_styles = formatter.get_style_defs('.highlight')
-
-                html_code = f"""
-                <html>
-                    <head>
-                        <style>
-                            {css_styles}
-                        </style>
-                    </head>
-                    <body>
-                        {highlight(lang_text, lexer, formatter)}
-                    </body>
-                </html>
-                """
-                browser.setText(lexer, html_code)
-                self.__mainWidget.layout().addWidget(browser)
+        # old code
+        # chunks = text.split('```')
+        # for i in range(len(chunks)):
+        #     if i % 2 == 0:
+        #         lbl = QLabel(chunks[i])
+        #
+        #         lbl.setAlignment(Qt.AlignLeft)
+        #         lbl.setWordWrap(True)
+        #         lbl.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        #         lbl.setOpenExternalLinks(True)
+        #
+        #         self.__mainWidget.layout().addWidget(lbl)
+        #     else:
+        #         browser = SourceBrowser()
+        #
+        #         lang_name = ''
+        #         lang_text = ''
+        #
+        #         m = re.search('([\S]+)\n*(.+)', chunks[i], re.DOTALL)
+        #         if m:
+        #             lang_name = m.group(1)
+        #             lang_text = m.group(2)
+        #         try:
+        #             lexer = get_lexer_by_name(lang_name)
+        #         except Exception as e:
+        #             lexer = get_lexer_by_name('Text')
+        #
+        #         # get the guessed language based on given code
+        #         formatter = HtmlFormatter(style='colorful')
+        #
+        #         css_styles = formatter.get_style_defs('.highlight')
+        #
+        #         html_code = f"""
+        #         <html>
+        #             <head>
+        #                 <style>
+        #                     {css_styles}
+        #                 </style>
+        #             </head>
+        #             <body>
+        #                 {highlight(lang_text, lexer, formatter)}
+        #             </body>
+        #         </html>
+        #         """
+        #         browser.setText(lexer, html_code)
+        #         self.__mainWidget.layout().addWidget(browser)
 
     def addText(self, text: str):
         unit = self.__mainWidget.layout().itemAt(self.__mainWidget.layout().count()-1).widget()
