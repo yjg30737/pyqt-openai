@@ -1,5 +1,5 @@
-from qtpy.QtWidgets import QWidget, QComboBox, QTextEdit, QLabel, QVBoxLayout, QApplication, QCheckBox, QDoubleSpinBox, \
-    QSpinBox, QPushButton
+from qtpy.QtCore import Qt
+from qtpy.QtWidgets import QWidget, QSizePolicy, QComboBox, QTextEdit, QLabel, QVBoxLayout, QCheckBox, QPushButton
 
 from pyqt_openai.apiData import getChatModel
 from pyqt_openai.sqlite import SqliteDatabase
@@ -35,6 +35,7 @@ class ChatPage(QWidget):
         systemlbl = QLabel('System')
         self.__systemTextEdit = QTextEdit()
         self.__systemTextEdit.setText('You are a helpful assistant.')
+        self.__systemTextEdit.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Preferred)
         saveSystemBtn = QPushButton('Save System')
         saveSystemBtn.clicked.connect(self.__saveSystem)
         modelCmbBox = QComboBox()
@@ -94,6 +95,7 @@ class ChatPage(QWidget):
         lay.addWidget(modelCmbBox)
         lay.addWidget(streamChkBox)
         lay.addWidget(finishReasonChkBox)
+        lay.setAlignment(Qt.AlignTop)
 
         self.setLayout(lay)
 
