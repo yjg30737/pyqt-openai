@@ -21,6 +21,7 @@ class OpenAIThread(QThread):
     def __init__(self, model, openai_arg, remember_f, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.__model = model
+        print(model)
         self.__endpoint = getModelEndpoint(model)
         self.__openai_arg = openai_arg
         self.__remember_f = remember_f
@@ -65,7 +66,6 @@ class OpenAIThread(QThread):
                 self.replyGenerated.emit(response_text, False, False)
         except openai.error.InvalidRequestError as e:
             print(e)
-            self.replyGenerated.emit('<p style="color:red">Your request was rejected as a result of our safety system.<br/>'
-                                     'Your prompt may contain text that is not allowed by our safety system.</p>', False, False)
+            self.replyGenerated.emit(f'<p style="color:red">{e}</p>', False, False)
         except openai.error.RateLimitError as e:
             self.replyGenerated.emit(f'<p style="color:red">{e}<br/>Check the usage: https://platform.openai.com/account/usage<br/>Update to paid account: https://platform.openai.com/account/billing/overview', False, False)

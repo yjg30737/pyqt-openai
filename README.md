@@ -141,7 +141,7 @@ I made the command suggestion GUI resemble the Discord command autocomplete popu
 ## How to Install
 1. git clone ~
 2. cd pyqt-openai
-3. pip install -r requirements.txt
+3. pip install -r requirements.txt --upgrade
 4. cd pyqt_openai
 5. You should put your api key in the line edit. You can get it in <a href="https://platform.openai.com/account/api-keys">official site</a> of openai. Sign up and log in before you get it.
 
@@ -165,6 +165,7 @@ sudo apt-get install libxcb-xinerama0
 ```
 
 ## Troubleshooting
+### subprocess-exited-with-error
 If you see this error while installing the openai package
 ```
 subprocess-exited-with-error
@@ -179,6 +180,17 @@ python setup.py install
 That will install the openai.
 
 Note: I don't know this can happen in newer version of openai as well, so tell me if you know about something
+
+### qtpy.QtBindingsNotFoundError: No Qt bindings could be found
+first, do this:
+```
+pip uninstall -r requirements.txt
+```
+second, do this:
+```
+pip install -r requirements.txt --upgrade
+```
+then it will work :)
 
 ## Contact
 You can join pyqt-openai's <a href="https://discord.gg/cHekprskVE">Discord Server</a> to have a conversation about it or AI-related stuff 🙂

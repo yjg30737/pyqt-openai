@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QListWidget, QWidget, QVBoxLayout, QLabel
+from qtpy.QtWidgets import QListWidget, QWidget, QVBoxLayout, QLabel
 
 
 class CommandSuggestionWidget(QWidget):
