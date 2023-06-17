@@ -4,7 +4,7 @@
   
   [![](https://dcbadge.vercel.app/api/server/cHekprskVE)](https://discord.gg/cHekprskVE)
   
-  [![](https://img.shields.io/badge/korean-readme-green)](https://github.com/yjg30737/pyqt-openai/blob/main/README.kr)
+  [![](https://img.shields.io/badge/korean-readme-green)](https://github.com/yjg30737/pyqt-openai/blob/main/README.kr.md)
 
 </div>
 
