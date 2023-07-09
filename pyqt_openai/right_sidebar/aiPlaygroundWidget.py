@@ -2,7 +2,7 @@ from qtpy.QtCore import QSettings
 from qtpy.QtWidgets import QScrollArea, QWidget, QTabWidget, QGridLayout
 
 from pyqt_openai.right_sidebar.chatPage import ChatPage
-from pyqt_openai.right_sidebar.completionPage import CompletionPage
+from pyqt_openai.right_sidebar.LlamaPage import LlamaPage
 from pyqt_openai.sqlite import SqliteDatabase
 
 
@@ -31,10 +31,10 @@ class AIPlaygroundWidget(QScrollArea):
         tabWidget = QTabWidget()
 
         chatPage = ChatPage(self.__db, self.__ini_etc_dict)
-        self.__completionPage = CompletionPage(self.__db, self.__ini_etc_dict, self.__modelData)
+        self.__completionPage = LlamaPage()
 
         tabWidget.addTab(chatPage, 'Chat', )
-        tabWidget.addTab(self.__completionPage, 'Completion', )
+        tabWidget.addTab(self.__completionPage, 'LlamaIndex', )
         tabWidget.currentChanged.connect(self.__tabChanged)
         tabWidget.setCurrentIndex(self.__cur_idx)
 
@@ -48,9 +48,6 @@ class AIPlaygroundWidget(QScrollArea):
         self.setWidgetResizable(True)
 
         self.setStyleSheet('QScrollArea { border: 0 }')
-
-    def setModelInfoByModel(self, f: bool):
-        self.__completionPage.setModelInfoByModel(f)
 
     def __tabChanged(self, idx):
         self.__settings_struct.setValue('TAB_IDX', idx)

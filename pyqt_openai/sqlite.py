@@ -50,16 +50,6 @@ class SqliteDatabase:
             'stream': True
         }
 
-        # GPT-3, etc.
-        self.__completion_default_value = {
-            'model': "text-davinci-003",
-            'temperature': 0.7,
-            'max_tokens': 4096,
-            'top_p': 1,
-            'frequency_penalty': 0,
-            'presence_penalty': 0,
-        }
-
         # DALL-E
         self.__image_default_value = {
             'model': "DALL-E",
@@ -69,8 +59,7 @@ class SqliteDatabase:
             # 'response_format':
         }
 
-        self.__each_info_dict = {1: [self.__info_tb_nm, self.__chat_default_value],
-                                 2: [self.__completion_info_tb_nm, self.__completion_default_value], }
+        self.__each_info_dict = {1: [self.__info_tb_nm, self.__chat_default_value] }
 
         self.__prop_prompt_unit_default_value = [{'name': 'Task', 'text': ''},
                                                  {'name': 'Topic', 'text': ''},
@@ -743,28 +732,6 @@ class SqliteDatabase:
 
     def export(self, ids, saved_filename):
         shutil.copy2(self.__db_filename, saved_filename)
-
-    # legacy
-    def convertJsonIntoSql(self):
-        try:
-            # Read data from json
-            with open('test/conv_history.json', 'r') as f:
-                data = json.load(f)
-                for obj in list(data.values())[0]:
-                    id, title, conv_data = obj.values()
-                    # start from 1 in sql unlike json which starts from 0
-                    id += 1
-                    self.insertConv(title)
-                    for i in range(len(conv_data)):
-                        # Insert a row into the table
-                        self.__c.execute(
-                            f'INSERT INTO {self.__conv_unit_tb_nm}{id} (id_fk, is_user, conv) VALUES (?, ?, ?)',
-                            (id, i % 2 == 0, conv_data[i],))
-                        # Commit the transaction
-                        self.__conn.commit()
-        except sqlite3.Error as e:
-            print(f"An error occurred: {e}")
-            raise
 
     def getCursor(self):
         return self.__c
