@@ -32,16 +32,10 @@ class OpenAIChatBotWidget(QWidget):
         # db
         self.__db = SqliteDatabase()
 
+        # ini file
+
         # managing with ini file or something else
         self.__ini_etc_dict = {}
-
-        self.__remember_past_conv = False
-        self.__finishReason = False
-        self.__modelData = ModelData()
-
-        self.__ini_etc_dict['remember_past_conv'] = self.__remember_past_conv
-        self.__ini_etc_dict['finishReason'] = self.__finishReason
-        self.__ini_etc_dict['modelData'] = self.__modelData
 
         self.__settings_struct = QSettings('pyqt_openai.ini', QSettings.IniFormat)
 
@@ -50,7 +44,7 @@ class OpenAIChatBotWidget(QWidget):
         self.__browser = ChatBrowser()
         self.__prompt = Prompt(self.__db)
         self.__lineEdit = self.__prompt.getTextEdit()
-        self.__aiPlaygroundWidget = AIPlaygroundWidget(self.__db, self.__ini_etc_dict, self.__modelData)
+        self.__aiPlaygroundWidget = AIPlaygroundWidget()
         self.__promptGeneratorWidget = PromptGeneratorWidget(self.__db)
 
         self.__sideBarBtn = SvgButton()
