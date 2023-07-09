@@ -105,7 +105,6 @@ class ChatPage(QWidget):
 
     def __modelChanged(self, v):
         self.__info_dict['model'] = v
-        # self.setModelInfoByModel()
         self.__db.updateInfo(1, 'model', v)
 
     def __streamChecked(self, f):

@@ -232,14 +232,13 @@ class MainWindow(QMainWindow):
     def __setApi(self):
         try:
             api_key = self.__apiLineEdit.text()
+            print(api_key)
             response = requests.get('https://api.openai.com/v1/models', headers={'Authorization': f'Bearer {api_key}'})
             f = response.status_code == 200
             self.__setAIEnabled(f)
             if f:
                 self.__setApiKey(api_key)
                 self.__settings_struct.setValue('API_KEY', api_key)
-
-                self.__openAiChatBotWidget.setModelInfoByModel(True)
 
                 self.__apiCheckPreviewLbl.setStyleSheet("color: {}".format(QColor(0, 200, 0).name()))
                 self.__apiCheckPreviewLbl.setText('API key is valid')

@@ -45,31 +45,6 @@ class OpenAIChatBotWidget(QWidget):
 
         self.__settings_struct = QSettings('pyqt_openai.ini', QSettings.IniFormat)
 
-        # make it compatible with version which was used json file as a database
-        if self.__isConvHistoryJsonExists():
-            self.__migrateJsonToSqlite()
-
-        # "remember past conv" feature
-        if self.__settings_struct.contains('REMEMBER_PAST_CONVERSATION'):
-            self.__remember_past_conv = True if self.__settings_struct.value(
-                'REMEMBER_PAST_CONVERSATION') == '1' else False
-        else:
-            self.__settings_struct.setValue('REMEMBER_PAST_CONVERSATION', '0')
-
-        # don't care about this - just saving past conversation in gpt 3 and below
-        if os.path.exists('conv.json'):
-            pass
-        else:
-            with open('conv.json', 'w') as f:
-                json.dump({}, f)
-
-    def __isConvHistoryJsonExists(self):
-        return os.path.exists('conv_history.json')
-
-    def __migrateJsonToSqlite(self):
-        self.__db.convertJsonIntoSql()
-        os.remove('conv_history.json')
-
     def __initUi(self):
         self.__leftSideBarWidget = LeftSideBar()
         self.__browser = ChatBrowser()
@@ -186,9 +161,6 @@ class OpenAIChatBotWidget(QWidget):
 
         self.__lineEdit.setFocus()
 
-    def setModelInfoByModel(self, f):
-        self.__aiPlaygroundWidget.setModelInfoByModel(f)
-
     def showAiToolBar(self, f):
         self.__menuWidget.setVisible(f)
 
@@ -201,12 +173,6 @@ class OpenAIChatBotWidget(QWidget):
     def __chat(self):
         info_dict = self.__db.selectInfo()
         openai_arg = ''
-        if self.__remember_past_conv:
-            convs = []
-            with open('conv.json', 'r') as f:
-                for line in f:
-                    conv = json.loads(line.strip())
-                    convs.append(conv)
         # TODO refactoring
         if info_dict['model'] in getChatModel():
             # "assistant" below is for making the AI remember the last question
@@ -259,8 +225,6 @@ class OpenAIChatBotWidget(QWidget):
             self.__notifierWidget.doubleClicked.connect(self.notifierWidgetActivated)
 
     def __changeConv(self, item: QListWidgetItem):
-        # If a 'change' event occurs but there are no items, it should mean that list is empty
-        # so reset conv_history.json
         if item:
             id = item.data(Qt.UserRole)
             conv = self.__db.selectCertainConvHistory(id)
