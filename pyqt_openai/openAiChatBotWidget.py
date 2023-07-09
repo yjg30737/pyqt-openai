@@ -180,12 +180,15 @@ class OpenAIChatBotWidget(QWidget):
                 {"role": "user", "content": self.__prompt.getContent()},
             ],
             'temperature': temperature,
-            'max_tokens': max_tokens,
             'top_p': top_p,
             'frequency_penalty': frequency_penalty,
             'presence_penalty': presence_penalty,
             'stream': stream,
         }
+
+        use_max_token = self.__settings_ini.value('use_max_token', type=bool)
+        if use_max_token:
+            openai_arg['max_tokens'] = max_tokens
 
         if self.__leftSideBarWidget.isCurrentConvExists():
             pass
