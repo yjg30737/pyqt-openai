@@ -7,16 +7,12 @@ from pyqt_openai.sqlite import SqliteDatabase
 
 
 class AIPlaygroundWidget(QScrollArea):
-    def __init__(self, db: SqliteDatabase, ini_etc_dict, model_data):
+    def __init__(self):
         super().__init__()
-        self.__initVal(db, ini_etc_dict, model_data)
+        self.__initVal()
         self.__initUi()
 
-    def __initVal(self, db, ini_etc_dict, model_data):
-        self.__db = db
-        self.__modelData = model_data
-
-        self.__ini_etc_dict = ini_etc_dict
+    def __initVal(self):
         self.__settings_struct = QSettings('pyqt_openai.ini', QSettings.IniFormat)
 
         # load tab widget's last current index
@@ -29,7 +25,7 @@ class AIPlaygroundWidget(QScrollArea):
     def __initUi(self):
         tabWidget = QTabWidget()
 
-        chatPage = ChatPage(self.__db, self.__ini_etc_dict)
+        chatPage = ChatPage()
         self.__llamaPage = LlamaPage()
 
         tabWidget.addTab(chatPage, 'Chat', )
