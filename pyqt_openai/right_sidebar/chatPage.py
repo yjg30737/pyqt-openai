@@ -36,8 +36,10 @@ class ChatPage(QWidget):
             self.__settings_ini.setValue('presence_penalty', 0)
 
         # etc
+        if not self.__settings_ini.contains('use_max_tokens'):
+            self.__settings_ini.setValue('use_max_tokens', False)
         if not self.__settings_ini.contains('finish_reason'):
-            self.__settings_ini.setValue('finish_reason', True)
+            self.__settings_ini.setValue('finish_reason', False)
 
         self.__stream = self.__settings_ini.value('stream', type=bool)
         self.__model = self.__settings_ini.value('model', type=str)
@@ -48,6 +50,7 @@ class ChatPage(QWidget):
         self.__frequency_penalty = self.__settings_ini.value('frequency_penalty', type=float)
         self.__presence_penalty = self.__settings_ini.value('presence_penalty', type=float)
 
+        self.__use_max_tokens = self.__settings_ini.value('use_max_tokens', type=bool)
         self.__finish_reason = self.__settings_ini.value('finish_reason', type=bool)
 
     def __initUi(self):
@@ -71,11 +74,11 @@ class ChatPage(QWidget):
         temperatureSpinBox.setValue(self.__temperature)
         temperatureSpinBox.valueChanged.connect(self.__temperatureChanged)
 
-        maxTokensSpinBox = QSpinBox()
-        maxTokensSpinBox.setRange(1, 2048)
-        maxTokensSpinBox.setAccelerated(True)
-        maxTokensSpinBox.setValue(self.__max_tokens)
-        maxTokensSpinBox.valueChanged.connect(self.__maxTokensChanged)
+        self.__maxTokensSpinBox = QSpinBox()
+        self.__maxTokensSpinBox.setRange(1, 2048)
+        self.__maxTokensSpinBox.setAccelerated(True)
+        self.__maxTokensSpinBox.setValue(self.__max_tokens)
+        self.__maxTokensSpinBox.valueChanged.connect(self.__maxTokensChanged)
 
         toppSpinBox = QDoubleSpinBox()
         toppSpinBox.setRange(0, 1)
@@ -103,6 +106,12 @@ class ChatPage(QWidget):
         streamChkBox.toggled.connect(self.__streamChecked)
         streamChkBox.setText('Stream')
 
+        useMaxTokenChkBox = QCheckBox()
+        useMaxTokenChkBox.toggled.connect(self.__useMaxChecked)
+        useMaxTokenChkBox.setChecked(self.__use_max_tokens)
+        useMaxTokenChkBox.setText('Use Max Tokens')
+        self.__maxTokensSpinBox.setEnabled(self.__use_max_tokens)
+
         finishReasonChkBox = QCheckBox('Show Finish Reason (working)')
         finishReasonChkBox.setChecked(self.__finish_reason)
         finishReasonChkBox.toggled.connect(self.__finishReasonChecked)
@@ -111,7 +120,7 @@ class ChatPage(QWidget):
         lay = QFormLayout()
 
         lay.addRow('temperature', temperatureSpinBox)
-        lay.addRow('maxTokens', maxTokensSpinBox)
+        lay.addRow('maxTokens', self.__maxTokensSpinBox)
         lay.addRow('topp', toppSpinBox)
         lay.addRow('frequencyPenalty', frequencyPenaltySpinBox)
         lay.addRow('presencePenalty', presencePenaltySpinBox)
@@ -126,6 +135,7 @@ class ChatPage(QWidget):
         lay.addWidget(saveSystemBtn)
         lay.addWidget(modelCmbBox)
         lay.addWidget(streamChkBox)
+        lay.addWidget(useMaxTokenChkBox)
         lay.addWidget(finishReasonChkBox)
         lay.addWidget(paramWidget)
         lay.setAlignment(Qt.AlignTop)
@@ -143,6 +153,11 @@ class ChatPage(QWidget):
     def __streamChecked(self, f):
         self.__stream = f
         self.__settings_ini.setValue('stream', f)
+
+    def __useMaxChecked(self, f):
+        self.__use_max_tokens = f
+        self.__settings_ini.setValue('use_max_tokens', f)
+        self.__maxTokensSpinBox.setEnabled(f)
 
     def __finishReasonChecked(self, f):
         self.__finish_reason = f
