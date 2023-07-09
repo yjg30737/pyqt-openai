@@ -18,13 +18,12 @@ class OpenAIThread(QThread):
     replyGenerated = Signal(str, bool, bool)
     streamFinished = Signal()
 
-    def __init__(self, model, openai_arg, remember_f, *args, **kwargs):
+    def __init__(self, model, openai_arg, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.__model = model
         print(model)
         self.__endpoint = getModelEndpoint(model)
         self.__openai_arg = openai_arg
-        self.__remember_f = remember_f
 
     def run(self):
         try:
@@ -52,17 +51,6 @@ class OpenAIThread(QThread):
                 )
 
                 response_text = openai_object['choices'][0]['text'].strip()
-
-                # this doesn't store any data, so we manually do that every time
-                if self.__remember_f:
-                    conv = {
-                        'prompt': self.__openai_arg['prompt'],
-                        'response': response_text,
-                    }
-
-                    with open('conv.json', 'a') as f:
-                        f.write(json.dumps(conv) + '\n')
-
                 self.replyGenerated.emit(response_text, False, False)
         except openai.error.InvalidRequestError as e:
             print(e)

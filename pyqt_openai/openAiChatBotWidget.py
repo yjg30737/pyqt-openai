@@ -32,12 +32,8 @@ class OpenAIChatBotWidget(QWidget):
         # db
         self.__db = SqliteDatabase()
 
-        # ini file
-
-        # managing with ini file or something else
-        self.__ini_etc_dict = {}
-
-        self.__settings_struct = QSettings('pyqt_openai.ini', QSettings.IniFormat)
+        # ini
+        self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.IniFormat)
 
     def __initUi(self):
         self.__leftSideBarWidget = LeftSideBar()
@@ -165,33 +161,32 @@ class OpenAIChatBotWidget(QWidget):
         self.__lineEdit.setEnabled(f)
 
     def __chat(self):
-        info_dict = self.__db.selectInfo()
-        openai_arg = ''
-        # TODO refactoring
-        if info_dict['model'] in getChatModel():
-            # "assistant" below is for making the AI remember the last question
-            openai_arg = {
-                'model': info_dict['model'],
-                'messages': [
-                    {"role": "system", "content": info_dict['system']},
-                    {"role": "assistant", "content": self.__browser.getAllText()},
-                    {"role": "user", "content": self.__prompt.getContent()},
-                ],
-                # 'temperature': info_dict['temperature'],
+        stream = self.__settings_ini.value('stream', type=bool)
+        model = self.__settings_ini.value('model', type=str)
+        system = self.__settings_ini.value('system', type=str)
+        temperature = self.__settings_ini.value('temperature', type=float)
+        max_tokens = self.__settings_ini.value('max_tokens', type=int)
+        top_p = self.__settings_ini.value('top_p', type=float)
+        frequency_penalty = self.__settings_ini.value('frequency_penalty', type=float)
+        presence_penalty = self.__settings_ini.value('presence_penalty', type=float)
 
-                # won't use max_tokens, this is set to infinite by default
-                # and i can't find any reason why should i limit the tokens currently
-                # https://platform.openai.com/docs/api-reference/chat/create
-                # 'max_tokens': self.__max_tokens,
+        finish_reason = self.__settings_ini.value('finish_reason', type=bool)
 
-                # 'top_p': info_dict['top_p'],
-                # 'frequency_penalty': info_dict['frequency_penalty'],
-                # 'presence_penalty': info_dict['presence_penalty'],
+        openai_arg = {
+            'model': model,
+            'messages': [
+                {"role": "system", "content": system},
+                {"role": "assistant", "content": self.__browser.getAllText()},
+                {"role": "user", "content": self.__prompt.getContent()},
+            ],
+            'temperature': temperature,
+            'max_tokens': max_tokens,
+            'top_p': top_p,
+            'frequency_penalty': frequency_penalty,
+            'presence_penalty': presence_penalty,
+            'stream': stream,
+        }
 
-                'stream': True if info_dict['stream'] == 1 else False,
-            }
-        else:
-            openai_arg = info_dict
         if self.__leftSideBarWidget.isCurrentConvExists():
             pass
         else:
@@ -202,7 +197,7 @@ class OpenAIChatBotWidget(QWidget):
 
         self.__browser.showLabel(self.__prompt.getContent(), True, False)
 
-        self.__t = OpenAIThread(info_dict['model'], openai_arg, self.__remember_past_conv)
+        self.__t = OpenAIThread(model, openai_arg)
         self.__t.replyGenerated.connect(self.__browser.showLabel)
         self.__t.streamFinished.connect(self.__browser.streamFinished)
         self.__lineEdit.clear()
