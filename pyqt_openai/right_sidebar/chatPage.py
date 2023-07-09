@@ -1,3 +1,4 @@
+from PyQt5.QtWidgets import QDoubleSpinBox, QSpinBox, QFormLayout
 from qtpy.QtCore import Qt
 from qtpy.QtWidgets import QWidget, QSizePolicy, QComboBox, QTextEdit, QLabel, QVBoxLayout, QCheckBox, QPushButton
 
@@ -38,45 +39,45 @@ class ChatPage(QWidget):
         self.__systemTextEdit.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Preferred)
         saveSystemBtn = QPushButton('Save System')
         saveSystemBtn.clicked.connect(self.__saveSystem)
+
         modelCmbBox = QComboBox()
         modelCmbBox.addItems(getChatModel())
         modelCmbBox.setCurrentText(self.__info_dict['model'])
         modelCmbBox.currentTextChanged.connect(self.__modelChanged)
 
-        # temperatureSpinBox = QDoubleSpinBox()
-        # temperatureSpinBox.setRange(0, 1)
-        # temperatureSpinBox.setAccelerated(True)
-        # temperatureSpinBox.setSingleStep(0.01)
-        # # temperatureSpinBox.setValue(self.__info_dict['temperature'])
-        # # temperatureSpinBox.valueChanged.connect(self.__temperatureChanged)
-        #
-        # # later
-        # # maxTokensSpinBox = QSpinBox()
-        # # maxTokensSpinBox.setRange(0, 4000)
-        # # maxTokensSpinBox.setAccelerated(True)
-        # # maxTokensSpinBox.setValue(self.__info_dict['max_tokens'])
-        # # maxTokensSpinBox.valueChanged.connect(self.__maxTokensChanged)
-        #
-        # toppSpinBox = QDoubleSpinBox()
-        # toppSpinBox.setRange(0, 1)
-        # toppSpinBox.setAccelerated(True)
-        # toppSpinBox.setSingleStep(0.01)
-        # # toppSpinBox.setValue(self.__info_dict['top_p'])
-        # # toppSpinBox.valueChanged.connect(self.__toppChanged)
-        #
-        # frequencyPenaltySpinBox = QDoubleSpinBox()
-        # frequencyPenaltySpinBox.setRange(0, 2)
-        # frequencyPenaltySpinBox.setAccelerated(True)
-        # frequencyPenaltySpinBox.setSingleStep(0.01)
-        # # frequencyPenaltySpinBox.setValue(self.__info_dict['frequency_penalty'])
-        # # frequencyPenaltySpinBox.valueChanged.connect(self.__frequencyPenaltyChanged)
-        #
-        # presencePenaltySpinBox = QDoubleSpinBox()
-        # presencePenaltySpinBox.setRange(0, 2)
-        # presencePenaltySpinBox.setAccelerated(True)
-        # presencePenaltySpinBox.setSingleStep(0.01)
-        # # presencePenaltySpinBox.setValue(self.__info_dict['presence_penalty'])
-        # # presencePenaltySpinBox.valueChanged.connect(self.__presencePenaltyChanged)
+        temperatureSpinBox = QDoubleSpinBox()
+        temperatureSpinBox.setRange(0, 2)
+        temperatureSpinBox.setAccelerated(True)
+        temperatureSpinBox.setSingleStep(0.01)
+        temperatureSpinBox.setValue(self.__info_dict['temperature'])
+        temperatureSpinBox.valueChanged.connect(self.__temperatureChanged)
+
+        maxTokensSpinBox = QSpinBox()
+        maxTokensSpinBox.setRange(1, 2048)
+        maxTokensSpinBox.setAccelerated(True)
+        maxTokensSpinBox.setValue(self.__info_dict['max_tokens'])
+        maxTokensSpinBox.valueChanged.connect(self.__maxTokensChanged)
+
+        toppSpinBox = QDoubleSpinBox()
+        toppSpinBox.setRange(0, 1)
+        toppSpinBox.setAccelerated(True)
+        toppSpinBox.setSingleStep(0.01)
+        toppSpinBox.setValue(self.__info_dict['top_p'])
+        toppSpinBox.valueChanged.connect(self.__toppChanged)
+
+        frequencyPenaltySpinBox = QDoubleSpinBox()
+        frequencyPenaltySpinBox.setRange(0, 2)
+        frequencyPenaltySpinBox.setAccelerated(True)
+        frequencyPenaltySpinBox.setSingleStep(0.01)
+        frequencyPenaltySpinBox.setValue(self.__info_dict['frequency_penalty'])
+        frequencyPenaltySpinBox.valueChanged.connect(self.__frequencyPenaltyChanged)
+
+        presencePenaltySpinBox = QDoubleSpinBox()
+        presencePenaltySpinBox.setRange(0, 2)
+        presencePenaltySpinBox.setAccelerated(True)
+        presencePenaltySpinBox.setSingleStep(0.01)
+        presencePenaltySpinBox.setValue(self.__info_dict['presence_penalty'])
+        presencePenaltySpinBox.valueChanged.connect(self.__presencePenaltyChanged)
 
         streamChkBox = QCheckBox()
         streamChkBox.setChecked(self.__stream)
@@ -88,6 +89,18 @@ class ChatPage(QWidget):
         finishReasonChkBox.toggled.connect(self.__finishReasonChecked)
         finishReasonChkBox.setText('Show Finish Reason')
 
+        lay = QFormLayout()
+
+        lay.addRow('temperature', temperatureSpinBox)
+        lay.addRow('maxTokens', maxTokensSpinBox)
+        lay.addRow('topp', toppSpinBox)
+        lay.addRow('frequencyPenalty', frequencyPenaltySpinBox)
+        lay.addRow('presencePenalty', presencePenaltySpinBox)
+        lay.setContentsMargins(0, 0, 0, 0)
+
+        paramWidget = QWidget()
+        paramWidget.setLayout(lay)
+
         lay = QVBoxLayout()
         lay.addWidget(systemlbl)
         lay.addWidget(self.__systemTextEdit)
@@ -95,6 +108,7 @@ class ChatPage(QWidget):
         lay.addWidget(modelCmbBox)
         lay.addWidget(streamChkBox)
         lay.addWidget(finishReasonChkBox)
+        lay.addWidget(paramWidget)
         lay.setAlignment(Qt.AlignTop)
 
         self.setLayout(lay)
@@ -113,3 +127,18 @@ class ChatPage(QWidget):
 
     def __finishReasonChecked(self, f):
         self.__finishReason = f
+
+    def __temperatureChanged(self, v):
+        print(v)
+
+    def __maxTokensChanged(self, v):
+        print(v)
+
+    def __toppChanged(self, v):
+        print(v)
+
+    def __frequencyPenaltyChanged(self, v):
+        print(v)
+
+    def __presencePenaltyChanged(self, v):
+        print(v)

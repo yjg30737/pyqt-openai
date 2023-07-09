@@ -25,7 +25,6 @@ class AIPlaygroundWidget(QScrollArea):
         else:
             self.__cur_idx = 0
             self.__settings_struct.setValue('TAB_IDX', str(self.__cur_idx))
-        self.__db.setModelType(self.__cur_idx+1)
 
     def __initUi(self):
         tabWidget = QTabWidget()
@@ -51,4 +50,3 @@ class AIPlaygroundWidget(QScrollArea):
 
     def __tabChanged(self, idx):
         self.__settings_struct.setValue('TAB_IDX', idx)
-        self.__db.setModelType(idx+1)
