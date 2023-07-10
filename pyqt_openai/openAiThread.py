@@ -21,7 +21,6 @@ class OpenAIThread(QThread):
 
     def __init__(self, model, openai_arg, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.__model = model
         self.__endpoint = getModelEndpoint(model)
         self.__openai_arg = openai_arg
 
@@ -55,18 +54,21 @@ class LlamaOpenAIThread(QThread):
     replyGenerated = Signal(str, bool, bool)
     streamFinished = Signal()
 
-    def __init__(self, llama_idx_instance, query_text, *args, **kwargs):
+    def __init__(self, llama_idx_instance, openai_arg, query_text, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.__llama_idx_instance = llama_idx_instance
+        self.__openai_arg = openai_arg
         self.__query_text = query_text
 
     def run(self):
         try:
-            resp = self.__llama_idx_instance.getResponse(self.__query_text)
+            self.__llama_idx_instance.set_openai_arg(**self.__openai_arg)
+            resp = self.__llama_idx_instance.get_response(self.__query_text)
             f = isinstance(resp, StreamingResponse)
             if f:
                 for response_text in resp.response_gen:
                     self.replyGenerated.emit(response_text, False, f)
+                self.streamFinished.emit()
             else:
                 self.replyGenerated.emit(resp.response, False, f)
         except openai.error.InvalidRequestError as e:
