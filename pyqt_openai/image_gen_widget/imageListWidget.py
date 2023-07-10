@@ -25,8 +25,8 @@ class ImageItemWidget(QWidget):
         lay.addWidget(self.__topicLbl)
         lay.setContentsMargins(0, 0, 0, 0)
 
-        leftWidget = QWidget()
-        leftWidget.setLayout(lay)
+        bottomWidget = QWidget()
+        bottomWidget.setLayout(lay)
 
         editButton = SvgButton()
         editButton.setIcon('ico/edit.svg')
@@ -45,12 +45,12 @@ class ImageItemWidget(QWidget):
         lay.setAlignment(Qt.AlignCenter | Qt.AlignRight)
         lay.setContentsMargins(0, 0, 0, 0)
 
-        rightWidget = QWidget()
-        rightWidget.setLayout(lay)
+        topWidget = QWidget()
+        topWidget.setLayout(lay)
 
-        lay = QHBoxLayout()
-        lay.addWidget(leftWidget)
-        lay.addWidget(rightWidget)
+        lay = QVBoxLayout()
+        lay.addWidget(topWidget)
+        lay.addWidget(bottomWidget)
 
         self.setLayout(lay)
 

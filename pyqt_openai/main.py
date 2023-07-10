@@ -239,8 +239,6 @@ class MainWindow(QMainWindow):
                 self.__setApiKey(api_key)
                 self.__settings_struct.setValue('API_KEY', api_key)
 
-                self.__openAiChatBotWidget.setModelInfoByModel(True)
-
                 self.__apiCheckPreviewLbl.setStyleSheet("color: {}".format(QColor(0, 200, 0).name()))
                 self.__apiCheckPreviewLbl.setText('API key is valid')
             else:
