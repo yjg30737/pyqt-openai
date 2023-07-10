@@ -4,7 +4,7 @@ import webbrowser
 
 from qtpy.QtCore import Qt, QSettings, Signal
 from qtpy.QtWidgets import QHBoxLayout, QWidget, QSizePolicy, QVBoxLayout, QFrame, QSplitter, \
-    QListWidgetItem, QFileDialog
+    QListWidgetItem, QFileDialog, QMessageBox
 
 from pyqt_openai.apiData import ModelData, getChatModel
 from pyqt_openai.chat_widget.chatBrowser import ChatBrowser
@@ -14,6 +14,7 @@ from pyqt_openai.notifier import NotifierWidget
 from pyqt_openai.openAiThread import OpenAIThread
 from pyqt_openai.prompt_gen_widget.promptGeneratorWidget import PromptGeneratorWidget
 from pyqt_openai.right_sidebar.aiPlaygroundWidget import AIPlaygroundWidget
+from pyqt_openai.util.llamapage_script import GPTLLamaIndexClass
 from pyqt_openai.util.script import open_directory, get_generic_ext_out_of_qt_ext, conv_unit_to_txt, conv_unit_to_html, \
     add_file_to_zip
 from pyqt_openai.sqlite import SqliteDatabase
@@ -35,12 +36,16 @@ class OpenAIChatBotWidget(QWidget):
         # ini
         self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.IniFormat)
 
+        # llamaindex
+        self.__llama_class = GPTLLamaIndexClass()
+
     def __initUi(self):
         self.__leftSideBarWidget = LeftSideBar()
         self.__browser = ChatBrowser()
         self.__prompt = Prompt(self.__db)
         self.__lineEdit = self.__prompt.getTextEdit()
         self.__aiPlaygroundWidget = AIPlaygroundWidget()
+        self.__aiPlaygroundWidget.onDirectorySelected.connect(self.__llama_class.set_directory)
         self.__promptGeneratorWidget = PromptGeneratorWidget(self.__db)
 
         self.__sideBarBtn = SvgButton()
@@ -161,51 +166,58 @@ class OpenAIChatBotWidget(QWidget):
         self.__lineEdit.setEnabled(f)
 
     def __chat(self):
-        stream = self.__settings_ini.value('stream', type=bool)
-        model = self.__settings_ini.value('model', type=str)
-        system = self.__settings_ini.value('system', type=str)
-        temperature = self.__settings_ini.value('temperature', type=float)
-        max_tokens = self.__settings_ini.value('max_tokens', type=int)
-        top_p = self.__settings_ini.value('top_p', type=float)
-        frequency_penalty = self.__settings_ini.value('frequency_penalty', type=float)
-        presence_penalty = self.__settings_ini.value('presence_penalty', type=float)
+        try:
+            stream = self.__settings_ini.value('stream', type=bool)
+            model = self.__settings_ini.value('model', type=str)
+            system = self.__settings_ini.value('system', type=str)
+            temperature = self.__settings_ini.value('temperature', type=float)
+            max_tokens = self.__settings_ini.value('max_tokens', type=int)
+            top_p = self.__settings_ini.value('top_p', type=float)
+            frequency_penalty = self.__settings_ini.value('frequency_penalty', type=float)
+            presence_penalty = self.__settings_ini.value('presence_penalty', type=float)
 
-        finish_reason = self.__settings_ini.value('finish_reason', type=bool)
+            finish_reason = self.__settings_ini.value('finish_reason', type=bool)
+            use_llama_index = self.__settings_ini.value('use_llama_index', type=bool)
 
-        openai_arg = {
-            'model': model,
-            'messages': [
-                {"role": "system", "content": system},
-                {"role": "assistant", "content": self.__browser.getAllText()},
-                {"role": "user", "content": self.__prompt.getContent()},
-            ],
-            'temperature': temperature,
-            'top_p': top_p,
-            'frequency_penalty': frequency_penalty,
-            'presence_penalty': presence_penalty,
-            'stream': stream,
-        }
+            openai_arg = {
+                'model': model,
+                'messages': [
+                    {"role": "system", "content": system},
+                    {"role": "assistant", "content": self.__browser.getAllText()},
+                    {"role": "user", "content": self.__prompt.getContent()},
+                ],
+                'temperature': temperature,
+                'top_p': top_p,
+                'frequency_penalty': frequency_penalty,
+                'presence_penalty': presence_penalty,
+                'stream': stream,
+            }
 
-        use_max_token = self.__settings_ini.value('use_max_token', type=bool)
-        if use_max_token:
-            openai_arg['max_tokens'] = max_tokens
+            # check llamaindex is available
+            if self.__llama_class.get_directory() and use_llama_index:
+                del openai_arg['messages']
+            use_max_token = self.__settings_ini.value('use_max_token', type=bool)
+            if use_max_token:
+                openai_arg['max_tokens'] = max_tokens
 
-        if self.__leftSideBarWidget.isCurrentConvExists():
-            pass
-        else:
-            self.__addConv()
+            if self.__leftSideBarWidget.isCurrentConvExists():
+                pass
+            else:
+                self.__addConv()
 
-        self.__lineEdit.setEnabled(False)
-        self.__leftSideBarWidget.setEnabled(False)
+            self.__lineEdit.setEnabled(False)
+            self.__leftSideBarWidget.setEnabled(False)
 
-        self.__browser.showLabel(self.__prompt.getContent(), True, False)
+            self.__browser.showLabel(self.__prompt.getContent(), True, False)
 
-        self.__t = OpenAIThread(model, openai_arg)
-        self.__t.replyGenerated.connect(self.__browser.showLabel)
-        self.__t.streamFinished.connect(self.__browser.streamFinished)
-        self.__lineEdit.clear()
-        self.__t.start()
-        self.__t.finished.connect(self.__afterGenerated)
+            self.__t = OpenAIThread(model, openai_arg)
+            self.__t.replyGenerated.connect(self.__browser.showLabel)
+            self.__t.streamFinished.connect(self.__browser.streamFinished)
+            self.__lineEdit.clear()
+            self.__t.start()
+            self.__t.finished.connect(self.__afterGenerated)
+        except Exception as e:
+            QMessageBox.critical(self, "Error", str(e))
 
     def __afterGenerated(self):
         self.__lineEdit.setEnabled(True)

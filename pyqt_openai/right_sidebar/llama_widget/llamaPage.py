@@ -1,4 +1,4 @@
-from qtpy.QtCore import Qt
+from qtpy.QtCore import Qt, Signal
 from qtpy.QtGui import QFont
 from qtpy.QtWidgets import QFrame, QTextBrowser
 from qtpy.QtWidgets import QWidget, QLabel, QVBoxLayout
@@ -8,6 +8,8 @@ from pyqt_openai.util.llamapage_script import GPTLLamaIndexClass
 
 
 class LlamaPage(QWidget):
+    onDirectorySelected = Signal(str)
+
     def __init__(self):
         super().__init__()
         self.__initUi()
@@ -42,7 +44,7 @@ class LlamaPage(QWidget):
 
     def __onDirectorySelected(self):
         selected_dirname = self.__listWidget.getDir()
-        self.__gptLLamaIndexClass.setDirectory(selected_dirname)
+        self.onDirectorySelected.emit(selected_dirname)
 
     def __setTextInBrowser(self, txt_file):
         with open(txt_file, 'r', encoding='utf-8') as f:
