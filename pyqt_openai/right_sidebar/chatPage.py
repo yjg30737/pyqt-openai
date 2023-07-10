@@ -1,13 +1,13 @@
-from PyQt5.QtCore import QSettings
-from PyQt5.QtWidgets import QDoubleSpinBox, QSpinBox, QFormLayout
-from qtpy.QtCore import Qt
-from qtpy.QtWidgets import QWidget, QSizePolicy, QComboBox, QTextEdit, QLabel, QVBoxLayout, QCheckBox, QPushButton
+from qtpy.QtCore import Qt, Signal, QSettings
+from qtpy.QtWidgets import QWidget, QDoubleSpinBox, QSpinBox, QFormLayout, QFrame, QSizePolicy, QComboBox, QTextEdit, QLabel, QVBoxLayout, QCheckBox, QPushButton
 
 from pyqt_openai.apiData import getChatModel
 from pyqt_openai.sqlite import SqliteDatabase
 
 
 class ChatPage(QWidget):
+    onToggleLlama = Signal(bool)
+
     def __init__(self):
         super().__init__()
         self.__initVal()
@@ -40,6 +40,8 @@ class ChatPage(QWidget):
             self.__settings_ini.setValue('use_max_tokens', False)
         if not self.__settings_ini.contains('finish_reason'):
             self.__settings_ini.setValue('finish_reason', False)
+        if not self.__settings_ini.contains('use_llama_index'):
+            self.__settings_ini.setValue('use_llama_index', False)
 
         self.__stream = self.__settings_ini.value('stream', type=bool)
         self.__model = self.__settings_ini.value('model', type=str)
@@ -52,6 +54,7 @@ class ChatPage(QWidget):
 
         self.__use_max_tokens = self.__settings_ini.value('use_max_tokens', type=bool)
         self.__finish_reason = self.__settings_ini.value('finish_reason', type=bool)
+        self.__use_llama_index = self.__settings_ini.value('use_llama_index', type=bool)
 
     def __initUi(self):
         systemlbl = QLabel('System')
@@ -106,6 +109,15 @@ class ChatPage(QWidget):
         streamChkBox.toggled.connect(self.__streamChecked)
         streamChkBox.setText('Stream')
 
+        llamaChkBox = QCheckBox()
+        llamaChkBox.setChecked(self.__use_llama_index)
+        llamaChkBox.toggled.connect(self.__use_llama_indexChecked)
+        llamaChkBox.setText('Use LlamaIndex')
+
+        sep = QFrame()
+        sep.setFrameShape(QFrame.HLine)
+        sep.setFrameShadow(QFrame.Sunken)
+
         useMaxTokenChkBox = QCheckBox()
         useMaxTokenChkBox.toggled.connect(self.__useMaxChecked)
         useMaxTokenChkBox.setChecked(self.__use_max_tokens)
@@ -137,6 +149,8 @@ class ChatPage(QWidget):
         lay.addWidget(streamChkBox)
         lay.addWidget(useMaxTokenChkBox)
         lay.addWidget(finishReasonChkBox)
+        lay.addWidget(llamaChkBox)
+        lay.addWidget(sep)
         lay.addWidget(paramWidget)
         lay.setAlignment(Qt.AlignTop)
 
@@ -153,6 +167,11 @@ class ChatPage(QWidget):
     def __streamChecked(self, f):
         self.__stream = f
         self.__settings_ini.setValue('stream', f)
+
+    def __use_llama_indexChecked(self, f):
+        self.__use_llama_index = f
+        self.__settings_ini.setValue('use_llama_index', f)
+        self.onToggleLlama.emit(f)
 
     def __useMaxChecked(self, f):
         self.__use_max_tokens = f
