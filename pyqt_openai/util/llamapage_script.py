@@ -3,8 +3,8 @@ import os, openai
 from llama_index import GPTVectorStoreIndex, SimpleDirectoryReader, LLMPredictor, ServiceContext
 from langchain.chat_models import ChatOpenAI
 
-openai.api_key = 'My_key'
-os.environ['OPENAI_API_KEY'] = 'My_key'
+openai.api_key = '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'
+os.environ['OPENAI_API_KEY'] = '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'
 # this app will set api key to environment variable and save it in openai_ini.ini
 # openai_ini.ini will be generated if api key you entered is valid
 
@@ -24,12 +24,14 @@ class GPTLLamaIndexClass:
 
     def set_directory(self, directory):
         self.__directory = directory
+        self.__documents = SimpleDirectoryReader(self.__directory).load_data()
 
     def get_directory(self):
         return self.__directory
 
     def set_openai_arg(self, **args):
         self.__openai_arg = args
+        self.__init_engine()
 
     def set_chunk_size_limit(self, chunk_size_limit):
         self.__chunk_size_limit = chunk_size_limit
@@ -37,13 +39,11 @@ class GPTLLamaIndexClass:
     def set_similarity_top_k(self, similarity_top_k):
         self.__similarity_top_k = similarity_top_k
 
-    def init_engine(self):
+    def __init_engine(self):
         try:
-            documents = SimpleDirectoryReader(self.__directory).load_data()
-
             llm_predictor = LLMPredictor(llm=ChatOpenAI(**self.__openai_arg, streaming=True))
             service_context = ServiceContext.from_defaults(llm_predictor=llm_predictor, chunk_size_limit=self.__chunk_size_limit)
-            index = GPTVectorStoreIndex.from_documents(documents, service_context=service_context)
+            index = GPTVectorStoreIndex.from_documents(self.__documents, service_context=service_context)
 
             self.__query_engine = index.as_query_engine(
                 service_context=service_context,
@@ -60,7 +60,7 @@ class GPTLLamaIndexClass:
 
         return response
 
-#
+
 # openai_arg = {
 #                     'model': 'gpt-3.5-turbo',
 #                     'temperature': 0.7,
@@ -73,7 +73,6 @@ class GPTLLamaIndexClass:
 # c = GPTLLamaIndexClass()
 # c.set_directory('./llama_example')
 # c.set_openai_arg(**openai_arg)
-# c.init_engine()
 #
 # response = c.get_response(
 #     "Hello, who is yjg30737 and what language is he good at?",

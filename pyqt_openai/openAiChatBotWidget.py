@@ -11,7 +11,7 @@ from pyqt_openai.chat_widget.chatBrowser import ChatBrowser
 from pyqt_openai.chat_widget.prompt import Prompt
 from pyqt_openai.leftSideBar import LeftSideBar
 from pyqt_openai.notifier import NotifierWidget
-from pyqt_openai.openAiThread import OpenAIThread
+from pyqt_openai.openAiThread import OpenAIThread, LlamaOpenAIThread
 from pyqt_openai.prompt_gen_widget.promptGeneratorWidget import PromptGeneratorWidget
 from pyqt_openai.right_sidebar.aiPlaygroundWidget import AIPlaygroundWidget
 from pyqt_openai.util.llamapage_script import GPTLLamaIndexClass
@@ -193,11 +193,12 @@ class OpenAIChatBotWidget(QWidget):
                 'stream': stream,
             }
 
+            is_llama_available = self.__llama_class.get_directory() and use_llama_index
             # check llamaindex is available
-            if self.__llama_class.get_directory() and use_llama_index:
+            if is_llama_available:
                 del openai_arg['messages']
-            use_max_token = self.__settings_ini.value('use_max_token', type=bool)
-            if use_max_token:
+            use_max_tokens = self.__settings_ini.value('use_max_tokens', type=bool)
+            if use_max_tokens:
                 openai_arg['max_tokens'] = max_tokens
 
             if self.__leftSideBarWidget.isCurrentConvExists():
@@ -208,12 +209,17 @@ class OpenAIChatBotWidget(QWidget):
             self.__lineEdit.setEnabled(False)
             self.__leftSideBarWidget.setEnabled(False)
 
-            self.__browser.showLabel(self.__prompt.getContent(), True, False)
+            query_text = self.__prompt.getContent()
 
-            self.__t = OpenAIThread(model, openai_arg)
+            self.__browser.showLabel(query_text, True, False)
+            self.__lineEdit.clear()
+
+            if is_llama_available:
+                self.__t = LlamaOpenAIThread(self.__llama_class, openai_arg=openai_arg, query_text=query_text)
+            else:
+                self.__t = OpenAIThread(model, openai_arg)
             self.__t.replyGenerated.connect(self.__browser.showLabel)
             self.__t.streamFinished.connect(self.__browser.streamFinished)
-            self.__lineEdit.clear()
             self.__t.start()
             self.__t.finished.connect(self.__afterGenerated)
         except Exception as e:
