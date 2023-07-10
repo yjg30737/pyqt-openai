@@ -3,10 +3,6 @@ import os, openai
 from llama_index import GPTVectorStoreIndex, SimpleDirectoryReader, LLMPredictor, ServiceContext
 from langchain.chat_models import ChatOpenAI
 
-openai.api_key = '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'
-os.environ['OPENAI_API_KEY'] = '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'
-# this app will set api key to environment variable and save it in openai_ini.ini
-# openai_ini.ini will be generated if api key you entered is valid
 
 
 class GPTLLamaIndexClass:
