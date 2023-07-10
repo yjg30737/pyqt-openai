@@ -30,7 +30,6 @@ setup(
         'openai',
         'pyperclip',
         'stability_sdk',
-        'jinja2',
-        'tiktoken'
+        'jinja2'
     ]
 )
