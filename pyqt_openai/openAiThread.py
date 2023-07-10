@@ -2,6 +2,7 @@ import inspect
 import json
 
 import openai
+from llama_index.response.schema import StreamingResponse
 
 from qtpy.QtCore import QThread, Signal
 
@@ -13,7 +14,7 @@ class OpenAIThread(QThread):
     == replyGenerated Signal ==
     First: response
     Second: user or AI
-    Third: streaming a chat completion or not
+    Third: streaming or not streaming
     """
     replyGenerated = Signal(str, bool, bool)
     streamFinished = Signal()
@@ -21,7 +22,6 @@ class OpenAIThread(QThread):
     def __init__(self, model, openai_arg, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.__model = model
-        print(model)
         self.__endpoint = getModelEndpoint(model)
         self.__openai_arg = openai_arg
 
@@ -45,15 +45,32 @@ class OpenAIThread(QThread):
                 else:
                     response_text = response['choices'][0]['message']['content']
                     self.replyGenerated.emit(response_text, False, False)
-            elif self.__endpoint == '/v1/completions':
-                openai_object = openai.Completion.create(
-                    **self.__openai_arg
-                )
-
-                response_text = openai_object['choices'][0]['text'].strip()
-                self.replyGenerated.emit(response_text, False, False)
         except openai.error.InvalidRequestError as e:
-            print(e)
             self.replyGenerated.emit(f'<p style="color:red">{e}</p>', False, False)
         except openai.error.RateLimitError as e:
             self.replyGenerated.emit(f'<p style="color:red">{e}<br/>Check the usage: https://platform.openai.com/account/usage<br/>Update to paid account: https://platform.openai.com/account/billing/overview', False, False)
+
+
+class LlamaOpenAIThread(QThread):
+    replyGenerated = Signal(str, bool, bool)
+    streamFinished = Signal()
+
+    def __init__(self, llama_idx_instance, query_text, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.__llama_idx_instance = llama_idx_instance
+        self.__query_text = query_text
+
+    def run(self):
+        try:
+            resp = self.__llama_idx_instance.getResponse(self.__query_text)
+            f = isinstance(resp, StreamingResponse)
+            if f:
+                for response_text in resp.response_gen:
+                    self.replyGenerated.emit(response_text, False, f)
+            else:
+                self.replyGenerated.emit(resp.response, False, f)
+        except openai.error.InvalidRequestError as e:
+            self.replyGenerated.emit('<p style="color:red">Your request was rejected as a result of our safety system.<br/>'
+                                     'Your prompt may contain text that is not allowed by our safety system.</p>', False)
+        except openai.error.RateLimitError as e:
+            self.replyGenerated.emit(f'<p style="color:red">{e}<br/>Check the usage: https://platform.openai.com/account/usage<br/>Update to paid account: https://platform.openai.com/account/billing/overview', False)
