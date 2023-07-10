@@ -30,6 +30,7 @@ setup(
         'openai',
         'pyperclip',
         'stability_sdk',
-        'jinja2'
+        'jinja2',
+        'llama-index'
     ]
 )
