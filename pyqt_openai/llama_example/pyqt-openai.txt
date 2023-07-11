@@ -1,12 +1,7 @@
 # pyqt-openai
-<div align="center">
-  <img src="https://user-images.githubusercontent.com/55078043/229002952-9afe57de-b0b6-400f-9628-b8e0044d3f7b.png" width="150px" height="150px"><br/><br/>
-  
-  [![](https://dcbadge.vercel.app/api/server/cHekprskVE)](https://discord.gg/cHekprskVE)
-  
-  [![](https://img.shields.io/badge/korean-readme-green)](https://github.com/yjg30737/pyqt-openai/blob/main/README.kr.md)
-
-</div>
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/55078043/229002952-9afe57de-b0b6-400f-9628-b8e0044d3f7b.png">
+</p>
 
 Example of using OpenAI with PyQt (Python cross-platform GUI toolkit)
 
@@ -20,26 +15,22 @@ If you want to study openai with Python-only good old desktop software, this is 
 
 The OpenAI model this package uses is the <a href="https://platform.openai.com/docs/models/gpt-3-5">gpt-3.5-turbo</a> model(which is nearly as functional as <b>ChatGPT</b>) by default. You can use gpt-4 as well.
 
-Image generation feature(DALL-E and Stable Diffusion) is also available.
+Image generation feature(DALL-E and Stable Diffusion) available since v0.1.4.
 
-<b>Stable Diffusion</b> used [DreamStudio API](https://dreamstudio.ai/). This is not entirely free like stable-diffusion-webgui. 
+<b>Stable Diffusion</b> used [DreamStudio API](https://dreamstudio.ai/). This is not entirely free like stable-diffusion-webgui.
 
 But this is very lightweight and more accessible. don't need CUDA, torch, expansive PC, anything.
 
 This is using <b>sqlite</b> as a database.
 
-You can select the model and change each parameters of openai from the right side bar.
-
-Also you can combine openai with llama-index feature to make gpt model answer your question based on information you had provided!
+You can select the model at the right side bar.
 
 An internet connection is required.
-
-If you have any questions or you want to make AI related software with PyQt or PySide, feel free to join Discord server of pyqt-openai.
 
 ## Table of Contents
 * [Feature](#feature)
 * [Requirements](#requirements)
-* [Preview and Usage](#preview-and-usage)
+* [Preview & Usage](#preview-usage)
 * [How to Install](#how-to-install)
 * [Troubleshooting](#troubleshooting)
 * [Contact](#contact)
@@ -47,40 +38,33 @@ If you have any questions or you want to make AI related software with PyQt or P
 * [See Also](#see-also)
 
 ## Feature
-* basically this is <b>desktop application version of ChatGPT</b> with image generation tool. 
+* basically this is <b>desktop application version of ChatGPT</b> with image generation tool.
   * text streaming (enable by default, you can disable it)
   * AI remembers past conversation
-  * support copy button
-* <b>conversation management</b>
+* conversation management
   * add & delete conversations
-  * save conversations - SQlite db, text files compressed file, html files compressed file (both are zip)
+  * save conversations
   * rename conversation
   * everything above is saved in an SQLite database file named conv.db.
-* support controlling parameters(temperature, top_p, etc) just like openai playground 
-* support latest model such as <b>GPT-4-32k-0613</b>
-* support <b>prompt generator</b> (manageable, autosaved in database) 
-* support <b>slash commands</b>
+* support GPT-4 and every other models below GPT3
+* support prompt generator (manageable, autosaved in database)
+* support slash commands
 * support beginning and ending part of the prompt
-* you can <b>run this in background</b> application
+* you can run this in background application
   * notification will pop up when response is generated
 * you can make window stack on top or control its transparency
 * image generation (DALL-E, Stable Diffusion with DreamStudio API)
 * you can copy and download the image if you want. just hover the mouse cursor over the image.
-* you can <b>fine-tune</b> openai with llama-index.
 
 ## Requirements
 * qtpy - the package allowing you to write code that works with both PyQt and PySide
 * PyQt5 >= 5.14 or PySide6
 * openai
-* aiohttp - for openai dependency 
+* aiohttp - for openai dependency
 * pyperclip - to copy prompt text from prompt generator
 * stability_sdk - for Stable Diffusion
-* jinja2 - for saving the conversation with html file
-* llama-index - to fine-tune
 
-## Preview and Usage
-#### Note: A lot of previews below are not from latest version. It is slightly different with current GUI. So if you want to really know what this looks like, you can just see it for yourself :)
-
+## Preview & Usage
 ### Overview
 #### Windows
 ![image](https://github.com/yjg30737/pyqt-openai/assets/55078043/51667298-2c3f-4846-a8c9-ec56331b8361)
@@ -93,17 +77,7 @@ You can change screen between text chatbot and image generating tool screen.
 #### Linux (Ubuntu)
 ![image](https://github.com/yjg30737/pyqt-openai/assets/55078043/4005c085-53f4-406f-adb0-4fb4d87d88ba)
 
-#### MacOS
-![image](https://github.com/yjg30737/pyqt-openai/assets/55078043/4fec8f14-3768-49e8-9ad6-a4fbf240e643)
-
-Thanks to Werranton, who gave me the pyqt-openai window example image from macOS :)
-
-(He has changed the pyqt-openai's overall theme personally)
-
-### Using LlamaIndex
-![image](https://github.com/yjg30737/pyqt-openai/assets/55078043/e161b551-91dc-4c4d-8a33-28179d72fb64)
-
-If you want to use this with your personal chatbot based on data you've given, then you can check the llamaindex checkbox and go to the tab, select the directory which includes .txt files containing the data.
+If you use MacOS, please give me the pyqt-openai screen image from it.
 
 ### Conversation
 #### Preview 1
@@ -113,11 +87,6 @@ https://user-images.githubusercontent.com/55078043/236583883-8e9732a3-1223-4b28-
 #### Preview 2 (using prompt feature)
 
 https://github.com/yjg30737/pyqt-openai/assets/55078043/841a1505-f1cc-452e-99ab-0a9c661e6ead
-
-#### Conversation Save Feature
-![image](https://github.com/yjg30737/pyqt-openai/assets/55078043/908ed185-06a6-4f7a-9626-92141ba24e1a)
-
-You can save checked conversation units to SQlite db file or compressed file (zip) which contains each conversation as text/html file.
 
 ### Prompt Generator
 #### How to Generate
@@ -166,7 +135,7 @@ I made the command suggestion GUI resemble the Discord command autocomplete popu
 ## How to Install
 1. git clone ~
 2. cd pyqt-openai
-3. pip install -r requirements.txt --upgrade
+3. pip install -r requirements.txt
 4. cd pyqt_openai
 5. You should put your api key in the line edit. You can get it in <a href="https://platform.openai.com/account/api-keys">official site</a> of openai. Sign up and log in before you get it.
 
@@ -190,14 +159,13 @@ sudo apt-get install libxcb-xinerama0
 ```
 
 ## Troubleshooting
-### subprocess-exited-with-error
 If you see this error while installing the openai package
 ```
 subprocess-exited-with-error
 ```
-download the package itself from <a href="https://pypi.org/project/openai/#files">pypi</a>. 
+download the package itself from <a href="https://pypi.org/project/openai/#files">pypi</a>.
 
-Unzip it, access the package directory, type 
+Unzip it, access the package directory, type
 ```
 python setup.py install
 ```
@@ -205,17 +173,6 @@ python setup.py install
 That will install the openai.
 
 Note: I don't know this can happen in newer version of openai as well, so tell me if you know about something
-
-### qtpy.QtBindingsNotFoundError: No Qt bindings could be found
-first, do this:
-```
-pip uninstall -r requirements.txt
-```
-second, do this:
-```
-pip install -r requirements.txt --upgrade
-```
-then it will work :)
 
 ## Contact
 You can join pyqt-openai's <a href="https://discord.gg/cHekprskVE">Discord Server</a> to have a conversation about it or AI-related stuff 🙂
@@ -226,6 +183,7 @@ I recommend to install sqlite management software. It's not necessary to run thi
 ## TODO list
 * DB for images (to further experiement of both DALL-E and Stable Diffusion or other image generation engine)
 * show the explanation of every model and terms related to AI (e.g. temperature, topp..)
+* save conversation history with other format (xlsx, csv, etc.)
 * tokenizer
 * highlight the source (optional, eventually)
 * support multiple language
