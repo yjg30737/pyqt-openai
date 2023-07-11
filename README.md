@@ -8,7 +8,6 @@
 
 </div>
 
-
 Example of using OpenAI with PyQt (Python cross-platform GUI toolkit)
 
 This shows an example of using OpenAI with PyQt as a chatbot and using DALL-E or Stable Diffusion as a image generation tool.
@@ -21,9 +20,7 @@ If you want to study openai with Python-only good old desktop software, this is 
 
 The OpenAI model this package uses is the <a href="https://platform.openai.com/docs/models/gpt-3-5">gpt-3.5-turbo</a> model(which is nearly as functional as <b>ChatGPT</b>) by default. You can use gpt-4 as well.
 
-Latest model such as gpt-3.5-turbo-0613 is also available
-
-Image generation feature(DALL-E and Stable Diffusion) available since v0.1.4.
+Image generation feature(DALL-E and Stable Diffusion) is also available.
 
 <b>Stable Diffusion</b> used [DreamStudio API](https://dreamstudio.ai/). This is not entirely free like stable-diffusion-webgui. 
 
@@ -31,14 +28,18 @@ But this is very lightweight and more accessible. don't need CUDA, torch, expans
 
 This is using <b>sqlite</b> as a database.
 
-You can select the model at the right side bar.
+You can select the model and change each parameters of openai from the right side bar.
+
+Also you can combine openai with llama-index feature to make gpt model answer your question based on information you had provided!
 
 An internet connection is required.
+
+If you have any questions or you want to make AI related software with PyQt or PySide, feel free to join Discord server of pyqt-openai.
 
 ## Table of Contents
 * [Feature](#feature)
 * [Requirements](#requirements)
-* [Preview & Usage](#preview-usage)
+* [Preview and Usage](#preview-and-usage)
 * [How to Install](#how-to-install)
 * [Troubleshooting](#troubleshooting)
 * [Contact](#contact)
@@ -50,20 +51,22 @@ An internet connection is required.
   * text streaming (enable by default, you can disable it)
   * AI remembers past conversation
   * support copy button
-* conversation management
+* <b>conversation management</b>
   * add & delete conversations
   * save conversations - SQlite db, text files compressed file, html files compressed file (both are zip)
   * rename conversation
   * everything above is saved in an SQLite database file named conv.db.
-* support GPT-4 and every other models below GPT3
-* support prompt generator (manageable, autosaved in database) 
-* support slash commands
+* support controlling parameters(temperature, top_p, etc) just like openai playground 
+* support latest model such as <b>GPT-4-32k-0613</b>
+* support <b>prompt generator</b> (manageable, autosaved in database) 
+* support <b>slash commands</b>
 * support beginning and ending part of the prompt
-* you can run this in background application
+* you can <b>run this in background</b> application
   * notification will pop up when response is generated
 * you can make window stack on top or control its transparency
 * image generation (DALL-E, Stable Diffusion with DreamStudio API)
 * you can copy and download the image if you want. just hover the mouse cursor over the image.
+* you can <b>fine-tune</b> openai with llama-index.
 
 ## Requirements
 * qtpy - the package allowing you to write code that works with both PyQt and PySide
@@ -73,8 +76,11 @@ An internet connection is required.
 * pyperclip - to copy prompt text from prompt generator
 * stability_sdk - for Stable Diffusion
 * jinja2 - for saving the conversation with html file
+* llama-index - to fine-tune
 
-## Preview & Usage
+## Preview and Usage
+#### Note: A lot of previews below are not from latest version. It is slightly different with current GUI. So if you want to really know what this looks like, you can just see it for yourself :)
+
 ### Overview
 #### Windows
 ![image](https://github.com/yjg30737/pyqt-openai/assets/55078043/51667298-2c3f-4846-a8c9-ec56331b8361)
@@ -87,7 +93,17 @@ You can change screen between text chatbot and image generating tool screen.
 #### Linux (Ubuntu)
 ![image](https://github.com/yjg30737/pyqt-openai/assets/55078043/4005c085-53f4-406f-adb0-4fb4d87d88ba)
 
-If you use MacOS, please give me the pyqt-openai screen image from it.
+#### MacOS
+![image](https://github.com/yjg30737/pyqt-openai/assets/55078043/4fec8f14-3768-49e8-9ad6-a4fbf240e643)
+
+Thanks to Werranton, who gave me the pyqt-openai window example image from macOS :)
+
+(He has changed the pyqt-openai's overall theme personally)
+
+### Using LlamaIndex
+![image](https://github.com/yjg30737/pyqt-openai/assets/55078043/e161b551-91dc-4c4d-8a33-28179d72fb64)
+
+If you want to use this with your personal chatbot based on data you've given, then you can check the llamaindex checkbox and go to the tab, select the directory which includes .txt files containing the data.
 
 ### Conversation
 #### Preview 1
