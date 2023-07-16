@@ -29,7 +29,6 @@ setup(
         'aiohttp',
         'openai',
         'pyperclip',
-        'stability_sdk',
         'jinja2',
         'llama-index'
     ]

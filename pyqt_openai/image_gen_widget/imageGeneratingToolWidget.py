@@ -5,7 +5,7 @@ from qtpy.QtWidgets import QApplication, QHBoxLayout, QVBoxLayout, QFrame, QWidg
 from qtpy.QtWidgets import QSplitter
 
 from pyqt_openai.image_gen_widget.leftSideBar import LeftSideBar
-from pyqt_openai.image_gen_widget.rightSideBar import RightSideBar
+from pyqt_openai.image_gen_widget.imageDallEPage import ImageDallEPage
 from pyqt_openai.image_gen_widget.viewWidget import ViewWidget
 from pyqt_openai.svgButton import SvgButton
 
@@ -28,10 +28,9 @@ class ImageGeneratingToolWidget(QWidget):
         self.__leftSideBarWidget.export.connect(self.__exportImageGroup)
 
         self.__viewWidget = ViewWidget()
-        self.__rightSideBarWidget = RightSideBar()
+        self.__rightSideBarWidget = ImageDallEPage()
         self.__rightSideBarWidget.notifierWidgetActivated.connect(self.notifierWidgetActivated)
         self.__rightSideBarWidget.submitDallE.connect(self.__setResult)
-        self.__rightSideBarWidget.submitSd.connect(self.__setResult)
 
         self.__sideBarBtn = SvgButton()
         self.__sideBarBtn.setIcon('ico/sidebar.svg')
