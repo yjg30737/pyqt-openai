@@ -1,11 +1,9 @@
-import sys
-
 from qtpy.QtCore import Qt, Signal
-from qtpy.QtWidgets import QApplication, QHBoxLayout, QVBoxLayout, QFrame, QWidget
+from qtpy.QtWidgets import QHBoxLayout, QVBoxLayout, QFrame, QWidget
 from qtpy.QtWidgets import QSplitter
 
-from pyqt_openai.image_gen_widget.leftSideBar import LeftSideBar
 from pyqt_openai.image_gen_widget.imageDallEPage import ImageDallEPage
+from pyqt_openai.image_gen_widget.leftSideBar import LeftSideBar
 from pyqt_openai.image_gen_widget.viewWidget import ViewWidget
 from pyqt_openai.svgButton import SvgButton
 

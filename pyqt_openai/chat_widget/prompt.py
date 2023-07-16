@@ -71,8 +71,7 @@ class Prompt(QWidget):
         supportPromptCommandAction.toggled.connect(self.__supportPromptCommand)
 
         readingFilesAction = QAction('Upload Files...', self)
-        readingFilesAction.setCheckable(True)
-        readingFilesAction.toggled.connect(self.__readingFiles)
+        readingFilesAction.triggered.connect(self.__readingFiles)
 
         # Add the actions to the menu
         menu.addAction(beginningAction)
