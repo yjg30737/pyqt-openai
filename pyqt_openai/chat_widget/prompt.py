@@ -1,5 +1,7 @@
+import os
+
 from qtpy.QtCore import Qt
-from qtpy.QtWidgets import QVBoxLayout, QToolButton, QMenu, QAction, QWidget, QHBoxLayout
+from qtpy.QtWidgets import QVBoxLayout, QFileDialog, QToolButton, QMenu, QAction, QWidget, QHBoxLayout
 
 from pyqt_openai.chat_widget.textEditPropmtGroup import TextEditPropmtGroup
 from pyqt_openai.propmt_command_completer.commandSuggestionWidget import CommandSuggestionWidget
@@ -68,10 +70,15 @@ class Prompt(QWidget):
         supportPromptCommandAction.setCheckable(True)
         supportPromptCommandAction.toggled.connect(self.__supportPromptCommand)
 
+        readingFilesAction = QAction('Upload Files...', self)
+        readingFilesAction.setCheckable(True)
+        readingFilesAction.toggled.connect(self.__readingFiles)
+
         # Add the actions to the menu
         menu.addAction(beginningAction)
         menu.addAction(endingAction)
         menu.addAction(supportPromptCommandAction)
+        menu.addAction(readingFilesAction)
 
         # Connect the button to the menu
         settingsBtn.setMenu(menu)
@@ -184,3 +191,21 @@ class Prompt(QWidget):
     def __supportPromptCommand(self, f):
         self.__commandEnabled = f
         self.__textEditGroup.setCommandEnabled(f)
+
+    def __readingFiles(self):
+        filenames = QFileDialog.getOpenFileNames(self, 'Find', '', 'All Files (*.*)')
+        if filenames[0]:
+            filenames = filenames[0]
+            source_context = ''
+            for filename in filenames:
+                base_filename = os.path.basename(filename)
+                source_context += f'=== {base_filename} start ==='
+                source_context += '\n'*2
+                with open(filename, 'r', encoding='utf-8') as f:
+                    source_context += f.read()
+                source_context += '\n'*2
+                source_context += f'=== {base_filename} end ==='
+                source_context += '\n'*2
+            prompt_context = f'== Source Start ==\n{source_context}== Source End =='
+
+            self.__textEditGroup.getGroup()[1].setText(prompt_context)
