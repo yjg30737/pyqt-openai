@@ -3,6 +3,7 @@ from functools import partial
 from qtpy.QtCore import QSettings, Signal
 from qtpy.QtWidgets import QScrollArea, QWidget, QTabWidget, QGridLayout
 
+from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.right_sidebar.chatPage import ChatPage
 from pyqt_openai.right_sidebar.llama_widget.llamaPage import LlamaPage
 from pyqt_openai.sqlite import SqliteDatabase
@@ -38,7 +39,7 @@ class AIPlaygroundWidget(QScrollArea):
         self.__llamaPage = LlamaPage()
         self.__llamaPage.onDirectorySelected.connect(self.onDirectorySelected)
 
-        tabWidget.addTab(chatPage, 'Chat', )
+        tabWidget.addTab(chatPage, LangClass.TRANSLATIONS['Chat'], )
         tabWidget.addTab(self.__llamaPage, 'LlamaIndex', )
         tabWidget.currentChanged.connect(self.__tabChanged)
         use_llama_index_tab_f = self.__settings_ini.value('use_llama_index', type=bool)

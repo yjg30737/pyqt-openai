@@ -2,6 +2,7 @@ from qtpy.QtCore import Qt, Signal, QSettings
 from qtpy.QtWidgets import QWidget, QDoubleSpinBox, QSpinBox, QFormLayout, QFrame, QSizePolicy, QComboBox, QTextEdit, QLabel, QVBoxLayout, QCheckBox, QPushButton
 
 from pyqt_openai.apiData import getChatModel
+from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.sqlite import SqliteDatabase
 
 
@@ -57,12 +58,12 @@ class ChatPage(QWidget):
         self.__use_llama_index = self.__settings_ini.value('use_llama_index', type=bool)
 
     def __initUi(self):
-        systemlbl = QLabel('System')
+        systemlbl = QLabel(LangClass.TRANSLATIONS['System'])
 
         self.__systemTextEdit = QTextEdit()
         self.__systemTextEdit.setText(self.__system)
         self.__systemTextEdit.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Preferred)
-        saveSystemBtn = QPushButton('Save System')
+        saveSystemBtn = QPushButton(LangClass.TRANSLATIONS['Save System'])
         saveSystemBtn.clicked.connect(self.__saveSystem)
 
         modelCmbBox = QComboBox()
@@ -107,12 +108,12 @@ class ChatPage(QWidget):
         streamChkBox = QCheckBox()
         streamChkBox.setChecked(self.__stream)
         streamChkBox.toggled.connect(self.__streamChecked)
-        streamChkBox.setText('Stream')
+        streamChkBox.setText(LangClass.TRANSLATIONS['Stream'])
 
         llamaChkBox = QCheckBox()
         llamaChkBox.setChecked(self.__use_llama_index)
         llamaChkBox.toggled.connect(self.__use_llama_indexChecked)
-        llamaChkBox.setText('Use LlamaIndex')
+        llamaChkBox.setText(LangClass.TRANSLATIONS['Use LlamaIndex'])
 
         sep = QFrame()
         sep.setFrameShape(QFrame.HLine)
@@ -121,13 +122,12 @@ class ChatPage(QWidget):
         useMaxTokenChkBox = QCheckBox()
         useMaxTokenChkBox.toggled.connect(self.__useMaxChecked)
         useMaxTokenChkBox.setChecked(self.__use_max_tokens)
-        useMaxTokenChkBox.setText('Use Max Tokens')
+        useMaxTokenChkBox.setText(LangClass.TRANSLATIONS['Use Max Tokens'])
         self.__maxTokensSpinBox.setEnabled(self.__use_max_tokens)
 
-        finishReasonChkBox = QCheckBox('Show Finish Reason (working)')
+        finishReasonChkBox = QCheckBox(LangClass.TRANSLATIONS['Show Finish Reason (working)'])
         finishReasonChkBox.setChecked(self.__finish_reason)
         finishReasonChkBox.toggled.connect(self.__finishReasonChecked)
-        finishReasonChkBox.setText('Show Finish Reason')
 
         lay = QFormLayout()
 

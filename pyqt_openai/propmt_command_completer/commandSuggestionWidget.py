@@ -1,5 +1,7 @@
 from qtpy.QtWidgets import QListWidget, QWidget, QVBoxLayout, QLabel
 
+from pyqt_openai.res.language_dict import LangClass
+
 
 class CommandSuggestionWidget(QWidget):
     def __init__(self):
@@ -11,7 +13,7 @@ class CommandSuggestionWidget(QWidget):
         self.__commandList.currentRowChanged.connect(self.onCountChanged)
 
         lay = QVBoxLayout()
-        lay.addWidget(QLabel('Command List'))
+        lay.addWidget(QLabel(LangClass.TRANSLATIONS['Command List']))
         lay.addWidget(self.__commandList)
         lay.setContentsMargins(0, 5, 0, 0)
 

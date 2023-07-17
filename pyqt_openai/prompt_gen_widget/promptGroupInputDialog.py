@@ -17,7 +17,7 @@ class PromptGroupInputDialog(QDialog):
         self.__db = db
 
     def __initUi(self):
-        self.setWindowTitle('New Prompt')
+        self.setWindowTitle(LangClass.TRANSLATIONS['New Prompt'])
         self.setWindowFlags(Qt.Window | Qt.WindowCloseButtonHint)
 
         self.__newName = QLineEdit()

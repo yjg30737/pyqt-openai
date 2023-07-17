@@ -28,15 +28,15 @@ class PromptGeneratorWidget(QScrollArea):
         templatePage.updated.connect(self.__textChanged)
 
         self.__prompt = QTextBrowser()
-        self.__prompt.setPlaceholderText('Generated Prompt')
+        self.__prompt.setPlaceholderText(LangClass.TRANSLATIONS['Generated Prompt'])
 
         promptTabWidget = QTabWidget()
-        promptTabWidget.addTab(propPage, 'Property')
-        promptTabWidget.addTab(templatePage, 'Template')
+        promptTabWidget.addTab(propPage, LangClass.TRANSLATIONS['Property'])
+        promptTabWidget.addTab(templatePage, LangClass.TRANSLATIONS['Template'])
 
-        previewLbl = QLabel('Preview')
+        previewLbl = QLabel(LangClass.TRANSLATIONS['Preview'])
 
-        copyBtn = QPushButton('Copy')
+        copyBtn = QPushButton(LangClass.TRANSLATIONS['Copy'])
         copyBtn.clicked.connect(self.__copy)
 
         lay = QVBoxLayout()
