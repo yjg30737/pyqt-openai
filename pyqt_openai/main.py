@@ -157,11 +157,18 @@ class MainWindow(QMainWindow):
         self.__apiAction = QWidgetAction(self)
         self.__apiAction.setDefaultWidget(apiWidget)
 
-        self.__langAction = QWidgetAction(self)
-        self.__langCmbBox = QComboBox()
-        self.__langCmbBox.addItems(list(LangClass.LANGUAGE_DICT.keys()))
-        self.__langCmbBox.currentTextChanged.connect(LangClass.lang_changed)
-        self.__langAction.setDefaultWidget(self.__langCmbBox)
+    #     self.__langAction = QWidgetAction(self)
+    #     self.__langCmbBox = QComboBox()
+    #     self.__langCmbBox.addItems(list(LangClass.LANGUAGE_DICT.keys()))
+    #     self.__langCmbBox.currentTextChanged.connect(self.__lang_changed)
+    #     self.__langAction.setDefaultWidget(self.__langCmbBox)
+    #
+    # def __lang_changed(self, lang):
+    #     LangClass.lang_changed(lang)
+    #     # Define the arguments to be passed to the executable
+    #     args = [sys.executable, "main.py"]
+    #     # Call os.execv() to execute the new process
+    #     os.execv(sys.executable, args)
 
     def __setMenuBar(self):
         menubar = self.menuBar()
@@ -212,7 +219,7 @@ class MainWindow(QMainWindow):
         windowToolBar.addAction(self.__transparentAction)
         windowToolBar.addAction(self.__showAiToolBarAction)
         windowToolBar.addAction(self.__apiAction)
-        windowToolBar.addAction(self.__langAction)
+        # windowToolBar.addAction(self.__langAction)
         windowToolBar.setLayout(lay)
         windowToolBar.setMovable(False)
         self.addToolBar(aiTypeToolBar)
