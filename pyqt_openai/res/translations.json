@@ -1,5 +1,10 @@
 {
   "en_US": {
+    "Directory": "Directory",
+    "Files": "Files",
+    "Set Directory": "Set Directory",
+    "Select Directory": "Select Directory",
+    "This text browser shows selected file's content in the list.": "This text browser shows selected file's content in the list.",
     "Stream": "Stream",
     "System": "System",
     "Save System": "Save System",
@@ -71,6 +76,11 @@
     "Search Text": "Search Text"
   },
   "es_ES": {
+    "Directory": "Directorio",
+    "Files": "Archivos",
+    "Set Directory": "Establecer Directorio",
+    "Select Directory": "Seleccionar Directorio",
+    "This text browser shows selected file's content in the list.": "Este navegador de texto muestra el contenido del archivo seleccionado en la lista.",
     "Stream": "Transmisi\u00f3n",
     "System": "Sistema",
     "Save System": "Guardar Sistema",
@@ -142,6 +152,11 @@
     "Search Text": "Buscar texto"
   },
   "zh_CN": {
+    "Directory": "\u76ee\u5f55",
+    "Files": "\u6587\u4ef6",
+    "Set Directory": "\u8bbe\u7f6e\u76ee\u5f55",
+    "Select Directory": "\u9009\u62e9\u76ee\u5f55",
+    "This text browser shows selected file's content in the list.": "\u6b64\u6587\u672c\u6d4f\u89c8\u5668\u5728\u5217\u8868\u4e2d\u663e\u793a\u6240\u9009\u6587\u4ef6\u7684\u5185\u5bb9\u3002",
     "Stream": "\u6d41",
     "System": "\u7cfb\u7edf",
     "Save System": "\u4fdd\u5b58\u7cfb\u7edf",
@@ -213,6 +228,11 @@
     "Search Text": "\u641c\u7d22\u6587\u672c"
   },
   "ru_RU": {
+    "Directory": "\u0414\u0438\u0440\u0435\u043a\u0442\u043e\u0440\u0438\u044f",
+    "Files": "\u0424\u0430\u0439\u043b\u044b",
+    "Set Directory": "\u0423\u0441\u0442\u0430\u043d\u043e\u0432\u0438\u0442\u044c \u0434\u0438\u0440\u0435\u043a\u0442\u043e\u0440\u0438\u044e",
+    "Select Directory": "\u0412\u044b\u0431\u0440\u0430\u0442\u044c \u0434\u0438\u0440\u0435\u043a\u0442\u043e\u0440\u0438\u044e",
+    "This text browser shows selected file's content in the list.": "\u042d\u0442\u043e\u0442 \u0442\u0435\u043a\u0441\u0442\u043e\u0432\u044b\u0439 \u0431\u0440\u0430\u0443\u0437\u0435\u0440 \u043e\u0442\u043e\u0431\u0440\u0430\u0436\u0430\u0435\u0442 \u0441\u043e\u0434\u0435\u0440\u0436\u0438\u043c\u043e\u0435 \u0432\u044b\u0431\u0440\u0430\u043d\u043d\u043e\u0433\u043e \u0444\u0430\u0439\u043b\u0430 \u0432 \u0441\u043f\u0438\u0441\u043a\u0435.",
     "Stream": "\u041f\u043e\u0442\u043e\u043a",
     "System": "\u0421\u0438\u0441\u0442\u0435\u043c\u0430",
     "Save System": "\u0421\u043e\u0445\u0440\u0430\u043d\u0438\u0442\u044c \u0421\u0438\u0441\u0442\u0435\u043c\u0443",
@@ -284,11 +304,15 @@
     "Search Text": "\u041f\u043e\u0438\u0441\u043a \u0442\u0435\u043a\u0441\u0442\u0430"
   },
   "ko_KR": {
+    "Directory": "\ub514\ub809\ud130\ub9ac",
+    "Files": "\ud30c\uc77c",
+    "Set Directory": "\ub514\ub809\ud130\ub9ac \uc124\uc815",
+    "Select Directory": "\ub514\ub809\ud130\ub9ac \uc120\ud0dd",
+    "This text browser shows selected file's content in the list.": "\uc774 \ud14d\uc2a4\ud2b8 \ube0c\ub77c\uc6b0\uc800\ub294 \ubaa9\ub85d\uc5d0\uc11c \uc120\ud0dd\ud55c \ud30c\uc77c\uc758 \ub0b4\uc6a9\uc744 \ud45c\uc2dc\ud569\ub2c8\ub2e4.",
     "Stream": "\uc2a4\ud2b8\ub9bc",
     "System": "\uc2dc\uc2a4\ud15c",
     "Save System": "\uc2dc\uc2a4\ud15c \uc800\uc7a5",
     "Chat": "\ucc44\ud305",
-    
     "Use LlamaIndex": "LlamaIndex \uc0ac\uc6a9",
     "Use Max Tokens": "\ucd5c\ub300 \ud1a0\ud070 \uc0ac\uc6a9",
     "Show Finish Reason (working)": "\uc885\ub8cc \uc774\uc720 \ud45c\uc2dc (\uc791\ub3d9 \uc911)",
@@ -356,11 +380,15 @@
     "Search Text": "\ud14d\uc2a4\ud2b8 \uac80\uc0c9"
   },
   "fr_FR": {
+    "Directory": "R\u00e9pertoire",
+    "Files": "Fichiers",
+    "Set Directory": "D\u00e9finir le r\u00e9pertoire",
+    "Select Directory": "S\u00e9lectionner le r\u00e9pertoire",
+    "This text browser shows selected file's content in the list.": "Ce navigateur de texte affiche le contenu du fichier s\u00e9lectionn\u00e9 dans la liste.",
     "Stream": "Diffusion en continu",
     "System": "Syst\u00e8me",
     "Save System": "Enregistrer le syst\u00e8me",
     "Chat": "Discussion",
-    
     "Use LlamaIndex": "Utiliser LlamaIndex",
     "Use Max Tokens": "Utiliser le nombre maximal de jetons",
     "Show Finish Reason (working)": "Afficher la raison de la fin (en cours)",
@@ -428,11 +456,15 @@
     "Search Text": "Rechercher le texte"
   },
   "de_DE": {
+    "Directory": "Verzeichnis",
+    "Files": "Dateien",
+    "Set Directory": "Verzeichnis festlegen",
+    "Select Directory": "Verzeichnis ausw\u00e4hlen",
+    "This text browser shows selected file's content in the list.": "Dieser Textbrowser zeigt den Inhalt der ausgew\u00e4hlten Datei in der Liste an.",
     "Stream": "Stream",
     "System": "System",
     "Save System": "System speichern",
     "Chat": "Chat",
-    
     "Use LlamaIndex": "LlamaIndex verwenden",
     "Use Max Tokens": "Maximale Tokens verwenden",
     "Show Finish Reason (working)": "Beendigungsgrund anzeigen (funktionsf\u00e4hig)",
@@ -500,11 +532,15 @@
     "Search Text": "Text suchen"
   },
   "it_IT": {
+    "Directory": "Directory",
+    "Files": "File",
+    "Set Directory": "Imposta Directory",
+    "Select Directory": "Seleziona Directory",
+    "This text browser shows selected file's content in the list.": "Questo browser di testo mostra il contenuto del file selezionato nell'elenco.",
     "Stream": "Stream",
     "System": "Sistema",
     "Save System": "Salva Sistema",
     "Chat": "Chat",
-    
     "Use LlamaIndex": "Usa LlamaIndex",
     "Use Max Tokens": "Usa Max Tokens",
     "Show Finish Reason (working)": "Mostra motivo di completamento (funzionante)",
@@ -572,11 +608,15 @@
     "Search Text": "Cerca testo"
   },
   "hi_IN": {
+    "Directory": "\u0921\u093e\u092f\u0930\u0947\u0915\u094d\u091f\u0930\u0940",
+    "Files": "\u092b\u093c\u093e\u0907\u0932\u0947\u0902",
+    "Set Directory": "\u0921\u093e\u092f\u0930\u0947\u0915\u094d\u091f\u0930\u0940 \u0938\u0947\u091f \u0915\u0930\u0947\u0902",
+    "Select Directory": "\u0921\u093e\u092f\u0930\u0947\u0915\u094d\u091f\u0930\u0940 \u091a\u0941\u0928\u0947\u0902",
+    "This text browser shows selected file's content in the list.": "\u092f\u0939 \u091f\u0947\u0915\u094d\u0938\u094d\u091f \u092c\u094d\u0930\u093e\u0909\u091c\u093c\u0930 \u0938\u0942\u091a\u0940 \u092e\u0947\u0902 \u091a\u092f\u0928\u093f\u0924 \u092b\u093c\u093e\u0907\u0932 \u0915\u0940 \u0938\u093e\u092e\u0917\u094d\u0930\u0940 \u0926\u093f\u0916\u093e\u0924\u093e \u0939\u0948\u0964",
     "Stream": "\u0938\u094d\u091f\u094d\u0930\u0940\u092e",
     "System": "\u0938\u093f\u0938\u094d\u091f\u092e",
     "Save System": "\u0938\u093f\u0938\u094d\u091f\u092e \u0938\u0939\u0947\u091c\u0947\u0902",
     "Chat": "\u091a\u0948\u091f",
-    
     "Use LlamaIndex": "LlamaIndex \u0915\u093e \u092a\u094d\u0930\u092f\u094b\u0917 \u0915\u0930\u0947\u0902",
     "Use Max Tokens": "\u0905\u0927\u093f\u0915\u0924\u092e \u091f\u094b\u0915\u0928 \u0915\u093e \u092a\u094d\u0930\u092f\u094b\u0917 \u0915\u0930\u0947\u0902",
     "Show Finish Reason (working)": "\u0938\u092e\u093e\u092a\u094d\u0924\u093f \u0915\u093e \u0915\u093e\u0930\u0923 \u0926\u093f\u0916\u093e\u090f\u0902 (\u0915\u093e\u0930\u094d\u092f\u0930\u0924)",
@@ -644,11 +684,15 @@
     "Search Text": "\u091f\u0947\u0915\u094d\u0938\u094d\u091f \u0916\u094b\u091c\u0947\u0902"
   },
   "ar_AE": {
+    "Directory": "\u0627\u0644\u0645\u062c\u0644\u062f",
+    "Files": "\u0627\u0644\u0645\u0644\u0641\u0627\u062a",
+    "Set Directory": "\u062a\u0639\u064a\u064a\u0646 \u0627\u0644\u0645\u062c\u0644\u062f",
+    "Select Directory": "\u0627\u062e\u062a\u064a\u0627\u0631 \u0627\u0644\u0645\u062c\u0644\u062f",
+    "This text browser shows selected file's content in the list.": "\u0647\u0630\u0627 \u0627\u0644\u0645\u062a\u0635\u0641\u062d \u0627\u0644\u0646\u0635\u064a \u064a\u0639\u0631\u0636 \u0645\u062d\u062a\u0648\u0649 \u0627\u0644\u0645\u0644\u0641 \u0627\u0644\u0645\u062d\u062f\u062f \u0641\u064a \u0627\u0644\u0642\u0627\u0626\u0645\u0629.",
     "Stream": "\u062a\u064a\u0627\u0631",
     "System": "\u0627\u0644\u0646\u0638\u0627\u0645",
     "Save System": "\u062d\u0641\u0638 \u0627\u0644\u0646\u0638\u0627\u0645",
     "Chat": "\u0645\u062d\u0627\u062f\u062b\u0629",
-    
     "Use LlamaIndex": "\u0627\u0633\u062a\u062e\u062f\u0627\u0645 LlamaIndex",
     "Use Max Tokens": "\u0627\u0633\u062a\u062e\u062f\u0645 \u0627\u0644\u062d\u062f \u0627\u0644\u0623\u0642\u0635\u0649 \u0644\u0644\u0631\u0645\u0648\u0632",
     "Show Finish Reason (working)": "\u0639\u0631\u0636 \u0633\u0628\u0628 \u0627\u0644\u0627\u0646\u062a\u0647\u0627\u0621 (\u064a\u0639\u0645\u0644)",

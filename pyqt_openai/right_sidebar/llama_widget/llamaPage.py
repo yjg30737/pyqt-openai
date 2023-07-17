@@ -3,6 +3,7 @@ from qtpy.QtGui import QFont
 from qtpy.QtWidgets import QFrame, QTextBrowser
 from qtpy.QtWidgets import QWidget, QLabel, QVBoxLayout
 
+from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.right_sidebar.llama_widget.listWidget import FileListWidget
 from pyqt_openai.util.llamapage_script import GPTLLamaIndexClass
 
@@ -28,7 +29,7 @@ class LlamaPage(QWidget):
         self.__listWidget.onDirectorySelected.connect(self.__onDirectorySelected)
 
         self.__txtBrowser = QTextBrowser()
-        self.__txtBrowser.setPlaceholderText('This text browser shows selected file\'s content in the list.')
+        self.__txtBrowser.setPlaceholderText(LangClass.TRANSLATIONS["This text browser shows selected file's content in the list."])
         self.__txtBrowser.setMaximumHeight(150)
 
         sep = QFrame()
