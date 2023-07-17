@@ -5,6 +5,7 @@ from qtpy.QtCore import Signal, Qt
 from pyqt_openai.inputDialog import InputDialog
 from pyqt_openai.prompt_gen_widget.promptGroupInputDialog import PromptGroupInputDialog
 from pyqt_openai.prompt_gen_widget.templatePromptUnitInputDialog import TemplatePromptUnitInputDialog
+from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.sqlite import SqliteDatabase
 from pyqt_openai.svgButton import SvgButton
 
@@ -134,7 +135,7 @@ class TemplateTable(QWidget):
         self.__table.setRowCount(len(self.__previousPromptTemplateArr))
         self.__table.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
         self.__table.setSelectionBehavior(QAbstractItemView.SelectRows)
-        self.__table.setHorizontalHeaderLabels(['Act', 'Prompt'])
+        self.__table.setHorizontalHeaderLabels(['Act', LangClass.TRANSLATIONS['Prompt']])
         self.__table.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
         self.__table.currentItemChanged.connect(self.__rowChanged)
 

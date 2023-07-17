@@ -3,7 +3,6 @@ from qtpy.QtWidgets import QHBoxLayout, QVBoxLayout, QFrame, QWidget
 from qtpy.QtWidgets import QSplitter
 
 from pyqt_openai.image_gen_widget.imageDallEPage import ImageDallEPage
-from pyqt_openai.image_gen_widget.leftSideBar import LeftSideBar
 from pyqt_openai.image_gen_widget.viewWidget import ViewWidget
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.svgButton import SvgButton
@@ -17,26 +16,10 @@ class ImageGeneratingToolWidget(QWidget):
         self.__initUi()
 
     def __initUi(self):
-        # TODO
-        self.__leftSideBarWidget = LeftSideBar()
-        self.__leftSideBarWidget.setVisible(False)
-        self.__leftSideBarWidget.added.connect(self.__addImageGroup)
-        self.__leftSideBarWidget.deleted.connect(self.__deleteImageGroup)
-        # changed
-        # imageUpdated
-        self.__leftSideBarWidget.export.connect(self.__exportImageGroup)
-
         self.__viewWidget = ViewWidget()
         self.__rightSideBarWidget = ImageDallEPage()
         self.__rightSideBarWidget.notifierWidgetActivated.connect(self.notifierWidgetActivated)
         self.__rightSideBarWidget.submitDallE.connect(self.__setResult)
-
-        self.__sideBarBtn = SvgButton()
-        self.__sideBarBtn.setIcon('ico/sidebar.svg')
-        self.__sideBarBtn.setCheckable(True)
-        self.__sideBarBtn.setToolTip('Chat List')
-        self.__sideBarBtn.setChecked(True)
-        self.__sideBarBtn.toggled.connect(self.__leftSideBarWidget.setVisible)
 
         self.__historyBtn = SvgButton()
         self.__historyBtn.setIcon('ico/history.svg')
@@ -53,7 +36,6 @@ class ImageGeneratingToolWidget(QWidget):
         self.__settingBtn.toggled.connect(self.__rightSideBarWidget.setVisible)
 
         lay = QHBoxLayout()
-        # lay.addWidget(self.__sideBarBtn)
         lay.addWidget(self.__settingBtn)
         lay.addWidget(self.__historyBtn)
         lay.setContentsMargins(2, 2, 2, 2)
@@ -68,10 +50,9 @@ class ImageGeneratingToolWidget(QWidget):
         sep.setFrameShadow(QFrame.Sunken)
 
         mainWidget = QSplitter()
-        mainWidget.addWidget(self.__leftSideBarWidget)
         mainWidget.addWidget(self.__viewWidget)
         mainWidget.addWidget(self.__rightSideBarWidget)
-        mainWidget.setSizes([100, 700, 200])
+        mainWidget.setSizes([700, 300])
         mainWidget.setChildrenCollapsible(False)
         mainWidget.setHandleWidth(2)
         mainWidget.setStyleSheet(

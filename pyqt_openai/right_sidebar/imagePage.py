@@ -28,8 +28,8 @@ class ImagePage(QScrollArea):
         sizeCmbBox.currentTextChanged.connect(self.__sizeChanged)
         lay = QFormLayout()
         lay.addRow('Model', modelCmbBox)
-        lay.addRow('Total', nSpinBox)
-        lay.addRow('Size', sizeCmbBox)
+        lay.addRow(LangClass.TRANSLATIONS['Total'], nSpinBox)
+        lay.addRow(LangClass.TRANSLATIONS['Size'], sizeCmbBox)
 
         mainWidget = QWidget()
         mainWidget.setLayout(lay)

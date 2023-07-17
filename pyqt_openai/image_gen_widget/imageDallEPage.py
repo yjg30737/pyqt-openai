@@ -51,13 +51,13 @@ class ImageDallEPage(QWidget):
         self.__sizeCmbBox.currentTextChanged.connect(self.__sizeChanged)
 
         self.__promptWidget = QPlainTextEdit()
-        self.__submitBtn = QPushButton('Submit')
+        self.__submitBtn = QPushButton(LangClass.TRANSLATIONS['Submit'])
         self.__submitBtn.clicked.connect(self.__submit)
 
         lay = QFormLayout()
-        lay.addRow('Total', self.__nSpinBox)
-        lay.addRow('Size', self.__sizeCmbBox)
-        lay.addRow(QLabel('Prompt'))
+        lay.addRow(LangClass.TRANSLATIONS['Total'], self.__nSpinBox)
+        lay.addRow(LangClass.TRANSLATIONS['Size'], self.__sizeCmbBox)
+        lay.addRow(QLabel(LangClass.TRANSLATIONS['Prompt']))
         lay.addRow(self.__promptWidget)
         lay.addRow(self.__submitBtn)
 
