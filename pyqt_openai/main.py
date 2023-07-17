@@ -16,6 +16,7 @@ from qtpy.QtWidgets import QMainWindow, QToolBar, QHBoxLayout, QDialog, QLineEdi
     QMessageBox, QCheckBox
 from qtpy.QtCore import Qt, QCoreApplication, QSettings
 
+from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.aboutDialog import AboutDialog
 from pyqt_openai.customizeDialog import CustomizeDialog
 from pyqt_openai.svgButton import SvgButton
@@ -44,10 +45,12 @@ class MainWindow(QMainWindow):
         self.__initUi()
 
     def __initVal(self):
+        LangClass.lang_changed()
         self.__settings_struct = QSettings('pyqt_openai.ini', QSettings.IniFormat)
 
     def __initUi(self):
-        self.setWindowTitle('PyQt OpenAI Chatbot')
+        print(LangClass.TRANSLATIONS)
+        self.setWindowTitle(LangClass.TRANSLATIONS['PyQt OpenAI Chatbot'])
 
         self.__openAiChatBotWidget = OpenAIChatBotWidget()
         self.__openAiChatBotWidget.notifierWidgetActivated.connect(self.show)
@@ -78,16 +81,16 @@ class MainWindow(QMainWindow):
 
     def __setActions(self):
         # menu action
-        self.__exitAction = QAction("Exit", self)
+        self.__exitAction = QAction(LangClass.TRANSLATIONS['Exit'], self)
         self.__exitAction.triggered.connect(self.close)
 
-        self.__aboutAction = QAction("About...", self)
+        self.__aboutAction = QAction(LangClass.TRANSLATIONS['About...'], self)
         self.__aboutAction.triggered.connect(self.__showAboutDialog)
 
         # toolbar action
         self.__chooseAiAction = QWidgetAction(self)
         self.__chooseAiCmbBox = QComboBox()
-        self.__chooseAiCmbBox.addItems(['Chat', 'Image'])
+        self.__chooseAiCmbBox.addItems([LangClass.TRANSLATIONS['Chat'], LangClass.TRANSLATIONS['Image']])
         self.__chooseAiCmbBox.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
         self.__chooseAiCmbBox.currentIndexChanged.connect(self.__aiTypeChanged)
         self.__chooseAiAction.setDefaultWidget(self.__chooseAiCmbBox)
@@ -98,24 +101,24 @@ class MainWindow(QMainWindow):
         self.__stackBtn.setCheckable(True)
         self.__stackBtn.toggled.connect(self.__stackToggle)
         self.__stackAction.setDefaultWidget(self.__stackBtn)
-        self.__stackBtn.setToolTip('Always On Top')
+        self.__stackBtn.setToolTip(LangClass.TRANSLATIONS['Stack on Top'])
 
         self.__customizeAction = QWidgetAction(self)
         self.__customizeBtn = SvgButton()
         self.__customizeBtn.setIcon('ico/customize.svg')
         self.__customizeBtn.clicked.connect(self.__executeCustomizeDialog)
         self.__customizeAction.setDefaultWidget(self.__customizeBtn)
-        self.__customizeBtn.setToolTip('Customize (working)')
+        self.__customizeBtn.setToolTip(LangClass.TRANSLATIONS['Customize (working)'])
 
         self.__transparentAction = QWidgetAction(self)
         self.__transparentSpinBox = QSpinBox()
         self.__transparentSpinBox.setRange(0, 100)
         self.__transparentSpinBox.setValue(100)
         self.__transparentSpinBox.valueChanged.connect(self.__setTransparency)
-        self.__transparentSpinBox.setToolTip('Set Transparency of Window')
+        self.__transparentSpinBox.setToolTip(LangClass.TRANSLATIONS['Set Transparency of Window'])
 
         lay = QHBoxLayout()
-        lay.addWidget(QLabel('Window Transparency'))
+        lay.addWidget(QLabel(LangClass.TRANSLATIONS['Window Transparency']))
         lay.addWidget(self.__transparentSpinBox)
 
         transparencyActionWidget = QWidget()
@@ -123,7 +126,7 @@ class MainWindow(QMainWindow):
         self.__transparentAction.setDefaultWidget(transparencyActionWidget)
 
         self.__showAiToolBarAction = QWidgetAction(self)
-        self.__showAiToolBarChkBox = QCheckBox('Show AI Toolbar')
+        self.__showAiToolBarChkBox = QCheckBox(LangClass.TRANSLATIONS['Show AI Toolbar'])
         self.__showAiToolBarChkBox.setChecked(True)
         self.__showAiToolBarChkBox.toggled.connect(self.__showAiToolBarChkBoxChecked)
         self.__showAiToolBarAction.setDefaultWidget(self.__showAiToolBarChkBox)
@@ -138,7 +141,7 @@ class MainWindow(QMainWindow):
         self.__apiLineEdit.returnPressed.connect(self.__setApi)
         self.__apiLineEdit.setEchoMode(QLineEdit.Password)
 
-        apiBtn = QPushButton('Use')
+        apiBtn = QPushButton(LangClass.TRANSLATIONS['Use'])
         apiBtn.clicked.connect(self.__setApi)
 
         lay = QHBoxLayout()
@@ -154,16 +157,22 @@ class MainWindow(QMainWindow):
         self.__apiAction = QWidgetAction(self)
         self.__apiAction.setDefaultWidget(apiWidget)
 
+        self.__langAction = QWidgetAction(self)
+        self.__langCmbBox = QComboBox()
+        self.__langCmbBox.addItems(list(LangClass.LANGUAGE_DICT.keys()))
+        self.__langCmbBox.currentTextChanged.connect(LangClass.lang_changed)
+        self.__langAction.setDefaultWidget(self.__langCmbBox)
+
     def __setMenuBar(self):
         menubar = self.menuBar()
 
         # create the "File" menu
-        fileMenu = QMenu("File", self)
+        fileMenu = QMenu(LangClass.TRANSLATIONS['File'], self)
         fileMenu.addAction(self.__exitAction)
         menubar.addMenu(fileMenu)
 
         # create the "Help" menu
-        helpMenu = QMenu("Help", self)
+        helpMenu = QMenu(LangClass.TRANSLATIONS['Help'], self)
         menubar.addMenu(helpMenu)
 
         helpMenu.addAction(self.__aboutAction)
@@ -203,6 +212,7 @@ class MainWindow(QMainWindow):
         windowToolBar.addAction(self.__transparentAction)
         windowToolBar.addAction(self.__showAiToolBarAction)
         windowToolBar.addAction(self.__apiAction)
+        windowToolBar.addAction(self.__langAction)
         windowToolBar.setLayout(lay)
         windowToolBar.setMovable(False)
         self.addToolBar(aiTypeToolBar)
@@ -240,12 +250,12 @@ class MainWindow(QMainWindow):
                 self.__settings_struct.setValue('API_KEY', api_key)
 
                 self.__apiCheckPreviewLbl.setStyleSheet("color: {}".format(QColor(0, 200, 0).name()))
-                self.__apiCheckPreviewLbl.setText('API key is valid')
+                self.__apiCheckPreviewLbl.setText(LangClass.TRANSLATIONS['API key is valid'])
             else:
                 raise Exception
         except Exception as e:
             self.__apiCheckPreviewLbl.setStyleSheet("color: {}".format(QColor(255, 0, 0).name()))
-            self.__apiCheckPreviewLbl.setText('API key is invalid')
+            self.__apiCheckPreviewLbl.setText(LangClass.TRANSLATIONS['API key is invalid'])
             self.__setAIEnabled(False)
             print(e)
         finally:
@@ -278,9 +288,9 @@ class MainWindow(QMainWindow):
         self.__mainWidget.setCurrentIndex(i)
 
     def closeEvent(self, e):
-        message = 'The window has been closed. Would you like to continue running this app in the background?'
+        message = LangClass.TRANSLATIONS['The window will be closed. Would you like to continue running this app in the background?']
         closeMessageBox = QMessageBox(self)
-        closeMessageBox.setWindowTitle('Wait!')
+        closeMessageBox.setWindowTitle(LangClass.TRANSLATIONS['Wait!'])
         closeMessageBox.setText(message)
         closeMessageBox.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
         reply = closeMessageBox.exec()

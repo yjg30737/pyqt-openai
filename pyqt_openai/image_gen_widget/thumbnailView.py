@@ -6,6 +6,7 @@ from qtpy.QtGui import QPixmap, QColor, QBrush, QLinearGradient
 from qtpy.QtWidgets import QGraphicsScene, QGraphicsPixmapItem, QGraphicsView, QApplication, QWidget, QHBoxLayout, QFileDialog, QCheckBox, \
     QGraphicsProxyWidget
 
+from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.svgButton import SvgButton
 
 
@@ -92,7 +93,7 @@ class ThumbnailView(QGraphicsView):
         QApplication.clipboard().setPixmap(self._p)
 
     def __save(self):
-        filename = QFileDialog.getSaveFileName(self, 'Save', os.path.expanduser('~'), 'Image file (*.png)')
+        filename = QFileDialog.getSaveFileName(self, LangClass.TRANSLATIONS['Save'], os.path.expanduser('~'), 'Image file (*.png)')
         if filename[0]:
             filename = filename[0]
             self._p.save(filename)

@@ -5,6 +5,7 @@ from qtpy.QtWidgets import QScrollArea, QVBoxLayout, QWidget, QLabel, \
 
 from pyqt_openai.chat_widget.aiChatUnit import AIChatUnit
 from pyqt_openai.chat_widget.userChatUnit import UserChatUnit
+from pyqt_openai.res.language_dict import LangClass
 
 
 class ChatBrowser(QScrollArea):
@@ -19,7 +20,7 @@ class ChatBrowser(QScrollArea):
         self.__cur_id = 0
 
     def __initUi(self):
-        self.__homeWidget = QLabel('Home')
+        self.__homeWidget = QLabel(LangClass.TRANSLATIONS['Home'])
         self.__homeWidget.setAlignment(Qt.AlignCenter)
         self.__homeWidget.setFont(QFont('Arial', 32))
 

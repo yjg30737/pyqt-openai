@@ -4,6 +4,7 @@ from qtpy.QtWidgets import QWidget, QPushButton, QComboBox, QPlainTextEdit, QSpi
 from qtpy.QtCore import Signal, QThread
 
 from pyqt_openai.notifier import NotifierWidget
+from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.toast import Toast
 
 
@@ -96,7 +97,7 @@ class ImageDallEPage(QWidget):
     def __afterGenerated(self, image_url):
         self.submitDallE.emit(image_url)
         if not self.isVisible():
-            self.__notifierWidget = NotifierWidget(informative_text='Response 👌', detailed_text='Click this!')
+            self.__notifierWidget = NotifierWidget(informative_text=LangClass.TRANSLATIONS['Response 👌'], detailed_text=LangClass.TRANSLATIONS['Click this!'])
             self.__notifierWidget.show()
             self.__notifierWidget.doubleClicked.connect(self.notifierWidgetActivated)
         self.__submitBtn.setEnabled(True)

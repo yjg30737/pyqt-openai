@@ -2,6 +2,7 @@ from qtpy.QtCore import Signal
 from qtpy.QtWidgets import QWidget, QCheckBox, QVBoxLayout, QHBoxLayout, QSpacerItem, QSizePolicy, QListWidgetItem
 
 from pyqt_openai.image_gen_widget.imageListWidget import ImageListWidget
+from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.searchBar import SearchBar
 from pyqt_openai.svgButton import SvgButton
 
@@ -30,15 +31,15 @@ class LeftSideBar(QWidget):
         self.__delBtn.setIcon('ico/delete.svg')
         self.__saveBtn.setIcon('ico/save.svg')
 
-        self.__addBtn.setToolTip('Add')
-        self.__delBtn.setToolTip('Delete')
-        self.__saveBtn.setToolTip('Save')
+        self.__addBtn.setToolTip(LangClass.TRANSLATIONS['Add'])
+        self.__delBtn.setToolTip(LangClass.TRANSLATIONS['Delete'])
+        self.__saveBtn.setToolTip(LangClass.TRANSLATIONS['Save'])
 
         self.__addBtn.clicked.connect(self.__addClicked)
         self.__delBtn.clicked.connect(self.__deleteClicked)
         self.__saveBtn.clicked.connect(self.__saveClicked)
 
-        self.__allCheckBox = QCheckBox('Check All')
+        self.__allCheckBox = QCheckBox(LangClass.TRANSLATIONS['Check All'])
         self.__allCheckBox.stateChanged.connect(self.__stateChanged)
 
         lay = QHBoxLayout()
@@ -74,7 +75,7 @@ class LeftSideBar(QWidget):
         self.added.emit()
 
     def addImageGroup(self, id):
-        self.__imageListWidget.addImage('New Chat', id)
+        self.__imageListWidget.addImage(LangClass.TRANSLATIONS['New Chat'], id)
         self.__imageListWidget.setCurrentRow(0)
     # 
     # def isCurrentImageExists(self):

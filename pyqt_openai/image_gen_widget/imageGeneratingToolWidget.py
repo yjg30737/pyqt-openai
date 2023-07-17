@@ -5,6 +5,7 @@ from qtpy.QtWidgets import QSplitter
 from pyqt_openai.image_gen_widget.imageDallEPage import ImageDallEPage
 from pyqt_openai.image_gen_widget.leftSideBar import LeftSideBar
 from pyqt_openai.image_gen_widget.viewWidget import ViewWidget
+from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.svgButton import SvgButton
 
 
@@ -97,7 +98,7 @@ class ImageGeneratingToolWidget(QWidget):
         self.__rightSideBarWidget.setEnabled(f)
 
     def __addImageGroup(self):
-        cur_id = self.__db.insertConv('New Chat')
+        cur_id = self.__db.insertConv(LangClass.TRANSLATIONS['New Chat'])
         self.__browser.resetChatWidget(cur_id)
         self.__leftSideBarWidget.addImageGroup(cur_id)
         self.__lineEdit.setFocus()

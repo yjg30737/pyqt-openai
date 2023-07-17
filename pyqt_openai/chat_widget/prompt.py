@@ -5,6 +5,7 @@ from qtpy.QtWidgets import QVBoxLayout, QFileDialog, QToolButton, QMenu, QAction
 
 from pyqt_openai.chat_widget.textEditPropmtGroup import TextEditPropmtGroup
 from pyqt_openai.propmt_command_completer.commandSuggestionWidget import CommandSuggestionWidget
+from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.sqlite import SqliteDatabase
 from pyqt_openai.svgToolButton import SvgToolButton
 
@@ -49,28 +50,28 @@ class Prompt(QWidget):
 
         settingsBtn = SvgToolButton()
         settingsBtn.setIcon('ico/vertical_three_dots.svg')
-        settingsBtn.setToolTip('Prompt Settings')
+        settingsBtn.setToolTip(LangClass.TRANSLATIONS['Prompt Settings'])
 
         # Create the menu
         menu = QMenu(self)
 
         # Create the actions
-        beginningAction = QAction("Show Beginning", self)
+        beginningAction = QAction(LangClass.TRANSLATIONS['Show Beginning'], self)
         beginningAction.setShortcut('Ctrl+B')
         beginningAction.setCheckable(True)
         beginningAction.toggled.connect(self.__showBeginning)
 
-        endingAction = QAction("Show Ending", self)
+        endingAction = QAction(LangClass.TRANSLATIONS['Show Ending'], self)
         endingAction.setShortcut('Ctrl+E')
         endingAction.setCheckable(True)
         endingAction.toggled.connect(self.__showEnding)
 
-        supportPromptCommandAction = QAction('Support Prompt Command', self)
+        supportPromptCommandAction = QAction(LangClass.TRANSLATIONS['Support Prompt Command'], self)
         supportPromptCommandAction.setShortcut('Ctrl+Shift+P')
         supportPromptCommandAction.setCheckable(True)
         supportPromptCommandAction.toggled.connect(self.__supportPromptCommand)
 
-        readingFilesAction = QAction('Upload Files...', self)
+        readingFilesAction = QAction(LangClass.TRANSLATIONS['Upload Files...'], self)
         readingFilesAction.triggered.connect(self.__readingFiles)
 
         # Add the actions to the menu

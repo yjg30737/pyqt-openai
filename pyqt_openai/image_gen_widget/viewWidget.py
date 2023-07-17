@@ -6,6 +6,7 @@ from qtpy.QtCore import Qt
 
 from pyqt_openai.image_gen_widget.explorerWidget import ExplorerWidget
 from pyqt_openai.image_gen_widget.thumbnailView import ThumbnailView
+from pyqt_openai.res.language_dict import LangClass
 
 
 class ViewWidget(QWidget):
@@ -34,7 +35,7 @@ class ViewWidget(QWidget):
             }
             ''')
 
-        homeWidget = QLabel('Home')
+        homeWidget = QLabel(LangClass.TRANSLATIONS['Home'])
         homeWidget.setAlignment(Qt.AlignCenter)
         homeWidget.setFont(QFont('Arial', 32))
 
