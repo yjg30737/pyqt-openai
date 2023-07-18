@@ -21,6 +21,7 @@ class LangClass:
 
     @classmethod
     def lang_changed(cls, lang=None):
+
         with open(os.path.join(os.path.dirname(__file__), 'translations.json'), 'r', encoding='utf-8') as file:
             translations_data = json.load(file)
 
@@ -32,3 +33,7 @@ class LangClass:
             language = cls.LANGUAGE_DICT[lang]
 
         cls.TRANSLATIONS = translations_data[language]
+
+        for k, v in cls.LANGUAGE_DICT.items():
+            if v == language:
+                return k

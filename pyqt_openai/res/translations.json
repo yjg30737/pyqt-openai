@@ -1,5 +1,7 @@
 {
   "en_US": {
+    "Language Change": "Language Change",
+    "When changing the language, the program needs to be restarted. Would you like to restart it?": "When changing the language, the program needs to be restarted. Would you like to restart it?",
     "Directory": "Directory",
     "Files": "Files",
     "Set Directory": "Set Directory",
@@ -76,6 +78,8 @@
     "Search Text": "Search Text"
   },
   "es_ES": {
+    "Language Change": "Cambio de idioma",
+    "When changing the language, the program needs to be restarted. Would you like to restart it?": "Al cambiar el idioma, es necesario reiniciar el programa. \u00bfTe gustar\u00eda reiniciarlo?",
     "Directory": "Directorio",
     "Files": "Archivos",
     "Set Directory": "Establecer Directorio",
@@ -152,6 +156,8 @@
     "Search Text": "Buscar texto"
   },
   "zh_CN": {
+    "Language Change": "\u8bed\u8a00\u66f4\u6539",
+    "When changing the language, the program needs to be restarted. Would you like to restart it?": "\u66f4\u6539\u8bed\u8a00\u540e\uff0c\u9700\u8981\u91cd\u65b0\u542f\u52a8\u7a0b\u5e8f\u3002\u60a8\u8981\u91cd\u65b0\u542f\u52a8\u5417\uff1f",
     "Directory": "\u76ee\u5f55",
     "Files": "\u6587\u4ef6",
     "Set Directory": "\u8bbe\u7f6e\u76ee\u5f55",
@@ -228,6 +234,8 @@
     "Search Text": "\u641c\u7d22\u6587\u672c"
   },
   "ru_RU": {
+    "Language Change": "\u0421\u043c\u0435\u043d\u0430 \u044f\u0437\u044b\u043a\u0430",
+    "When changing the language, the program needs to be restarted. Would you like to restart it?": "\u041f\u0440\u0438 \u0438\u0437\u043c\u0435\u043d\u0435\u043d\u0438\u0438 \u044f\u0437\u044b\u043a\u0430 \u043d\u0435\u043e\u0431\u0445\u043e\u0434\u0438\u043c\u043e \u043f\u0435\u0440\u0435\u0437\u0430\u043f\u0443\u0441\u0442\u0438\u0442\u044c \u043f\u0440\u043e\u0433\u0440\u0430\u043c\u043c\u0443. \u0425\u043e\u0442\u0438\u0442\u0435 \u043f\u0435\u0440\u0435\u0437\u0430\u043f\u0443\u0441\u0442\u0438\u0442\u044c \u0435\u0435?",
     "Directory": "\u0414\u0438\u0440\u0435\u043a\u0442\u043e\u0440\u0438\u044f",
     "Files": "\u0424\u0430\u0439\u043b\u044b",
     "Set Directory": "\u0423\u0441\u0442\u0430\u043d\u043e\u0432\u0438\u0442\u044c \u0434\u0438\u0440\u0435\u043a\u0442\u043e\u0440\u0438\u044e",
@@ -304,6 +312,8 @@
     "Search Text": "\u041f\u043e\u0438\u0441\u043a \u0442\u0435\u043a\u0441\u0442\u0430"
   },
   "ko_KR": {
+    "Language Change": "\uc5b8\uc5b4 \ubcc0\uacbd",
+    "When changing the language, the program needs to be restarted. Would you like to restart it?": "\uc5b8\uc5b4\ub97c \ubcc0\uacbd\ud558\uba74 \ud504\ub85c\uadf8\ub7a8\uc744 \ub2e4\uc2dc \uc2dc\uc791\ud574\uc57c \ud569\ub2c8\ub2e4. \ub2e4\uc2dc \uc2dc\uc791\ud558\uc2dc\uaca0\uc2b5\ub2c8\uae4c?",
     "Directory": "\ub514\ub809\ud130\ub9ac",
     "Files": "\ud30c\uc77c",
     "Set Directory": "\ub514\ub809\ud130\ub9ac \uc124\uc815",
@@ -380,6 +390,8 @@
     "Search Text": "\ud14d\uc2a4\ud2b8 \uac80\uc0c9"
   },
   "fr_FR": {
+    "Language Change": "Changement de langue",
+    "When changing the language, the program needs to be restarted. Would you like to restart it?": "Lorsque vous changez la langue, le programme doit \u00eatre red\u00e9marr\u00e9. Souhaitez-vous le red\u00e9marrer ?",
     "Directory": "R\u00e9pertoire",
     "Files": "Fichiers",
     "Set Directory": "D\u00e9finir le r\u00e9pertoire",
@@ -456,6 +468,8 @@
     "Search Text": "Rechercher le texte"
   },
   "de_DE": {
+    "Language Change": "Sprach\u00e4nderung",
+    "When changing the language, the program needs to be restarted. Would you like to restart it?": "Bei einer Sprach\u00e4nderung muss das Programm neu gestartet werden. M\u00f6chten Sie es neu starten?",
     "Directory": "Verzeichnis",
     "Files": "Dateien",
     "Set Directory": "Verzeichnis festlegen",
@@ -532,6 +546,8 @@
     "Search Text": "Text suchen"
   },
   "it_IT": {
+    "Language Change": "Cambio lingua",
+    "When changing the language, the program needs to be restarted. Would you like to restart it?": "Quando si cambia la lingua, \u00e8 necessario riavviare il programma. Vuoi riavviarlo?",
     "Directory": "Directory",
     "Files": "File",
     "Set Directory": "Imposta Directory",
@@ -608,6 +624,8 @@
     "Search Text": "Cerca testo"
   },
   "hi_IN": {
+    "Language Change": "\u092d\u093e\u0937\u093e \u092a\u0930\u093f\u0935\u0930\u094d\u0924\u0928",
+    "When changing the language, the program needs to be restarted. Would you like to restart it?": "\u092d\u093e\u0937\u093e \u092c\u0926\u0932\u0928\u0947 \u092a\u0930, \u092a\u094d\u0930\u094b\u0917\u094d\u0930\u093e\u092e \u0915\u094b \u092a\u0941\u0928\u0903 \u0906\u0930\u0902\u092d \u0915\u093f\u092f\u093e \u091c\u093e\u0928\u093e \u091a\u093e\u0939\u093f\u090f\u0964 \u0915\u094d\u092f\u093e \u0906\u092a \u0907\u0938\u0947 \u092a\u0941\u0928\u0903 \u0906\u0930\u0902\u092d \u0915\u0930\u0928\u093e \u091a\u093e\u0939\u0947\u0902\u0917\u0947?",
     "Directory": "\u0921\u093e\u092f\u0930\u0947\u0915\u094d\u091f\u0930\u0940",
     "Files": "\u092b\u093c\u093e\u0907\u0932\u0947\u0902",
     "Set Directory": "\u0921\u093e\u092f\u0930\u0947\u0915\u094d\u091f\u0930\u0940 \u0938\u0947\u091f \u0915\u0930\u0947\u0902",
@@ -684,6 +702,8 @@
     "Search Text": "\u091f\u0947\u0915\u094d\u0938\u094d\u091f \u0916\u094b\u091c\u0947\u0902"
   },
   "ar_AE": {
+    "Language Change": "\u062a\u063a\u064a\u064a\u0631 \u0627\u0644\u0644\u063a\u0629",
+    "When changing the language, the program needs to be restarted. Would you like to restart it?": "\u0639\u0646\u062f \u062a\u063a\u064a\u064a\u0631 \u0627\u0644\u0644\u063a\u0629 \u060c \u064a\u062d\u062a\u0627\u062c \u0627\u0644\u0628\u0631\u0646\u0627\u0645\u062c \u0625\u0644\u0649 \u0625\u0639\u0627\u062f\u0629 \u0627\u0644\u062a\u0634\u063a\u064a\u0644. \u0647\u0644 \u062a\u0631\u063a\u0628 \u0641\u064a \u0625\u0639\u0627\u062f\u0629 \u062a\u0634\u063a\u064a\u0644\u0647\u061f",
     "Directory": "\u0627\u0644\u0645\u062c\u0644\u062f",
     "Files": "\u0627\u0644\u0645\u0644\u0641\u0627\u062a",
     "Set Directory": "\u062a\u0639\u064a\u064a\u0646 \u0627\u0644\u0645\u062c\u0644\u062f",

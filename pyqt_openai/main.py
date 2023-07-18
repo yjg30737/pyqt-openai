@@ -1,3 +1,5 @@
+import time
+
 import os, sys
 import openai, requests
 
@@ -45,11 +47,15 @@ class MainWindow(QMainWindow):
         self.__initUi()
 
     def __initVal(self):
-        LangClass.lang_changed()
         self.__settings_struct = QSettings('pyqt_openai.ini', QSettings.IniFormat)
+        self.__lang = None
+        if not self.__settings_struct.contains('lang'):
+            self.__settings_struct.setValue('lang', LangClass.lang_changed())
+        else:
+            self.__lang = self.__settings_struct.value('lang', type=str)
+        self.__lang = LangClass.lang_changed(self.__lang)
 
     def __initUi(self):
-        print(LangClass.TRANSLATIONS)
         self.setWindowTitle(LangClass.TRANSLATIONS['PyQt OpenAI Chatbot'])
 
         self.__openAiChatBotWidget = OpenAIChatBotWidget()
@@ -157,18 +163,36 @@ class MainWindow(QMainWindow):
         self.__apiAction = QWidgetAction(self)
         self.__apiAction.setDefaultWidget(apiWidget)
 
-    #     self.__langAction = QWidgetAction(self)
-    #     self.__langCmbBox = QComboBox()
-    #     self.__langCmbBox.addItems(list(LangClass.LANGUAGE_DICT.keys()))
-    #     self.__langCmbBox.currentTextChanged.connect(self.__lang_changed)
-    #     self.__langAction.setDefaultWidget(self.__langCmbBox)
-    #
-    # def __lang_changed(self, lang):
-    #     LangClass.lang_changed(lang)
-    #     # Define the arguments to be passed to the executable
-    #     args = [sys.executable, "main.py"]
-    #     # Call os.execv() to execute the new process
-    #     os.execv(sys.executable, args)
+        self.__langAction = QWidgetAction(self)
+        self.__langCmbBox = QComboBox()
+        self.__langCmbBox.addItems(list(LangClass.LANGUAGE_DICT.keys()))
+        self.__langCmbBox.setCurrentText(self.__lang)
+        self.__langCmbBox.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
+        self.__langCmbBox.currentTextChanged.connect(self.__lang_changed)
+        self.__langAction.setDefaultWidget(self.__langCmbBox)
+
+    def __lang_changed(self, lang):
+        msg_box = QMessageBox()
+        msg_box.setWindowTitle(LangClass.TRANSLATIONS['Language Change'])
+        msg_box.setText(LangClass.TRANSLATIONS['When changing the language, the program needs to be restarted. Would you like to restart it?'])
+        msg_box.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+        msg_box.setDefaultButton(QMessageBox.Yes)
+
+        # 메시지 상자 표시 및 사용자 입력 처리
+        result = msg_box.exec_()
+
+        if result == QMessageBox.Yes:
+            self.__settings_struct.setValue('lang', lang)
+            # save the changes to the file
+            self.__settings_struct.sync()
+            # Define the arguments to be passed to the executable
+            args = [sys.executable, "main.py"]
+            # Call os.execv() to execute the new process
+            os.execv(sys.executable, args)
+        else:
+            self.__langCmbBox.currentTextChanged.disconnect(self.__lang_changed)
+            self.__langCmbBox.setCurrentText(self.__lang)
+            self.__langCmbBox.currentTextChanged.connect(self.__lang_changed)
 
     def __setMenuBar(self):
         menubar = self.menuBar()
@@ -212,6 +236,10 @@ class MainWindow(QMainWindow):
         aiTypeToolBar.setMovable(False)
         aiTypeToolBar.addAction(self.__chooseAiAction)
 
+        langToolBar = QToolBar()
+        langToolBar.setMovable(False)
+        langToolBar.addAction(self.__langAction)
+
         windowToolBar = QToolBar()
         lay = windowToolBar.layout()
         windowToolBar.addAction(self.__stackAction)
@@ -219,11 +247,13 @@ class MainWindow(QMainWindow):
         windowToolBar.addAction(self.__transparentAction)
         windowToolBar.addAction(self.__showAiToolBarAction)
         windowToolBar.addAction(self.__apiAction)
-        # windowToolBar.addAction(self.__langAction)
         windowToolBar.setLayout(lay)
         windowToolBar.setMovable(False)
+
         self.addToolBar(aiTypeToolBar)
+        self.addToolBar(langToolBar)
         self.addToolBar(windowToolBar)
+
         # QToolbar's layout can't be set spacing with lay.setSpacing so i've just did this instead
         windowToolBar.setStyleSheet('QToolBar { spacing: 2px; }')
 
