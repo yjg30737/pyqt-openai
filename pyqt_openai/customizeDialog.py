@@ -10,6 +10,7 @@ from qtpy.QtGui import QPixmap
 from qtpy.QtWidgets import QGraphicsScene, QGraphicsView
 
 from pyqt_openai.circleProfileImage import RoundedImage
+from pyqt_openai.res.language_dict import LangClass
 
 
 class SingleImageGraphicsView(QGraphicsView):
@@ -72,7 +73,7 @@ class FindPathLineEdit(QLineEdit):
 
     def __prepareMenu(self, pos):
         menu = QMenu(self)
-        openDirAction = QAction('Open Path')
+        openDirAction = QAction(LangClass.TRANSLATIONS['Open Path'])
         openDirAction.setEnabled(self.text().strip() != '')
         openDirAction.triggered.connect(self.__openPath)
         menu.addAction(openDirAction)
@@ -102,7 +103,7 @@ class FindPathWidget(QWidget):
         if default_filename:
             self.__pathLineEdit.setText(default_filename)
 
-        self.__pathFindBtn = QPushButton('Find...')
+        self.__pathFindBtn = QPushButton(LangClass.TRANSLATIONS['Find...'])
 
         self.__pathFindBtn.clicked.connect(self.__find)
 
@@ -172,7 +173,7 @@ class CustomizeDialog(QDialog):
         pass
 
     def __initUi(self):
-        self.setWindowTitle('Customize (working)')
+        self.setWindowTitle(LangClass.TRANSLATIONS['Customize (working)'])
         self.setWindowFlags(Qt.Window | Qt.WindowCloseButtonHint)
 
         homePageGraphicsView = SingleImageGraphicsView()
@@ -213,9 +214,9 @@ class CustomizeDialog(QDialog):
         aiWidget.setLayout(lay3)
 
         lay = QFormLayout()
-        lay.addRow('Home Image', homePageWidget)
-        lay.addRow('User Image', userWidget)
-        lay.addRow('AI Image', aiWidget)
+        lay.addRow(LangClass.TRANSLATIONS['Home Image'], homePageWidget)
+        lay.addRow(LangClass.TRANSLATIONS['User Image'], userWidget)
+        lay.addRow(LangClass.TRANSLATIONS['AI Image'], aiWidget)
 
         self.__topWidget = QWidget()
         self.__topWidget.setLayout(lay)
@@ -224,10 +225,10 @@ class CustomizeDialog(QDialog):
         sep.setFrameShape(QFrame.HLine)
         sep.setFrameShadow(QFrame.Sunken)
 
-        self.__okBtn = QPushButton('OK')
+        self.__okBtn = QPushButton(LangClass.TRANSLATIONS['OK'])
         self.__okBtn.clicked.connect(self.accept)
 
-        cancelBtn = QPushButton('Cancel')
+        cancelBtn = QPushButton(LangClass.TRANSLATIONS['Cancel'])
         cancelBtn.clicked.connect(self.close)
 
         lay = QHBoxLayout()

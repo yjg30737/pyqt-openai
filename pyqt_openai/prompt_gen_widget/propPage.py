@@ -6,6 +6,7 @@ from qtpy.QtWidgets import QTableWidget, QLineEdit, QSizePolicy, QSpacerItem, QS
 from pyqt_openai.inputDialog import InputDialog
 from pyqt_openai.prompt_gen_widget.promptGroupInputDialog import PromptGroupInputDialog
 from pyqt_openai.prompt_gen_widget.propPromptUnitInputDialog import PropPromptUnitInputDialog
+from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.sqlite import SqliteDatabase
 from pyqt_openai.svgButton import SvgButton
 
@@ -34,7 +35,7 @@ class PropGroupList(QWidget):
         self.__delBtn.clicked.connect(self.__deleteGroup)
 
         lay = QHBoxLayout()
-        lay.addWidget(QLabel('Property Group'))
+        lay.addWidget(QLabel(LangClass.TRANSLATIONS['Property Group']))
         lay.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.MinimumExpanding))
         lay.addWidget(self.__addBtn)
         lay.addWidget(self.__delBtn)
@@ -139,7 +140,7 @@ class PropTable(QWidget):
         self.__table.setRowCount(len(self.__previousPromptPropArr))
         self.__table.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
         self.__table.setSelectionBehavior(QAbstractItemView.SelectRows)
-        self.__table.setHorizontalHeaderLabels(['Name', 'Value'])
+        self.__table.setHorizontalHeaderLabels([LangClass.TRANSLATIONS['Name'], LangClass.TRANSLATIONS['Value']])
 
         for i in range(len(self.__previousPromptPropArr)):
             name = self.__previousPromptPropArr[i][2]

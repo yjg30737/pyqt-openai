@@ -3,6 +3,7 @@ from qtpy.QtGui import QTextCursor
 from qtpy.QtWidgets import QVBoxLayout, QWidget
 
 from pyqt_openai.chat_widget.textEditPrompt import TextEditPrompt
+from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.sqlite import SqliteDatabase
 
 
@@ -21,18 +22,18 @@ class TextEditPropmtGroup(QWidget):
 
     def __initUi(self):
         self.__beginningTextEdit = TextEditPrompt()
-        self.__beginningTextEdit.setPlaceholderText('Beginning')
+        self.__beginningTextEdit.setPlaceholderText(LangClass.TRANSLATIONS['Beginning'])
 
         self.__textEdit = TextEditPrompt()
-        self.__textEdit.setPlaceholderText('Write some text...')
+        self.__textEdit.setPlaceholderText(LangClass.TRANSLATIONS['Write some text...'])
 
         # old code
         # self.__textEdit.textChanged.connect(self.textChanged)
         # self.__textEdit.sendSuggestionWidget.connect(self.__initPromptCommandAutocomplete)
-        # self.__textEdit.setPlaceholderText('Write some text...')
+        # self.__textEdit.setPlaceholderText(LangClass.TRANSLATIONS['Write some text...'])
 
         self.__endingTextEdit = TextEditPrompt()
-        self.__endingTextEdit.setPlaceholderText('Ending')
+        self.__endingTextEdit.setPlaceholderText(LangClass.TRANSLATIONS['Ending'])
 
         # all false by default
         self.__beginningTextEdit.setVisible(False)

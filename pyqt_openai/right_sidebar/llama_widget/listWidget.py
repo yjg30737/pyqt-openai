@@ -5,6 +5,8 @@ from qtpy.QtGui import QFontMetrics
 from qtpy.QtWidgets import QListWidget, QWidget, QVBoxLayout, QLabel, QHBoxLayout, QSpacerItem, QPushButton, \
     QSizePolicy, QFileDialog, QFrame
 
+from pyqt_openai.res.language_dict import LangClass
+
 
 class FileListWidget(QWidget):
     itemUpdate = Signal(bool)
@@ -17,12 +19,12 @@ class FileListWidget(QWidget):
         self.__initUi()
 
     def __initVal(self):
-        self.__dirLblPrefix = 'Directory: '
+        self.__dirLblPrefix = LangClass.TRANSLATIONS['Directory']
         self.__curDirName = ''
 
     def __initUi(self):
-        lbl = QLabel('Files')
-        setDirBtn = QPushButton('Set Directory')
+        lbl = QLabel(LangClass.TRANSLATIONS['Files'])
+        setDirBtn = QPushButton(LangClass.TRANSLATIONS['Set Directory'])
         setDirBtn.clicked.connect(self.__setDir)
         self.__dirLbl = QLabel(self.__dirLblPrefix)
 
@@ -51,7 +53,7 @@ class FileListWidget(QWidget):
         self.setLayout(lay)
 
     def __setDir(self):
-        directory = QFileDialog.getExistingDirectory(self, "Select Directory")
+        directory = QFileDialog.getExistingDirectory(self, LangClass.TRANSLATIONS['Select Directory'])
         ext_lst = ['.txt']
         if directory:
             self.__listWidget.clear()

@@ -4,6 +4,7 @@ from qtpy.QtWidgets import QWidget, QPushButton, QComboBox, QPlainTextEdit, QSpi
 from qtpy.QtCore import Signal, QThread
 
 from pyqt_openai.notifier import NotifierWidget
+from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.toast import Toast
 
 
@@ -50,13 +51,13 @@ class ImageDallEPage(QWidget):
         self.__sizeCmbBox.currentTextChanged.connect(self.__sizeChanged)
 
         self.__promptWidget = QPlainTextEdit()
-        self.__submitBtn = QPushButton('Submit')
+        self.__submitBtn = QPushButton(LangClass.TRANSLATIONS['Submit'])
         self.__submitBtn.clicked.connect(self.__submit)
 
         lay = QFormLayout()
-        lay.addRow('Total', self.__nSpinBox)
-        lay.addRow('Size', self.__sizeCmbBox)
-        lay.addRow(QLabel('Prompt'))
+        lay.addRow(LangClass.TRANSLATIONS['Total'], self.__nSpinBox)
+        lay.addRow(LangClass.TRANSLATIONS['Size'], self.__sizeCmbBox)
+        lay.addRow(QLabel(LangClass.TRANSLATIONS['Prompt']))
         lay.addRow(self.__promptWidget)
         lay.addRow(self.__submitBtn)
 
@@ -96,7 +97,7 @@ class ImageDallEPage(QWidget):
     def __afterGenerated(self, image_url):
         self.submitDallE.emit(image_url)
         if not self.isVisible():
-            self.__notifierWidget = NotifierWidget(informative_text='Response 👌', detailed_text='Click this!')
+            self.__notifierWidget = NotifierWidget(informative_text=LangClass.TRANSLATIONS['Response 👌'], detailed_text=LangClass.TRANSLATIONS['Click this!'])
             self.__notifierWidget.show()
             self.__notifierWidget.doubleClicked.connect(self.notifierWidgetActivated)
         self.__submitBtn.setEnabled(True)

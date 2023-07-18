@@ -2,6 +2,7 @@ from qtpy.QtCore import Qt, QUrl
 from qtpy.QtGui import QPixmap, QDesktopServices
 from qtpy.QtWidgets import QDialog, QPushButton, QHBoxLayout, QWidget, QVBoxLayout, QLabel
 
+from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.svgLabel import SvgLabel
 
 
@@ -24,10 +25,10 @@ class AboutDialog(QDialog):
         self.__initUi()
 
     def __initUi(self):
-        self.setWindowTitle('About')
+        self.setWindowTitle(LangClass.TRANSLATIONS['About'])
         self.setWindowFlags(Qt.Window | Qt.WindowCloseButtonHint)
 
-        self.__okBtn = QPushButton('OK')
+        self.__okBtn = QPushButton(LangClass.TRANSLATIONS['OK'])
         self.__okBtn.clicked.connect(self.accept)
 
         p = QPixmap('pyqtopenai.png')
@@ -35,9 +36,9 @@ class AboutDialog(QDialog):
         logoLbl.setPixmap(p)
 
         expWidget = QLabel()
-        expWidget.setText('''
+        expWidget.setText(f'''
         <h1>pyqt-openai</h1>
-        <p>Powered by qtpy</p>
+        <p>{LangClass.TRANSLATIONS['Powered by qtpy']}</p>
         ''')
         expWidget.setAlignment(Qt.AlignTop)
 
@@ -75,7 +76,7 @@ class AboutDialog(QDialog):
         topWidget = QWidget()
         topWidget.setLayout(lay)
 
-        cancelBtn = QPushButton('Cancel')
+        cancelBtn = QPushButton(LangClass.TRANSLATIONS['Cancel'])
         cancelBtn.clicked.connect(self.close)
 
         lay = QHBoxLayout()
