@@ -31,9 +31,9 @@ class UserChatUnit(QWidget):
         menuWidget.setStyleSheet('QWidget { background-color: #BBB }')
 
         self.__lbl = QLabel()
-        self.__lbl.setStyleSheet('QLabel { padding: 1em }')
+        self.__lbl.setStyleSheet('QLabel { padding: 6px }')
 
-        self.__lbl.setAlignment(Qt.AlignRight)
+        self.__lbl.setAlignment(Qt.AlignLeft)
         self.__lbl.setWordWrap(True)
         self.__lbl.setTextInteractionFlags(Qt.TextSelectableByMouse)
         self.__lbl.setOpenExternalLinks(True)

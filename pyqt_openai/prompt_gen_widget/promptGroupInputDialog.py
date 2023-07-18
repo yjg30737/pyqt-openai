@@ -3,6 +3,7 @@ import re
 from qtpy.QtCore import Qt
 from qtpy.QtWidgets import QDialog, QVBoxLayout, QLineEdit, QFrame, QPushButton, QHBoxLayout, QWidget
 
+from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.sqlite import SqliteDatabase
 
 
@@ -16,7 +17,7 @@ class PromptGroupInputDialog(QDialog):
         self.__db = db
 
     def __initUi(self):
-        self.setWindowTitle('New Prompt')
+        self.setWindowTitle(LangClass.TRANSLATIONS['New Prompt'])
         self.setWindowFlags(Qt.Window | Qt.WindowCloseButtonHint)
 
         self.__newName = QLineEdit()
@@ -26,10 +27,10 @@ class PromptGroupInputDialog(QDialog):
         sep.setFrameShape(QFrame.HLine)
         sep.setFrameShadow(QFrame.Sunken)
 
-        self.__okBtn = QPushButton('OK')
+        self.__okBtn = QPushButton(LangClass.TRANSLATIONS['OK'])
         self.__okBtn.clicked.connect(self.accept)
 
-        cancelBtn = QPushButton('Cancel')
+        cancelBtn = QPushButton(LangClass.TRANSLATIONS['Cancel'])
         cancelBtn.clicked.connect(self.close)
 
         lay = QHBoxLayout()

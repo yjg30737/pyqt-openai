@@ -17,9 +17,6 @@ class CurrentImageView(QGraphicsView):
         self._item = ''
 
     def __initUi(self):
-        # Create a button
-        self.button = QPushButton("Click me", self)
-        self.button.hide()
         self.setMouseTracking(True)
 
     def setFilename(self, filename: str):
@@ -32,17 +29,6 @@ class CurrentImageView(QGraphicsView):
 
     def setAspectRatioMode(self, mode):
         self.__aspectRatioMode = mode
-
-    def enterEvent(self, e):
-        # Show the button when the mouse enters the view
-        self.button.move(self.rect().x(), self.rect().y())
-        self.button.show()
-        return super().enterEvent(e)
-
-    def leaveEvent(self, e):
-        # Hide the button when the mouse leaves the view
-        self.button.hide()
-        return super().leaveEvent(e)
 
     def resizeEvent(self, e):
         if self._item:

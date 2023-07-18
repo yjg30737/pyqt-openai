@@ -5,6 +5,7 @@ from qtpy.QtWidgets import QWidget, QCheckBox, QListWidget, QVBoxLayout, QHBoxLa
     QLabel
 
 from pyqt_openai.convListWidget import ConvListWidget
+from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.searchBar import SearchBar
 from pyqt_openai.svgButton import SvgButton
 
@@ -33,15 +34,15 @@ class LeftSideBar(QWidget):
         self.__delBtn.setIcon('ico/delete.svg')
         self.__saveBtn.setIcon('ico/save.svg')
 
-        self.__addBtn.setToolTip('Add')
-        self.__delBtn.setToolTip('Delete')
-        self.__saveBtn.setToolTip('Save')
+        self.__addBtn.setToolTip(LangClass.TRANSLATIONS['Add'])
+        self.__delBtn.setToolTip(LangClass.TRANSLATIONS['Delete'])
+        self.__saveBtn.setToolTip(LangClass.TRANSLATIONS['Save'])
 
         self.__addBtn.clicked.connect(self.__addClicked)
         self.__delBtn.clicked.connect(self.__deleteClicked)
         self.__saveBtn.clicked.connect(self.__saveClicked)
 
-        self.__allCheckBox = QCheckBox('Check All')
+        self.__allCheckBox = QCheckBox(LangClass.TRANSLATIONS['Check All'])
         self.__allCheckBox.stateChanged.connect(self.__stateChanged)
 
         lay = QHBoxLayout()
@@ -77,7 +78,7 @@ class LeftSideBar(QWidget):
         self.added.emit()
 
     def addToList(self, id):
-        self.__convListWidget.addConv('New Chat', id)
+        self.__convListWidget.addConv(LangClass.TRANSLATIONS['New Chat'], id)
         self.__convListWidget.setCurrentRow(0)
 
     def isCurrentConvExists(self):

@@ -13,6 +13,7 @@ from pyqt_openai.leftSideBar import LeftSideBar
 from pyqt_openai.notifier import NotifierWidget
 from pyqt_openai.openAiThread import OpenAIThread, LlamaOpenAIThread
 from pyqt_openai.prompt_gen_widget.promptGeneratorWidget import PromptGeneratorWidget
+from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.right_sidebar.aiPlaygroundWidget import AIPlaygroundWidget
 from pyqt_openai.util.llamapage_script import GPTLLamaIndexClass
 from pyqt_openai.util.script import open_directory, get_generic_ext_out_of_qt_ext, conv_unit_to_txt, conv_unit_to_html, \
@@ -230,7 +231,7 @@ class OpenAIChatBotWidget(QWidget):
         self.__leftSideBarWidget.setEnabled(True)
         self.__lineEdit.setFocus()
         if not self.isVisible():
-            self.__notifierWidget = NotifierWidget(informative_text='Response 👌', detailed_text='Click this!')
+            self.__notifierWidget = NotifierWidget(informative_text=LangClass.TRANSLATIONS['Response 👌'], detailed_text=LangClass.TRANSLATIONS['Click this!'])
             self.__notifierWidget.show()
             self.__notifierWidget.doubleClicked.connect(self.notifierWidgetActivated)
 
@@ -244,7 +245,7 @@ class OpenAIChatBotWidget(QWidget):
 
 
     def __addConv(self):
-        cur_id = self.__db.insertConv('New Chat')
+        cur_id = self.__db.insertConv(LangClass.TRANSLATIONS['New Chat'])
         self.__browser.resetChatWidget(cur_id)
         self.__leftSideBarWidget.addToList(cur_id)
         self.__lineEdit.setFocus()
@@ -258,7 +259,7 @@ class OpenAIChatBotWidget(QWidget):
             self.__db.deleteConv(id)
 
     def __export(self, ids):
-        file_data = QFileDialog.getSaveFileName(self, 'Save', os.path.expanduser('~'), 'SQLite DB file (*.db);;txt files Compressed File (*.zip);;html files Compressed File (*.zip)')
+        file_data = QFileDialog.getSaveFileName(self, LangClass.TRANSLATIONS['Save'], os.path.expanduser('~'), 'SQLite DB file (*.db);;txt files Compressed File (*.zip);;html files Compressed File (*.zip)')
         if file_data[0]:
             filename = file_data[0]
             ext = os.path.splitext(filename)[-1] or get_generic_ext_out_of_qt_ext(file_data[1])
