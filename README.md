@@ -8,23 +8,17 @@
 
 </div>
 
-Example of using OpenAI with PyQt (Python cross-platform GUI toolkit)
+PyQt/PySide(Python cross-platform GUI toolkit) OpenAI Chatbot which supports more than 8 languages (you can see the list below) 
 
-This shows an example of using OpenAI with PyQt as a chatbot and using DALL-E or Stable Diffusion as a image generation tool.
-
-Even though this project has become too huge to be called an 'example'.
+You can use OpenAI models(GPT4, DALL-E, etc.) with PyQt as a chatbot.
 
 The major advantage of this package is that you don't need to know other language aside from Python.
 
 If you want to study openai with Python-only good old desktop software, this is for you.
 
-The OpenAI model this package uses is the <a href="https://platform.openai.com/docs/models/gpt-3-5">gpt-3.5-turbo</a> model(which is nearly as functional as <b>ChatGPT</b>) by default. You can use gpt-4 as well.
+The OpenAI model this package uses is the <a href="https://platform.openai.com/docs/models/gpt-3-5">gpt-3.5-turbo</a> model by default. You can use gpt-4 as well.
 
-Image generation feature(DALL-E and Stable Diffusion) is also available.
-
-<b>Stable Diffusion</b> used [DreamStudio API](https://dreamstudio.ai/). This is not entirely free like stable-diffusion-webgui. 
-
-But this is very lightweight and more accessible. don't need CUDA, torch, expansive PC, anything.
+Image generation feature(DALL-E) is also available.
 
 This is using <b>sqlite</b> as a database.
 
@@ -38,6 +32,7 @@ If you have any questions or you want to make AI related software with PyQt or P
 
 ## Table of Contents
 * [Feature](#feature)
+* [Supported Languages](#supported-languages)
 * [Requirements](#requirements)
 * [Preview and Usage](#preview-and-usage)
 * [How to Install](#how-to-install)
@@ -64,9 +59,24 @@ If you have any questions or you want to make AI related software with PyQt or P
 * you can <b>run this in background</b> application
   * notification will pop up when response is generated
 * you can make window stack on top or control its transparency
-* image generation (DALL-E, Stable Diffusion with DreamStudio API)
+* image generation (DALL-E)
 * you can copy and download the image if you want. just hover the mouse cursor over the image.
 * you can <b>fine-tune</b> openai with llama-index.
+* support text-based file uploading
+
+## Supported Languages
+* English
+* Spanish
+* Chinese
+* Russian
+* Korean
+* French
+* German
+* Italian
+* Hindi
+* Arabic
+
+If you have any additional languages you would like to add, please feel free to make a request by mail, issue, discord, etc at any time.
 
 ## Requirements
 * qtpy - the package allowing you to write code that works with both PyQt and PySide
@@ -74,7 +84,6 @@ If you have any questions or you want to make AI related software with PyQt or P
 * openai
 * aiohttp - for openai dependency 
 * pyperclip - to copy prompt text from prompt generator
-* stability_sdk - for Stable Diffusion
 * jinja2 - for saving the conversation with html file
 * llama-index - to fine-tune
 
@@ -160,9 +169,6 @@ In this preview, i pressed the keyboard shortcut of each actions(show beginning,
 
 I made the command suggestion GUI resemble the Discord command autocomplete popup, with which a lot of people have become accustomed.
 
-### Image Generation
-![image](https://github.com/yjg30737/pyqt-openai/assets/55078043/d0903a76-bf4f-4900-bfea-89da6f072c9d)
-
 ## How to Install
 1. git clone ~
 2. cd pyqt-openai
@@ -224,14 +230,10 @@ You can join pyqt-openai's <a href="https://discord.gg/cHekprskVE">Discord Serve
 I recommend to install sqlite management software. It's not necessary to run this app (obviously), but it's good practice to manage database about conversation history with AI and to know how this works.
 
 ## TODO list
-* DB for images (to further experiement of both DALL-E and Stable Diffusion or other image generation engine)
 * show the explanation of every model and terms related to AI (e.g. temperature, topp..)
 * tokenizer
 * highlight the source (optional, eventually)
-* support multiple language
-* use SQLAlchemy (maybe not)
 * show reason when the chat input is disabled for some reasons
-* add the basic example sources of making deep learning model with PyTorch (eventually)
 
 ## See Also
 * <a href="https://learn.microsoft.com/en-us/azure/cognitive-services/openai/overview">Azure OpenAI service</a>
