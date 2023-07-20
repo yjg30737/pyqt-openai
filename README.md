@@ -46,12 +46,14 @@ If you have any questions or you want to make AI related software with PyQt or P
   * text streaming (enable by default, you can disable it)
   * AI remembers past conversation
   * support copy button
+  * able to stop response in the middle of text generation
 * <b>conversation management</b>
   * add & delete conversations
   * save conversations - SQlite db, text files compressed file, html files compressed file (both are zip)
   * rename conversation
   * everything above is saved in an SQLite database file named conv.db.
-* support controlling parameters(temperature, top_p, etc) just like openai playground 
+* support controlling parameters(temperature, top_p, etc) just like openai playground
+* able to see the reason why stream is finished
 * support latest model such as <b>GPT-4-32k-0613</b>
 * support <b>prompt generator</b> (manageable, autosaved in database) 
 * support <b>slash commands</b>
@@ -230,10 +232,7 @@ You can join pyqt-openai's <a href="https://discord.gg/cHekprskVE">Discord Serve
 I recommend to install sqlite management software. It's not necessary to run this app (obviously), but it's good practice to manage database about conversation history with AI and to know how this works.
 
 ## TODO list
-* show the explanation of every model and terms related to AI (e.g. temperature, topp..)
 * tokenizer
-* highlight the source (optional, eventually)
-* show reason when the chat input is disabled for some reasons
 
 ## See Also
 * <a href="https://learn.microsoft.com/en-us/azure/cognitive-services/openai/overview">Azure OpenAI service</a>
