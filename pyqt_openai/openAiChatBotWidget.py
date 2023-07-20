@@ -50,6 +50,8 @@ class OpenAIChatBotWidget(QWidget):
 
         self.__prompt = Prompt(self.__db)
         self.__prompt.onStoppedClicked.connect(self.__stopResponse)
+        self.__prompt.onContinuedClicked.connect(self.__continueResponse)
+        self.__prompt.onRegenerateClicked.connect(self.__regenerateResponse)
 
         self.__lineEdit = self.__prompt.getTextEdit()
         self.__aiPlaygroundWidget = AIPlaygroundWidget()
@@ -174,7 +176,7 @@ class OpenAIChatBotWidget(QWidget):
     def setAIEnabled(self, f):
         self.__lineEdit.setEnabled(f)
 
-    def __chat(self):
+    def __chat(self, continue_f=False):
         try:
             stream = self.__settings_ini.value('stream', type=bool)
             model = self.__settings_ini.value('model', type=str)
@@ -213,7 +215,13 @@ class OpenAIChatBotWidget(QWidget):
             else:
                 self.__addConv()
 
-            query_text = self.__prompt.getContent()
+            """
+            for make GPT continue to respond
+            """
+            if continue_f:
+                query_text = 'Continue to respond.'
+            else:
+                query_text = self.__prompt.getContent()
             self.__browser.showLabel(query_text, True, False)
 
             if is_llama_available:
@@ -230,6 +238,15 @@ class OpenAIChatBotWidget(QWidget):
 
     def __stopResponse(self):
         self.__t.stop_streaming()
+
+    def __continueResponse(self):
+        self.__chat(True)
+
+    def __regenerateResponse(self):
+        """
+        get last question and make it another response based on it
+        """
+        pass
 
     def __toggleWidgetWhileChatting(self, f, continue_f=False):
         self.__lineEdit.setEnabled(f)
