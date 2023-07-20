@@ -47,7 +47,10 @@ class OpenAIChatBotWidget(QWidget):
     def __initUi(self):
         self.__leftSideBarWidget = LeftSideBar()
         self.__browser = ChatBrowser(self.__finish_reason)
+
         self.__prompt = Prompt(self.__db)
+        self.__prompt.onStoppedClicked.connect(self.__stopResponse)
+
         self.__lineEdit = self.__prompt.getTextEdit()
         self.__aiPlaygroundWidget = AIPlaygroundWidget()
         self.__aiPlaygroundWidget.onDirectorySelected.connect(self.__llama_class.set_directory)
@@ -210,18 +213,14 @@ class OpenAIChatBotWidget(QWidget):
             else:
                 self.__addConv()
 
-            self.__lineEdit.setEnabled(False)
-            self.__leftSideBarWidget.setEnabled(False)
-
             query_text = self.__prompt.getContent()
-
             self.__browser.showLabel(query_text, True, False)
-            self.__lineEdit.clear()
 
             if is_llama_available:
                 self.__t = LlamaOpenAIThread(self.__llama_class, openai_arg=openai_arg, query_text=query_text)
             else:
                 self.__t = OpenAIThread(model, openai_arg)
+            self.__t.started.connect(self.__beforeGenerated)
             self.__t.replyGenerated.connect(self.__browser.showLabel)
             self.__t.streamFinished.connect(self.__browser.streamFinished)
             self.__t.start()
@@ -229,9 +228,20 @@ class OpenAIChatBotWidget(QWidget):
         except Exception as e:
             QMessageBox.critical(self, "Error", str(e))
 
+    def __stopResponse(self):
+        self.__t.stop_streaming()
+
+    def __toggleWidgetWhileChatting(self, f):
+        self.__lineEdit.setEnabled(f)
+        self.__leftSideBarWidget.setEnabled(f)
+        self.__prompt.activateDuringGeneratingWidget(not f)
+
+    def __beforeGenerated(self):
+        self.__toggleWidgetWhileChatting(False)
+        self.__lineEdit.clear()
+
     def __afterGenerated(self):
-        self.__lineEdit.setEnabled(True)
-        self.__leftSideBarWidget.setEnabled(True)
+        self.__toggleWidgetWhileChatting(True)
         self.__lineEdit.setFocus()
         if not self.isVisible():
             self.__notifierWidget = NotifierWidget(informative_text=LangClass.TRANSLATIONS['Response 👌'], detailed_text=LangClass.TRANSLATIONS['Click this!'])

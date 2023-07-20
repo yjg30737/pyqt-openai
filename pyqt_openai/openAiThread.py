@@ -39,8 +39,9 @@ class OpenAIThread(QThread):
                 if inspect.isgenerator(response):
                     for chunk in response:
                         if self.__stop_streaming:
-                            finish_reason = chunk['choices'][0].get('finish_reason', 'stopped by user')
+                            finish_reason = 'stopped by user'
                             self.streamFinished.emit(finish_reason)
+                            break
                         else:
                             delta = chunk['choices'][0]['delta']
                             response_text = delta.get('content', '')
@@ -81,7 +82,7 @@ class LlamaOpenAIThread(QThread):
             if f:
                 for response_text in resp.response_gen:
                     if self.__stop_streaming:
-                        pass
+                        break
                     else:
                         self.replyGenerated.emit(response_text, False, f, 'stopped by user')
                 self.streamFinished.emit('')

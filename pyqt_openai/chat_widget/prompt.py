@@ -1,7 +1,7 @@
 import os
 
-from qtpy.QtCore import Qt
-from qtpy.QtWidgets import QVBoxLayout, QFileDialog, QToolButton, QMenu, QAction, QWidget, QHBoxLayout
+from qtpy.QtCore import Qt, Signal
+from qtpy.QtWidgets import QVBoxLayout, QPushButton, QFileDialog, QToolButton, QMenu, QAction, QWidget, QHBoxLayout
 
 from pyqt_openai.chat_widget.textEditPropmtGroup import TextEditPropmtGroup
 from pyqt_openai.propmt_command_completer.commandSuggestionWidget import CommandSuggestionWidget
@@ -11,6 +11,8 @@ from pyqt_openai.svgToolButton import SvgToolButton
 
 
 class Prompt(QWidget):
+    onStoppedClicked = Signal()
+    
     def __init__(self, db: SqliteDatabase):
         super().__init__()
         self.__initVal(db)
@@ -26,6 +28,9 @@ class Prompt(QWidget):
         self.__commandEnabled = False
 
     def __initUi(self):
+        self.__stopBtn = QPushButton('Stop')
+        self.__stopBtn.clicked.connect(self.onStoppedClicked.emit)
+
         # Create the command suggestion list
         self.__suggestionWidget = CommandSuggestionWidget()
         self.__suggestion_list = self.__suggestionWidget.getCommandList()
@@ -40,6 +45,7 @@ class Prompt(QWidget):
         self.__suggestion_list.itemClicked.connect(self.executeCommand)
 
         lay = QVBoxLayout()
+        lay.addWidget(self.__stopBtn)
         lay.addWidget(self.__suggestionWidget)
         lay.addWidget(self.__textEditGroup)
         lay.setContentsMargins(0, 0, 0, 0)
@@ -97,7 +103,19 @@ class Prompt(QWidget):
         lay.addWidget(rightWidget)
         lay.setContentsMargins(0, 0, 0, 0)
         lay.setSpacing(0)
+
+        bottomWidget = QWidget()
+        bottomWidget.setLayout(lay)
+
+        lay = QVBoxLayout()
+        lay.addWidget(self.__stopBtn)
+        lay.addWidget(bottomWidget)
+        lay.setContentsMargins(0, 0, 0, 0)
+        lay.setSpacing(0)
+
         self.setLayout(lay)
+
+        self.activateDuringGeneratingWidget(False)
 
         self.__suggestionWidget.setVisible(False)
 
@@ -168,6 +186,9 @@ class Prompt(QWidget):
                 min(self.__suggestion_list.currentRow() + 1, self.__suggestion_list.count() - 1))
         elif key == 'enter':
             self.executeCommand(self.__suggestion_list.currentItem())
+
+    def activateDuringGeneratingWidget(self, f):
+        self.__stopBtn.setVisible(f)
 
     def executeCommand(self, item):
         self.__textEditGroup.executeCommand(item, self.__p_grp)
