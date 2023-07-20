@@ -24,6 +24,10 @@ class OpenAIThread(QThread):
         super().__init__(*args, **kwargs)
         self.__endpoint = getModelEndpoint(model)
         self.__openai_arg = openai_arg
+        self.__stop_streaming = False
+
+    def stop_streaming(self):
+        self.__stop_streaming = True
 
     def run(self):
         try:
@@ -34,13 +38,17 @@ class OpenAIThread(QThread):
                 # if it is streaming, type will be generator
                 if inspect.isgenerator(response):
                     for chunk in response:
-                        delta = chunk['choices'][0]['delta']
-                        response_text = delta.get('content', '')
-                        if response_text:
-                            self.replyGenerated.emit(response_text, False, True, '')
-                        else:
-                            finish_reason = chunk['choices'][0].get('finish_reason', '')
+                        if self.__stop_streaming:
+                            finish_reason = chunk['choices'][0].get('finish_reason', 'stopped by user')
                             self.streamFinished.emit(finish_reason)
+                        else:
+                            delta = chunk['choices'][0]['delta']
+                            response_text = delta.get('content', '')
+                            if response_text:
+                                self.replyGenerated.emit(response_text, False, True, '')
+                            else:
+                                finish_reason = chunk['choices'][0].get('finish_reason', '')
+                                self.streamFinished.emit(finish_reason)
                 else:
                     response_text = response['choices'][0]['message']['content']
                     finish_reason = response['choices'][0]['finish_reason']
@@ -60,6 +68,10 @@ class LlamaOpenAIThread(QThread):
         self.__llama_idx_instance = llama_idx_instance
         self.__openai_arg = openai_arg
         self.__query_text = query_text
+        self.__stop_streaming = False
+
+    def stop_streaming(self):
+        self.__stop_streaming = True
 
     def run(self):
         try:
@@ -68,7 +80,10 @@ class LlamaOpenAIThread(QThread):
             f = isinstance(resp, StreamingResponse)
             if f:
                 for response_text in resp.response_gen:
-                    self.replyGenerated.emit(response_text, False, f, '')
+                    if self.__stop_streaming:
+                        pass
+                    else:
+                        self.replyGenerated.emit(response_text, False, f, 'stopped by user')
                 self.streamFinished.emit('')
             else:
                 self.replyGenerated.emit(resp.response, False, f, '')
