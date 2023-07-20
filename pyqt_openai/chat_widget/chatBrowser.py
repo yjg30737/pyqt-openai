@@ -73,7 +73,6 @@ class ChatBrowser(QScrollArea):
             self.widget().setCurrentIndex(1)
         return self.__setLabel(text, stream_f, user_f)
 
-
     def __setLabel(self, text, stream_f, user_f):
         chatUnit = QLabel()
         if user_f:

@@ -15,6 +15,7 @@ class OpenAIThread(QThread):
     First: response
     Second: user or AI
     Third: streaming or not streaming
+    Forth: Finish reason
     """
     replyGenerated = Signal(str, bool, bool, str)
     streamFinished = Signal(str)
@@ -64,7 +65,6 @@ class LlamaOpenAIThread(QThread):
         try:
             self.__llama_idx_instance.set_openai_arg(**self.__openai_arg)
             resp = self.__llama_idx_instance.get_response(self.__query_text)
-            print(resp)
             f = isinstance(resp, StreamingResponse)
             if f:
                 for response_text in resp.response_gen:
@@ -74,6 +74,6 @@ class LlamaOpenAIThread(QThread):
                 self.replyGenerated.emit(resp.response, False, f, '')
         except openai.error.InvalidRequestError as e:
             self.replyGenerated.emit('<p style="color:red">Your request was rejected as a result of our safety system.<br/>'
-                                     'Your prompt may contain text that is not allowed by our safety system.</p>', False)
+                                     'Your prompt may contain text that is not allowed by our safety system.</p>', False, False, 'Error')
         except openai.error.RateLimitError as e:
-            self.replyGenerated.emit(f'<p style="color:red">{e}<br/>Check the usage: https://platform.openai.com/account/usage<br/>Update to paid account: https://platform.openai.com/account/billing/overview', False)
+            self.replyGenerated.emit(f'<p style="color:red">{e}<br/>Check the usage: https://platform.openai.com/account/usage<br/>Update to paid account: https://platform.openai.com/account/billing/overview', False, False, 'Error')
