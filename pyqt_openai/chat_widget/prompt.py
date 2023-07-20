@@ -1,7 +1,7 @@
 import os
 
-from qtpy.QtCore import Qt
-from qtpy.QtWidgets import QVBoxLayout, QFileDialog, QToolButton, QMenu, QAction, QWidget, QHBoxLayout
+from qtpy.QtCore import Qt, Signal
+from qtpy.QtWidgets import QVBoxLayout, QPushButton, QFileDialog, QToolButton, QMenu, QAction, QWidget, QHBoxLayout
 
 from pyqt_openai.chat_widget.textEditPropmtGroup import TextEditPropmtGroup
 from pyqt_openai.propmt_command_completer.commandSuggestionWidget import CommandSuggestionWidget
@@ -11,6 +11,10 @@ from pyqt_openai.svgToolButton import SvgToolButton
 
 
 class Prompt(QWidget):
+    onStoppedClicked = Signal()
+    onContinuedClicked = Signal()
+    onRegenerateClicked = Signal()
+    
     def __init__(self, db: SqliteDatabase):
         super().__init__()
         self.__initVal(db)
@@ -26,6 +30,35 @@ class Prompt(QWidget):
         self.__commandEnabled = False
 
     def __initUi(self):
+        # prompt control buttons
+        self.__stopBtn = QPushButton('Stop')
+        self.__stopBtn.clicked.connect(self.onStoppedClicked.emit)
+
+        lay = QHBoxLayout()
+        lay.setContentsMargins(0, 0, 0, 0)
+        lay.setSpacing(0)
+        lay.addWidget(self.__stopBtn)
+        lay.setAlignment(Qt.AlignCenter)
+
+        self.__controlWidgetDuringGeneration = QWidget()
+        self.__controlWidgetDuringGeneration.setLayout(lay)
+
+        self.__continueBtn = QPushButton('Continue')
+        self.__continueBtn.clicked.connect(self.onContinuedClicked.emit)
+
+        self.__regenerateBtn = QPushButton('Regenerate')
+        self.__regenerateBtn.clicked.connect(self.onRegenerateClicked.emit)
+
+        lay = QHBoxLayout()
+        lay.setContentsMargins(0, 0, 0, 0)
+        lay.setSpacing(0)
+        lay.addWidget(self.__continueBtn)
+        lay.addWidget(self.__regenerateBtn)
+        lay.setAlignment(Qt.AlignCenter)
+
+        self.__controlWidgetAfterGeneration = QWidget()
+        self.__controlWidgetAfterGeneration.setLayout(lay)
+
         # Create the command suggestion list
         self.__suggestionWidget = CommandSuggestionWidget()
         self.__suggestion_list = self.__suggestionWidget.getCommandList()
@@ -97,7 +130,21 @@ class Prompt(QWidget):
         lay.addWidget(rightWidget)
         lay.setContentsMargins(0, 0, 0, 0)
         lay.setSpacing(0)
+
+        bottomWidget = QWidget()
+        bottomWidget.setLayout(lay)
+
+        lay = QVBoxLayout()
+        lay.addWidget(self.__controlWidgetDuringGeneration)
+        lay.addWidget(self.__controlWidgetAfterGeneration)
+        lay.addWidget(bottomWidget)
+        lay.setContentsMargins(0, 0, 0, 0)
+        lay.setSpacing(0)
+
         self.setLayout(lay)
+
+        self.activateDuringGeneratingWidget(False)
+        self.activateAfterResponseWidget(False)
 
         self.__suggestionWidget.setVisible(False)
 
@@ -168,6 +215,13 @@ class Prompt(QWidget):
                 min(self.__suggestion_list.currentRow() + 1, self.__suggestion_list.count() - 1))
         elif key == 'enter':
             self.executeCommand(self.__suggestion_list.currentItem())
+
+    def activateDuringGeneratingWidget(self, f):
+        self.__controlWidgetDuringGeneration.setVisible(f)
+
+    def activateAfterResponseWidget(self, f, continue_f=False):
+        self.__controlWidgetAfterGeneration.setVisible(f)
+        self.__continueBtn.setVisible(continue_f)
 
     def executeCommand(self, item):
         self.__textEditGroup.executeCommand(item, self.__p_grp)
