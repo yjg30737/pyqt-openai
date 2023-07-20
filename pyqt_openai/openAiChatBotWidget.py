@@ -243,6 +243,7 @@ class OpenAIChatBotWidget(QWidget):
         self.__chat(True)
 
     def __regenerateResponse(self):
+        # TODO
         """
         get last question and make it another response based on it
         """
@@ -252,7 +253,8 @@ class OpenAIChatBotWidget(QWidget):
         self.__lineEdit.setEnabled(f)
         self.__leftSideBarWidget.setEnabled(f)
         self.__prompt.activateDuringGeneratingWidget(not f)
-        self.__prompt.activateAfterResponseWidget(f, continue_f)
+        # TODO
+        # self.__prompt.activateAfterResponseWidget(f, continue_f)
 
     def __beforeGenerated(self):
         self.__toggleWidgetWhileChatting(False)

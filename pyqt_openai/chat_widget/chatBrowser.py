@@ -104,7 +104,9 @@ class ChatBrowser(QScrollArea):
                 if lay.itemAt(i) and lay.itemAt(i).widget():
                     widget = lay.itemAt(i).widget()
                     if isinstance(widget, AIChatUnit):
-                        all_text_lst.append(widget.text())
+                        all_text_lst.append(f'Answer: {widget.text()}')
+                    elif isinstance(widget, UserChatUnit):
+                        all_text_lst.append(f'Question: {widget.text()}')
 
         return '\n'.join(all_text_lst)
 
