@@ -231,17 +231,19 @@ class OpenAIChatBotWidget(QWidget):
     def __stopResponse(self):
         self.__t.stop_streaming()
 
-    def __toggleWidgetWhileChatting(self, f):
+    def __toggleWidgetWhileChatting(self, f, continue_f=False):
         self.__lineEdit.setEnabled(f)
         self.__leftSideBarWidget.setEnabled(f)
         self.__prompt.activateDuringGeneratingWidget(not f)
+        self.__prompt.activateAfterResponseWidget(f, continue_f)
 
     def __beforeGenerated(self):
         self.__toggleWidgetWhileChatting(False)
         self.__lineEdit.clear()
 
     def __afterGenerated(self):
-        self.__toggleWidgetWhileChatting(True)
+        continue_f = self.__browser.getLastFinishReason() == 'Finish Reason: length'
+        self.__toggleWidgetWhileChatting(True, continue_f)
         self.__lineEdit.setFocus()
         if not self.isVisible():
             self.__notifierWidget = NotifierWidget(informative_text=LangClass.TRANSLATIONS['Response 👌'], detailed_text = self.__browser.getLastResponse())
@@ -255,6 +257,8 @@ class OpenAIChatBotWidget(QWidget):
             self.__browser.replaceConv(id, conv_data)
         else:
             self.__browser.resetChatWidget(0)
+        self.__prompt.activateDuringGeneratingWidget(False)
+        self.__prompt.activateAfterResponseWidget(False)
 
     def __addConv(self):
         cur_id = self.__db.insertConv(LangClass.TRANSLATIONS['New Chat'])

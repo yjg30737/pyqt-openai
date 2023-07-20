@@ -118,6 +118,16 @@ class ChatBrowser(QScrollArea):
                     return widget.text()
         return ''
 
+    def getLastFinishReason(self):
+        lay = self.getChatWidget().layout()
+        if lay:
+            i = lay.count()-1
+            if lay.itemAt(i) and lay.itemAt(i).widget():
+                widget = lay.itemAt(i).widget()
+                if isinstance(widget, AIChatUnit):
+                    return widget.getFinishReason()
+        return ''
+
     def getEveryResponse(self):
         lay = self.getChatWidget().layout()
         if lay:

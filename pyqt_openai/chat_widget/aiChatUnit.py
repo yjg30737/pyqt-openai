@@ -84,7 +84,6 @@ class AIChatUnit(QWidget):
         copyBtn.setIcon('ico/copy.svg')
         copyBtn.clicked.connect(self.__copy)
 
-
         lay.addWidget(self.__finishReasonLbl)
         lay.addWidget(copyBtn)
         lay.setAlignment(Qt.AlignRight)
@@ -140,10 +139,13 @@ class AIChatUnit(QWidget):
                     widget.setAlignment(a0)
 
     def setFinishReason(self, finish_reason):
-        self.__finishReasonLbl.setText(f'<p style="color:red; margin-right: 2px">{finish_reason}</p>')
+        self.__finishReasonLbl.setText(f'Finish Reason: {finish_reason}')
 
     def showFinishReason(self, f):
         self.__finishReasonLbl.setVisible(f)
+
+    def getFinishReason(self):
+        return self.__finishReasonLbl.text()
 
     def setText(self, text: str):
         lbl = QLabel(text)
