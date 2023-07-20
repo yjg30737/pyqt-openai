@@ -37,16 +37,26 @@ class OpenAIChatBotWidget(QWidget):
         # ini
         self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.IniFormat)
 
+        if not self.__settings_ini.contains('finish_reason'):
+            self.__settings_ini.setValue('finish_reason', False)
+        self.__finish_reason = self.__settings_ini.value('finish_reason', type=bool)
+
         # llamaindex
         self.__llama_class = GPTLLamaIndexClass()
 
     def __initUi(self):
         self.__leftSideBarWidget = LeftSideBar()
-        self.__browser = ChatBrowser()
+        self.__browser = ChatBrowser(self.__finish_reason)
+
         self.__prompt = Prompt(self.__db)
+        self.__prompt.onStoppedClicked.connect(self.__stopResponse)
+        self.__prompt.onContinuedClicked.connect(self.__continueResponse)
+        self.__prompt.onRegenerateClicked.connect(self.__regenerateResponse)
+
         self.__lineEdit = self.__prompt.getTextEdit()
         self.__aiPlaygroundWidget = AIPlaygroundWidget()
         self.__aiPlaygroundWidget.onDirectorySelected.connect(self.__llama_class.set_directory)
+        self.__aiPlaygroundWidget.onFinishReasonToggled.connect(self.__onFinishReasonToggled)
         self.__promptGeneratorWidget = PromptGeneratorWidget(self.__db)
 
         self.__sideBarBtn = SvgButton()
@@ -166,7 +176,7 @@ class OpenAIChatBotWidget(QWidget):
     def setAIEnabled(self, f):
         self.__lineEdit.setEnabled(f)
 
-    def __chat(self):
+    def __chat(self, continue_f=False):
         try:
             stream = self.__settings_ini.value('stream', type=bool)
             model = self.__settings_ini.value('model', type=str)
@@ -176,8 +186,6 @@ class OpenAIChatBotWidget(QWidget):
             top_p = self.__settings_ini.value('top_p', type=float)
             frequency_penalty = self.__settings_ini.value('frequency_penalty', type=float)
             presence_penalty = self.__settings_ini.value('presence_penalty', type=float)
-
-            finish_reason = self.__settings_ini.value('finish_reason', type=bool)
             use_llama_index = self.__settings_ini.value('use_llama_index', type=bool)
 
             openai_arg = {
@@ -207,18 +215,20 @@ class OpenAIChatBotWidget(QWidget):
             else:
                 self.__addConv()
 
-            self.__lineEdit.setEnabled(False)
-            self.__leftSideBarWidget.setEnabled(False)
-
-            query_text = self.__prompt.getContent()
-
+            """
+            for make GPT continue to respond
+            """
+            if continue_f:
+                query_text = 'Continue to respond.'
+            else:
+                query_text = self.__prompt.getContent()
             self.__browser.showLabel(query_text, True, False)
-            self.__lineEdit.clear()
 
             if is_llama_available:
                 self.__t = LlamaOpenAIThread(self.__llama_class, openai_arg=openai_arg, query_text=query_text)
             else:
                 self.__t = OpenAIThread(model, openai_arg)
+            self.__t.started.connect(self.__beforeGenerated)
             self.__t.replyGenerated.connect(self.__browser.showLabel)
             self.__t.streamFinished.connect(self.__browser.streamFinished)
             self.__t.start()
@@ -226,23 +236,48 @@ class OpenAIChatBotWidget(QWidget):
         except Exception as e:
             QMessageBox.critical(self, "Error", str(e))
 
+    def __stopResponse(self):
+        self.__t.stop_streaming()
+
+    def __continueResponse(self):
+        self.__chat(True)
+
+    def __regenerateResponse(self):
+        # TODO
+        """
+        get last question and make it another response based on it
+        """
+        pass
+
+    def __toggleWidgetWhileChatting(self, f, continue_f=False):
+        self.__lineEdit.setEnabled(f)
+        self.__leftSideBarWidget.setEnabled(f)
+        self.__prompt.activateDuringGeneratingWidget(not f)
+        # TODO
+        # self.__prompt.activateAfterResponseWidget(f, continue_f)
+
+    def __beforeGenerated(self):
+        self.__toggleWidgetWhileChatting(False)
+        self.__lineEdit.clear()
+
     def __afterGenerated(self):
-        self.__lineEdit.setEnabled(True)
-        self.__leftSideBarWidget.setEnabled(True)
+        continue_f = self.__browser.getLastFinishReason() == 'Finish Reason: length'
+        self.__toggleWidgetWhileChatting(True, continue_f)
         self.__lineEdit.setFocus()
         if not self.isVisible():
-            self.__notifierWidget = NotifierWidget(informative_text=LangClass.TRANSLATIONS['Response 👌'], detailed_text=LangClass.TRANSLATIONS['Click this!'])
+            self.__notifierWidget = NotifierWidget(informative_text=LangClass.TRANSLATIONS['Response 👌'], detailed_text = self.__browser.getLastResponse())
             self.__notifierWidget.show()
             self.__notifierWidget.doubleClicked.connect(self.notifierWidgetActivated)
 
     def __changeConv(self, item: QListWidgetItem):
         if item:
             id = item.data(Qt.UserRole)
-            conv = self.__db.selectCertainConvHistory(id)
-            self.__browser.replaceConv(id, conv)
+            conv_data = self.__db.selectCertainConvHistory(id)
+            self.__browser.replaceConv(id, conv_data)
         else:
             self.__browser.resetChatWidget(0)
-
+        self.__prompt.activateDuringGeneratingWidget(False)
+        self.__prompt.activateAfterResponseWidget(False)
 
     def __addConv(self):
         cur_id = self.__db.insertConv(LangClass.TRANSLATIONS['New Chat'])
@@ -257,6 +292,9 @@ class OpenAIChatBotWidget(QWidget):
     def __deleteConv(self, id_lst):
         for id in id_lst:
             self.__db.deleteConv(id)
+
+    def __onFinishReasonToggled(self, f):
+        self.__browser.toggle_show_finished_reason_f(f)
 
     def __export(self, ids):
         file_data = QFileDialog.getSaveFileName(self, LangClass.TRANSLATIONS['Save'], os.path.expanduser('~'), 'SQLite DB file (*.db);;txt files Compressed File (*.zip);;html files Compressed File (*.zip)')
@@ -275,6 +313,6 @@ class OpenAIChatBotWidget(QWidget):
                 self.__db.export(ids, filename)
             open_directory(os.path.dirname(filename))
 
-    def __updateConvUnit(self, id, user_f, conv_unit=None):
+    def __updateConvUnit(self, id, user_f, conv_unit=None, finish_reason=''):
         if conv_unit:
-            self.__db.insertConvUnit(id, user_f, conv_unit)
+            self.__db.insertConvUnit(id, user_f, conv_unit, finish_reason=finish_reason)

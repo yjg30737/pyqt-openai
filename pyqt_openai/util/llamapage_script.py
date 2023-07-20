@@ -37,6 +37,17 @@ class GPTLLamaIndexClass:
 
     def __init_engine(self):
         try:
+            query_engine_streaming = self.__openai_arg['stream']
+
+            keys_to_keep = ['model', 'temperature']
+
+            # Create a new dictionary with the desired keys
+            filtered_dict = {key: self.__openai_arg[key] for key in keys_to_keep}
+
+            # If you want to modify the original dictionary in-place, you can use this:
+            self.__openai_arg.clear()
+            self.__openai_arg.update(filtered_dict)
+
             llm_predictor = LLMPredictor(llm=ChatOpenAI(**self.__openai_arg, streaming=True))
             service_context = ServiceContext.from_defaults(llm_predictor=llm_predictor, chunk_size_limit=self.__chunk_size_limit)
             index = GPTVectorStoreIndex.from_documents(self.__documents, service_context=service_context)
@@ -44,7 +55,7 @@ class GPTLLamaIndexClass:
             self.__query_engine = index.as_query_engine(
                 service_context=service_context,
                 similarity_top_k=self.__similarity_top_k,
-                streaming=self.__openai_arg['stream']
+                streaming=query_engine_streaming
             )
         except Exception as e:
             raise Exception
