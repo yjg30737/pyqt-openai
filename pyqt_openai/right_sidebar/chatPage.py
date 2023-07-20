@@ -126,7 +126,7 @@ class ChatPage(QWidget):
         useMaxTokenChkBox.setText(LangClass.TRANSLATIONS['Use Max Tokens'])
         self.__maxTokensSpinBox.setEnabled(self.__use_max_tokens)
 
-        finishReasonChkBox = QCheckBox(LangClass.TRANSLATIONS['Show Finish Reason (working)'])
+        finishReasonChkBox = QCheckBox(LangClass.TRANSLATIONS['Show Finish Reason'])
         finishReasonChkBox.toggled.connect(self.__finishReasonChecked)
         finishReasonChkBox.setChecked(self.__finish_reason)
 

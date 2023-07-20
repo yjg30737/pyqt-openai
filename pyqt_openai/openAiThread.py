@@ -43,7 +43,6 @@ class OpenAIThread(QThread):
                 else:
                     response_text = response['choices'][0]['message']['content']
                     finish_reason = response['choices'][0]['finish_reason']
-                    print(finish_reason)
                     self.replyGenerated.emit(response_text, False, False, finish_reason)
         except openai.error.InvalidRequestError as e:
             self.replyGenerated.emit(f'<p style="color:red">{e}</p>', False, False, 'Error')
