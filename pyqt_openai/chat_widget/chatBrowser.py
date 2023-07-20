@@ -50,7 +50,7 @@ class ChatBrowser(QScrollArea):
             # change user_f type from bool to int to insert in db
             self.convUnitUpdated.emit(self.__cur_id, int(user_f), text, finish_reason)
 
-    def __getLastUnit(self) -> AIChatUnit:
+    def __getLastUnit(self) -> AIChatUnit | None:
         item = self.getChatWidget().layout().itemAt(self.getChatWidget().layout().count() - 1)
         if item:
             return item.widget()

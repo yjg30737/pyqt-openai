@@ -244,7 +244,7 @@ class OpenAIChatBotWidget(QWidget):
         self.__toggleWidgetWhileChatting(True)
         self.__lineEdit.setFocus()
         if not self.isVisible():
-            self.__notifierWidget = NotifierWidget(informative_text=LangClass.TRANSLATIONS['Response 👌'], detailed_text=LangClass.TRANSLATIONS['Click this!'])
+            self.__notifierWidget = NotifierWidget(informative_text=LangClass.TRANSLATIONS['Response 👌'], detailed_text = self.__browser.getLastResponse())
             self.__notifierWidget.show()
             self.__notifierWidget.doubleClicked.connect(self.notifierWidgetActivated)
 
