@@ -8,6 +8,7 @@ from pyqt_openai.sqlite import SqliteDatabase
 
 class ChatPage(QWidget):
     onToggleLlama = Signal(bool)
+    onFinishReasonToggled = Signal(bool)
 
     def __init__(self):
         super().__init__()
@@ -126,8 +127,8 @@ class ChatPage(QWidget):
         self.__maxTokensSpinBox.setEnabled(self.__use_max_tokens)
 
         finishReasonChkBox = QCheckBox(LangClass.TRANSLATIONS['Show Finish Reason (working)'])
-        finishReasonChkBox.setChecked(self.__finish_reason)
         finishReasonChkBox.toggled.connect(self.__finishReasonChecked)
+        finishReasonChkBox.setChecked(self.__finish_reason)
 
         lay = QFormLayout()
 
@@ -181,6 +182,7 @@ class ChatPage(QWidget):
     def __finishReasonChecked(self, f):
         self.__finish_reason = f
         self.__settings_ini.setValue('finish_reason', f)
+        self.onFinishReasonToggled.emit(f)
 
     def __temperatureChanged(self, v):
         self.__temperature = v

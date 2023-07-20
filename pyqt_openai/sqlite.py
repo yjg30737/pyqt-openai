@@ -351,6 +351,9 @@ class SqliteDatabase:
             self.__createPropPromptGroup()
             self.__createTemplatePromptGroup()
 
+            # alter tables for applying latest update
+            self.__alterConvUnit()
+
             # Commit the transaction
             self.__conn.commit()
         except sqlite3.Error as e:
@@ -437,6 +440,35 @@ class SqliteDatabase:
             print(f"An error occurred: {e}")
             raise
 
+    def __alterConvUnit(self):
+        # search the conv unit tables
+        res = self.__c.execute(f'''
+                        SELECT name
+                        FROM sqlite_master
+                        WHERE type = 'table' AND name LIKE '{self.__conv_unit_tb_nm}%';
+                    ''')
+
+        # get the columns
+        for name in res.fetchall():
+            col_to_add = [{'name': 'finish_reason', 'type': 'TEXT' }]
+
+            self.__c.execute(f"PRAGMA table_info({name[0]})")
+            existing_columns_to_add = [column[1] for column in self.__c.fetchall()]
+
+            col_to_add = list(filter(lambda x: x['name'] not in existing_columns_to_add, col_to_add))
+
+            if len(col_to_add) > 0:
+                statement = f'ALTER TABLE {name[0]}'
+                for col in col_to_add:
+                    name = col['name']
+                    type = col['type']
+                    statement += f' ADD COLUMN {name} {type}'
+
+                self.__c.execute(statement)
+
+        # self.__c.execute(f'''ALTER TABLE {self.__conv_unit_tb_nm}{id_fk}
+        #                         ADD COLUMN new_column_name data_type''')
+
     def __createConvUnit(self, id_fk):
         try:
             # Check if the table exists
@@ -451,6 +483,7 @@ class SqliteDatabase:
                                           id_fk INTEGER,
                                           is_user INTEGER,
                                           conv TEXT,
+                                          finish_reason TEXT,
                                           update_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
                                           insert_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
                                           FOREIGN KEY (id_fk) REFERENCES {self.__conv_tb_nm}(id) ON DELETE CASCADE)''')
@@ -492,14 +525,14 @@ class SqliteDatabase:
         return self.__c.fetchall()
 
     def selectCertainConvHistory(self, id):
-        return [elem[3] for elem in self.selectCertainConv(id)]
+        return [{'is_user': elem[2], 'conv': elem[3], 'finish_reason': elem[4], 'update_dt': elem[5]} for elem in self.selectCertainConv(id)]
 
-    def insertConvUnit(self, id, user_f, conv):
+    def insertConvUnit(self, id, user_f, conv, finish_reason=''):
         try:
             # Insert a row into the table
             self.__c.execute(
-                f'INSERT INTO {self.__conv_unit_tb_nm}{id} (id_fk, is_user, conv) VALUES (?, ?, ?)',
-                (id, user_f, conv,))
+                f'INSERT INTO {self.__conv_unit_tb_nm}{id} (id_fk, is_user, conv, finish_reason) VALUES (?, ?, ?, ?)',
+                (id, user_f, conv, finish_reason))
             new_id = self.__c.lastrowid
             # Commit the transaction
             self.__conn.commit()

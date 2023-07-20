@@ -37,16 +37,21 @@ class OpenAIChatBotWidget(QWidget):
         # ini
         self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.IniFormat)
 
+        if not self.__settings_ini.contains('finish_reason'):
+            self.__settings_ini.setValue('finish_reason', False)
+        self.__finish_reason = self.__settings_ini.value('finish_reason', type=bool)
+
         # llamaindex
         self.__llama_class = GPTLLamaIndexClass()
 
     def __initUi(self):
         self.__leftSideBarWidget = LeftSideBar()
-        self.__browser = ChatBrowser()
+        self.__browser = ChatBrowser(self.__finish_reason)
         self.__prompt = Prompt(self.__db)
         self.__lineEdit = self.__prompt.getTextEdit()
         self.__aiPlaygroundWidget = AIPlaygroundWidget()
         self.__aiPlaygroundWidget.onDirectorySelected.connect(self.__llama_class.set_directory)
+        self.__aiPlaygroundWidget.onFinishReasonToggled.connect(self.__onFinishReasonToggled)
         self.__promptGeneratorWidget = PromptGeneratorWidget(self.__db)
 
         self.__sideBarBtn = SvgButton()
@@ -176,8 +181,6 @@ class OpenAIChatBotWidget(QWidget):
             top_p = self.__settings_ini.value('top_p', type=float)
             frequency_penalty = self.__settings_ini.value('frequency_penalty', type=float)
             presence_penalty = self.__settings_ini.value('presence_penalty', type=float)
-
-            finish_reason = self.__settings_ini.value('finish_reason', type=bool)
             use_llama_index = self.__settings_ini.value('use_llama_index', type=bool)
 
             openai_arg = {
@@ -238,11 +241,10 @@ class OpenAIChatBotWidget(QWidget):
     def __changeConv(self, item: QListWidgetItem):
         if item:
             id = item.data(Qt.UserRole)
-            conv = self.__db.selectCertainConvHistory(id)
-            self.__browser.replaceConv(id, conv)
+            conv_data = self.__db.selectCertainConvHistory(id)
+            self.__browser.replaceConv(id, conv_data)
         else:
             self.__browser.resetChatWidget(0)
-
 
     def __addConv(self):
         cur_id = self.__db.insertConv(LangClass.TRANSLATIONS['New Chat'])
@@ -257,6 +259,9 @@ class OpenAIChatBotWidget(QWidget):
     def __deleteConv(self, id_lst):
         for id in id_lst:
             self.__db.deleteConv(id)
+
+    def __onFinishReasonToggled(self, f):
+        self.__browser.toggle_show_finished_reason_f(f)
 
     def __export(self, ids):
         file_data = QFileDialog.getSaveFileName(self, LangClass.TRANSLATIONS['Save'], os.path.expanduser('~'), 'SQLite DB file (*.db);;txt files Compressed File (*.zip);;html files Compressed File (*.zip)')
@@ -275,6 +280,6 @@ class OpenAIChatBotWidget(QWidget):
                 self.__db.export(ids, filename)
             open_directory(os.path.dirname(filename))
 
-    def __updateConvUnit(self, id, user_f, conv_unit=None):
+    def __updateConvUnit(self, id, user_f, conv_unit=None, finish_reason=''):
         if conv_unit:
-            self.__db.insertConvUnit(id, user_f, conv_unit)
+            self.__db.insertConvUnit(id, user_f, conv_unit, finish_reason=finish_reason)
