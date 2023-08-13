@@ -30,6 +30,8 @@ An internet connection is required.
 
 If you have any questions or you want to make AI related software with PyQt or PySide, feel free to join Discord server of pyqt-openai.
 
+<h3>Please do not distribute this commercially without my permission, by claiming it as your own creation.</h3>
+
 ## Table of Contents
 * [Feature](#feature)
 * [Supported Languages](#supported-languages)
