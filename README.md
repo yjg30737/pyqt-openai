@@ -77,6 +77,7 @@ If you have any questions or you want to make AI related software with PyQt or P
 * Italian
 * Hindi
 * Arabic
+* Japanese
 
 If you have any additional languages you would like to add, please feel free to make a request by mail, issue, discord, etc at any time.
 
