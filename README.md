@@ -262,9 +262,3 @@ SOFTWARE.
 
 ## TODO list
 * tokenizer
-
-## See Also
-* <a href="https://learn.microsoft.com/en-us/azure/cognitive-services/openai/overview">Azure OpenAI service</a>
-* <a href="https://openai.com/waitlist/gpt-4-api">join gpt4 waitlist</a> - i took 1 month to get access from it
-* <a href="https://https://openai.com/waitlist/plugins">join chatgpt plugins waitlist</a>
-
