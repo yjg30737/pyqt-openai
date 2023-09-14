@@ -1,7 +1,7 @@
 import json
 
 from qtpy.QtCore import Signal
-from qtpy.QtWidgets import QWidget, QCheckBox, QListWidget, QVBoxLayout, QHBoxLayout, QSpacerItem, QSizePolicy, QListWidgetItem, \
+from qtpy.QtWidgets import QWidget, QComboBox, QCheckBox, QListWidget, QVBoxLayout, QHBoxLayout, QSpacerItem, QSizePolicy, QListWidgetItem, \
     QLabel
 
 from pyqt_openai.convListWidget import ConvListWidget
@@ -25,6 +25,10 @@ class LeftSideBar(QWidget):
         searchBar = SearchBar()
         searchBar.searched.connect(self.__search)
         searchBar.setPlaceHolder('Search the Conversation...')
+
+        self.__searchOptionCmbBox = QComboBox()
+        self.__searchOptionCmbBox.addItems(['Title', 'Content'])
+        self.__searchOptionCmbBox.setMinimumHeight(searchBar.sizeHint().height())
 
         self.__addBtn = SvgButton()
         self.__delBtn = SvgButton()
@@ -56,9 +60,17 @@ class LeftSideBar(QWidget):
         navWidget = QWidget()
         navWidget.setLayout(lay)
 
+        lay = QHBoxLayout()
+        lay.addWidget(searchBar)
+        lay.addWidget(self.__searchOptionCmbBox)
+        lay.setContentsMargins(0, 0, 0, 0)
+
+        searchWidget = QWidget()
+        searchWidget.setLayout(lay)
+
         lay = QVBoxLayout()
         lay.addWidget(navWidget)
-        lay.addWidget(searchBar)
+        lay.addWidget(searchWidget)
 
         topWidget = QWidget()
         topWidget.setLayout(lay)
