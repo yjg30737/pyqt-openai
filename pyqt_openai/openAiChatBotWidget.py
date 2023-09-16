@@ -3,7 +3,7 @@ import webbrowser
 
 from qtpy.QtCore import Qt, QSettings, Signal
 from qtpy.QtWidgets import QHBoxLayout, QWidget, QSizePolicy, QVBoxLayout, QFrame, QSplitter, \
-    QListWidgetItem, QFileDialog, QMessageBox
+    QListWidgetItem, QFileDialog, QMessageBox, QPushButton
 
 from pyqt_openai.chat_widget.chatWidget import ChatWidget
 from pyqt_openai.chat_widget.prompt import Prompt
@@ -79,10 +79,21 @@ class OpenAIChatBotWidget(QWidget):
         self.__promptBtn.setChecked(True)
         self.__promptBtn.toggled.connect(self.__promptGeneratorWidget.setVisible)
 
+        sep = QFrame()
+        sep.setFrameShape(QFrame.VLine)
+        sep.setFrameShadow(QFrame.Sunken)
+
+        toggleMenuWidgetBtn = QPushButton('Show Menu Widget')
+        toggleMenuWidgetBtn.setCheckable(True)
+        toggleMenuWidgetBtn.setChecked(True)
+        toggleMenuWidgetBtn.toggled.connect(self.__chatWidget.toggleMenuWidget)
+
         lay = QHBoxLayout()
         lay.addWidget(self.__sideBarBtn)
         lay.addWidget(self.__settingBtn)
         lay.addWidget(self.__promptBtn)
+        lay.addWidget(sep)
+        lay.addWidget(toggleMenuWidgetBtn)
         lay.setContentsMargins(2, 2, 2, 2)
         lay.setAlignment(Qt.AlignLeft)
 

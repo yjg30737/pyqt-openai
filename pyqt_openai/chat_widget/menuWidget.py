@@ -18,17 +18,9 @@ class MenuWidget(QWidget):
         sep.setFrameShape(QFrame.VLine)
         sep.setFrameShadow(QFrame.Sunken)
 
-        self.__closeBtn = SvgButton()
-        self.__closeBtn.setIcon('ico/close.svg')
-        self.__closeBtn.clicked.connect(self.__close)
-
         lay = QHBoxLayout()
         lay.addWidget(findTextWidget)
         lay.addWidget(sep)
-        lay.addWidget(self.__closeBtn)
         lay.setContentsMargins(0, 0, 0, 0)
 
         self.setLayout(lay)
-
-    def __close(self):
-        self.setVisible(False)

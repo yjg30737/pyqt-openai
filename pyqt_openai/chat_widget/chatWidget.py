@@ -24,10 +24,10 @@ class ChatWidget(QWidget):
 
         self.__chatBrowser = ChatBrowser(self.__show_finished_reason_f)
 
-        menuWidget = MenuWidget(self.__chatBrowser)
+        self.__menuWidget = MenuWidget(self.__chatBrowser)
 
         lay = QVBoxLayout()
-        lay.addWidget(menuWidget)
+        lay.addWidget(self.__menuWidget)
         lay.addWidget(self.__chatBrowser)
         lay.setSpacing(0)
         lay.setContentsMargins(0, 0, 0, 0)
@@ -56,3 +56,6 @@ class ChatWidget(QWidget):
 
     def getChatBrowser(self):
         return self.__chatBrowser
+
+    def toggleMenuWidget(self, f):
+        self.__menuWidget.setVisible(f)
