@@ -3,6 +3,8 @@ import os, sys
 from qtpy.QtGui import QIcon
 
 # Get the absolute path of the current script file
+from pyqt_openai.chat_widget.chatBrowser import ChatBrowser
+
 script_path = os.path.abspath(__file__)
 
 # Get the root directory by going up one level from the script directory
@@ -18,27 +20,27 @@ from chat_widget.findTextWidget import FindTextWidget
 
 
 class MenuWidget(QWidget):
-    def __init__(self):
+    def __init__(self, widget: ChatBrowser):
         super().__init__()
-        self.__initUi()
+        self.__initUi(widget=widget)
 
-    def __initUi(self):
-        findTextWidget = FindTextWidget(self)
+    def __initUi(self, widget):
+        findTextWidget = FindTextWidget(widget)
 
         self.__arrowBtn = QPushButton()
         self.__arrowBtn.toggled.connect(self.__toggled)
-
-        self.__foldUnfoldAnimation = QPropertyAnimation(self, b"height")
-        self.__foldUnfoldAnimation.valueChanged.connect(self.setFixedHeight)
-        self.__foldUnfoldAnimation.setStartValue(self.height())
-        self.__foldUnfoldAnimation.setDuration(200)
-        self.__foldUnfoldAnimation.setEndValue(self.sizeHint().height())
 
         lay = QHBoxLayout()
         lay.addWidget(findTextWidget)
         lay.addWidget(self.__arrowBtn)
 
         self.setLayout(lay)
+
+        self.__foldUnfoldAnimation = QPropertyAnimation(self, b"height")
+        self.__foldUnfoldAnimation.valueChanged.connect(self.setFixedHeight)
+        self.__foldUnfoldAnimation.setStartValue(self.sizeHint().height())
+        self.__foldUnfoldAnimation.setDuration(200)
+        self.__foldUnfoldAnimation.setEndValue(0)
 
     def __toggled(self, f):
         if f:
