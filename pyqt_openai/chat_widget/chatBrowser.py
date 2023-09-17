@@ -151,6 +151,16 @@ class ChatBrowser(QScrollArea):
         self.clear()
         self.setCurId(id)
 
+    def setCurrentLabelIncludingTextBySliderPosition(self, text):
+        lay = self.widget().layout()
+        labels = [lay.itemAt(i).widget() for i in range(lay.count()) if lay.itemAt(i)]
+        label_info = [{'class':label, 'text':label.text(), 'pos':label.y()} for label in labels]
+        res_lbl = []
+        for _ in label_info:
+            if _['text'].find(text) != -1:
+                res_lbl.append(_)
+        return res_lbl
+
     def replaceConv(self, id, conv_data):
         """
         for showing old conversation

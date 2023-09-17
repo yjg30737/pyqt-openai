@@ -13,9 +13,9 @@ class FindTextWidget(QWidget):
     nextClicked = pyqtSignal(str)
     closeSignal = pyqtSignal()
 
-    def __init__(self, widget: ChatBrowser):
+    def __init__(self, chatBrowser: ChatBrowser):
         super().__init__()
-        self.__widgetToFind = widget
+        self.__chatBrowser = chatBrowser
 
         self.__selectionsInit()
         self.__initUi()
@@ -97,18 +97,26 @@ class FindTextWidget(QWidget):
 
     def __textChanged(self, text, widgetTextChanged=False):
         f1 = text.strip() != ''
-        flags = 0
-        if self.__caseBtn.isChecked():
-            flags = flags | QTextDocument.FindCaseSensitively
+        if f1:
+            res_lbl = self.__chatBrowser.setCurrentLabelIncludingTextBySliderPosition(text)
+            f2 = len(res_lbl) > 0
+            self.__btnToggled(f2)
         else:
-            flags = flags & ~QTextDocument.FindCaseSensitively
-        if self.__wordBtn.isChecked():
-            flags = flags | QTextDocument.FindWholeWords
-        else:
-            flags = flags & ~QTextDocument.FindWholeWords
-        self.__findInit(text, flags=flags, widgetTextChanged=widgetTextChanged)
-        f2 = len(self.__selections) > 0
-        self.__btnToggled(f1 and f2)
+            self.__btnToggled(False)
+
+
+        # flags = 0
+        # if self.__caseBtn.isChecked():
+        #     flags = flags | QTextDocument.FindCaseSensitively
+        # else:
+        #     flags = flags & ~QTextDocument.FindCaseSensitively
+        # if self.__wordBtn.isChecked():
+        #     flags = flags | QTextDocument.FindWholeWords
+        # else:
+        #     flags = flags & ~QTextDocument.FindWholeWords
+        # self.__findInit(text, flags=flags, widgetTextChanged=widgetTextChanged)
+        # f2 = len(self.__selections) > 0
+        # self.__btnToggled(f1 and f2)
 
     def __setCount(self):
         word_cnt = len(self.__selections)
@@ -131,7 +139,7 @@ class FindTextWidget(QWidget):
         #     self.__selections.append(sel)
         #
         # self.__selectionsInit()
-        # doc = self.__widgetToFind.document()
+        # doc = self.__chatBrowser.document()
         # fmt = QTextCharFormat()
         # fmt.setForeground(Qt.green)
         # fmt.setBackground(Qt.darkYellow)
@@ -147,7 +155,7 @@ class FindTextWidget(QWidget):
         #                 addSelection()
         #         break
         #     addSelection()
-        # self.__widgetToFind.setExtraSelections(self.__selections)
+        # self.__chatBrowser.setExtraSelections(self.__selections)
         # self.__setCount()
         # if widgetTextChanged:
         #     pass
@@ -156,7 +164,7 @@ class FindTextWidget(QWidget):
 
     def prev(self):
         pass
-        # cur_pos = self.__widgetToFind.textCursor().position()
+        # cur_pos = self.__chatBrowser.textCursor().position()
         # text = self.__findTextLineEdit.text()
         #
         # def getPosList():
@@ -193,7 +201,7 @@ class FindTextWidget(QWidget):
 
     def next(self):
         pass
-        # cur_pos = self.__widgetToFind.textCursor().position()
+        # cur_pos = self.__chatBrowser.textCursor().position()
         # text = self.__findTextLineEdit.text()
         #
         # def getPosList():
@@ -241,8 +249,8 @@ class FindTextWidget(QWidget):
         # cur.setPosition(start, QTextCursor.MoveAnchor)
         # cur.setPosition(end, QTextCursor.KeepAnchor)
         #
-        # self.__widgetToFind.setTextCursor(cur)
-        # self.__widgetToFind.ensureCursorVisible()
+        # self.__chatBrowser.setTextCursor(cur)
+        # self.__chatBrowser.ensureCursorVisible()
 
     def __caseToggled(self, f):
         text = self.__findTextLineEdit.text()
@@ -253,7 +261,7 @@ class FindTextWidget(QWidget):
         self.__textChanged(text)
 
     def showEvent(self, e):
-        # cur = self.__widgetToFind.textCursor()
+        # cur = self.__chatBrowser.textCursor()
         # text = cur.selectedText()
         # prev_text = self.__findTextLineEdit.text()
         # if prev_text == text:
@@ -271,14 +279,14 @@ class FindTextWidget(QWidget):
         pass
         # not_selections = []
         # fmt = QTextCharFormat()
-        # fmt.setForeground(self.__widgetToFind.textColor())
+        # fmt.setForeground(self.__chatBrowser.textColor())
         # for selection in self.__selections:
         #     cur = selection.cursor
         #     sel = QTextBrowser.ExtraSelection()
         #     sel.cursor = cur
         #     sel.format = fmt
         #     not_selections.append(sel)
-        # self.__widgetToFind.setExtraSelections(not_selections)
+        # self.__chatBrowser.setExtraSelections(not_selections)
 
         self.closeSignal.emit()
 
