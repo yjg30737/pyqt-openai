@@ -14,13 +14,8 @@ class MenuWidget(QWidget):
     def __initUi(self, widget):
         findTextWidget = FindTextWidget(widget)
 
-        sep = QFrame()
-        sep.setFrameShape(QFrame.VLine)
-        sep.setFrameShadow(QFrame.Sunken)
-
         lay = QHBoxLayout()
         lay.addWidget(findTextWidget)
-        lay.addWidget(sep)
         lay.setContentsMargins(0, 0, 0, 0)
 
         self.setLayout(lay)
