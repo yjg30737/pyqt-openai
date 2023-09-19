@@ -169,9 +169,12 @@ class FindTextWidget(QWidget):
         # else:
         #     self.next()
 
+    def __setCurrentPosition(self):
+        self.__chatBrowser.verticalScrollBar().setSliderPosition(self.__selections[self.__cur_idx]['pos'])
+
     def prev(self):
         self.__cur_idx = max(0, self.__cur_idx-1)
-        self.__chatBrowser.verticalScrollBar().setSliderPosition(self.__selections[self.__cur_idx]['pos'])
+        self.__setCurrentPosition()
         # cur_pos = self.__chatBrowser.textCursor().position()
         # text = self.__findTextLineEdit.text()
         #
@@ -209,7 +212,7 @@ class FindTextWidget(QWidget):
 
     def next(self):
         self.__cur_idx = min(len(self.__selections)-1, self.__cur_idx+1)
-        self.__chatBrowser.verticalScrollBar().setSliderPosition(self.__selections[self.__cur_idx]['pos'])
+        self.__setCurrentPosition()
         # cur_pos = self.__chatBrowser.textCursor().position()
         # text = self.__findTextLineEdit.text()
         #
