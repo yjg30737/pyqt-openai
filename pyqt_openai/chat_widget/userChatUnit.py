@@ -1,4 +1,5 @@
 import pyperclip
+from qtpy.QtGui import QColor
 
 from qtpy.QtCore import Qt
 from qtpy.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel
@@ -54,3 +55,7 @@ class UserChatUnit(QWidget):
 
     def text(self):
         return self.__lbl.text()
+
+    def highlightWord(self, text, color_str):
+        color = QColor(color_str)
+        print(f'highlight {text} with {color.name()}')

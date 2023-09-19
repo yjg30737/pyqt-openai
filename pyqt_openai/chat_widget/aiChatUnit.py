@@ -204,6 +204,10 @@ class AIChatUnit(QWidget):
         #         browser.setText(lexer, html_code)
         #         self.__mainWidget.layout().addWidget(browser)
 
+    def highlightWord(self, text, color_str):
+        color = QColor(color_str)
+        print(f'highlight {text} with {color.name()}')
+
     def addText(self, text: str):
         unit = self.__mainWidget.layout().itemAt(self.__mainWidget.layout().count()-1).widget()
         if isinstance(unit, QLabel):

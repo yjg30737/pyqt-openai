@@ -1,9 +1,10 @@
-from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtGui import QTextCursor, QTextCharFormat, QTextDocument
-from PyQt5.QtWidgets import QWidget, QTextBrowser, QLabel, \
-    QHBoxLayout, QGridLayout, QLineEdit, QMessageBox
+from qtpy.QtCore import pyqtSignal
+from qtpy.QtWidgets import QWidget, QLabel, \
+    QHBoxLayout, QGridLayout, QLineEdit
 
+from pyqt_openai.chat_widget.aiChatUnit import AIChatUnit
 from pyqt_openai.chat_widget.chatBrowser import ChatBrowser
+from pyqt_openai.chat_widget.userChatUnit import UserChatUnit
 from pyqt_openai.svgButton import SvgButton
 
 
@@ -16,13 +17,12 @@ class FindTextWidget(QWidget):
     def __init__(self, chatBrowser: ChatBrowser):
         super().__init__()
         self.__chatBrowser = chatBrowser
-
-        self.__selectionsInit()
         self.__initVal()
         self.__initUi()
 
     def __initVal(self):
         self.__selections = []
+        self.__cur_text = ''
         self.__cur_idx = 0
 
     def __initUi(self):
@@ -105,6 +105,7 @@ class FindTextWidget(QWidget):
         self.__cur_idx = 0
         if f1:
             self.__selections = self.__chatBrowser.setCurrentLabelIncludingTextBySliderPosition(text)
+            self.__cur_text = text
             self.__setCount()
             f2 = len(self.__selections) > 0
             self.__btnToggled(f2)
@@ -132,10 +133,6 @@ class FindTextWidget(QWidget):
     def __btnToggled(self, f):
         self.__prevBtn.setEnabled(f)
         self.__nextBtn.setEnabled(f)
-
-    def __selectionsInit(self):
-        self.__selections = []
-        self.__selections_idx = -1
 
     def __findInit(self, text, flags=0, widgetTextChanged=False):
         pass
@@ -172,9 +169,15 @@ class FindTextWidget(QWidget):
     def __setCurrentPosition(self):
         self.__chatBrowser.verticalScrollBar().setSliderPosition(self.__selections[self.__cur_idx]['pos'])
 
+    def __highlightCurrentUnitColor(self):
+        unit = self.__selections[self.__cur_idx]['class']
+        if isinstance(unit, UserChatUnit) or isinstance(unit, AIChatUnit):
+            unit.highlightWord(self.__cur_text, '#FF0000')
+
     def prev(self):
         self.__cur_idx = max(0, self.__cur_idx-1)
         self.__setCurrentPosition()
+        self.__highlightCurrentUnitColor()
         # cur_pos = self.__chatBrowser.textCursor().position()
         # text = self.__findTextLineEdit.text()
         #
@@ -213,6 +216,7 @@ class FindTextWidget(QWidget):
     def next(self):
         self.__cur_idx = min(len(self.__selections)-1, self.__cur_idx+1)
         self.__setCurrentPosition()
+        self.__highlightCurrentUnitColor()
         # cur_pos = self.__chatBrowser.textCursor().position()
         # text = self.__findTextLineEdit.text()
         #
