@@ -61,6 +61,9 @@ class UserChatUnit(QWidget):
     def text(self):
         return self.__lbl.text()
 
+    def removeFormat(self):
+        self.setText(self.__plain_text)
+
     def highlightWord(self, text, color_str):
         self.__plain_text = self.text()
 

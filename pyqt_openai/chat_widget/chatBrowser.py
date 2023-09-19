@@ -151,15 +151,24 @@ class ChatBrowser(QScrollArea):
         self.clear()
         self.setCurId(id)
 
-    def setCurrentLabelIncludingTextBySliderPosition(self, text):
+    def __getEveryLabels(self):
         lay = self.widget().layout()
         labels = [lay.itemAt(i).widget() for i in range(lay.count()) if lay.itemAt(i)]
+        return labels
+
+    def setCurrentLabelIncludingTextBySliderPosition(self, text):
+        labels = self.__getEveryLabels()
         label_info = [{'class':label, 'text':label.text(), 'pos':label.y()} for label in labels]
         res_lbl = []
         for _ in label_info:
             if _['text'].find(text) != -1:
                 res_lbl.append(_)
         return res_lbl
+
+    def removeFormat(self):
+        labels = self.__getEveryLabels()
+        for label in labels:
+            label.removeFormat()
 
     def replaceConv(self, id, conv_data):
         """

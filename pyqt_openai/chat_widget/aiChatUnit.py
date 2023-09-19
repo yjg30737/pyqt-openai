@@ -208,6 +208,9 @@ class AIChatUnit(QWidget):
         #         browser.setText(lexer, html_code)
         #         self.__mainWidget.layout().addWidget(browser)
 
+    def removeFormat(self):
+        self.setText(self.__plain_text)
+
     def highlightWord(self, text, color_str):
         self.__plain_text = self.text()
 

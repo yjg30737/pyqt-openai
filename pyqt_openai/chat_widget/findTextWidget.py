@@ -103,14 +103,16 @@ class FindTextWidget(QWidget):
     def __textChanged(self, text):
         f1 = text.strip() != ''
         self.__cur_idx = 0
+        self.__cur_text = text
         if f1:
             self.__selections = self.__chatBrowser.setCurrentLabelIncludingTextBySliderPosition(text)
-            self.__cur_text = text
-            self.__setCount()
             f2 = len(self.__selections) > 0
             self.__btnToggled(f2)
         else:
+            self.__selections = []
             self.__btnToggled(False)
+            self.__chatBrowser.removeFormat()
+        self.__setCount()
 
 
         # flags = 0
