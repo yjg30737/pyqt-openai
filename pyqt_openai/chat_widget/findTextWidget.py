@@ -22,7 +22,7 @@ class FindTextWidget(QWidget):
         self.__initUi()
 
     def __initVal(self):
-        self.__res_lbl = []
+        self.__selections = []
         self.__cur_idx = 0
 
     def __initUi(self):
@@ -104,8 +104,9 @@ class FindTextWidget(QWidget):
         f1 = text.strip() != ''
         self.__cur_idx = 0
         if f1:
-            self.__res_lbl = self.__chatBrowser.setCurrentLabelIncludingTextBySliderPosition(text)
-            f2 = len(self.__res_lbl) > 0
+            self.__selections = self.__chatBrowser.setCurrentLabelIncludingTextBySliderPosition(text)
+            self.__setCount()
+            f2 = len(self.__selections) > 0
             self.__btnToggled(f2)
         else:
             self.__btnToggled(False)
@@ -170,7 +171,7 @@ class FindTextWidget(QWidget):
 
     def prev(self):
         self.__cur_idx = max(0, self.__cur_idx-1)
-        self.__chatBrowser.verticalScrollBar().setSliderPosition(self.__res_lbl[self.__cur_idx]['pos'])
+        self.__chatBrowser.verticalScrollBar().setSliderPosition(self.__selections[self.__cur_idx]['pos'])
         # cur_pos = self.__chatBrowser.textCursor().position()
         # text = self.__findTextLineEdit.text()
         #
@@ -207,8 +208,8 @@ class FindTextWidget(QWidget):
         #         pass
 
     def next(self):
-        self.__cur_idx = min(len(self.__res_lbl)-1, self.__cur_idx+1)
-        self.__chatBrowser.verticalScrollBar().setSliderPosition(self.__res_lbl[self.__cur_idx]['pos'])
+        self.__cur_idx = min(len(self.__selections)-1, self.__cur_idx+1)
+        self.__chatBrowser.verticalScrollBar().setSliderPosition(self.__selections[self.__cur_idx]['pos'])
         # cur_pos = self.__chatBrowser.textCursor().position()
         # text = self.__findTextLineEdit.text()
         #
