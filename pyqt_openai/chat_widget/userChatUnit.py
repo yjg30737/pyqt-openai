@@ -55,17 +55,22 @@ class UserChatUnit(QWidget):
     def __copy(self):
         pyperclip.copy(self.text())
 
-    def setText(self, text, formatted=False):
-        if formatted:
-            self.__plain_text = text
+    def setText(self, text):
         self.__lbl.setText(text)
 
     def text(self):
         return self.__lbl.text()
 
     def highlightWord(self, text, color_str):
+        self.__plain_text = self.text()
+
         color = QColor(color_str)
         print(f'highlight {text} with {color.name()}')
 
+        m = re.finditer(text, self.__plain_text)
+        print(m)
+        for _ in m:
+            print(_.span())
+
         formatted_text = text
-        self.setText(formatted_text, True)
+        # self.setText(formatted_text, True)

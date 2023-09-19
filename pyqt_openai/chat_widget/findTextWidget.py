@@ -1,4 +1,4 @@
-from qtpy.QtCore import pyqtSignal
+from qtpy.QtCore import Signal
 from qtpy.QtWidgets import QWidget, QLabel, \
     QHBoxLayout, QGridLayout, QLineEdit
 
@@ -10,9 +10,9 @@ from pyqt_openai.svgButton import SvgButton
 
 class FindTextWidget(QWidget):
 
-    prevClicked = pyqtSignal(str)
-    nextClicked = pyqtSignal(str)
-    closeSignal = pyqtSignal()
+    prevClicked = Signal(str)
+    nextClicked = Signal(str)
+    closeSignal = Signal()
 
     def __init__(self, chatBrowser: ChatBrowser):
         super().__init__()

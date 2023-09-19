@@ -151,9 +151,7 @@ class AIChatUnit(QWidget):
     def getFinishReason(self):
         return self.__finishReasonLbl.text()
 
-    def setText(self, text: str, formatted=False):
-        if formatted:
-            self.__plain_text = text
+    def setText(self, text: str):
         lbl = QLabel(text)
 
         lbl.setAlignment(Qt.AlignLeft)
@@ -211,11 +209,16 @@ class AIChatUnit(QWidget):
         #         self.__mainWidget.layout().addWidget(browser)
 
     def highlightWord(self, text, color_str):
+        self.__plain_text = self.text()
+
         color = QColor(color_str)
         print(f'highlight {text} with {color.name()}')
 
+        m = re.finditer(text, self.__plain_text)
+        for _ in m:
+            print(_.span())
+
         formatted_text = text
-        self.setText(formatted_text, True)
 
     def addText(self, text: str):
         unit = self.__mainWidget.layout().itemAt(self.__mainWidget.layout().count()-1).widget()
