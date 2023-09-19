@@ -1,6 +1,7 @@
+import re
+
 import pyperclip
 from qtpy.QtGui import QColor
-
 from qtpy.QtCore import Qt
 from qtpy.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel
 
@@ -10,7 +11,11 @@ from pyqt_openai.svgButton import SvgButton
 class UserChatUnit(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.__initVal()
         self.__initUi()
+
+    def __initVal(self):
+        self.__plain_text = ''
 
     def __initUi(self):
         # common
@@ -50,7 +55,9 @@ class UserChatUnit(QWidget):
     def __copy(self):
         pyperclip.copy(self.text())
 
-    def setText(self, text):
+    def setText(self, text, formatted=False):
+        if formatted:
+            self.__plain_text = text
         self.__lbl.setText(text)
 
     def text(self):
@@ -59,3 +66,6 @@ class UserChatUnit(QWidget):
     def highlightWord(self, text, color_str):
         color = QColor(color_str)
         print(f'highlight {text} with {color.name()}')
+
+        formatted_text = text
+        self.setText(formatted_text, True)

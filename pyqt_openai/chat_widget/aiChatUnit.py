@@ -69,7 +69,11 @@ class SourceBrowser(QWidget):
 class AIChatUnit(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.__initVal()
         self.__initUi()
+
+    def __initVal(self):
+        self.__plain_text = ''
 
     def __initUi(self):
         # common
@@ -147,7 +151,9 @@ class AIChatUnit(QWidget):
     def getFinishReason(self):
         return self.__finishReasonLbl.text()
 
-    def setText(self, text: str):
+    def setText(self, text: str, formatted=False):
+        if formatted:
+            self.__plain_text = text
         lbl = QLabel(text)
 
         lbl.setAlignment(Qt.AlignLeft)
@@ -207,6 +213,9 @@ class AIChatUnit(QWidget):
     def highlightWord(self, text, color_str):
         color = QColor(color_str)
         print(f'highlight {text} with {color.name()}')
+
+        formatted_text = text
+        self.setText(formatted_text, True)
 
     def addText(self, text: str):
         unit = self.__mainWidget.layout().itemAt(self.__mainWidget.layout().count()-1).widget()
