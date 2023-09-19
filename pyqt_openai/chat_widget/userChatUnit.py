@@ -71,9 +71,19 @@ class UserChatUnit(QWidget):
         print(f'highlight {text} with {color.name()}')
 
         m = re.finditer(text, self.__plain_text)
-        print(m)
-        for _ in m:
-            print(_.span())
+        formatted_text = ''
+        last_end = 0
 
-        formatted_text = text
+        for _ in m:
+            start, end = _.span()
+
+            formatted_text += self.__plain_text[last_end:start]
+
+            formatted_text += "<span style='color:red'>" + self.__plain_text[start:end] + "</span>"
+
+            last_end = end
+
+        formatted_text += self.__plain_text[last_end:]
+
+        self.__lbl.setText(formatted_text)
         # self.setText(formatted_text, True)

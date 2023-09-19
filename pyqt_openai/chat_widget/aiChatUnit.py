@@ -73,6 +73,7 @@ class AIChatUnit(QWidget):
         self.__initUi()
 
     def __initVal(self):
+        self.__lbl = ''
         self.__plain_text = ''
 
     def __initUi(self):
@@ -152,14 +153,14 @@ class AIChatUnit(QWidget):
         return self.__finishReasonLbl.text()
 
     def setText(self, text: str):
-        lbl = QLabel(text)
+        self.__lbl = QLabel(text)
 
-        lbl.setAlignment(Qt.AlignLeft)
-        lbl.setWordWrap(True)
-        lbl.setTextInteractionFlags(Qt.TextSelectableByMouse)
-        lbl.setOpenExternalLinks(True)
+        self.__lbl.setAlignment(Qt.AlignLeft)
+        self.__lbl.setWordWrap(True)
+        self.__lbl.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        self.__lbl.setOpenExternalLinks(True)
 
-        self.__mainWidget.layout().addWidget(lbl)
+        self.__mainWidget.layout().addWidget(self.__lbl)
 
         # old code
         # chunks = text.split('```')
@@ -218,10 +219,21 @@ class AIChatUnit(QWidget):
         print(f'highlight {text} with {color.name()}')
 
         m = re.finditer(text, self.__plain_text)
-        for _ in m:
-            print(_.span())
+        formatted_text = ''
+        last_end = 0
 
-        formatted_text = text
+        for _ in m:
+            start, end = _.span()
+
+            formatted_text += self.__plain_text[last_end:start]
+
+            formatted_text += "<span style='color:red'>" + self.__plain_text[start:end] + "</span>"
+
+            last_end = end
+
+        formatted_text += self.__plain_text[last_end:]
+
+        self.__lbl.setText(formatted_text)
 
     def addText(self, text: str):
         unit = self.__mainWidget.layout().itemAt(self.__mainWidget.layout().count()-1).widget()
