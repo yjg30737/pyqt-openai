@@ -43,7 +43,7 @@ class OpenAIChatBotWidget(QWidget):
         self.__llama_class = GPTLLamaIndexClass()
 
     def __initUi(self):
-        self.__leftSideBarWidget = LeftSideBar()
+        self.__leftSideBarWidget = LeftSideBar(self.__db)
         self.__chatWidget = ChatWidget(self.__finish_reason)
         self.__browser = self.__chatWidget.getChatBrowser()
 
@@ -282,7 +282,7 @@ class OpenAIChatBotWidget(QWidget):
     def __changeConv(self, item: QListWidgetItem):
         if item:
             id = item.data(Qt.UserRole)
-            conv_data = self.__db.selectCertainConvHistory(id)
+            conv_data = self.__db.selectCertainConv(id)
             self.__browser.replaceConv(id, conv_data)
         else:
             self.__browser.resetChatWidget(0)

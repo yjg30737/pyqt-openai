@@ -17,9 +17,13 @@ class LeftSideBar(QWidget):
     convUpdated = Signal(int, str)
     export = Signal(list)
 
-    def __init__(self):
+    def __init__(self, db):
         super().__init__()
+        self.__initVal(db)
         self.__initUi()
+
+    def __initVal(self, db):
+        self.__db = db
 
     def __initUi(self):
         searchBar = SearchBar()
@@ -110,10 +114,28 @@ class LeftSideBar(QWidget):
         self.__convListWidget.toggleState(f)
 
     def __search(self, text):
-        for i in range(self.__convListWidget.count()):
-            item = self.__convListWidget.item(i)
-            widget = self.__convListWidget.itemWidget(item)
-            item.setHidden(False if text.lower() in widget.text().lower() else True)
+        # title
+        if self.__searchOptionCmbBox.currentText() == LangClass.TRANSLATIONS['Title']:
+            for i in range(self.__convListWidget.count()):
+                # refac
+                item = self.__convListWidget.item(i)
+                widget = self.__convListWidget.itemWidget(item)
+                item.setHidden(False if text.lower() in widget.text().lower() else True)
+        # content
+        elif self.__searchOptionCmbBox.currentText() == LangClass.TRANSLATIONS['Content']:
+            convs = self.__db.selectAllContentOfConv()
+            for conv in convs:
+                print('#'*8+'Conv Start'+'#'*8)
+                print(conv)
+                print('#' * 8 + 'Conv End' + '#' * 8)
+                print('\n')
+
+            # for i in convs:
+            #     # refac
+            #     item = self.__convListWidget.item(i)
+            #     widget = self.__convListWidget.itemWidget(item)
+            #     item.setHidden(False if text.lower() in widget.text().lower() else True)
+
 
     def initHistory(self, db):
         try:

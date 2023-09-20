@@ -27,7 +27,7 @@ def open_directory(path):
 
 def conv_unit_to_txt(db, id, title, username='User', ai_name='AI'):
     content = ''
-    certain_conv_filename_content = db.selectCertainConv(id)
+    certain_conv_filename_content = db.selectCertainConvRaw(id)
     content += f'== {title} ==' + '\n'*2
     for unit in certain_conv_filename_content:
         unit_prefix = username if unit[2] == 1 else ai_name
@@ -36,7 +36,7 @@ def conv_unit_to_txt(db, id, title, username='User', ai_name='AI'):
     return content
 
 def conv_unit_to_html(db, id, title):
-    certain_conv_filename_content = db.selectCertainConv(id)
+    certain_conv_filename_content = db.selectCertainConvRaw(id)
     chat_history = [unit[3] for unit in certain_conv_filename_content]
     template = Template('''
     <html>

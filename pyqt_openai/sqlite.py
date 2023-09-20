@@ -520,12 +520,18 @@ class SqliteDatabase:
             print(f"An error occurred: {e}")
             raise
 
-    def selectCertainConv(self, id):
+    def selectCertainConvRaw(self, id):
         self.__c.execute(f'SELECT * FROM {self.getConvUnitTableName()}{id}')
         return self.__c.fetchall()
 
-    def selectCertainConvHistory(self, id):
-        return [{'is_user': elem[2], 'conv': elem[3], 'finish_reason': elem[4], 'update_dt': elem[5]} for elem in self.selectCertainConv(id)]
+    def selectCertainConv(self, id):
+        return [{'is_user': elem[2], 'conv': elem[3], 'finish_reason': elem[4], 'update_dt': elem[5]} for elem in self.selectCertainConvRaw(id)]
+
+    def selectAllContentOfConv(self):
+        arr = []
+        for i in [conv[0] for conv in self.selectAllConv()]:
+            arr.append((i, self.selectCertainConv(i)))
+        return arr
 
     def insertConvUnit(self, id, user_f, conv, finish_reason=''):
         try:
