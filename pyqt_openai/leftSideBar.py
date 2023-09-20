@@ -27,7 +27,7 @@ class LeftSideBar(QWidget):
         searchBar.setPlaceHolder('Search the Conversation...')
 
         self.__searchOptionCmbBox = QComboBox()
-        self.__searchOptionCmbBox.addItems(['Title', 'Content'])
+        self.__searchOptionCmbBox.addItems([LangClass.TRANSLATIONS['Title'], LangClass.TRANSLATIONS['Content']])
         self.__searchOptionCmbBox.setMinimumHeight(searchBar.sizeHint().height())
 
         self.__addBtn = SvgButton()
