@@ -117,25 +117,26 @@ class LeftSideBar(QWidget):
         # title
         if self.__searchOptionCmbBox.currentText() == LangClass.TRANSLATIONS['Title']:
             for i in range(self.__convListWidget.count()):
-                # refac
                 item = self.__convListWidget.item(i)
-                widget = self.__convListWidget.itemWidget(item)
-                item.setHidden(False if text.lower() in widget.text().lower() else True)
+                if item:
+                    widget = self.__convListWidget.itemWidget(item)
+                    item.setHidden(False if text.lower() in widget.text().lower() else True)
         # content
         elif self.__searchOptionCmbBox.currentText() == LangClass.TRANSLATIONS['Content']:
             convs = self.__db.selectAllContentOfConv()
+
+            # self.__convListWidget.item.data(Qt.UserRole)
             for conv in convs:
-                print('#'*8+'Conv Start'+'#'*8)
-                print(conv)
-                print('#' * 8 + 'Conv End' + '#' * 8)
-                print('\n')
-
-            # for i in convs:
-            #     # refac
-            #     item = self.__convListWidget.item(i)
-            #     widget = self.__convListWidget.itemWidget(item)
-            #     item.setHidden(False if text.lower() in widget.text().lower() else True)
-
+                i = conv[0]
+                each_content_arr = list(filter(lambda x: x.find(text) != -1, [_['conv'] for _ in conv[1]]))
+                item = self.__convListWidget.item(i)
+                if item:
+                    if len(each_content_arr) > 0:
+                        item.setHidden(False)
+                    else:
+                        item.setHidden(True)
+                    print('id:', conv[0])
+                    print('conv:', [(_['id'], _['conv']) for _ in conv[1]])
 
     def initHistory(self, db):
         try:

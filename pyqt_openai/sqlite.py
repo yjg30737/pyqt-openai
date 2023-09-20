@@ -525,7 +525,12 @@ class SqliteDatabase:
         return self.__c.fetchall()
 
     def selectCertainConv(self, id):
-        return [{'is_user': elem[2], 'conv': elem[3], 'finish_reason': elem[4], 'update_dt': elem[5]} for elem in self.selectCertainConvRaw(id)]
+        return [{'id': elem[0],
+                 'parent_id': elem[1],
+                 'is_user': elem[2],
+                 'conv': elem[3],
+                 'finish_reason': elem[4],
+                 'update_dt': elem[5]} for elem in self.selectCertainConvRaw(id)]
 
     def selectAllContentOfConv(self):
         arr = []
