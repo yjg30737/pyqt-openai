@@ -75,6 +75,7 @@ class AIChatUnit(QWidget):
     def __initVal(self):
         self.__lbl = ''
         self.__plain_text = ''
+        self.__find_f = False
 
     def __initUi(self):
         # common
@@ -209,31 +210,8 @@ class AIChatUnit(QWidget):
         #         browser.setText(lexer, html_code)
         #         self.__mainWidget.layout().addWidget(browser)
 
-    def removeFormat(self):
-        self.setText(self.__plain_text)
-
-    def highlightWord(self, text, color_str):
-        self.__plain_text = self.text()
-
-        color = QColor(color_str)
-        print(f'highlight {text} with {color.name()}')
-
-        m = re.finditer(text, self.__plain_text)
-        formatted_text = ''
-        last_end = 0
-
-        for _ in m:
-            start, end = _.span()
-
-            formatted_text += self.__plain_text[last_end:start]
-
-            formatted_text += "<span style='color:red'>" + self.__plain_text[start:end] + "</span>"
-
-            last_end = end
-
-        formatted_text += self.__plain_text[last_end:]
-
-        self.__lbl.setText(formatted_text)
+    def toPlainText(self):
+        return self.__plain_text
 
     def addText(self, text: str):
         unit = self.__mainWidget.layout().itemAt(self.__mainWidget.layout().count()-1).widget()

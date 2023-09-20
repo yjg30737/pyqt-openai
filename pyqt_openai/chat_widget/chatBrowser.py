@@ -165,11 +165,6 @@ class ChatBrowser(QScrollArea):
                 res_lbl.append(_)
         return res_lbl
 
-    def removeFormat(self):
-        labels = self.__getEveryLabels()
-        for label in labels:
-            label.removeFormat()
-
     def replaceConv(self, id, conv_data):
         """
         for showing old conversation

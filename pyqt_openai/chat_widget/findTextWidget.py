@@ -100,33 +100,23 @@ class FindTextWidget(QWidget):
     def widgetTextChanged(self):
         self.__textChanged(self.__findTextLineEdit.text())
 
+    def __findInit(self, text):
+        self.__selections = self.__chatBrowser.setCurrentLabelIncludingTextBySliderPosition(text)
+        is_exist = len(self.__selections) > 0
+        if is_exist:
+            self.__setCurrentPosition()
+        self.__btnToggled(is_exist)
+
     def __textChanged(self, text):
         f1 = text.strip() != ''
         self.__cur_idx = 0
         self.__cur_text = text
         if f1:
-            self.__selections = self.__chatBrowser.setCurrentLabelIncludingTextBySliderPosition(text)
-            f2 = len(self.__selections) > 0
-            self.__btnToggled(f2)
+            self.__findInit(text)
         else:
             self.__selections = []
             self.__btnToggled(False)
-            self.__chatBrowser.removeFormat()
         self.__setCount()
-
-
-        # flags = 0
-        # if self.__caseBtn.isChecked():
-        #     flags = flags | QTextDocument.FindCaseSensitively
-        # else:
-        #     flags = flags & ~QTextDocument.FindCaseSensitively
-        # if self.__wordBtn.isChecked():
-        #     flags = flags | QTextDocument.FindWholeWords
-        # else:
-        #     flags = flags & ~QTextDocument.FindWholeWords
-        # self.__findInit(text, flags=flags, widgetTextChanged=widgetTextChanged)
-        # f2 = len(self.__selections) > 0
-        # self.__btnToggled(f1 and f2)
 
     def __setCount(self):
         word_cnt = len(self.__selections)
@@ -136,139 +126,16 @@ class FindTextWidget(QWidget):
         self.__prevBtn.setEnabled(f)
         self.__nextBtn.setEnabled(f)
 
-    def __findInit(self, text, flags=0, widgetTextChanged=False):
-        pass
-        # def addSelection():
-        #     sel = QTextBrowser.ExtraSelection()
-        #     sel.cursor = cur
-        #     sel.format = fmt
-        #     self.__selections.append(sel)
-        #
-        # self.__selectionsInit()
-        # doc = self.__chatBrowser.document()
-        # fmt = QTextCharFormat()
-        # fmt.setForeground(Qt.green)
-        # fmt.setBackground(Qt.darkYellow)
-        # cur = QTextCursor()
-        # while True:
-        #     if flags:
-        #         cur = doc.find(text, cur, flags)
-        #     else:
-        #         cur = doc.find(text, cur)
-        #     if cur.isNull() or cur.atEnd():
-        #         if cur.atEnd():
-        #             if cur.selectedText() == text:
-        #                 addSelection()
-        #         break
-        #     addSelection()
-        # self.__chatBrowser.setExtraSelections(self.__selections)
-        # self.__setCount()
-        # if widgetTextChanged:
-        #     pass
-        # else:
-        #     self.next()
-
     def __setCurrentPosition(self):
         self.__chatBrowser.verticalScrollBar().setSliderPosition(self.__selections[self.__cur_idx]['pos'])
-
-    def __highlightCurrentUnitColor(self):
-        unit = self.__selections[self.__cur_idx]['class']
-        if isinstance(unit, UserChatUnit) or isinstance(unit, AIChatUnit):
-            unit.highlightWord(self.__cur_text, '#FF0000')
 
     def prev(self):
         self.__cur_idx = max(0, self.__cur_idx-1)
         self.__setCurrentPosition()
-        self.__highlightCurrentUnitColor()
-        # cur_pos = self.__chatBrowser.textCursor().position()
-        # text = self.__findTextLineEdit.text()
-        #
-        # def getPosList():
-        #     pos_lst = [selection.cursor.position() for selection in self.__selections]
-        #     pos_lst = [c for c in pos_lst if c < cur_pos]
-        #     return pos_lst
-        #
-        # if self.__selections_idx-1 < 0:
-        #     if cur_pos > self.__selections[0].cursor.position():
-        #         pos_lst = getPosList()
-        #         if len(pos_lst) > 0:
-        #             closest_value = max(pos_lst)
-        #             self.__selections_idx = pos_lst.index(closest_value)
-        #             self.__setCursor()
-        #             self.__cnt_lbl.setText(self.__cnt_cur_idx_text.format(self.__selections_idx+1, len(self.__selections)))
-        #             self.prevClicked.emit(text)
-        #         else:
-        #             pass
-        #     else:
-        #         QMessageBox.information(self, 'Notice', 'Start of file.')
-        # else:
-        #     pos_lst = getPosList()
-        #     if len(pos_lst) > 0:
-        #         closest_value = max(pos_lst)
-        #         if cur_pos in pos_lst:
-        #             self.__selections_idx -= 1
-        #         else:
-        #             self.__selections_idx = pos_lst.index(closest_value)
-        #         self.__setCursor()
-        #         self.__cnt_lbl.setText(self.__cnt_cur_idx_text.format(self.__selections_idx+1, len(self.__selections)))
-        #         self.prevClicked.emit(text)
-        #     else:
-        #         pass
 
     def next(self):
         self.__cur_idx = min(len(self.__selections)-1, self.__cur_idx+1)
         self.__setCurrentPosition()
-        self.__highlightCurrentUnitColor()
-        # cur_pos = self.__chatBrowser.textCursor().position()
-        # text = self.__findTextLineEdit.text()
-        #
-        # def getPosList():
-        #     pos_lst = [selection.cursor.position() for selection in self.__selections]
-        #     pos_lst = [c for c in pos_lst if c > cur_pos]
-        #     return pos_lst
-        #
-        # if len(self.__selections) > 0:
-        #     if self.__selections_idx+1 >= len(self.__selections):
-        #         if cur_pos < self.__selections[-1].cursor.position():
-        #             pos_lst = getPosList()
-        #             if len(pos_lst) > 0:
-        #                 closest_value = min(pos_lst)
-        #                 self.__selections_idx = len(self.__selections)-len(pos_lst) + pos_lst.index(closest_value)
-        #
-        #                 self.__setCursor()
-        #                 self.__cnt_lbl.setText(
-        #                     self.__cnt_cur_idx_text.format(self.__selections_idx + 1, len(self.__selections)))
-        #                 self.nextClicked.emit(text)
-        #             else:
-        #                 pass
-        #         else:
-        #             QMessageBox.information(self, 'Notice', 'End of file.')
-        #     else:
-        #         pos_lst = getPosList()
-        #         if len(pos_lst) > 0:
-        #             closest_value = min(pos_lst)
-        #             if cur_pos in pos_lst:
-        #                 self.__selections_idx += 1
-        #             else:
-        #                 self.__selections_idx = len(self.__selections)-len(pos_lst) + pos_lst.index(closest_value)
-        #             self.__setCursor()
-        #             self.__cnt_lbl.setText(self.__cnt_cur_idx_text.format(self.__selections_idx+1, len(self.__selections)))
-        #             self.nextClicked.emit(text)
-        #         else:
-        #             self.__selections_idx += 1
-        #             self.__setCursor()
-        #             self.nextClicked.emit(text)
-
-    def __setCursor(self):
-        pass
-        # cur = self.__selections[self.__selections_idx].cursor
-        # start = cur.selectionStart()
-        # end = cur.selectionEnd()
-        # cur.setPosition(start, QTextCursor.MoveAnchor)
-        # cur.setPosition(end, QTextCursor.KeepAnchor)
-        #
-        # self.__chatBrowser.setTextCursor(cur)
-        # self.__chatBrowser.ensureCursorVisible()
 
     def __caseToggled(self, f):
         text = self.__findTextLineEdit.text()
@@ -278,35 +145,8 @@ class FindTextWidget(QWidget):
         text = self.__findTextLineEdit.text()
         self.__textChanged(text)
 
-    def showEvent(self, e):
-        # cur = self.__chatBrowser.textCursor()
-        # text = cur.selectedText()
-        # prev_text = self.__findTextLineEdit.text()
-        # if prev_text == text:
-        #     self.__textChanged(text)
-        # else:
-        #     self.__findTextLineEdit.setText(text)
-
-        return super().showEvent(e)
-
     def setCloseBtn(self, f: bool):
         self.__closeBtn.setVisible(f)
-
-    def close(self):
-        super().close()
-        pass
-        # not_selections = []
-        # fmt = QTextCharFormat()
-        # fmt.setForeground(self.__chatBrowser.textColor())
-        # for selection in self.__selections:
-        #     cur = selection.cursor
-        #     sel = QTextBrowser.ExtraSelection()
-        #     sel.cursor = cur
-        #     sel.format = fmt
-        #     not_selections.append(sel)
-        # self.__chatBrowser.setExtraSelections(not_selections)
-
-        self.closeSignal.emit()
 
     def getLineEdit(self):
         return self.__findTextLineEdit

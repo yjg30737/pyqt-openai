@@ -16,6 +16,7 @@ class UserChatUnit(QWidget):
 
     def __initVal(self):
         self.__plain_text = ''
+        self.__find_f = False
 
     def __initUi(self):
         # common
@@ -61,29 +62,5 @@ class UserChatUnit(QWidget):
     def text(self):
         return self.__lbl.text()
 
-    def removeFormat(self):
-        self.setText(self.__plain_text)
-
-    def highlightWord(self, text, color_str):
-        self.__plain_text = self.text()
-
-        color = QColor(color_str)
-        print(f'highlight {text} with {color.name()}')
-
-        m = re.finditer(text, self.__plain_text)
-        formatted_text = ''
-        last_end = 0
-
-        for _ in m:
-            start, end = _.span()
-
-            formatted_text += self.__plain_text[last_end:start]
-
-            formatted_text += "<span style='color:red'>" + self.__plain_text[start:end] + "</span>"
-
-            last_end = end
-
-        formatted_text += self.__plain_text[last_end:]
-
-        self.__lbl.setText(formatted_text)
-        # self.setText(formatted_text, True)
+    def toPlainText(self):
+        return self.__plain_text
