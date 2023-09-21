@@ -3,7 +3,7 @@ import re
 import pyperclip
 
 from qtpy.QtCore import Qt
-from qtpy.QtGui import QPalette, QColor
+from qtpy.QtGui import QPalette, QColor, QPixmap
 from qtpy.QtWidgets import QLabel, QWidget, QVBoxLayout, QApplication, QHBoxLayout, QSpacerItem, QSizePolicy, \
     QTextBrowser, QAbstractScrollArea
 from pygments import highlight
@@ -224,6 +224,11 @@ class AIChatUnit(QWidget):
         elif isinstance(unit, QTextBrowser):
             unit.append(text)
 
+    def getIcon(self):
+        return self.__icon.pixmap()
+
+    def setIcon(self, filename):
+        self.__icon.setPixmap(QPixmap(filename))
 
 if __name__ == "__main__":
     import sys

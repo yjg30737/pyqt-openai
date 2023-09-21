@@ -21,6 +21,9 @@ class ChatBrowser(QScrollArea):
         self.__cur_id = 0
         self.__show_finished_reason_f = finish_reason
 
+        self.__user_image = ''
+        self.__ai_image = ''
+
     def __initUi(self):
         lay = QVBoxLayout()
         lay.setAlignment(Qt.AlignTop)
@@ -69,8 +72,13 @@ class ChatBrowser(QScrollArea):
         if user_f:
             chatUnit = UserChatUnit()
             chatUnit.setText(text)
+            chatUnit.setIcon(self.__user_image)
         else:
             chatUnit = AIChatUnit()
+            if chatUnit.getIcon():
+                pass
+            else:
+                chatUnit.setIcon(self.__ai_image)
             if stream_f:
                 unit = self.__getLastUnit()
                 if isinstance(unit, AIChatUnit):
@@ -156,6 +164,16 @@ class ChatBrowser(QScrollArea):
         labels = [lay.itemAt(i).widget() for i in range(lay.count()) if lay.itemAt(i)]
         return labels
 
+    def __getEveryUserLabels(self):
+        lay = self.widget().layout()
+        labels = [lay.itemAt(i).widget() for i in range(lay.count()) if lay.itemAt(i) and isinstance(lay.itemAt(i).widget(), UserChatUnit)]
+        return labels
+
+    def __getEveryAILabels(self):
+        lay = self.widget().layout()
+        labels = [lay.itemAt(i).widget() for i in range(lay.count()) if lay.itemAt(i) and isinstance(lay.itemAt(i).widget(), AIChatUnit)]
+        return labels
+
     def setCurrentLabelIncludingTextBySliderPosition(self, text):
         labels = self.__getEveryLabels()
         label_info = [{'class':label, 'text':label.text(), 'pos':label.y()} for label in labels]
@@ -189,3 +207,15 @@ class ChatBrowser(QScrollArea):
                         lbl = unit.findChild(QLabel, 'finishReasonLbl')
                         if isinstance(lbl, QLabel):
                             lbl.setVisible(self.__show_finished_reason_f)
+
+    def setUserImage(self, img):
+        self.__user_image = img
+        lbls = self.__getEveryUserLabels()
+        for lbl in lbls:
+            lbl.setIcon(img)
+
+    def setAIImage(self, img):
+        self.__ai_image = img
+        lbls = self.__getEveryAILabels()
+        for lbl in lbls:
+            lbl.setIcon(img)

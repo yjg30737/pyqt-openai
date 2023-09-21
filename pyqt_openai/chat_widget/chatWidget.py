@@ -20,19 +20,25 @@ class ChatWidget(QWidget):
 
         if not self.__settings_ini.contains('background_image'):
             self.__settings_ini.setValue('background_image', '')
+        if not self.__settings_ini.contains('user_image'):
+            self.__settings_ini.setValue('user_image', 'ico/user.svg')
+        if not self.__settings_ini.contains('ai_image'):
+            self.__settings_ini.setValue('ai_image', 'ico/openai.svg')
 
         self.__background_image = self.__settings_ini.value('background_image', type=str)
+        self.__user_image = self.__settings_ini.value('user_image', type=str)
+        self.__ai_image = self.__settings_ini.value('ai_image', type=str)
 
     def __initUi(self):
         self.__homeWidget = QScrollArea()
         self.__homeLbl = QLabel(LangClass.TRANSLATIONS['Home'])
-        if self.__background_image:
-            self.__homeLbl.setPixmap(QPixmap(self.__background_image))
         self.__homeLbl.setAlignment(Qt.AlignCenter)
         self.__homeLbl.setFont(QFont('Arial', 32))
         self.__homeWidget.setWidget(self.__homeLbl)
 
         self.__chatBrowser = ChatBrowser(self.__show_finished_reason_f)
+
+        self.refreshCustomizedInformation()
 
         self.__menuWidget = MenuWidget(self.__chatBrowser)
 
@@ -72,5 +78,12 @@ class ChatWidget(QWidget):
 
     def refreshCustomizedInformation(self):
         self.__background_image = self.__settings_ini.value('background_image', type=str)
+        self.__user_image = self.__settings_ini.value('user_image', type=str)
+        self.__ai_image = self.__settings_ini.value('ai_image', type=str)
+
         if self.__background_image:
             self.__homeLbl.setPixmap(QPixmap(self.__background_image))
+        if self.__user_image:
+            self.__chatBrowser.setUserImage(self.__user_image)
+        if self.__ai_image:
+            self.__chatBrowser.setAIImage(self.__ai_image)

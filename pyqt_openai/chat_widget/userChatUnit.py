@@ -1,8 +1,9 @@
 import pyperclip
-from pyqt_openai.svgButton import SvgButton
+from qtpy.QtGui import QPixmap
 from qtpy.QtCore import Qt
 from qtpy.QtWidgets import QSpacerItem, QSizePolicy, QWidget, QVBoxLayout, QHBoxLayout, QLabel
 
+from pyqt_openai.svgButton import SvgButton
 
 class UserChatUnit(QWidget):
     def __init__(self, parent=None):
@@ -64,3 +65,6 @@ class UserChatUnit(QWidget):
 
     def toPlainText(self):
         return self.__plain_text
+
+    def setIcon(self, filename):
+        self.__icon.setPixmap(QPixmap(filename))
