@@ -3,7 +3,7 @@ import re
 import pyperclip
 
 from qtpy.QtCore import Qt
-from qtpy.QtGui import QPalette, QColor, QPixmap
+from qtpy.QtGui import QPalette, QColor
 from qtpy.QtWidgets import QLabel, QWidget, QVBoxLayout, QApplication, QHBoxLayout, QSpacerItem, QSizePolicy, \
     QTextBrowser, QAbstractScrollArea
 from pygments import highlight
@@ -11,6 +11,8 @@ from pygments.formatters.html import HtmlFormatter
 from pygments.lexers import get_lexer_by_name
 
 from pyqt_openai.svgButton import SvgButton
+
+from circleProfileImage import RoundedImage
 
 
 class SourceBrowser(QWidget):
@@ -82,8 +84,8 @@ class AIChatUnit(QWidget):
         menuWidget = QWidget()
         lay = QHBoxLayout()
 
-        self.__icon = QLabel()
-        self.__icon.setFixedSize(24, 24)
+        self.__icon = RoundedImage()
+        self.__icon.setMaximumSize(24, 24)
 
         self.__finishReasonLbl = QLabel()
         self.__finishReasonLbl.setObjectName('finishReasonLbl')
@@ -225,10 +227,10 @@ class AIChatUnit(QWidget):
             unit.append(text)
 
     def getIcon(self):
-        return self.__icon.pixmap()
+        return self.__icon.getImage()
 
     def setIcon(self, filename):
-        self.__icon.setPixmap(QPixmap(filename))
+        self.__icon.setImage(filename)
 
 if __name__ == "__main__":
     import sys

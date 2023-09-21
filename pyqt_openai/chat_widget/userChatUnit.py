@@ -1,9 +1,11 @@
 import pyperclip
-from qtpy.QtGui import QPixmap
 from qtpy.QtCore import Qt
 from qtpy.QtWidgets import QSpacerItem, QSizePolicy, QWidget, QVBoxLayout, QHBoxLayout, QLabel
 
 from pyqt_openai.svgButton import SvgButton
+
+from circleProfileImage import RoundedImage
+
 
 class UserChatUnit(QWidget):
     def __init__(self, parent=None):
@@ -20,8 +22,8 @@ class UserChatUnit(QWidget):
         menuWidget = QWidget()
         lay = QHBoxLayout()
 
-        self.__icon = QLabel()
-        self.__icon.setFixedSize(24, 24)
+        self.__icon = RoundedImage()
+        self.__icon.setMaximumSize(24, 24)
 
         # SvgButton is supposed to be used like "copyBtn = SvgButton(self)" but it makes GUI broken so i won't give "self" argument to SvgButton
         copyBtn = SvgButton()
@@ -66,5 +68,8 @@ class UserChatUnit(QWidget):
     def toPlainText(self):
         return self.__plain_text
 
+    def getIcon(self):
+        return self.__icon.getImage()
+
     def setIcon(self, filename):
-        self.__icon.setPixmap(QPixmap(filename))
+        self.__icon.setImage(filename)
