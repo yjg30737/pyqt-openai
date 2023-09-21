@@ -16,7 +16,8 @@ class LangClass:
         "German": "de_DE",
         "Italian": "it_IT",
         "Hindi": "hi_IN",
-        "Arabic": "ar_AE"
+        "Arabic": "ar_AE",
+        "Japanese": "ja_JP"
     }
 
     @classmethod

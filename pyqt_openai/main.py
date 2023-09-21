@@ -88,7 +88,7 @@ class MainWindow(QMainWindow):
     def __setActions(self):
         # menu action
         self.__exitAction = QAction(LangClass.TRANSLATIONS['Exit'], self)
-        self.__exitAction.triggered.connect(self.close)
+        self.__exitAction.triggered.connect(self.__beforeClose)
 
         self.__aboutAction = QAction(LangClass.TRANSLATIONS['About...'], self)
         self.__aboutAction.triggered.connect(self.__showAboutDialog)
@@ -319,25 +319,36 @@ class MainWindow(QMainWindow):
         dialog = CustomizeDialog(self)
         reply = dialog.exec()
         if reply == QDialog.Accepted:
-            pass
+            self.__openAiChatBotWidget.refreshCustomizedInformation()
 
     def __aiTypeChanged(self, i):
         self.__mainWidget.setCurrentIndex(i)
 
-    def closeEvent(self, e):
+    def __beforeClose(self):
         message = LangClass.TRANSLATIONS['The window will be closed. Would you like to continue running this app in the background?']
         closeMessageBox = QMessageBox(self)
         closeMessageBox.setWindowTitle(LangClass.TRANSLATIONS['Wait!'])
         closeMessageBox.setText(message)
-        closeMessageBox.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+        closeMessageBox.setStandardButtons(QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
         reply = closeMessageBox.exec()
-        # Yes
-        if reply == 16384:
-            e.accept()
-        # No
-        elif reply == 65536:
-            app.quit()
-        return super().closeEvent(e)
+        # Cancel
+        if reply == 4194304:
+            return True
+        else:
+            # Yes
+            if reply == 16384:
+                self.close()
+            # No
+            elif reply == 65536:
+                app.quit()
+
+    def closeEvent(self, e):
+        f = self.__beforeClose()
+        if f:
+            e.ignore()
+        else:
+            return super().closeEvent(e)
+
 
 
 if __name__ == "__main__":

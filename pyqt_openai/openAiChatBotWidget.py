@@ -1,13 +1,11 @@
-import json
 import os
 import webbrowser
 
 from qtpy.QtCore import Qt, QSettings, Signal
 from qtpy.QtWidgets import QHBoxLayout, QWidget, QSizePolicy, QVBoxLayout, QFrame, QSplitter, \
-    QListWidgetItem, QFileDialog, QMessageBox
+    QListWidgetItem, QFileDialog, QMessageBox, QPushButton
 
-from pyqt_openai.apiData import ModelData, getChatModel
-from pyqt_openai.chat_widget.chatBrowser import ChatBrowser
+from pyqt_openai.chat_widget.chatWidget import ChatWidget
 from pyqt_openai.chat_widget.prompt import Prompt
 from pyqt_openai.leftSideBar import LeftSideBar
 from pyqt_openai.notifier import NotifierWidget
@@ -15,11 +13,11 @@ from pyqt_openai.openAiThread import OpenAIThread, LlamaOpenAIThread
 from pyqt_openai.prompt_gen_widget.promptGeneratorWidget import PromptGeneratorWidget
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.right_sidebar.aiPlaygroundWidget import AIPlaygroundWidget
+from pyqt_openai.sqlite import SqliteDatabase
+from pyqt_openai.svgButton import SvgButton
 from pyqt_openai.util.llamapage_script import GPTLLamaIndexClass
 from pyqt_openai.util.script import open_directory, get_generic_ext_out_of_qt_ext, conv_unit_to_txt, conv_unit_to_html, \
     add_file_to_zip
-from pyqt_openai.sqlite import SqliteDatabase
-from pyqt_openai.svgButton import SvgButton
 
 
 class OpenAIChatBotWidget(QWidget):
@@ -45,8 +43,9 @@ class OpenAIChatBotWidget(QWidget):
         self.__llama_class = GPTLLamaIndexClass()
 
     def __initUi(self):
-        self.__leftSideBarWidget = LeftSideBar()
-        self.__browser = ChatBrowser(self.__finish_reason)
+        self.__leftSideBarWidget = LeftSideBar(self.__db)
+        self.__chatWidget = ChatWidget(self.__finish_reason)
+        self.__browser = self.__chatWidget.getChatBrowser()
 
         self.__prompt = Prompt(self.__db)
         self.__prompt.onStoppedClicked.connect(self.__stopResponse)
@@ -80,10 +79,21 @@ class OpenAIChatBotWidget(QWidget):
         self.__promptBtn.setChecked(True)
         self.__promptBtn.toggled.connect(self.__promptGeneratorWidget.setVisible)
 
+        sep = QFrame()
+        sep.setFrameShape(QFrame.VLine)
+        sep.setFrameShadow(QFrame.Sunken)
+
+        toggleMenuWidgetBtn = QPushButton('Show Menu Widget')
+        toggleMenuWidgetBtn.setCheckable(True)
+        toggleMenuWidgetBtn.setChecked(True)
+        toggleMenuWidgetBtn.toggled.connect(self.__chatWidget.toggleMenuWidget)
+
         lay = QHBoxLayout()
         lay.addWidget(self.__sideBarBtn)
         lay.addWidget(self.__settingBtn)
         lay.addWidget(self.__promptBtn)
+        lay.addWidget(sep)
+        lay.addWidget(toggleMenuWidgetBtn)
         lay.setContentsMargins(2, 2, 2, 2)
         lay.setAlignment(Qt.AlignLeft)
 
@@ -116,7 +126,7 @@ class OpenAIChatBotWidget(QWidget):
         self.__queryWidget.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
 
         lay = QVBoxLayout()
-        lay.addWidget(self.__browser)
+        lay.addWidget(self.__chatWidget)
         lay.addWidget(self.__queryWidget)
         lay.setSpacing(0)
         lay.setContentsMargins(0, 0, 0, 0)
@@ -175,6 +185,9 @@ class OpenAIChatBotWidget(QWidget):
 
     def setAIEnabled(self, f):
         self.__lineEdit.setEnabled(f)
+
+    def refreshCustomizedInformation(self):
+        self.__chatWidget.refreshCustomizedInformation()
 
     def __chat(self, continue_f=False):
         try:
@@ -272,7 +285,7 @@ class OpenAIChatBotWidget(QWidget):
     def __changeConv(self, item: QListWidgetItem):
         if item:
             id = item.data(Qt.UserRole)
-            conv_data = self.__db.selectCertainConvHistory(id)
+            conv_data = self.__db.selectCertainConv(id)
             self.__browser.replaceConv(id, conv_data)
         else:
             self.__browser.resetChatWidget(0)

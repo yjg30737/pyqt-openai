@@ -40,3 +40,6 @@ class RoundedImage(QLabel):
         self.__pixmap.setMask(self.__mask)
         self.setPixmap(self.__pixmap)
         self.setScaledContents(True)
+
+    def getImage(self):
+        return self.__pixmap
