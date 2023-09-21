@@ -34,11 +34,8 @@ class ChatWidget(QWidget):
         self.__homeLbl = QLabel(LangClass.TRANSLATIONS['Home'])
         self.__homeLbl.setAlignment(Qt.AlignCenter)
         self.__homeLbl.setFont(QFont('Arial', 32))
-        self.__homeWidget.setWidget(self.__homeLbl)
 
         self.__chatBrowser = ChatBrowser(self.__show_finished_reason_f)
-
-        self.refreshCustomizedInformation()
 
         self.__menuWidget = MenuWidget(self.__chatBrowser)
 
@@ -63,6 +60,9 @@ class ChatWidget(QWidget):
         lay.setAlignment(Qt.AlignTop)
         lay.setContentsMargins(0, 0, 0, 0)
         self.setLayout(lay)
+
+        self.refreshCustomizedInformation()
+        self.__homeWidget.setWidget(self.__homeLbl)
 
     def __resetWidget(self):
         self.__mainWidget.setCurrentIndex(0)
