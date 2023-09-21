@@ -1,5 +1,5 @@
 from qtpy.QtGui import QFont, QPixmap
-from qtpy.QtWidgets import QWidget, QLabel, QVBoxLayout, QStackedWidget
+from qtpy.QtWidgets import QWidget, QScrollArea, QLabel, QVBoxLayout, QStackedWidget
 from qtpy.QtCore import Qt, QSettings
 
 from pyqt_openai.chat_widget.chatBrowser import ChatBrowser
@@ -24,11 +24,13 @@ class ChatWidget(QWidget):
         self.__background_image = self.__settings_ini.value('background_image', type=str)
 
     def __initUi(self):
-        self.__homeWidget = QLabel(LangClass.TRANSLATIONS['Home'])
+        self.__homeWidget = QScrollArea()
+        self.__homeLbl = QLabel(LangClass.TRANSLATIONS['Home'])
         if self.__background_image:
-            self.__homeWidget.setPixmap(QPixmap(self.__background_image))
-        self.__homeWidget.setAlignment(Qt.AlignCenter)
-        self.__homeWidget.setFont(QFont('Arial', 32))
+            self.__homeLbl.setPixmap(QPixmap(self.__background_image))
+        self.__homeLbl.setAlignment(Qt.AlignCenter)
+        self.__homeLbl.setFont(QFont('Arial', 32))
+        self.__homeWidget.setWidget(self.__homeLbl)
 
         self.__chatBrowser = ChatBrowser(self.__show_finished_reason_f)
 
@@ -71,4 +73,4 @@ class ChatWidget(QWidget):
     def refreshCustomizedInformation(self):
         self.__background_image = self.__settings_ini.value('background_image', type=str)
         if self.__background_image:
-            self.__homeWidget.setPixmap(QPixmap(self.__background_image))
+            self.__homeLbl.setPixmap(QPixmap(self.__background_image))

@@ -82,6 +82,9 @@ class AIChatUnit(QWidget):
         menuWidget = QWidget()
         lay = QHBoxLayout()
 
+        self.__icon = QLabel()
+        self.__icon.setFixedSize(24, 24)
+
         self.__finishReasonLbl = QLabel()
         self.__finishReasonLbl.setObjectName('finishReasonLbl')
 
@@ -90,9 +93,10 @@ class AIChatUnit(QWidget):
         copyBtn.setIcon('ico/copy.svg')
         copyBtn.clicked.connect(self.__copy)
 
+        lay.addWidget(self.__icon)
+        lay.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.MinimumExpanding))
         lay.addWidget(self.__finishReasonLbl)
         lay.addWidget(copyBtn)
-        lay.setAlignment(Qt.AlignRight)
         lay.setContentsMargins(2, 2, 2, 2)
         lay.setSpacing(1)
 

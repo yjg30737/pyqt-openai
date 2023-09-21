@@ -1,11 +1,7 @@
-import re
-
 import pyperclip
-from qtpy.QtGui import QColor
-from qtpy.QtCore import Qt
-from qtpy.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel
-
 from pyqt_openai.svgButton import SvgButton
+from qtpy.QtCore import Qt
+from qtpy.QtWidgets import QSpacerItem, QSizePolicy, QWidget, QVBoxLayout, QHBoxLayout, QLabel
 
 
 class UserChatUnit(QWidget):
@@ -23,13 +19,17 @@ class UserChatUnit(QWidget):
         menuWidget = QWidget()
         lay = QHBoxLayout()
 
+        self.__icon = QLabel()
+        self.__icon.setFixedSize(24, 24)
+
         # SvgButton is supposed to be used like "copyBtn = SvgButton(self)" but it makes GUI broken so i won't give "self" argument to SvgButton
         copyBtn = SvgButton()
         copyBtn.setIcon('ico/copy.svg')
         copyBtn.clicked.connect(self.__copy)
 
+        lay.addWidget(self.__icon)
+        lay.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.MinimumExpanding))
         lay.addWidget(copyBtn)
-        lay.setAlignment(Qt.AlignRight)
         lay.setContentsMargins(2, 2, 2, 2)
         lay.setSpacing(1)
 
