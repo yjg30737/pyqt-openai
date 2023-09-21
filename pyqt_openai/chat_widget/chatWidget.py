@@ -63,6 +63,7 @@ class ChatWidget(QWidget):
 
         self.refreshCustomizedInformation()
         self.__homeWidget.setWidget(self.__homeLbl)
+        self.__homeWidget.setWidgetResizable(True)
 
     def __resetWidget(self):
         self.__mainWidget.setCurrentIndex(0)
