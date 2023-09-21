@@ -186,6 +186,9 @@ class OpenAIChatBotWidget(QWidget):
     def setAIEnabled(self, f):
         self.__lineEdit.setEnabled(f)
 
+    def refreshCustomizedInformation(self):
+        self.__chatWidget.refreshCustomizedInformation()
+
     def __chat(self, continue_f=False):
         try:
             stream = self.__settings_ini.value('stream', type=bool)

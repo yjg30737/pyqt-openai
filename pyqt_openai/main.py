@@ -319,7 +319,7 @@ class MainWindow(QMainWindow):
         dialog = CustomizeDialog(self)
         reply = dialog.exec()
         if reply == QDialog.Accepted:
-            pass
+            self.__openAiChatBotWidget.refreshCustomizedInformation()
 
     def __aiTypeChanged(self, i):
         self.__mainWidget.setCurrentIndex(i)
