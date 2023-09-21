@@ -1,9 +1,8 @@
 import subprocess
 
-from qtpy.QtGui import QIcon
 from qtpy.QtWidgets import QDialog, QFrame, QPushButton, QHBoxLayout, QVBoxLayout, QWidget, QLabel, \
     QFileDialog, QFormLayout
-from qtpy.QtCore import Qt, Signal
+from qtpy.QtCore import Qt, Signal, QSettings
 
 from qtpy.QtWidgets import QLineEdit, QMenu, QAction
 from qtpy.QtGui import QPixmap
@@ -25,8 +24,11 @@ class SingleImageGraphicsView(QGraphicsView):
         self._item = ''
 
     def setFilename(self, filename: str):
-        self._p = QPixmap(filename)
-        self._setPixmap(self._p)
+        if filename == '':
+            pass
+        else:
+            self._p = QPixmap(filename)
+            self._setPixmap(self._p)
 
     def setPixmap(self, p):
         self._setPixmap(p)
@@ -170,26 +172,41 @@ class CustomizeDialog(QDialog):
         self.__initUi()
 
     def __initVal(self):
-        pass
+        self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.IniFormat)
+
+        if not self.__settings_ini.contains('background_image'):
+            self.__settings_ini.setValue('background_image', '')
+        if not self.__settings_ini.contains('user_image'):
+            self.__settings_ini.setValue('user_image', 'ico/user.svg')
+        if not self.__settings_ini.contains('ai_image'):
+            self.__settings_ini.setValue('ai_image', 'ico/openai.svg')
+
+        self.__background_image = self.__settings_ini.value('background_image', type=str)
+        self.__user_image = self.__settings_ini.value('user_image', type=str)
+        self.__ai_image = self.__settings_ini.value('ai_image', type=str)
 
     def __initUi(self):
         self.setWindowTitle(LangClass.TRANSLATIONS['Customize (working)'])
         self.setWindowFlags(Qt.Window | Qt.WindowCloseButtonHint)
 
         self.__homePageGraphicsView = SingleImageGraphicsView()
+        self.__homePageGraphicsView.setFilename(self.__background_image)
 
         self.__userImage = RoundedImage()
         self.__userImage.setMaximumSize(24, 24)
-        self.__userImage.setImage('ico/user.svg')
+        self.__userImage.setImage(self.__user_image)
         self.__AIImage = RoundedImage()
-        self.__AIImage.setImage('ico/openai.svg')
+        self.__AIImage.setImage(self.__ai_image)
         self.__AIImage.setMaximumSize(24, 24)
 
         self.__findPathWidget1 = FindPathWidget()
+        self.__findPathWidget1.getLineEdit().setText(self.__background_image)
         self.__findPathWidget1.added.connect(self.__homePageGraphicsView.setFilename)
         self.__findPathWidget2 = FindPathWidget()
+        self.__findPathWidget2.getLineEdit().setText(self.__user_image)
         self.__findPathWidget2.added.connect(self.__userImage.setImage)
         self.__findPathWidget3 = FindPathWidget()
+        self.__findPathWidget3.getLineEdit().setText(self.__ai_image)
         self.__findPathWidget3.added.connect(self.__AIImage.setImage)
 
         lay1 = QVBoxLayout()
@@ -248,8 +265,7 @@ class CustomizeDialog(QDialog):
         self.setLayout(lay)
 
     def __accept(self):
-        print(self.__findPathWidget1.getFileName())
-        print(self.__findPathWidget2.getFileName())
-        print(self.__findPathWidget3.getFileName())
-        print('accept')
+        self.__settings_ini.setValue('background_image', self.__findPathWidget1.getFileName())
+        self.__settings_ini.setValue('user_image', self.__findPathWidget2.getFileName())
+        self.__settings_ini.setValue('ai_image', self.__findPathWidget3.getFileName())
         self.accept()
