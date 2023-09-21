@@ -1,6 +1,6 @@
-from qtpy.QtGui import QFont
+from qtpy.QtGui import QFont, QPixmap
 from qtpy.QtWidgets import QWidget, QLabel, QVBoxLayout, QStackedWidget
-from qtpy.QtCore import Qt
+from qtpy.QtCore import Qt, QSettings
 
 from pyqt_openai.chat_widget.chatBrowser import ChatBrowser
 from pyqt_openai.chat_widget.menuWidget import MenuWidget
@@ -16,9 +16,16 @@ class ChatWidget(QWidget):
     def __initVal(self, finish_reason):
         self.__cur_id = 0
         self.__show_finished_reason_f = finish_reason
+        self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.IniFormat)
+
+        if not self.__settings_ini.contains('background_image'):
+            self.__settings_ini.setValue('background_image', '')
+
+        self.__background_image = self.__settings_ini.value('background_image', type=str)
 
     def __initUi(self):
         self.__homeWidget = QLabel(LangClass.TRANSLATIONS['Home'])
+        self.__homeWidget.setPixmap(QPixmap(self.__background_image))
         self.__homeWidget.setAlignment(Qt.AlignCenter)
         self.__homeWidget.setFont(QFont('Arial', 32))
 
