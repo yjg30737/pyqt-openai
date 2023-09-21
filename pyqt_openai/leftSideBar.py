@@ -1,13 +1,10 @@
-import json
-
-from qtpy.QtCore import Signal
-from qtpy.QtWidgets import QWidget, QComboBox, QCheckBox, QListWidget, QVBoxLayout, QHBoxLayout, QSpacerItem, QSizePolicy, QListWidgetItem, \
-    QLabel
-
 from pyqt_openai.convListWidget import ConvListWidget
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.searchBar import SearchBar
 from pyqt_openai.svgButton import SvgButton
+from qtpy.QtCore import Signal, Qt
+from qtpy.QtWidgets import QWidget, QComboBox, QCheckBox, QVBoxLayout, QHBoxLayout, QSpacerItem, QSizePolicy, \
+    QListWidgetItem
 
 
 class LeftSideBar(QWidget):
@@ -124,12 +121,13 @@ class LeftSideBar(QWidget):
         # content
         elif self.__searchOptionCmbBox.currentText() == LangClass.TRANSLATIONS['Content']:
             convs = self.__db.selectAllContentOfConv()
-
-            # self.__convListWidget.item.data(Qt.UserRole)
+            db_id_real_id_dict = dict()
+            for i in range(self.__convListWidget.count()):
+                db_id_real_id_dict[self.__convListWidget.item(i).data(Qt.UserRole)] = self.__convListWidget.item(i)
             for conv in convs:
                 i = conv[0]
                 each_content_arr = list(filter(lambda x: x.find(text) != -1, [_['conv'] for _ in conv[1]]))
-                item = self.__convListWidget.item(i)
+                item = db_id_real_id_dict[i]
                 if item:
                     if len(each_content_arr) > 0:
                         item.setHidden(False)
