@@ -1,11 +1,9 @@
 import os
-import sys
 import re
+import sys
 import zipfile
 
 from jinja2 import Template
-
-from pyqt_openai.sqlite import SqliteDatabase
 
 
 def get_generic_ext_out_of_qt_ext(text):
@@ -24,6 +22,17 @@ def open_directory(path):
     else:
         print("Unsupported operating system.")
 
+def get_version():
+    with open("../../setup.py", "r") as f:
+        setup_content = f.read()
+
+    version_match = re.search(r"version=['\"]([^'\"]+)['\"]", setup_content)
+
+    if version_match:
+        version = version_match.group(1)
+    else:
+        raise RuntimeError("Version information not found.")
+    return f'Version: {version}'
 
 def conv_unit_to_txt(db, id, title, username='User', ai_name='AI'):
     content = ''
