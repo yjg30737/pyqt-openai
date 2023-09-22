@@ -58,7 +58,10 @@ class OpenAIThread(QThread):
             self.replyGenerated.emit(f'<p style="color:red">{e}</p>', False, False, 'Error')
         except openai.error.RateLimitError as e:
             self.replyGenerated.emit(f'<p style="color:red">{e}<br/>Check the usage: https://platform.openai.com/account/usage<br/>Update to paid account: https://platform.openai.com/account/billing/overview', False, False, 'Error')
-
+        except openai.error.APIError as e:
+            self.replyGenerated.emit(f'<p style="color:red">{e}</p>', False, False, 'Error')
+        except Exception as e:
+            self.replyGenerated.emit(f'<p style="color:red">{e}</p>', False, False, 'Error')
 
 class LlamaOpenAIThread(QThread):
     replyGenerated = Signal(str, bool, bool, str)
