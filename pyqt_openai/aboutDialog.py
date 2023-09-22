@@ -1,9 +1,12 @@
+import datetime
+
 from qtpy.QtCore import Qt, QUrl
 from qtpy.QtGui import QPixmap, QDesktopServices
 from qtpy.QtWidgets import QDialog, QPushButton, QHBoxLayout, QWidget, QVBoxLayout, QLabel
 
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.svgLabel import SvgLabel
+from pyqt_openai.util.script import get_version
 
 
 class ClickableLabel(SvgLabel):
@@ -35,12 +38,29 @@ class AboutDialog(QDialog):
         logoLbl = QLabel()
         logoLbl.setPixmap(p)
 
-        expWidget = QLabel()
-        expWidget.setText(f'''
+        descWidget1 = QLabel()
+        descWidget1.setText(f'''
         <h1>pyqt-openai</h1>
+        Software Version {get_version()}<br/>
+        © 2023 yjg30737. Used under the MIT License.<br/></br/>
+        MIT License:<br/><br/>
+        Copyright (c) {datetime.datetime.now().year} yjg30737<br/>
+        ''')
+
+        descWidget2 = ClickableLabel()
+        descWidget2.setText('MIT License Full Text (See More...)')
+        descWidget2.setUrl('https://github.com/yjg30737/pyqt-openai/blob/main/LICENSE')
+        descWidget2.setStyleSheet('QLabel:hover { color: blue }')
+
+        descWidget3 = QLabel()
+        descWidget3.setText(f'''
+        Contact: yjg30737@gmail.com<br/>
         <p>{LangClass.TRANSLATIONS['Powered by qtpy']}</p>
         ''')
-        expWidget.setAlignment(Qt.AlignTop)
+
+        descWidget1.setAlignment(Qt.AlignTop)
+        descWidget2.setAlignment(Qt.AlignTop)
+        descWidget3.setAlignment(Qt.AlignTop)
 
         self.__githubLbl = ClickableLabel()
         self.__githubLbl.setSvgFile('ico/github.svg')
@@ -61,7 +81,9 @@ class AboutDialog(QDialog):
         linkWidget.setLayout(lay)
 
         lay = QVBoxLayout()
-        lay.addWidget(expWidget)
+        lay.addWidget(descWidget1)
+        lay.addWidget(descWidget2)
+        lay.addWidget(descWidget3)
         lay.addWidget(linkWidget)
         lay.setAlignment(Qt.AlignTop)
         lay.setContentsMargins(0, 0, 0, 0)
