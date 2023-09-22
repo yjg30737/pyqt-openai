@@ -42,7 +42,7 @@ class AboutDialog(QDialog):
         descWidget1.setText(f'''
         <h1>pyqt-openai</h1>
         Software Version {get_version()}<br/><br/>
-        © 2023 yjg30737. Used under the MIT License.<br/>
+        © 2023 {datetime.datetime.now().year}. Used under the MIT License.<br/>
         Copyright (c) {datetime.datetime.now().year} yjg30737<br/>
         ''')
 
