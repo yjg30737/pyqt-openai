@@ -32,7 +32,7 @@ def get_version():
         version = version_match.group(1)
     else:
         raise RuntimeError("Version information not found.")
-    return f'Version: {version}'
+    return f'{version}'
 
 def conv_unit_to_txt(db, id, title, username='User', ai_name='AI'):
     content = ''

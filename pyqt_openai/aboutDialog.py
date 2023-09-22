@@ -41,20 +41,19 @@ class AboutDialog(QDialog):
         descWidget1 = QLabel()
         descWidget1.setText(f'''
         <h1>pyqt-openai</h1>
-        Software Version {get_version()}<br/>
-        © 2023 yjg30737. Used under the MIT License.<br/></br/>
-        MIT License:<br/><br/>
+        Software Version {get_version()}<br/><br/>
+        © 2023 yjg30737. Used under the MIT License.<br/>
         Copyright (c) {datetime.datetime.now().year} yjg30737<br/>
         ''')
 
         descWidget2 = ClickableLabel()
-        descWidget2.setText('MIT License Full Text (See More...)')
+        descWidget2.setText('Read MIT License Full Text')
         descWidget2.setUrl('https://github.com/yjg30737/pyqt-openai/blob/main/LICENSE')
         descWidget2.setStyleSheet('QLabel:hover { color: blue }')
 
         descWidget3 = QLabel()
         descWidget3.setText(f'''
-        Contact: yjg30737@gmail.com<br/>
+        <br/><br/>Contact: yjg30737@gmail.com<br/>
         <p>{LangClass.TRANSLATIONS['Powered by qtpy']}</p>
         ''')
 
