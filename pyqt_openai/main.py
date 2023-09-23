@@ -1,5 +1,6 @@
 import time
 
+import webbrowser
 import os, sys
 import openai, requests
 
@@ -92,6 +93,9 @@ class MainWindow(QMainWindow):
 
         self.__aboutAction = QAction(LangClass.TRANSLATIONS['About...'], self)
         self.__aboutAction.triggered.connect(self.__showAboutDialog)
+
+        self.__buyMeCoffeeAction = QAction('Buy me a coffee!', self)
+        self.__buyMeCoffeeAction.triggered.connect(self.__buyMeCoffee)
 
         # toolbar action
         self.__chooseAiAction = QWidgetAction(self)
@@ -207,6 +211,7 @@ class MainWindow(QMainWindow):
         menubar.addMenu(helpMenu)
 
         helpMenu.addAction(self.__aboutAction)
+        helpMenu.addAction(self.__buyMeCoffeeAction)
 
     def __setTrayMenu(self):
         # background app
@@ -301,6 +306,9 @@ class MainWindow(QMainWindow):
     def __showAboutDialog(self):
         aboutDialog = AboutDialog()
         aboutDialog.exec()
+
+    def __buyMeCoffee(self):
+        webbrowser.open('https://www.buymeacoffee.com/yjg30737')
 
     def __stackToggle(self, f):
         if f:
