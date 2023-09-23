@@ -1,3 +1,5 @@
+import re
+
 from qtpy.QtCore import Signal
 from qtpy.QtWidgets import QWidget, QLabel, \
     QHBoxLayout, QGridLayout, QLineEdit
@@ -62,6 +64,7 @@ class FindTextWidget(QWidget):
 
         self.__regexBtn = SvgButton()
         self.__regexBtn.setCheckable(True)
+        self.__regexBtn.toggled.connect(self.__regexToggled)
         self.__regexBtn.setIcon('ico/regex.svg')
 
         self.__closeBtn = SvgButton()
@@ -101,13 +104,18 @@ class FindTextWidget(QWidget):
         self.__textChanged(self.__findTextLineEdit.text())
 
     def __findInit(self, text):
-        self.__selections = self.__chatBrowser.setCurrentLabelIncludingTextBySliderPosition(text,
-                                                                                            case_sensitive=self.__caseBtn.isChecked(),
-                                                                                            word_only=self.__wordBtn.isChecked())
-        is_exist = len(self.__selections) > 0
-        if is_exist:
-            self.__setCurrentPosition()
-        self.__btnToggled(is_exist)
+        # show "bad pattern" message if text is "\"
+        if self.__regexBtn.isChecked() and re.escape(text) == re.escape('\\'):
+            print('bad pattern!')
+        else:
+            self.__selections = self.__chatBrowser.setCurrentLabelIncludingTextBySliderPosition(text,
+                                                                                                case_sensitive=self.__caseBtn.isChecked(),
+                                                                                                word_only=self.__wordBtn.isChecked(),
+                                                                                                is_regex=self.__regexBtn.isChecked())
+            is_exist = len(self.__selections) > 0
+            if is_exist:
+                self.__setCurrentPosition()
+            self.__btnToggled(is_exist)
 
     def __textChanged(self, text):
         f1 = text.strip() != ''
@@ -144,6 +152,12 @@ class FindTextWidget(QWidget):
         self.__textChanged(text)
 
     def __wordToggled(self, f):
+        text = self.__findTextLineEdit.text()
+        self.__textChanged(text)
+
+    def __regexToggled(self, f):
+        # regex and word-only feature can't be use at the same time
+        self.__wordBtn.setChecked(False)
         text = self.__findTextLineEdit.text()
         self.__textChanged(text)
 

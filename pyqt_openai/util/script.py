@@ -44,6 +44,13 @@ def conv_unit_to_txt(db, id, title, username='User', ai_name='AI'):
         content += f'{unit_prefix}: {unit_content}' + '\n'*2
     return content
 
+def is_valid_regex(pattern):
+    try:
+        re.compile(pattern)
+        return True
+    except re.error:
+        return False
+
 def conv_unit_to_html(db, id, title):
     certain_conv_filename_content = db.selectCertainConvRaw(id)
     chat_history = [unit[3] for unit in certain_conv_filename_content]
