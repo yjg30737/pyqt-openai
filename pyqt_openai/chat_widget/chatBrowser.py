@@ -1,11 +1,10 @@
-from qtpy.QtCore import Qt, Signal, QSettings
-from qtpy.QtGui import QFont
-from qtpy.QtWidgets import QScrollArea, QVBoxLayout, QWidget, QLabel, \
-    QStackedWidget
+import re
+
+from qtpy.QtCore import Qt, Signal
+from qtpy.QtWidgets import QScrollArea, QVBoxLayout, QWidget, QLabel
 
 from pyqt_openai.chat_widget.aiChatUnit import AIChatUnit
 from pyqt_openai.chat_widget.userChatUnit import UserChatUnit
-from pyqt_openai.res.language_dict import LangClass
 
 
 class ChatBrowser(QScrollArea):
@@ -174,13 +173,31 @@ class ChatBrowser(QScrollArea):
         labels = [lay.itemAt(i).widget() for i in range(lay.count()) if lay.itemAt(i) and isinstance(lay.itemAt(i).widget(), AIChatUnit)]
         return labels
 
-    def setCurrentLabelIncludingTextBySliderPosition(self, text):
+    def setCurrentLabelIncludingTextBySliderPosition(self, text, case_sensitive=False, word_only=False):
         labels = self.__getEveryLabels()
         label_info = [{'class':label, 'text':label.text(), 'pos':label.y()} for label in labels]
         res_lbl = []
         for _ in label_info:
-            if _['text'].find(text) != -1:
-                res_lbl.append(_)
+            if case_sensitive:
+                if word_only:
+                    pattern = r'\b' + re.escape(text) + r'\b'
+                    result = re.search(pattern, _['text'])
+                    if result:
+                        res_lbl.append(_)
+                else:
+                    if _['text'].find(text) != -1:
+                        res_lbl.append(_)
+            else:
+                if word_only:
+                    pattern = r'\b' + re.escape(text) + r'\b'
+                    result = re.search(pattern, _['text'], re.IGNORECASE)
+                    if result:
+                        res_lbl.append(_)
+                else:
+                    result = re.search(text, _['text'], re.IGNORECASE)
+                    if result:
+                        res_lbl.append(_)
+
         return res_lbl
 
     def replaceConv(self, id, conv_data):

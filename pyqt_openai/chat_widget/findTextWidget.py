@@ -101,7 +101,9 @@ class FindTextWidget(QWidget):
         self.__textChanged(self.__findTextLineEdit.text())
 
     def __findInit(self, text):
-        self.__selections = self.__chatBrowser.setCurrentLabelIncludingTextBySliderPosition(text)
+        self.__selections = self.__chatBrowser.setCurrentLabelIncludingTextBySliderPosition(text,
+                                                                                            case_sensitive=self.__caseBtn.isChecked(),
+                                                                                            word_only=self.__wordBtn.isChecked())
         is_exist = len(self.__selections) > 0
         if is_exist:
             self.__setCurrentPosition()
