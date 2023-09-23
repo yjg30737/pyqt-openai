@@ -5,6 +5,7 @@ from qtpy.QtWidgets import QScrollArea, QVBoxLayout, QWidget, QLabel
 
 from pyqt_openai.chat_widget.aiChatUnit import AIChatUnit
 from pyqt_openai.chat_widget.userChatUnit import UserChatUnit
+from pyqt_openai.util.script import is_valid_regex
 
 
 class ChatBrowser(QScrollArea):
@@ -173,30 +174,46 @@ class ChatBrowser(QScrollArea):
         labels = [lay.itemAt(i).widget() for i in range(lay.count()) if lay.itemAt(i) and isinstance(lay.itemAt(i).widget(), AIChatUnit)]
         return labels
 
-    def setCurrentLabelIncludingTextBySliderPosition(self, text, case_sensitive=False, word_only=False):
+    def setCurrentLabelIncludingTextBySliderPosition(self, text, case_sensitive=False, word_only=False, is_regex=False):
         labels = self.__getEveryLabels()
         label_info = [{'class':label, 'text':label.text(), 'pos':label.y()} for label in labels]
         res_lbl = []
         for _ in label_info:
-            if case_sensitive:
-                if word_only:
-                    pattern = r'\b' + re.escape(text) + r'\b'
-                    result = re.search(pattern, _['text'])
-                    if result:
-                        res_lbl.append(_)
+            pattern = text
+            if is_regex:
+                if is_valid_regex(pattern):
+                    if case_sensitive:
+                        result = re.search(pattern, _['text'], re.IGNORECASE)
+                        if result:
+                            res_lbl.append(_)
+                    else:
+                        result = re.search(pattern, _['text'])
+                        if result:
+                            res_lbl.append(_)
                 else:
                     if _['text'].find(text) != -1:
                         res_lbl.append(_)
             else:
-                if word_only:
-                    pattern = r'\b' + re.escape(text) + r'\b'
-                    result = re.search(pattern, _['text'], re.IGNORECASE)
-                    if result:
-                        res_lbl.append(_)
+                if case_sensitive:
+                    if word_only:
+                        pattern = r'\b' + re.escape(text) + r'\b'
+                        result = re.search(pattern, _['text'])
+                        if result:
+                            res_lbl.append(_)
+                    else:
+                        if _['text'].find(text) != -1:
+                            res_lbl.append(_)
                 else:
-                    result = re.search(text, _['text'], re.IGNORECASE)
-                    if result:
-                        res_lbl.append(_)
+                    if word_only:
+                        pattern = r'\b' + re.escape(text) + r'\b'
+                        result = re.search(pattern, _['text'], re.IGNORECASE)
+                        if result:
+                            res_lbl.append(_)
+                    else:
+                        pattern = re.escape(text)
+                        result = re.search(pattern, _['text'], re.IGNORECASE)
+                        if result:
+                            res_lbl.append(_)
 
         return res_lbl
 
