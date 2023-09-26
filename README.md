@@ -30,7 +30,9 @@ An internet connection is required.
 
 If you have any questions or you want to make AI related software with PyQt or PySide, feel free to join Discord server of pyqt-openai.
 
-<h3>Please do not distribute this commercially without my permission, by claiming it as your own creation.</h3>
+And if you would like to support this project, you can click the button below to make a donation. Your contribution will greatly assist various projects, including this one!
+
+<a href="https://www.buymeacoffee.com/yjg30737" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
 
 ## Table of Contents
 * [Feature](#feature)
@@ -42,6 +44,7 @@ If you have any questions or you want to make AI related software with PyQt or P
 * [Contact](#contact)
 * [Note](#note)
 * [LICENSE](#license)
+* [Disclaimer](#disclaimer)
 * [See Also](#see-also)
 
 ## Feature
@@ -68,6 +71,9 @@ If you have any questions or you want to make AI related software with PyQt or P
 * you can copy and download the image if you want. just hover the mouse cursor over the image.
 * you can <b>fine-tune</b> openai with llama-index.
 * support text-based file uploading
+* support searching title and content in the conversation
+* support "find text" feature (match word, case-sensitive, regex, etc.)
+* support customizing feature (homepage, user and AI profile image) 
 
 ## Supported Languages
 * English
@@ -259,6 +265,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
+
+## Disclaimer
+
+Please do not distribute this commercially without my permission, by claiming it as your own creation.
 
 ## TODO list
 * tokenizer

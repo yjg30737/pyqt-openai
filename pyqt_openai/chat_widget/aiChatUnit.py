@@ -12,6 +12,8 @@ from pygments.lexers import get_lexer_by_name
 
 from pyqt_openai.svgButton import SvgButton
 
+from circleProfileImage import RoundedImage
+
 
 class SourceBrowser(QWidget):
     def __init__(self):
@@ -69,12 +71,21 @@ class SourceBrowser(QWidget):
 class AIChatUnit(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.__initVal()
         self.__initUi()
+
+    def __initVal(self):
+        self.__lbl = ''
+        self.__plain_text = ''
+        self.__find_f = False
 
     def __initUi(self):
         # common
         menuWidget = QWidget()
         lay = QHBoxLayout()
+
+        self.__icon = RoundedImage()
+        self.__icon.setMaximumSize(24, 24)
 
         self.__finishReasonLbl = QLabel()
         self.__finishReasonLbl.setObjectName('finishReasonLbl')
@@ -84,9 +95,10 @@ class AIChatUnit(QWidget):
         copyBtn.setIcon('ico/copy.svg')
         copyBtn.clicked.connect(self.__copy)
 
+        lay.addWidget(self.__icon)
+        lay.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.MinimumExpanding))
         lay.addWidget(self.__finishReasonLbl)
         lay.addWidget(copyBtn)
-        lay.setAlignment(Qt.AlignRight)
         lay.setContentsMargins(2, 2, 2, 2)
         lay.setSpacing(1)
 
@@ -148,14 +160,14 @@ class AIChatUnit(QWidget):
         return self.__finishReasonLbl.text()
 
     def setText(self, text: str):
-        lbl = QLabel(text)
+        self.__lbl = QLabel(text)
 
-        lbl.setAlignment(Qt.AlignLeft)
-        lbl.setWordWrap(True)
-        lbl.setTextInteractionFlags(Qt.TextSelectableByMouse)
-        lbl.setOpenExternalLinks(True)
+        self.__lbl.setAlignment(Qt.AlignLeft)
+        self.__lbl.setWordWrap(True)
+        self.__lbl.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        self.__lbl.setOpenExternalLinks(True)
 
-        self.__mainWidget.layout().addWidget(lbl)
+        self.__mainWidget.layout().addWidget(self.__lbl)
 
         # old code
         # chunks = text.split('```')
@@ -204,6 +216,9 @@ class AIChatUnit(QWidget):
         #         browser.setText(lexer, html_code)
         #         self.__mainWidget.layout().addWidget(browser)
 
+    def toPlainText(self):
+        return self.__plain_text
+
     def addText(self, text: str):
         unit = self.__mainWidget.layout().itemAt(self.__mainWidget.layout().count()-1).widget()
         if isinstance(unit, QLabel):
@@ -211,6 +226,11 @@ class AIChatUnit(QWidget):
         elif isinstance(unit, QTextBrowser):
             unit.append(text)
 
+    def getIcon(self):
+        return self.__icon.getImage()
+
+    def setIcon(self, filename):
+        self.__icon.setImage(filename)
 
 if __name__ == "__main__":
     import sys

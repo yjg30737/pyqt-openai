@@ -1,28 +1,38 @@
 import pyperclip
-
 from qtpy.QtCore import Qt
-from qtpy.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel
+from qtpy.QtWidgets import QSpacerItem, QSizePolicy, QWidget, QVBoxLayout, QHBoxLayout, QLabel
 
 from pyqt_openai.svgButton import SvgButton
+
+from circleProfileImage import RoundedImage
 
 
 class UserChatUnit(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.__initVal()
         self.__initUi()
+
+    def __initVal(self):
+        self.__plain_text = ''
+        self.__find_f = False
 
     def __initUi(self):
         # common
         menuWidget = QWidget()
         lay = QHBoxLayout()
 
+        self.__icon = RoundedImage()
+        self.__icon.setMaximumSize(24, 24)
+
         # SvgButton is supposed to be used like "copyBtn = SvgButton(self)" but it makes GUI broken so i won't give "self" argument to SvgButton
         copyBtn = SvgButton()
         copyBtn.setIcon('ico/copy.svg')
         copyBtn.clicked.connect(self.__copy)
 
+        lay.addWidget(self.__icon)
+        lay.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.MinimumExpanding))
         lay.addWidget(copyBtn)
-        lay.setAlignment(Qt.AlignRight)
         lay.setContentsMargins(2, 2, 2, 2)
         lay.setSpacing(1)
 
@@ -54,3 +64,12 @@ class UserChatUnit(QWidget):
 
     def text(self):
         return self.__lbl.text()
+
+    def toPlainText(self):
+        return self.__plain_text
+
+    def getIcon(self):
+        return self.__icon.getImage()
+
+    def setIcon(self, filename):
+        self.__icon.setImage(filename)

@@ -1,11 +1,9 @@
 import os
-import sys
 import re
+import sys
 import zipfile
 
 from jinja2 import Template
-
-from pyqt_openai.sqlite import SqliteDatabase
 
 
 def get_generic_ext_out_of_qt_ext(text):
@@ -24,10 +22,21 @@ def open_directory(path):
     else:
         print("Unsupported operating system.")
 
+def get_version():
+    with open("../setup.py", "r") as f:
+        setup_content = f.read()
+
+    version_match = re.search(r"version=['\"]([^'\"]+)['\"]", setup_content)
+
+    if version_match:
+        version = version_match.group(1)
+    else:
+        raise RuntimeError("Version information not found.")
+    return f'{version}'
 
 def conv_unit_to_txt(db, id, title, username='User', ai_name='AI'):
     content = ''
-    certain_conv_filename_content = db.selectCertainConv(id)
+    certain_conv_filename_content = db.selectCertainConvRaw(id)
     content += f'== {title} ==' + '\n'*2
     for unit in certain_conv_filename_content:
         unit_prefix = username if unit[2] == 1 else ai_name
@@ -36,7 +45,7 @@ def conv_unit_to_txt(db, id, title, username='User', ai_name='AI'):
     return content
 
 def conv_unit_to_html(db, id, title):
-    certain_conv_filename_content = db.selectCertainConv(id)
+    certain_conv_filename_content = db.selectCertainConvRaw(id)
     chat_history = [unit[3] for unit in certain_conv_filename_content]
     template = Template('''
     <html>
