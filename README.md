@@ -71,6 +71,9 @@ And if you would like to support this project, you can click the button below to
 * you can copy and download the image if you want. just hover the mouse cursor over the image.
 * you can <b>fine-tune</b> openai with llama-index.
 * support text-based file uploading
+* support searching title and content in the conversation
+* support "find text" feature (match word, case-sensitive, regex, etc.)
+* support customizing feature (homepage, user and AI profile image) 
 
 ## Supported Languages
 * English
