@@ -49,8 +49,10 @@ class OpenAIThread(QThread):
                                 self.replyGenerated.emit(response_text, False, True, '')
                             else:
                                 finish_reason = chunk['choices'][0].get('finish_reason', '')
+                                print(chunk)
                                 self.streamFinished.emit(finish_reason)
                 else:
+                    print(response['usage'])
                     response_text = response['choices'][0]['message']['content']
                     finish_reason = response['choices'][0]['finish_reason']
                     self.replyGenerated.emit(response_text, False, False, finish_reason)
