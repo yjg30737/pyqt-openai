@@ -161,9 +161,10 @@ class AIChatUnit(QWidget):
         self.__copyBtn.setEnabled(False)
         self.__infoBtn.setEnabled(False)
 
-    def showConvResultInfo(self, finish_reason):
+    def showConvResultInfo(self, info_dict):
         self.__copyBtn.setEnabled(True)
         self.__infoBtn.setEnabled(True)
+        self.__result_info = info_dict
 
     def setText(self, text: str):
         self.__lbl = QLabel(text)

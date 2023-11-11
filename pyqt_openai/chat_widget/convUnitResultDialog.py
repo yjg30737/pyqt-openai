@@ -15,11 +15,9 @@ class ConvUnitResultDialog(QDialog):
         self.setWindowTitle('Conversation Result')
         self.setWindowFlags(Qt.Window | Qt.WindowCloseButtonHint)
 
-        model_nameLbl = QLabel('model_nameLbl')
-        finish_reasonLbl = QLabel('finish_reasonLbl')
-        prompt_tokensLbl = QLabel('prompt_tokensLbl')
-        completion_tokensLbl = QLabel('completion_tokensLbl')
-        total_tokensLbl = QLabel('total_tokensLbl')
+        lbls = []
+        for k, v in self.__result_info.items():
+            lbls.append(QLabel(f'{k}: {v}'))
 
         sep = QFrame()
         sep.setFrameShape(QFrame.HLine)
@@ -29,11 +27,8 @@ class ConvUnitResultDialog(QDialog):
         okBtn.clicked.connect(self.accept)
 
         lay = QFormLayout()
-        lay.addWidget(model_nameLbl)
-        lay.addWidget(finish_reasonLbl)
-        lay.addWidget(prompt_tokensLbl)
-        lay.addWidget(completion_tokensLbl)
-        lay.addWidget(total_tokensLbl)
+        for lbl in lbls:
+            lay.addWidget(lbl)
         lay.addWidget(sep)
         lay.addWidget(okBtn)
 

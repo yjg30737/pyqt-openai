@@ -545,12 +545,15 @@ class SqliteDatabase:
 
     def insertConvUnit(self, id, user_f, conv, info):
         try:
-            # TODO 2023-11-11
-            # Insert a row into the table
             finish_reason = info['finish_reason']
+            model_name = info['model_name']
+            prompt_tokens = info['prompt_tokens']
+            completion_tokens = info['completion_tokens']
+            total_tokens = info['total_tokens']
             self.__c.execute(
-                f'INSERT INTO {self.__conv_unit_tb_nm}{id} (id_fk, is_user, conv, finish_reason) VALUES (?, ?, ?, ?)',
-                (id, user_f, conv, finish_reason))
+                f'INSERT INTO {self.__conv_unit_tb_nm}{id} (id_fk, is_user, conv, finish_reason, model_name, '
+                f'prompt_tokens, completion_tokens, total_tokens) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+                (id, user_f, conv, finish_reason, model_name, prompt_tokens, completion_tokens, total_tokens))
             new_id = self.__c.lastrowid
             # Commit the transaction
             self.__conn.commit()
