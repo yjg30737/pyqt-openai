@@ -5,11 +5,12 @@ import pyperclip
 from qtpy.QtCore import Qt
 from qtpy.QtGui import QPalette, QColor
 from qtpy.QtWidgets import QLabel, QWidget, QVBoxLayout, QApplication, QHBoxLayout, QSpacerItem, QSizePolicy, \
-    QTextBrowser, QAbstractScrollArea
+    QTextBrowser, QAbstractScrollArea, QPushButton
 from pygments import highlight
 from pygments.formatters.html import HtmlFormatter
 from pygments.lexers import get_lexer_by_name
 
+from pyqt_openai.chat_widget.convUnitResultDialog import ConvUnitResultDialog
 from pyqt_openai.svgButton import SvgButton
 
 from circleProfileImage import RoundedImage
@@ -78,6 +79,7 @@ class AIChatUnit(QWidget):
         self.__lbl = ''
         self.__plain_text = ''
         self.__find_f = False
+        self.__result_info = ''
 
     def __initUi(self):
         # common
@@ -87,18 +89,19 @@ class AIChatUnit(QWidget):
         self.__icon = RoundedImage()
         self.__icon.setMaximumSize(24, 24)
 
-        self.__finishReasonLbl = QLabel()
-        self.__finishReasonLbl.setObjectName('finishReasonLbl')
+        self.__infoBtn = SvgButton()
+        self.__infoBtn.setIcon('ico/info.svg')
+        self.__infoBtn.clicked.connect(self.__showInfo)
 
         # SvgButton is supposed to be used like "copyBtn = SvgButton(self)" but it makes GUI broken so i won't give "self" argument to SvgButton
-        copyBtn = SvgButton()
-        copyBtn.setIcon('ico/copy.svg')
-        copyBtn.clicked.connect(self.__copy)
+        self.__copyBtn = SvgButton()
+        self.__copyBtn.setIcon('ico/copy.svg')
+        self.__copyBtn.clicked.connect(self.__copy)
 
         lay.addWidget(self.__icon)
         lay.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.MinimumExpanding))
-        lay.addWidget(self.__finishReasonLbl)
-        lay.addWidget(copyBtn)
+        lay.addWidget(self.__infoBtn)
+        lay.addWidget(self.__copyBtn)
         lay.setContentsMargins(2, 2, 2, 2)
         lay.setSpacing(1)
 
@@ -126,6 +129,10 @@ class AIChatUnit(QWidget):
     def __copy(self):
         pyperclip.copy(self.text())
 
+    def __showInfo(self):
+        dialog = ConvUnitResultDialog(self.__result_info)
+        dialog.exec()
+
     def text(self):
         text = ''
         lay = self.__mainWidget.layout()
@@ -150,14 +157,14 @@ class AIChatUnit(QWidget):
                 if isinstance(widget, QLabel):
                     widget.setAlignment(a0)
 
-    def setFinishReason(self, finish_reason):
-        self.__finishReasonLbl.setText(f'Finish Reason: {finish_reason}')
+    def disableGUIDuringGenerateResponse(self):
+        self.__copyBtn.setEnabled(False)
+        self.__infoBtn.setEnabled(False)
 
-    def showFinishReason(self, f):
-        self.__finishReasonLbl.setVisible(f)
-
-    def getFinishReason(self):
-        return self.__finishReasonLbl.text()
+    def showConvResultInfo(self, info_dict):
+        self.__copyBtn.setEnabled(True)
+        self.__infoBtn.setEnabled(True)
+        self.__result_info = info_dict
 
     def setText(self, text: str):
         self.__lbl = QLabel(text)

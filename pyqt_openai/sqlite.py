@@ -54,6 +54,7 @@ class SqliteDatabase:
         try:
             # Connect to the database (create a new file if it doesn't exist)
             self.__conn = sqlite3.connect(self.__db_filename)
+            self.__conn.row_factory = sqlite3.Row
             self.__conn.execute('PRAGMA foreign_keys = ON;')
             self.__conn.commit()
 
@@ -450,21 +451,23 @@ class SqliteDatabase:
 
         # get the columns
         for name in res.fetchall():
-            col_to_add = [{'name': 'finish_reason', 'type': 'TEXT' }]
+            col_to_add = [{'field_name': 'finish_reason', 'type': 'TEXT'},
+                          {'field_name': 'model_name', 'type': 'VARCHAR(255)'},
+                          {'field_name': 'prompt_tokens', 'type': 'INTEGER'},
+                          {'field_name': 'completion_tokens', 'type': 'INTEGER'},
+                          {'field_name': 'total_tokens', 'type': 'INTEGER'}]
 
             self.__c.execute(f"PRAGMA table_info({name[0]})")
             existing_columns_to_add = [column[1] for column in self.__c.fetchall()]
 
-            col_to_add = list(filter(lambda x: x['name'] not in existing_columns_to_add, col_to_add))
+            col_to_add = list(filter(lambda x: x['field_name'] not in existing_columns_to_add, col_to_add))
 
             if len(col_to_add) > 0:
-                statement = f'ALTER TABLE {name[0]}'
                 for col in col_to_add:
-                    name = col['name']
+                    field_name = col['field_name']
                     type = col['type']
-                    statement += f' ADD COLUMN {name} {type}'
-
-                self.__c.execute(statement)
+                    statement = f'ALTER TABLE {name[0]} ADD COLUMN {field_name} {type}'
+                    self.__c.execute(statement)
 
         # self.__c.execute(f'''ALTER TABLE {self.__conv_unit_tb_nm}{id_fk}
         #                         ADD COLUMN new_column_name data_type''')
@@ -483,7 +486,11 @@ class SqliteDatabase:
                                           id_fk INTEGER,
                                           is_user INTEGER,
                                           conv TEXT,
-                                          finish_reason TEXT,
+                                          finish_reason VARCHAR(255),
+                                          model_name VARCHAR(255),
+                                          prompt_tokens INTEGER,
+                                          completion_tokens INTEGER,
+                                          total_tokens INTEGER,
                                           update_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
                                           insert_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
                                           FOREIGN KEY (id_fk) REFERENCES {self.__conv_tb_nm}(id) ON DELETE CASCADE)''')
@@ -525,12 +532,10 @@ class SqliteDatabase:
         return self.__c.fetchall()
 
     def selectCertainConv(self, id):
-        return [{'id': elem[0],
-                 'parent_id': elem[1],
-                 'is_user': elem[2],
-                 'conv': elem[3],
-                 'finish_reason': elem[4],
-                 'update_dt': elem[5]} for elem in self.selectCertainConvRaw(id)]
+        result = []
+        for elem in self.selectCertainConvRaw(id):
+            result.append(dict(elem))
+        return result
 
     def selectAllContentOfConv(self):
         arr = []
@@ -538,12 +543,17 @@ class SqliteDatabase:
             arr.append((i, self.selectCertainConv(i)))
         return arr
 
-    def insertConvUnit(self, id, user_f, conv, finish_reason=''):
+    def insertConvUnit(self, id, user_f, conv, info):
         try:
-            # Insert a row into the table
+            finish_reason = info['finish_reason']
+            model_name = info['model_name']
+            prompt_tokens = info['prompt_tokens']
+            completion_tokens = info['completion_tokens']
+            total_tokens = info['total_tokens']
             self.__c.execute(
-                f'INSERT INTO {self.__conv_unit_tb_nm}{id} (id_fk, is_user, conv, finish_reason) VALUES (?, ?, ?, ?)',
-                (id, user_f, conv, finish_reason))
+                f'INSERT INTO {self.__conv_unit_tb_nm}{id} (id_fk, is_user, conv, finish_reason, model_name, '
+                f'prompt_tokens, completion_tokens, total_tokens) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+                (id, user_f, conv, finish_reason, model_name, prompt_tokens, completion_tokens, total_tokens))
             new_id = self.__c.lastrowid
             # Commit the transaction
             self.__conn.commit()

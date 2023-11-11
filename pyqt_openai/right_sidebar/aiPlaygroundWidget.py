@@ -11,7 +11,6 @@ from pyqt_openai.sqlite import SqliteDatabase
 
 class AIPlaygroundWidget(QScrollArea):
     onDirectorySelected = Signal(str)
-    onFinishReasonToggled = Signal(bool)
 
     def __init__(self):
         super().__init__()
@@ -49,7 +48,6 @@ class AIPlaygroundWidget(QScrollArea):
 
         partial_func = partial(tabWidget.setTabEnabled, 1)
         chatPage.onToggleLlama.connect(lambda x: partial_func(x))
-        chatPage.onFinishReasonToggled.connect(self.onFinishReasonToggled)
 
         lay = QGridLayout()
         lay.addWidget(tabWidget)

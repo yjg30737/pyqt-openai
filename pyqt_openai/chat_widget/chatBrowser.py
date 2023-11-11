@@ -1,25 +1,24 @@
-from qtpy.QtCore import Qt, Signal, QSettings
-from qtpy.QtGui import QFont
-from qtpy.QtWidgets import QScrollArea, QVBoxLayout, QWidget, QLabel, \
-    QStackedWidget
+import re
+
+from qtpy.QtCore import Qt, Signal
+from qtpy.QtWidgets import QScrollArea, QVBoxLayout, QWidget, QLabel
 
 from pyqt_openai.chat_widget.aiChatUnit import AIChatUnit
 from pyqt_openai.chat_widget.userChatUnit import UserChatUnit
-from pyqt_openai.res.language_dict import LangClass
+from pyqt_openai.util.script import is_valid_regex
 
 
 class ChatBrowser(QScrollArea):
-    convUnitUpdated = Signal(int, int, str, str)
+    convUnitUpdated = Signal(int, int, str, dict)
     onReplacedCurrentPage = Signal(int)
 
-    def __init__(self, finish_reason=True):
+    def __init__(self):
         super().__init__()
-        self.__initVal(finish_reason)
+        self.__initVal()
         self.__initUi()
 
-    def __initVal(self, finish_reason):
+    def __initVal(self):
         self.__cur_id = 0
-        self.__show_finished_reason_f = finish_reason
 
         self.__user_image = ''
         self.__ai_image = ''
@@ -36,13 +35,13 @@ class ChatBrowser(QScrollArea):
         self.setWidget(self.__chatWidget)
         self.setWidgetResizable(True)
 
-    def showLabel(self, text, user_f, stream_f, finish_reason=''):
+    def showLabel(self, text, user_f, stream_f, info=None):
         # for question & response below the menu
         unit = self.showText(text, stream_f, user_f)
         if not stream_f:
-            self.__setFinishReason(unit, finish_reason)
+            self.__showConvResultInfo(unit, info)
             # change user_f type from bool to int to insert in db
-            self.convUnitUpdated.emit(self.__cur_id, int(user_f), text, finish_reason)
+            self.convUnitUpdated.emit(self.__cur_id, int(user_f), text, info)
 
     def __getLastUnit(self) -> AIChatUnit | None:
         item = self.widget().layout().itemAt(self.widget().layout().count() - 1)
@@ -51,14 +50,14 @@ class ChatBrowser(QScrollArea):
         else:
             return None
 
-    def __setFinishReason(self, unit, finish_reason):
+    def __showConvResultInfo(self, unit, info):
         if isinstance(unit, AIChatUnit):
-            unit.setFinishReason(finish_reason)
+            unit.showConvResultInfo(info)
 
-    def streamFinished(self, finish_reason):
+    def streamFinished(self, info):
         unit = self.__getLastUnit()
-        self.__setFinishReason(unit, finish_reason)
-        self.convUnitUpdated.emit(self.__cur_id, 0, self.getLastResponse(), finish_reason)
+        self.__showConvResultInfo(unit, info)
+        self.convUnitUpdated.emit(self.__cur_id, 0, self.getLastResponse(), info)
 
     def showText(self, text, stream_f, user_f):
         # if self.widget().currentWidget() == self.__chatWidget:
@@ -82,10 +81,11 @@ class ChatBrowser(QScrollArea):
             if stream_f:
                 unit = self.__getLastUnit()
                 if isinstance(unit, AIChatUnit):
+                    # TODO 2023-11-10
+                    unit.disableGUIDuringGenerateResponse()
                     unit.addText(text)
                     return
             chatUnit.setText(text)
-            chatUnit.showFinishReason(self.__show_finished_reason_f)
 
         self.widget().layout().addWidget(chatUnit)
         return chatUnit
@@ -117,16 +117,6 @@ class ChatBrowser(QScrollArea):
                 widget = lay.itemAt(i).widget()
                 if isinstance(widget, AIChatUnit):
                     return widget.text()
-        return ''
-
-    def getLastFinishReason(self):
-        lay = self.widget().layout()
-        if lay:
-            i = lay.count()-1
-            if lay.itemAt(i) and lay.itemAt(i).widget():
-                widget = lay.itemAt(i).widget()
-                if isinstance(widget, AIChatUnit):
-                    return widget.getFinishReason()
         return ''
 
     def getEveryResponse(self):
@@ -174,13 +164,52 @@ class ChatBrowser(QScrollArea):
         labels = [lay.itemAt(i).widget() for i in range(lay.count()) if lay.itemAt(i) and isinstance(lay.itemAt(i).widget(), AIChatUnit)]
         return labels
 
-    def setCurrentLabelIncludingTextBySliderPosition(self, text):
+    def getLastFinishReason(self):
+        # TODO 2023-11-11
+        # 1 is continue 0 is not continue
+        return 1
+
+    def setCurrentLabelIncludingTextBySliderPosition(self, text, case_sensitive=False, word_only=False, is_regex=False):
         labels = self.__getEveryLabels()
         label_info = [{'class':label, 'text':label.text(), 'pos':label.y()} for label in labels]
         res_lbl = []
         for _ in label_info:
-            if _['text'].find(text) != -1:
-                res_lbl.append(_)
+            pattern = text
+            if is_regex:
+                if is_valid_regex(pattern):
+                    if case_sensitive:
+                        result = re.search(pattern, _['text'], re.IGNORECASE)
+                        if result:
+                            res_lbl.append(_)
+                    else:
+                        result = re.search(pattern, _['text'])
+                        if result:
+                            res_lbl.append(_)
+                else:
+                    if _['text'].find(text) != -1:
+                        res_lbl.append(_)
+            else:
+                if case_sensitive:
+                    if word_only:
+                        pattern = r'\b' + re.escape(text) + r'\b'
+                        result = re.search(pattern, _['text'])
+                        if result:
+                            res_lbl.append(_)
+                    else:
+                        if _['text'].find(text) != -1:
+                            res_lbl.append(_)
+                else:
+                    if word_only:
+                        pattern = r'\b' + re.escape(text) + r'\b'
+                        result = re.search(pattern, _['text'], re.IGNORECASE)
+                        if result:
+                            res_lbl.append(_)
+                    else:
+                        pattern = re.escape(text)
+                        result = re.search(pattern, _['text'], re.IGNORECASE)
+                        if result:
+                            res_lbl.append(_)
+
         return res_lbl
 
     def replaceConv(self, id, conv_data):
@@ -193,20 +222,14 @@ class ChatBrowser(QScrollArea):
         for i in range(len(conv_data)):
             # stream is False no matter what
             unit = self.__setLabel(conv_data[i]['conv'], False, conv_data[i]['is_user'])
-            self.__setFinishReason(unit, conv_data[i]['finish_reason'])
-
-    def toggle_show_finished_reason_f(self, f):
-        self.__show_finished_reason_f = f
-        lay = self.widget().layout()
-        if lay:
-            for i in range(lay.count()):
-                item = lay.itemAt(i)
-                if item and item.widget():
-                    unit = item.widget()
-                    if isinstance(unit, AIChatUnit):
-                        lbl = unit.findChild(QLabel, 'finishReasonLbl')
-                        if isinstance(lbl, QLabel):
-                            lbl.setVisible(self.__show_finished_reason_f)
+            info = {
+            'finish_reason': conv_data[i]['finish_reason'],
+            'model_name': conv_data[i]['model_name'],
+            'prompt_tokens': conv_data[i]['prompt_tokens'],
+            'completion_tokens': conv_data[i]['completion_tokens'],
+            'total_tokens': conv_data[i]['total_tokens'],
+            }
+            self.__showConvResultInfo(unit, info)
 
     def setUserImage(self, img):
         self.__user_image = img
