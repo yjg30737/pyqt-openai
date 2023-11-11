@@ -8,7 +8,6 @@ from pyqt_openai.sqlite import SqliteDatabase
 
 class ChatPage(QWidget):
     onToggleLlama = Signal(bool)
-    onFinishReasonToggled = Signal(bool)
 
     def __init__(self):
         super().__init__()
@@ -126,10 +125,6 @@ class ChatPage(QWidget):
         useMaxTokenChkBox.setText(LangClass.TRANSLATIONS['Use Max Tokens'])
         self.__maxTokensSpinBox.setEnabled(self.__use_max_tokens)
 
-        finishReasonChkBox = QCheckBox(LangClass.TRANSLATIONS['Show Finish Reason'])
-        finishReasonChkBox.toggled.connect(self.__finishReasonChecked)
-        finishReasonChkBox.setChecked(self.__finish_reason)
-
         lay = QFormLayout()
 
         lay.addRow('temperature', temperatureSpinBox)
@@ -149,7 +144,6 @@ class ChatPage(QWidget):
         lay.addWidget(modelCmbBox)
         lay.addWidget(streamChkBox)
         lay.addWidget(useMaxTokenChkBox)
-        lay.addWidget(finishReasonChkBox)
         lay.addWidget(llamaChkBox)
         lay.addWidget(sep)
         lay.addWidget(paramWidget)
@@ -178,11 +172,6 @@ class ChatPage(QWidget):
         self.__use_max_tokens = f
         self.__settings_ini.setValue('use_max_tokens', f)
         self.__maxTokensSpinBox.setEnabled(f)
-
-    def __finishReasonChecked(self, f):
-        self.__finish_reason = f
-        self.__settings_ini.setValue('finish_reason', f)
-        self.onFinishReasonToggled.emit(f)
 
     def __temperatureChanged(self, v):
         self.__temperature = v

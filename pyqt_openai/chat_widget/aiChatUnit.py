@@ -89,9 +89,6 @@ class AIChatUnit(QWidget):
         self.__icon = RoundedImage()
         self.__icon.setMaximumSize(24, 24)
 
-        self.__finishReasonLbl = QLabel()
-        self.__finishReasonLbl.setObjectName('finishReasonLbl')
-
         self.__infoBtn = SvgButton()
         self.__infoBtn.setIcon('ico/info.svg')
         self.__infoBtn.clicked.connect(self.__showInfo)
@@ -104,7 +101,6 @@ class AIChatUnit(QWidget):
         lay.addWidget(self.__icon)
         lay.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.MinimumExpanding))
         lay.addWidget(self.__infoBtn)
-        lay.addWidget(self.__finishReasonLbl)
         lay.addWidget(self.__copyBtn)
         lay.setContentsMargins(2, 2, 2, 2)
         lay.setSpacing(1)
@@ -168,13 +164,6 @@ class AIChatUnit(QWidget):
     def showConvResultInfo(self, finish_reason):
         self.__copyBtn.setEnabled(True)
         self.__infoBtn.setEnabled(True)
-        self.__finishReasonLbl.setText(f'Finish Reason: {finish_reason}')
-
-    def showFinishReason(self, f):
-        self.__finishReasonLbl.setVisible(f)
-
-    def getFinishReason(self):
-        return self.__finishReasonLbl.text()
 
     def setText(self, text: str):
         self.__lbl = QLabel(text)

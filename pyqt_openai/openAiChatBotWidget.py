@@ -55,7 +55,6 @@ class OpenAIChatBotWidget(QWidget):
         self.__lineEdit = self.__prompt.getTextEdit()
         self.__aiPlaygroundWidget = AIPlaygroundWidget()
         self.__aiPlaygroundWidget.onDirectorySelected.connect(self.__llama_class.set_directory)
-        self.__aiPlaygroundWidget.onFinishReasonToggled.connect(self.__onFinishReasonToggled)
         self.__promptGeneratorWidget = PromptGeneratorWidget(self.__db)
 
         self.__sideBarBtn = SvgButton()
@@ -274,6 +273,7 @@ class OpenAIChatBotWidget(QWidget):
         self.__lineEdit.clear()
 
     def __afterGenerated(self):
+        # TODO 2023-11-11
         continue_f = self.__browser.getLastFinishReason() == 'Finish Reason: length'
         self.__toggleWidgetWhileChatting(True, continue_f)
         self.__lineEdit.setFocus()
@@ -305,9 +305,6 @@ class OpenAIChatBotWidget(QWidget):
     def __deleteConv(self, id_lst):
         for id in id_lst:
             self.__db.deleteConv(id)
-
-    def __onFinishReasonToggled(self, f):
-        self.__browser.toggle_show_finished_reason_f(f)
 
     def __export(self, ids):
         file_data = QFileDialog.getSaveFileName(self, LangClass.TRANSLATIONS['Save'], os.path.expanduser('~'), 'SQLite DB file (*.db);;txt files Compressed File (*.zip);;html files Compressed File (*.zip)')

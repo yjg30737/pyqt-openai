@@ -12,14 +12,13 @@ class ChatBrowser(QScrollArea):
     convUnitUpdated = Signal(int, int, str, str)
     onReplacedCurrentPage = Signal(int)
 
-    def __init__(self, finish_reason=True):
+    def __init__(self):
         super().__init__()
-        self.__initVal(finish_reason)
+        self.__initVal()
         self.__initUi()
 
-    def __initVal(self, finish_reason):
+    def __initVal(self):
         self.__cur_id = 0
-        self.__show_finished_reason_f = finish_reason
 
         self.__user_image = ''
         self.__ai_image = ''
@@ -87,7 +86,6 @@ class ChatBrowser(QScrollArea):
                     unit.addText(text)
                     return
             chatUnit.setText(text)
-            chatUnit.showFinishReason(self.__show_finished_reason_f)
 
         self.widget().layout().addWidget(chatUnit)
         return chatUnit
@@ -119,16 +117,6 @@ class ChatBrowser(QScrollArea):
                 widget = lay.itemAt(i).widget()
                 if isinstance(widget, AIChatUnit):
                     return widget.text()
-        return ''
-
-    def getLastFinishReason(self):
-        lay = self.widget().layout()
-        if lay:
-            i = lay.count()-1
-            if lay.itemAt(i) and lay.itemAt(i).widget():
-                widget = lay.itemAt(i).widget()
-                if isinstance(widget, AIChatUnit):
-                    return widget.getFinishReason()
         return ''
 
     def getEveryResponse(self):
@@ -175,6 +163,10 @@ class ChatBrowser(QScrollArea):
         lay = self.widget().layout()
         labels = [lay.itemAt(i).widget() for i in range(lay.count()) if lay.itemAt(i) and isinstance(lay.itemAt(i).widget(), AIChatUnit)]
         return labels
+
+    def getLastFinishReason(self):
+        # 1 is continue 0 is not continue
+        return 1
 
     def setCurrentLabelIncludingTextBySliderPosition(self, text, case_sensitive=False, word_only=False, is_regex=False):
         labels = self.__getEveryLabels()
@@ -230,19 +222,6 @@ class ChatBrowser(QScrollArea):
             # stream is False no matter what
             unit = self.__setLabel(conv_data[i]['conv'], False, conv_data[i]['is_user'])
             self.__showConvResultInfo(unit, conv_data[i]['finish_reason'])
-
-    def toggle_show_finished_reason_f(self, f):
-        self.__show_finished_reason_f = f
-        lay = self.widget().layout()
-        if lay:
-            for i in range(lay.count()):
-                item = lay.itemAt(i)
-                if item and item.widget():
-                    unit = item.widget()
-                    if isinstance(unit, AIChatUnit):
-                        lbl = unit.findChild(QLabel, 'finishReasonLbl')
-                        if isinstance(lbl, QLabel):
-                            lbl.setVisible(self.__show_finished_reason_f)
 
     def setUserImage(self, img):
         self.__user_image = img
