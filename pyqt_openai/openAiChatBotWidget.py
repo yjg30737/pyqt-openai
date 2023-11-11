@@ -223,6 +223,14 @@ class OpenAIChatBotWidget(QWidget):
             else:
                 self.__addConv()
 
+            info = {
+                'model_name': openai_arg['model'],
+                'finish_reason': '',
+                'prompt_tokens': '',
+                'completion_tokens': '',
+                'total_tokens': '',
+            }
+
             """
             for make GPT continue to respond
             """
@@ -230,12 +238,12 @@ class OpenAIChatBotWidget(QWidget):
                 query_text = 'Continue to respond.'
             else:
                 query_text = self.__prompt.getContent()
-            self.__browser.showLabel(query_text, True, False)
+            self.__browser.showLabel(query_text, True, False, info)
 
             if is_llama_available:
-                self.__t = LlamaOpenAIThread(self.__llama_class, openai_arg=openai_arg, query_text=query_text)
+                self.__t = LlamaOpenAIThread(self.__llama_class, openai_arg=openai_arg, query_text=query_text, info=info)
             else:
-                self.__t = OpenAIThread(model, openai_arg)
+                self.__t = OpenAIThread(model, openai_arg, info=info)
             self.__t.started.connect(self.__beforeGenerated)
             self.__t.replyGenerated.connect(self.__browser.showLabel)
             self.__t.streamFinished.connect(self.__browser.streamFinished)

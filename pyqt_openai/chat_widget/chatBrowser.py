@@ -35,7 +35,7 @@ class ChatBrowser(QScrollArea):
         self.setWidget(self.__chatWidget)
         self.setWidgetResizable(True)
 
-    def showLabel(self, text, user_f, stream_f, info):
+    def showLabel(self, text, user_f, stream_f, info=None):
         # for question & response below the menu
         unit = self.showText(text, stream_f, user_f)
         if not stream_f:

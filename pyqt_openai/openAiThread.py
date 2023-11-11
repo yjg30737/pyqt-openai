@@ -17,14 +17,16 @@ class OpenAIThread(QThread):
     Third: streaming or not streaming
     Forth: Finish reason
     """
-    replyGenerated = Signal(str, bool, bool, str)
-    streamFinished = Signal(str)
+    replyGenerated = Signal(str, bool, bool, dict)
+    streamFinished = Signal(dict)
 
-    def __init__(self, model, openai_arg, *args, **kwargs):
+    def __init__(self, model, openai_arg, info, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.__endpoint = getModelEndpoint(model)
         self.__openai_arg = openai_arg
         self.__stop_streaming = False
+
+        self.__info_dict = info
 
     def stop_streaming(self):
         self.__stop_streaming = True
@@ -39,42 +41,50 @@ class OpenAIThread(QThread):
                 if inspect.isgenerator(response):
                     for chunk in response:
                         if self.__stop_streaming:
-                            finish_reason = 'stopped by user'
-                            self.streamFinished.emit(finish_reason)
+                            self.__info_dict['finish_reason'] = 'stopped by user'
+                            self.streamFinished.emit(self.__info_dict)
                             break
                         else:
                             delta = chunk['choices'][0]['delta']
                             response_text = delta.get('content', '')
                             if response_text:
-                                self.replyGenerated.emit(response_text, False, True, '')
+                                self.replyGenerated.emit(response_text, False, True, self.__info_dict)
                             else:
-                                finish_reason = chunk['choices'][0].get('finish_reason', '')
-                                print(chunk)
-                                self.streamFinished.emit(finish_reason)
+                                self.__info_dict['finish_reason'] = chunk['choices'][0].get('finish_reason', '')
+                                self.streamFinished.emit(self.__info_dict)
                 else:
-                    print(response['usage'])
                     response_text = response['choices'][0]['message']['content']
-                    finish_reason = response['choices'][0]['finish_reason']
-                    self.replyGenerated.emit(response_text, False, False, finish_reason)
+                    self.__info_dict['prompt_tokens'] = response['usage']['prompt_tokens']
+                    self.__info_dict['completion_tokens'] = response['usage']['completion_tokens']
+                    self.__info_dict['total_tokens'] = response['usage']['total_tokens']
+                    self.__info_dict['finish_reason'] = response['choices'][0]['finish_reason']
+                    self.replyGenerated.emit(response_text, False, False, self.__info_dict)
         except openai.error.InvalidRequestError as e:
-            self.replyGenerated.emit(f'<p style="color:red">{e}</p>', False, False, 'Error')
+            self.__info_dict['finish_reason'] = 'Error'
+            self.replyGenerated.emit(f'<p style="color:red">{e}</p>', False, False, self.__info_dict)
         except openai.error.RateLimitError as e:
-            self.replyGenerated.emit(f'<p style="color:red">{e}<br/>Check the usage: https://platform.openai.com/account/usage<br/>Update to paid account: https://platform.openai.com/account/billing/overview', False, False, 'Error')
+            self.__info_dict['finish_reason'] = 'Error'
+            self.replyGenerated.emit(f'<p style="color:red">{e}<br/>Check the usage: https://platform.openai.com/account/usage<br/>Update to paid account: https://platform.openai.com/account/billing/overview',
+                                     False, False, self.__info_dict)
         except openai.error.APIError as e:
-            self.replyGenerated.emit(f'<p style="color:red">{e}</p>', False, False, 'Error')
+            self.__info_dict['finish_reason'] = 'Error'
+            self.replyGenerated.emit(f'<p style="color:red">{e}</p>', False, False, self.__info_dict)
         except Exception as e:
-            self.replyGenerated.emit(f'<p style="color:red">{e}</p>', False, False, 'Error')
+            self.__info_dict['finish_reason'] = 'Error'
+            self.replyGenerated.emit(f'<p style="color:red">{e}</p>', False, False, self.__info_dict)
 
 class LlamaOpenAIThread(QThread):
-    replyGenerated = Signal(str, bool, bool, str)
-    streamFinished = Signal(str)
+    replyGenerated = Signal(str, bool, bool, dict)
+    streamFinished = Signal(dict)
 
-    def __init__(self, llama_idx_instance, openai_arg, query_text, *args, **kwargs):
+    def __init__(self, llama_idx_instance, openai_arg, query_text, info, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.__llama_idx_instance = llama_idx_instance
         self.__openai_arg = openai_arg
         self.__query_text = query_text
         self.__stop_streaming = False
+
+        self.__info_dict = info
 
     def stop_streaming(self):
         self.__stop_streaming = True
@@ -89,12 +99,17 @@ class LlamaOpenAIThread(QThread):
                     if self.__stop_streaming:
                         break
                     else:
-                        self.replyGenerated.emit(response_text, False, f, 'stopped by user')
-                self.streamFinished.emit('')
+                        self.__info_dict['finish_reason'] = 'stopped by user'
+                        self.replyGenerated.emit(response_text, False, f, self.__info_dict)
+                self.streamFinished.emit(self.__info_dict)
             else:
-                self.replyGenerated.emit(resp.response, False, f, '')
+                self.replyGenerated.emit(resp.response, False, f, self.__info_dict)
         except openai.error.InvalidRequestError as e:
+            self.__info_dict['finish_reason'] = 'Error'
             self.replyGenerated.emit('<p style="color:red">Your request was rejected as a result of our safety system.<br/>'
-                                     'Your prompt may contain text that is not allowed by our safety system.</p>', False, False, 'Error')
+                                     'Your prompt may contain text that is not allowed by our safety system.</p>',
+                                     False, False, self.__info_dict)
         except openai.error.RateLimitError as e:
-            self.replyGenerated.emit(f'<p style="color:red">{e}<br/>Check the usage: https://platform.openai.com/account/usage<br/>Update to paid account: https://platform.openai.com/account/billing/overview', False, False, 'Error')
+            self.__info_dict['finish_reason'] = 'Error'
+            self.replyGenerated.emit(f'<p style="color:red">{e}<br/>Check the usage: https://platform.openai.com/account/usage<br/>Update to paid account: https://platform.openai.com/account/billing/overview',
+                                     False, False, self.__info_dict)
