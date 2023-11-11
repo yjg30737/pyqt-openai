@@ -35,16 +35,12 @@ class OpenAIChatBotWidget(QWidget):
         # ini
         self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.IniFormat)
 
-        if not self.__settings_ini.contains('finish_reason'):
-            self.__settings_ini.setValue('finish_reason', False)
-        self.__finish_reason = self.__settings_ini.value('finish_reason', type=bool)
-
         # llamaindex
         self.__llama_class = GPTLLamaIndexClass()
 
     def __initUi(self):
         self.__leftSideBarWidget = LeftSideBar(self.__db)
-        self.__chatWidget = ChatWidget(self.__finish_reason)
+        self.__chatWidget = ChatWidget()
         self.__browser = self.__chatWidget.getChatBrowser()
 
         self.__prompt = Prompt(self.__db)
@@ -55,7 +51,6 @@ class OpenAIChatBotWidget(QWidget):
         self.__lineEdit = self.__prompt.getTextEdit()
         self.__aiPlaygroundWidget = AIPlaygroundWidget()
         self.__aiPlaygroundWidget.onDirectorySelected.connect(self.__llama_class.set_directory)
-        self.__aiPlaygroundWidget.onFinishReasonToggled.connect(self.__onFinishReasonToggled)
         self.__promptGeneratorWidget = PromptGeneratorWidget(self.__db)
 
         self.__sideBarBtn = SvgButton()
@@ -228,6 +223,14 @@ class OpenAIChatBotWidget(QWidget):
             else:
                 self.__addConv()
 
+            info = {
+                'model_name': openai_arg['model'],
+                'finish_reason': '',
+                'prompt_tokens': '',
+                'completion_tokens': '',
+                'total_tokens': '',
+            }
+
             """
             for make GPT continue to respond
             """
@@ -235,12 +238,12 @@ class OpenAIChatBotWidget(QWidget):
                 query_text = 'Continue to respond.'
             else:
                 query_text = self.__prompt.getContent()
-            self.__browser.showLabel(query_text, True, False)
+            self.__browser.showLabel(query_text, True, False, info)
 
             if is_llama_available:
-                self.__t = LlamaOpenAIThread(self.__llama_class, openai_arg=openai_arg, query_text=query_text)
+                self.__t = LlamaOpenAIThread(self.__llama_class, openai_arg=openai_arg, query_text=query_text, info=info)
             else:
-                self.__t = OpenAIThread(model, openai_arg)
+                self.__t = OpenAIThread(model, openai_arg, info=info)
             self.__t.started.connect(self.__beforeGenerated)
             self.__t.replyGenerated.connect(self.__browser.showLabel)
             self.__t.streamFinished.connect(self.__browser.streamFinished)
@@ -274,6 +277,7 @@ class OpenAIChatBotWidget(QWidget):
         self.__lineEdit.clear()
 
     def __afterGenerated(self):
+        # TODO 2023-11-11
         continue_f = self.__browser.getLastFinishReason() == 'Finish Reason: length'
         self.__toggleWidgetWhileChatting(True, continue_f)
         self.__lineEdit.setFocus()
@@ -306,9 +310,6 @@ class OpenAIChatBotWidget(QWidget):
         for id in id_lst:
             self.__db.deleteConv(id)
 
-    def __onFinishReasonToggled(self, f):
-        self.__browser.toggle_show_finished_reason_f(f)
-
     def __export(self, ids):
         file_data = QFileDialog.getSaveFileName(self, LangClass.TRANSLATIONS['Save'], os.path.expanduser('~'), 'SQLite DB file (*.db);;txt files Compressed File (*.zip);;html files Compressed File (*.zip)')
         if file_data[0]:
@@ -326,6 +327,6 @@ class OpenAIChatBotWidget(QWidget):
                 self.__db.export(ids, filename)
             open_directory(os.path.dirname(filename))
 
-    def __updateConvUnit(self, id, user_f, conv_unit=None, finish_reason=''):
+    def __updateConvUnit(self, id, user_f, conv_unit=None, info=None):
         if conv_unit:
-            self.__db.insertConvUnit(id, user_f, conv_unit, finish_reason=finish_reason)
+            self.__db.insertConvUnit(id, user_f, conv_unit, info=info)

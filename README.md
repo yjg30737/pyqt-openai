@@ -8,7 +8,9 @@
 
 </div>
 
-PyQt/PySide(Python cross-platform GUI toolkit) OpenAI Chatbot which supports more than 8 languages (you can see the list below) 
+PyQt/PySide(Python cross-platform GUI toolkit) OpenAI Chatbot which supports more than 8 languages (you can see the list below)
+
+<b>This supports Windows, MacOS, Linux.</b>
 
 You can use OpenAI models(GPT4, DALL-E, etc.) with PyQt as a chatbot.
 
@@ -60,7 +62,8 @@ And if you would like to support this project, you can click the button below to
   * everything above is saved in an SQLite database file named conv.db.
 * support controlling parameters(temperature, top_p, etc) just like openai playground
 * able to see the reason why stream is finished
-* support latest model such as <b>GPT-4-32k-0613</b>
+* support token count (only for non-streaming response)
+* support latest model such as <b>GPT-4-1106-preview</b>
 * support <b>prompt generator</b> (manageable, autosaved in database) 
 * support <b>slash commands</b>
 * support beginning and ending part of the prompt
@@ -100,26 +103,15 @@ If you have any additional languages you would like to add, please feel free to 
 * llama-index - to fine-tune
 
 ## Preview and Usage
-#### Note: A lot of previews below are not from latest version. It is slightly different with current GUI. So if you want to really know what this looks like, you can just see it for yourself :)
+#### Note: A lot of previews below are not from latest version, EXCEPT FOR FIRST ONE! It is slightly different with current GUI. So if you want to really know what this looks like, see it by yourself :) But i will definitely change any image(s) which should be changed.
 
 ### Overview
-#### Windows
-![image](https://github.com/yjg30737/pyqt-openai/assets/55078043/51667298-2c3f-4846-a8c9-ec56331b8361)
+![image](https://github.com/yjg30737/pyqt-openai/assets/55078043/00aab779-37bd-45e8-b21c-9f4ed3e473e8)
 <b>You have to write your openai api key inside the red box.</b> see [How to install](#how-to-install)
 
 You can change screen between text chatbot and image generating tool screen.
 
 ![image](https://github.com/yjg30737/pyqt-openai/assets/55078043/78260aaf-2626-4267-9309-07655cab2061)
-
-#### Linux (Ubuntu)
-![image](https://github.com/yjg30737/pyqt-openai/assets/55078043/4005c085-53f4-406f-adb0-4fb4d87d88ba)
-
-#### MacOS
-![image](https://github.com/yjg30737/pyqt-openai/assets/55078043/4fec8f14-3768-49e8-9ad6-a4fbf240e643)
-
-Thanks to Werranton, who gave me the pyqt-openai window example image from macOS :)
-
-(He has changed the pyqt-openai's overall theme personally)
 
 ### Using LlamaIndex
 ![image](https://github.com/yjg30737/pyqt-openai/assets/55078043/e161b551-91dc-4c4d-8a33-28179d72fb64)

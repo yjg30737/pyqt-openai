@@ -8,14 +8,13 @@ from pyqt_openai.res.language_dict import LangClass
 
 
 class ChatWidget(QWidget):
-    def __init__(self, finish_reason=True):
+    def __init__(self):
         super(ChatWidget, self).__init__()
-        self.__initVal(finish_reason)
+        self.__initVal()
         self.__initUi()
 
-    def __initVal(self, finish_reason):
+    def __initVal(self):
         self.__cur_id = 0
-        self.__show_finished_reason_f = finish_reason
         self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.IniFormat)
 
         if not self.__settings_ini.contains('background_image'):
@@ -35,7 +34,7 @@ class ChatWidget(QWidget):
         self.__homeLbl.setAlignment(Qt.AlignCenter)
         self.__homeLbl.setFont(QFont('Arial', 32))
 
-        self.__chatBrowser = ChatBrowser(self.__show_finished_reason_f)
+        self.__chatBrowser = ChatBrowser()
 
         self.__menuWidget = MenuWidget(self.__chatBrowser)
 
