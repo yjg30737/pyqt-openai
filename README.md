@@ -8,7 +8,9 @@
 
 </div>
 
-PyQt/PySide(Python cross-platform GUI toolkit) OpenAI Chatbot which supports more than 8 languages (you can see the list below) 
+PyQt/PySide(Python cross-platform GUI toolkit) OpenAI Chatbot which supports more than 8 languages (you can see the list below)
+
+<b>This supports Windows, MacOS, Linux.</b>
 
 You can use OpenAI models(GPT4, DALL-E, etc.) with PyQt as a chatbot.
 
@@ -104,23 +106,12 @@ If you have any additional languages you would like to add, please feel free to 
 #### Note: A lot of previews below are not from latest version. It is slightly different with current GUI. So if you want to really know what this looks like, you can just see it for yourself :)
 
 ### Overview
-#### Windows
-![image](https://github.com/yjg30737/pyqt-openai/assets/55078043/51667298-2c3f-4846-a8c9-ec56331b8361)
+![image](https://github.com/yjg30737/pyqt-openai/assets/55078043/00aab779-37bd-45e8-b21c-9f4ed3e473e8)
 <b>You have to write your openai api key inside the red box.</b> see [How to install](#how-to-install)
 
 You can change screen between text chatbot and image generating tool screen.
 
 ![image](https://github.com/yjg30737/pyqt-openai/assets/55078043/78260aaf-2626-4267-9309-07655cab2061)
-
-#### Linux (Ubuntu)
-![image](https://github.com/yjg30737/pyqt-openai/assets/55078043/4005c085-53f4-406f-adb0-4fb4d87d88ba)
-
-#### MacOS
-![image](https://github.com/yjg30737/pyqt-openai/assets/55078043/4fec8f14-3768-49e8-9ad6-a4fbf240e643)
-
-Thanks to Werranton, who gave me the pyqt-openai window example image from macOS :)
-
-(He has changed the pyqt-openai's overall theme personally)
 
 ### Using LlamaIndex
 ![image](https://github.com/yjg30737/pyqt-openai/assets/55078043/e161b551-91dc-4c4d-8a33-28179d72fb64)
