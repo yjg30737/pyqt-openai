@@ -103,7 +103,7 @@ If you have any additional languages you would like to add, please feel free to 
 * llama-index - to fine-tune
 
 ## Preview and Usage
-#### Note: A lot of previews below are not from latest version. It is slightly different with current GUI. So if you want to really know what this looks like, you can just see it for yourself :)
+#### Note: A lot of previews below are not from latest version, EXCEPT FOR FIRST ONE! It is slightly different with current GUI. So if you want to really know what this looks like, see it by yourself :) But i will definitely change any image(s) which should be changed.
 
 ### Overview
 ![image](https://github.com/yjg30737/pyqt-openai/assets/55078043/00aab779-37bd-45e8-b21c-9f4ed3e473e8)
