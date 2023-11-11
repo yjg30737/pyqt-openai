@@ -40,7 +40,7 @@ class ChatBrowser(QScrollArea):
         # for question & response below the menu
         unit = self.showText(text, stream_f, user_f)
         if not stream_f:
-            self.__setFinishReason(unit, finish_reason)
+            self.__showConvResultInfo(unit, finish_reason)
             # change user_f type from bool to int to insert in db
             self.convUnitUpdated.emit(self.__cur_id, int(user_f), text, finish_reason)
 
@@ -51,13 +51,13 @@ class ChatBrowser(QScrollArea):
         else:
             return None
 
-    def __setFinishReason(self, unit, finish_reason):
+    def __showConvResultInfo(self, unit, finish_reason):
         if isinstance(unit, AIChatUnit):
-            unit.setFinishReason(finish_reason)
+            unit.showConvResultInfo(finish_reason)
 
     def streamFinished(self, finish_reason):
         unit = self.__getLastUnit()
-        self.__setFinishReason(unit, finish_reason)
+        self.__showConvResultInfo(unit, finish_reason)
         self.convUnitUpdated.emit(self.__cur_id, 0, self.getLastResponse(), finish_reason)
 
     def showText(self, text, stream_f, user_f):
@@ -82,6 +82,8 @@ class ChatBrowser(QScrollArea):
             if stream_f:
                 unit = self.__getLastUnit()
                 if isinstance(unit, AIChatUnit):
+                    # TODO 2023-11-10
+                    unit.disableGUIDuringGenerateResponse()
                     unit.addText(text)
                     return
             chatUnit.setText(text)
@@ -227,7 +229,7 @@ class ChatBrowser(QScrollArea):
         for i in range(len(conv_data)):
             # stream is False no matter what
             unit = self.__setLabel(conv_data[i]['conv'], False, conv_data[i]['is_user'])
-            self.__setFinishReason(unit, conv_data[i]['finish_reason'])
+            self.__showConvResultInfo(unit, conv_data[i]['finish_reason'])
 
     def toggle_show_finished_reason_f(self, f):
         self.__show_finished_reason_f = f
