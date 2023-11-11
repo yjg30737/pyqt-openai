@@ -35,10 +35,6 @@ class OpenAIChatBotWidget(QWidget):
         # ini
         self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.IniFormat)
 
-        if not self.__settings_ini.contains('finish_reason'):
-            self.__settings_ini.setValue('finish_reason', False)
-        self.__finish_reason = self.__settings_ini.value('finish_reason', type=bool)
-
         # llamaindex
         self.__llama_class = GPTLLamaIndexClass()
 
@@ -323,6 +319,6 @@ class OpenAIChatBotWidget(QWidget):
                 self.__db.export(ids, filename)
             open_directory(os.path.dirname(filename))
 
-    def __updateConvUnit(self, id, user_f, conv_unit=None, finish_reason=''):
+    def __updateConvUnit(self, id, user_f, conv_unit=None, info=None):
         if conv_unit:
-            self.__db.insertConvUnit(id, user_f, conv_unit, finish_reason=finish_reason)
+            self.__db.insertConvUnit(id, user_f, conv_unit, info=info)

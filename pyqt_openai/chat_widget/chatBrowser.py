@@ -9,7 +9,7 @@ from pyqt_openai.util.script import is_valid_regex
 
 
 class ChatBrowser(QScrollArea):
-    convUnitUpdated = Signal(int, int, str, str)
+    convUnitUpdated = Signal(int, int, str, dict)
     onReplacedCurrentPage = Signal(int)
 
     def __init__(self):
@@ -35,13 +35,13 @@ class ChatBrowser(QScrollArea):
         self.setWidget(self.__chatWidget)
         self.setWidgetResizable(True)
 
-    def showLabel(self, text, user_f, stream_f, finish_reason=''):
+    def showLabel(self, text, user_f, stream_f, info):
         # for question & response below the menu
         unit = self.showText(text, stream_f, user_f)
         if not stream_f:
-            self.__showConvResultInfo(unit, finish_reason)
+            self.__showConvResultInfo(unit, info)
             # change user_f type from bool to int to insert in db
-            self.convUnitUpdated.emit(self.__cur_id, int(user_f), text, finish_reason)
+            self.convUnitUpdated.emit(self.__cur_id, int(user_f), text, info)
 
     def __getLastUnit(self) -> AIChatUnit | None:
         item = self.widget().layout().itemAt(self.widget().layout().count() - 1)
@@ -50,14 +50,14 @@ class ChatBrowser(QScrollArea):
         else:
             return None
 
-    def __showConvResultInfo(self, unit, finish_reason):
+    def __showConvResultInfo(self, unit, info):
         if isinstance(unit, AIChatUnit):
-            unit.showConvResultInfo(finish_reason)
+            unit.showConvResultInfo(info)
 
-    def streamFinished(self, finish_reason):
+    def streamFinished(self, info):
         unit = self.__getLastUnit()
-        self.__showConvResultInfo(unit, finish_reason)
-        self.convUnitUpdated.emit(self.__cur_id, 0, self.getLastResponse(), finish_reason)
+        self.__showConvResultInfo(unit, info)
+        self.convUnitUpdated.emit(self.__cur_id, 0, self.getLastResponse(), info)
 
     def showText(self, text, stream_f, user_f):
         # if self.widget().currentWidget() == self.__chatWidget:
@@ -165,6 +165,7 @@ class ChatBrowser(QScrollArea):
         return labels
 
     def getLastFinishReason(self):
+        # TODO 2023-11-11
         # 1 is continue 0 is not continue
         return 1
 
@@ -221,7 +222,14 @@ class ChatBrowser(QScrollArea):
         for i in range(len(conv_data)):
             # stream is False no matter what
             unit = self.__setLabel(conv_data[i]['conv'], False, conv_data[i]['is_user'])
-            self.__showConvResultInfo(unit, conv_data[i]['finish_reason'])
+            info = {
+            'finish_reason': conv_data[i]['finish_reason'],
+            'model_name': conv_data[i]['model_name'],
+            'prompt_tokens': conv_data[i]['prompt_tokens'],
+            'completion_tokens': conv_data[i]['completion_tokens'],
+            'total_tokens': conv_data[i]['total_tokens'],
+            }
+            self.__showConvResultInfo(unit, info)
 
     def setUserImage(self, img):
         self.__user_image = img

@@ -543,9 +543,11 @@ class SqliteDatabase:
             arr.append((i, self.selectCertainConv(i)))
         return arr
 
-    def insertConvUnit(self, id, user_f, conv, finish_reason=''):
+    def insertConvUnit(self, id, user_f, conv, info):
         try:
+            # TODO 2023-11-11
             # Insert a row into the table
+            finish_reason = info['finish_reason']
             self.__c.execute(
                 f'INSERT INTO {self.__conv_unit_tb_nm}{id} (id_fk, is_user, conv, finish_reason) VALUES (?, ?, ?, ?)',
                 (id, user_f, conv, finish_reason))

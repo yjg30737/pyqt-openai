@@ -39,8 +39,6 @@ class ChatPage(QWidget):
         # etc
         if not self.__settings_ini.contains('use_max_tokens'):
             self.__settings_ini.setValue('use_max_tokens', False)
-        if not self.__settings_ini.contains('finish_reason'):
-            self.__settings_ini.setValue('finish_reason', False)
         if not self.__settings_ini.contains('use_llama_index'):
             self.__settings_ini.setValue('use_llama_index', False)
 
@@ -54,7 +52,6 @@ class ChatPage(QWidget):
         self.__presence_penalty = self.__settings_ini.value('presence_penalty', type=float)
 
         self.__use_max_tokens = self.__settings_ini.value('use_max_tokens', type=bool)
-        self.__finish_reason = self.__settings_ini.value('finish_reason', type=bool)
         self.__use_llama_index = self.__settings_ini.value('use_llama_index', type=bool)
 
     def __initUi(self):
