@@ -54,6 +54,7 @@ class SqliteDatabase:
         try:
             # Connect to the database (create a new file if it doesn't exist)
             self.__conn = sqlite3.connect(self.__db_filename)
+            self.__conn.row_factory = sqlite3.Row
             self.__conn.execute('PRAGMA foreign_keys = ON;')
             self.__conn.commit()
 
@@ -531,16 +532,10 @@ class SqliteDatabase:
         return self.__c.fetchall()
 
     def selectCertainConv(self, id):
-        return [{'id': elem[0],
-                 'parent_id': elem[1],
-                 'is_user': elem[2],
-                 'conv': elem[3],
-                 'finish_reason': elem[4],
-                 'model_name': elem[5],
-                 'prompt_tokens': elem[6],
-                 'completion_tokens': elem[7],
-                 'total_tokens': elem[8],
-                 'update_dt': elem[9]} for elem in self.selectCertainConvRaw(id)]
+        result = []
+        for elem in self.selectCertainConvRaw(id):
+            result.append(dict(elem))
+        return result
 
     def selectAllContentOfConv(self):
         arr = []

@@ -44,7 +44,7 @@ class OpenAIChatBotWidget(QWidget):
 
     def __initUi(self):
         self.__leftSideBarWidget = LeftSideBar(self.__db)
-        self.__chatWidget = ChatWidget(self.__finish_reason)
+        self.__chatWidget = ChatWidget()
         self.__browser = self.__chatWidget.getChatBrowser()
 
         self.__prompt = Prompt(self.__db)
