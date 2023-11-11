@@ -60,7 +60,8 @@ And if you would like to support this project, you can click the button below to
   * everything above is saved in an SQLite database file named conv.db.
 * support controlling parameters(temperature, top_p, etc) just like openai playground
 * able to see the reason why stream is finished
-* support latest model such as <b>GPT-4-32k-0613</b>
+* support token count (only for non-streaming response)
+* support latest model such as <b>GPT-4-1106-preview</b>
 * support <b>prompt generator</b> (manageable, autosaved in database) 
 * support <b>slash commands</b>
 * support beginning and ending part of the prompt
