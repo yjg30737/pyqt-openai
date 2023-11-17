@@ -78,7 +78,7 @@ class OpenAIThread(QThread):
                                     self.replyGenerated.emit(response_text, False, True, self.__info_dict)
                                 else:
                                     self.__info_dict['finish_reason'] = chunk.choices[0].finish_reason
-                                self.streamFinished.emit(self.__info_dict)
+                                    self.streamFinished.emit(self.__info_dict)
                     else:
                         response_text = response.choices[0].message.content
                         self.__info_dict['prompt_tokens'] = response.usage.prompt_tokens
