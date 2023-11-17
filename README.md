@@ -36,6 +36,8 @@ And if you would like to support this project, you can click the button below to
 
 <a href="https://www.buymeacoffee.com/yjg30737" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
 
+<b>This officially supports openai>=1.0.0 and llama-index 0.9.2, but it also supports old version of openai(below 1.0.0). If there is an error related to old version of openai, you have to either upgrade openai and llama-index to recent version or find the matching version. But i highly recommend that use recent version if you meet the error.</b> 
+
 ## Table of Contents
 * [Feature](#feature)
 * [Supported Languages](#supported-languages)
