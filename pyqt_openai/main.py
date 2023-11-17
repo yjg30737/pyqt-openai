@@ -26,7 +26,7 @@ from pyqt_openai.svgButton import SvgButton
 from pyqt_openai.image_gen_widget.imageGeneratingToolWidget import ImageGeneratingToolWidget
 from pyqt_openai.openAiChatBotWidget import OpenAIChatBotWidget
 
-import openai
+os.environ['OPENAI_API_KEY'] = ''
 
 from pyqt_openai.openai_public_var import OPENAI_STRUCT
 
