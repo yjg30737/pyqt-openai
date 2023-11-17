@@ -1,8 +1,8 @@
-import time
-
+import os
+import sys
 import webbrowser
-import os, sys
-import openai, requests
+
+import requests
 
 # Get the absolute path of the current script file
 script_path = os.path.abspath(__file__)
@@ -25,6 +25,10 @@ from pyqt_openai.customizeDialog import CustomizeDialog
 from pyqt_openai.svgButton import SvgButton
 from pyqt_openai.image_gen_widget.imageGeneratingToolWidget import ImageGeneratingToolWidget
 from pyqt_openai.openAiChatBotWidget import OpenAIChatBotWidget
+
+import openai
+
+from pyqt_openai.openai_public_var import OPENAI_STRUCT
 
 # for testing pyside6
 # if you use pyside6 already, you don't have to remove the #
@@ -76,7 +80,7 @@ class MainWindow(QMainWindow):
         self.__loadApiKeyInIni()
 
         # check if loaded API_KEY from ini file is not empty
-        if openai.api_key:
+        if os.environ['OPENAI_API_KEY']:
             self.__setApi()
         # if it is empty
         else:
@@ -262,18 +266,18 @@ class MainWindow(QMainWindow):
         # QToolbar's layout can't be set spacing with lay.setSpacing so i've just did this instead
         windowToolBar.setStyleSheet('QToolBar { spacing: 2px; }')
 
-    def __setApiKey(self, api_key):
-        # for script
-        openai.api_key = api_key
+    def __setApiKeyAndClient(self, api_key):
         # for subprocess (mostly)
         os.environ['OPENAI_API_KEY'] = api_key
         # for showing to the user
         self.__apiLineEdit.setText(api_key)
 
+        OPENAI_STRUCT.api_key = os.environ['OPENAI_API_KEY']
+
     def __loadApiKeyInIni(self):
         # this api key should be yours
         if self.__settings_struct.contains('API_KEY'):
-            self.__setApiKey(self.__settings_struct.value('API_KEY'))
+            self.__setApiKeyAndClient(self.__settings_struct.value('API_KEY'))
         else:
             self.__settings_struct.setValue('API_KEY', '')
 
@@ -288,7 +292,7 @@ class MainWindow(QMainWindow):
             f = response.status_code == 200
             self.__setAIEnabled(f)
             if f:
-                self.__setApiKey(api_key)
+                self.__setApiKeyAndClient(api_key)
                 self.__settings_struct.setValue('API_KEY', api_key)
 
                 self.__apiCheckPreviewLbl.setStyleSheet("color: {}".format(QColor(0, 200, 0).name()))

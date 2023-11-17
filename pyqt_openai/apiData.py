@@ -35,22 +35,3 @@ def getCompletionModel():
 
 def getChatModel():
     return ENDPOINT_DICT['/v1/chat/completions']
-
-# dynamic
-class ModelData:
-    def __init__(self):
-        super().__init__()
-        self.__modelList = []
-
-    def setModelData(self):
-        """
-        this is only used in completion type, so subtract chat model from it
-        :return:
-        """
-        self.__modelList = list(filter(lambda x: x['id'] not in getChatModel(), openai.Model.list()['data']))
-
-    def getModelData(self):
-        return self.__modelList
-
-    def getPermissionProperty(self, model_name, property):
-        return [model['permission'][0][property] for model in self.__modelList if model['id'] == model_name][0]

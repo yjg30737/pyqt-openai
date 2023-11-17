@@ -50,7 +50,12 @@ class OpenAIChatBotWidget(QWidget):
 
         self.__lineEdit = self.__prompt.getTextEdit()
         self.__aiPlaygroundWidget = AIPlaygroundWidget()
-        self.__aiPlaygroundWidget.onDirectorySelected.connect(self.__llama_class.set_directory)
+
+        try:
+            self.__aiPlaygroundWidget.onDirectorySelected.connect(self.__llama_class.set_directory)
+        except Exception as e:
+            QMessageBox.critical(self, "Error", str(e))
+
         self.__promptGeneratorWidget = PromptGeneratorWidget(self.__db)
 
         self.__sideBarBtn = SvgButton()
