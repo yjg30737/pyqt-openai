@@ -1,12 +1,13 @@
 import inspect
-import json
 
 import openai
-from llama_index.response.schema import StreamingResponse
 
+from llama_index.response.schema import StreamingResponse
 from qtpy.QtCore import QThread, Signal
 
 from pyqt_openai.apiData import getModelEndpoint
+
+from pyqt_openai.openai_public_var import OPENAI_STRUCT
 
 
 class OpenAIThread(QThread):
@@ -34,31 +35,58 @@ class OpenAIThread(QThread):
     def run(self):
         try:
             if self.__endpoint == '/v1/chat/completions':
-                response = openai.ChatCompletion.create(
-                       **self.__openai_arg
-                )
-                # if it is streaming, type will be generator
-                if inspect.isgenerator(response):
-                    for chunk in response:
-                        if self.__stop_streaming:
-                            self.__info_dict['finish_reason'] = 'stopped by user'
-                            self.streamFinished.emit(self.__info_dict)
-                            break
-                        else:
-                            delta = chunk['choices'][0]['delta']
-                            response_text = delta.get('content', '')
-                            if response_text:
-                                self.replyGenerated.emit(response_text, False, True, self.__info_dict)
-                            else:
-                                self.__info_dict['finish_reason'] = chunk['choices'][0].get('finish_reason', '')
+                response = ''
+                if openai.__version__ <= str(0.28):
+                    response = openai.ChatCompletion.create(
+                           **self.__openai_arg
+                    )
+                    # if it is streaming, type will be generator
+                    if inspect.isgenerator(response):
+                        for chunk in response:
+                            if self.__stop_streaming:
+                                self.__info_dict['finish_reason'] = 'stopped by user'
                                 self.streamFinished.emit(self.__info_dict)
-                else:
-                    response_text = response['choices'][0]['message']['content']
-                    self.__info_dict['prompt_tokens'] = response['usage']['prompt_tokens']
-                    self.__info_dict['completion_tokens'] = response['usage']['completion_tokens']
-                    self.__info_dict['total_tokens'] = response['usage']['total_tokens']
-                    self.__info_dict['finish_reason'] = response['choices'][0]['finish_reason']
-                    self.replyGenerated.emit(response_text, False, False, self.__info_dict)
+                                break
+                            else:
+                                delta = chunk['choices'][0]['delta']
+                                response_text = delta.get('content', '')
+                                if response_text:
+                                    self.replyGenerated.emit(response_text, False, True, self.__info_dict)
+                                else:
+                                    self.__info_dict['finish_reason'] = chunk['choices'][0].get('finish_reason', '')
+                                    self.streamFinished.emit(self.__info_dict)
+                    else:
+                        response_text = response['choices'][0]['message']['content']
+                        self.__info_dict['prompt_tokens'] = response['usage']['prompt_tokens']
+                        self.__info_dict['completion_tokens'] = response['usage']['completion_tokens']
+                        self.__info_dict['total_tokens'] = response['usage']['total_tokens']
+                        self.__info_dict['finish_reason'] = response['choices'][0]['finish_reason']
+                        self.replyGenerated.emit(response_text, False, False, self.__info_dict)
+                elif openai.__version__ >= str(1.0):
+                    response = OPENAI_STRUCT.chat.completions.create(
+                        **self.__openai_arg
+                    )
+                    if isinstance(response, openai.Stream):
+                        for chunk in response:
+                            if self.__stop_streaming:
+                                self.__info_dict['finish_reason'] = 'stopped by user'
+                                self.streamFinished.emit(self.__info_dict)
+                                break
+                            else:
+                                response_text = chunk.choices[0].delta.content
+                                if response_text:
+                                    self.replyGenerated.emit(response_text, False, True, self.__info_dict)
+                                else:
+                                    self.__info_dict['finish_reason'] = chunk.choices[0].finish_reason
+                                self.streamFinished.emit(self.__info_dict)
+                    else:
+                        response_text = response.choices[0].message.content
+                        self.__info_dict['prompt_tokens'] = response.usage.prompt_tokens
+                        self.__info_dict['completion_tokens'] = response.usage.completion_tokens
+                        self.__info_dict['total_tokens'] = response.usage.total_tokens
+                        self.__info_dict['finish_reason'] = response.choices[0].finish_reason
+                        self.replyGenerated.emit(response_text, False, False, self.__info_dict)
+
         except openai.error.InvalidRequestError as e:
             self.__info_dict['finish_reason'] = 'Error'
             self.replyGenerated.emit(f'<p style="color:red">{e}</p>', False, False, self.__info_dict)
