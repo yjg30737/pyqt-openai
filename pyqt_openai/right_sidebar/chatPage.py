@@ -1,7 +1,7 @@
 from qtpy.QtCore import Qt, Signal, QSettings
 from qtpy.QtWidgets import QWidget, QDoubleSpinBox, QSpinBox, QFormLayout, QFrame, QSizePolicy, QComboBox, QTextEdit, QLabel, QVBoxLayout, QCheckBox, QPushButton
 
-from pyqt_openai.apiData import getChatModel
+from pyqt_openai.pyqt_openai_data import getChatModel
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.sqlite import SqliteDatabase
 

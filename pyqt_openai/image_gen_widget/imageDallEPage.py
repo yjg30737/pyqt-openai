@@ -1,10 +1,9 @@
-import openai
-
-from qtpy.QtWidgets import QWidget, QPushButton, QComboBox, QPlainTextEdit, QSpinBox, QFormLayout, QTextEdit, QLabel
 from qtpy.QtCore import Signal, QThread
+from qtpy.QtWidgets import QWidget, QPushButton, QComboBox, QPlainTextEdit, QSpinBox, QFormLayout, QLabel
 
 from pyqt_openai.notifier import NotifierWidget
-from pyqt_openai.openai_public_var import OPENAI_STRUCT
+from pyqt_openai.pyqt_openai_data import DALLE_ARR
+from pyqt_openai.pyqt_openai_data import OPENAI_STRUCT
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.toast import Toast
 
@@ -42,12 +41,15 @@ class ImageDallEPage(QWidget):
         self.__initUi()
 
     def __initUi(self):
+        self.__modelCmbBox = QComboBox()
+        self.__modelCmbBox.addItems(DALLE_ARR)
+
         self.__nSpinBox = QSpinBox()
         self.__nSpinBox.setRange(1, 10)
         # self.__nSpinBox.setValue(self.__info_dict['n'])
         # self.__nSpinBox.valueChanged.connect(self.__nChanged)
         self.__sizeCmbBox = QComboBox()
-        self.__sizeCmbBox.addItems(['256x256', '512x512', '1024x1024'])
+        self.__sizeCmbBox.addItems(['1024x1024', '1024x1792', '1792x1024'])
         # self.__sizeCmbBox.setCurrentText(f"{self.__info_dict['width']}x{self.__info_dict['height']}")
         self.__sizeCmbBox.currentTextChanged.connect(self.__sizeChanged)
 
@@ -74,11 +76,8 @@ class ImageDallEPage(QWidget):
         # self.__db.updateInfo(3, 'height', height)
 
     def __submit(self):
-        # openai_arg = {
-        #     "prompt": self.__prompt.getContent(),
-        #     "n": info_dict['n'],
-        #     "size": f"{info_dict['width']}x{info_dict['height']}"
-        # }
+        model_name = self.__modelCmbBox.currentText()
+
         openai_arg = {
             "model": "dall-e-3",
             "prompt": self.__promptWidget.toPlainText(),
