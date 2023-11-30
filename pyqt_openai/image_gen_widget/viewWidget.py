@@ -52,15 +52,7 @@ class ViewWidget(QWidget):
         self.__mainWidget.setCurrentIndex(1)
         self.showImage(url, True)
 
-    def showSdResult(self, image_bin):
-        self.__mainWidget.setCurrentIndex(1)
-        self.showImage(image_bin, False)
-
     def showImage(self, arg, f: bool):
-        """
-        f=True means DALL-E
-        f=False means SD
-        """
         if f:
             arg = self.__currentImageView.setUrl(arg)
         else:

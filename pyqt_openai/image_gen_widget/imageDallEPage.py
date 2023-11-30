@@ -4,6 +4,7 @@ from qtpy.QtWidgets import QWidget, QPushButton, QComboBox, QPlainTextEdit, QSpi
 from qtpy.QtCore import Signal, QThread
 
 from pyqt_openai.notifier import NotifierWidget
+from pyqt_openai.openai_public_var import OPENAI_STRUCT
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.toast import Toast
 
@@ -18,7 +19,7 @@ class DallEThread(QThread):
 
     def run(self):
         try:
-            response = openai.Image.create(
+            response = OPENAI_STRUCT.images.generate(
                 **self.__openai_arg
             )
 
@@ -79,6 +80,7 @@ class ImageDallEPage(QWidget):
         #     "size": f"{info_dict['width']}x{info_dict['height']}"
         # }
         openai_arg = {
+            "model": "dall-e-3",
             "prompt": self.__promptWidget.toPlainText(),
             "n": self.__nSpinBox.value(),
             "size": self.__sizeCmbBox.currentText()

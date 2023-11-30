@@ -92,12 +92,4 @@ class ImageGeneratingToolWidget(QWidget):
         print('exportImageGroup')
 
     def __setResult(self, arg):
-        # DALL-E
-        if isinstance(arg, str):
-            self.__viewWidget.showDallEResult(arg)
-            # TODO
-            # self.__leftSideBarWidget.addImageGroup('DALL-E', 'New Image Group', 0)
-        # SD
-        elif isinstance(arg, bytes):
-            self.__viewWidget.showSdResult(arg)
-            # self.__leftSideBarWidget.addImageGroup('Stable Diffusion', 'New Image Group', 0)
+        self.__viewWidget.showDallEResult(arg)
