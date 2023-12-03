@@ -29,7 +29,7 @@ class DallEThread(QThread):
             self.errorGenerated.emit(str(e))
 
 
-class dallEControlWidget(QWidget):
+class DallEControlWidget(QWidget):
     submitDallE = Signal(str)
     notifierWidgetActivated = Signal()
 
@@ -63,6 +63,7 @@ class dallEControlWidget(QWidget):
         self.__nSpinBox.setRange(1, 10)
         self.__nSpinBox.setValue(self.__n)
         self.__nSpinBox.valueChanged.connect(self.__dalleChanged)
+        self.__nSpinBox.setEnabled(False)
 
         self.__sizeCmbBox = QComboBox()
         self.__sizeCmbBox.addItems(['1024x1024', '1024x1792', '1792x1024'])

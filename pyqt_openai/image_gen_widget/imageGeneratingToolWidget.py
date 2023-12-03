@@ -2,8 +2,10 @@ from qtpy.QtCore import Qt, Signal
 from qtpy.QtWidgets import QHBoxLayout, QVBoxLayout, QFrame, QWidget
 from qtpy.QtWidgets import QSplitter
 
-from pyqt_openai.image_gen_widget.dallEControlWidget import dallEControlWidget
-from pyqt_openai.image_gen_widget.viewWidget import ViewWidget
+from pyqt_openai.image_gen_widget.dallEControlWidget import DallEControlWidget
+from pyqt_openai.image_gen_widget.imageNavWidget import ImageNavWidget
+from pyqt_openai.image_gen_widget.thumbnailView import ThumbnailView
+from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.svgButton import SvgButton
 
@@ -16,8 +18,9 @@ class ImageGeneratingToolWidget(QWidget):
         self.__initUi()
 
     def __initUi(self):
-        self.__viewWidget = ViewWidget()
-        self.__rightSideBarWidget = dallEControlWidget()
+        self.__imageNavWidget = ImageNavWidget()
+        self.__viewWidget = ThumbnailView()
+        self.__rightSideBarWidget = DallEControlWidget()
         self.__rightSideBarWidget.notifierWidgetActivated.connect(self.notifierWidgetActivated)
         self.__rightSideBarWidget.submitDallE.connect(self.__setResult)
 
@@ -26,7 +29,7 @@ class ImageGeneratingToolWidget(QWidget):
         self.__historyBtn.setCheckable(True)
         self.__historyBtn.setToolTip('History')
         self.__historyBtn.setChecked(True)
-        self.__historyBtn.toggled.connect(self.__viewWidget.getExplorerWidget().setVisible)
+        self.__historyBtn.toggled.connect(self.__imageNavWidget.setVisible)
 
         self.__settingBtn = SvgButton()
         self.__settingBtn.setIcon('ico/setting.svg')
@@ -50,9 +53,10 @@ class ImageGeneratingToolWidget(QWidget):
         sep.setFrameShadow(QFrame.Sunken)
 
         mainWidget = QSplitter()
+        mainWidget.addWidget(self.__imageNavWidget)
         mainWidget.addWidget(self.__viewWidget)
         mainWidget.addWidget(self.__rightSideBarWidget)
-        mainWidget.setSizes([700, 300])
+        mainWidget.setSizes([200, 500, 300])
         mainWidget.setChildrenCollapsible(False)
         mainWidget.setHandleWidth(2)
         mainWidget.setStyleSheet(
@@ -79,4 +83,4 @@ class ImageGeneratingToolWidget(QWidget):
         self.__rightSideBarWidget.setEnabled(f)
 
     def __setResult(self, arg):
-        self.__viewWidget.showDallEResult(arg)
+        self.__viewWidget.setUrl(arg)

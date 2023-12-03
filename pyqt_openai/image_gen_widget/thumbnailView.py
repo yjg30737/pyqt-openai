@@ -61,6 +61,7 @@ class ThumbnailView(QGraphicsView):
 
     def __refreshSceneAndView(self):
         self._item = self._scene.addPixmap(self._p)
+        self._item.setTransformationMode(Qt.SmoothTransformation)
         self.fitInView(self.sceneRect(), self.__aspectRatioMode)
         self.setScene(self._scene)
 
