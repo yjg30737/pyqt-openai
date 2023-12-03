@@ -262,7 +262,7 @@ class SqliteDatabase:
             print(f"An error occurred: {e}")
             raise
 
-    def updateTemplatePromptGroupName(self, id, name):
+    def updateTemplatePromptGroup(self, id, name):
         try:
             self.__c.execute(f'UPDATE {self.__template_prompt_group_tb_nm} SET name=(?) WHERE id={id}', (name,))
             self.__conn.commit()
