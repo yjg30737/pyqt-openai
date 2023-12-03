@@ -5,8 +5,8 @@ from qtpy.QtWidgets import QVBoxLayout, QPushButton, QFileDialog, QToolButton, Q
 
 from pyqt_openai.chat_widget.textEditPropmtGroup import TextEditPropmtGroup
 from pyqt_openai.propmt_command_completer.commandSuggestionWidget import CommandSuggestionWidget
+from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.res.language_dict import LangClass
-from pyqt_openai.sqlite import SqliteDatabase
 from pyqt_openai.svgToolButton import SvgToolButton
 
 
@@ -15,14 +15,12 @@ class Prompt(QWidget):
     onContinuedClicked = Signal()
     onRegenerateClicked = Signal()
     
-    def __init__(self, db: SqliteDatabase):
+    def __init__(self):
         super().__init__()
-        self.__initVal(db)
+        self.__initVal()
         self.__initUi()
 
-    def __initVal(self, db):
-        self.__db = db
-
+    def __initVal(self):
         # prompt group
         self.__p_grp = []
 
@@ -63,7 +61,7 @@ class Prompt(QWidget):
         self.__suggestionWidget = CommandSuggestionWidget()
         self.__suggestion_list = self.__suggestionWidget.getCommandList()
 
-        self.__textEditGroup = TextEditPropmtGroup(self.__db)
+        self.__textEditGroup = TextEditPropmtGroup()
         self.__textEditGroup.textChanged.connect(self.updateHeight)
 
         # set command suggestion
@@ -153,8 +151,8 @@ class Prompt(QWidget):
     def __getEveryPromptCommands(self):
         # get prop group
         p_grp = []
-        for group in self.__db.selectPropPromptGroup():
-            p_grp_attr = [attr for attr in self.__db.selectPropPromptAttribute(group[0])]
+        for group in DB.selectPropPromptGroup():
+            p_grp_attr = [attr for attr in DB.selectPropPromptAttribute(group[0])]
             p_grp_value = ''
             for attr_obj in p_grp_attr:
                 name = attr_obj[2]
@@ -165,8 +163,8 @@ class Prompt(QWidget):
 
         # get template group
         t_grp = []
-        for group in self.__db.selectTemplatePromptGroup():
-            t_grp_attr = [attr for attr in self.__db.selectTemplatePromptUnit(group[0])]
+        for group in DB.selectTemplatePromptGroup():
+            t_grp_attr = [attr for attr in DB.selectTemplatePromptUnit(group[0])]
             t_grp_value = ''
             for attr_obj in t_grp_attr:
                 name = attr_obj[2]

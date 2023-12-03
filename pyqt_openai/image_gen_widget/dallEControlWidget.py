@@ -1,9 +1,8 @@
-from PyQt5.QtCore import QSettings
+from qtpy.QtCore import QSettings
 from qtpy.QtCore import Signal, QThread
 from qtpy.QtWidgets import QWidget, QPushButton, QComboBox, QPlainTextEdit, QSpinBox, QFormLayout, QLabel
 
 from pyqt_openai.notifier import NotifierWidget
-from pyqt_openai.pyqt_openai_data import DALLE_ARR
 from pyqt_openai.pyqt_openai_data import OPENAI_STRUCT
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.toast import Toast
@@ -30,7 +29,7 @@ class DallEThread(QThread):
             self.errorGenerated.emit(str(e))
 
 
-class ImageDallEPage(QWidget):
+class dallEControlWidget(QWidget):
     submitDallE = Signal(str)
     notifierWidgetActivated = Signal()
 

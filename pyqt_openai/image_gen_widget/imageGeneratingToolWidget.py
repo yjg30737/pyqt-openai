@@ -2,7 +2,7 @@ from qtpy.QtCore import Qt, Signal
 from qtpy.QtWidgets import QHBoxLayout, QVBoxLayout, QFrame, QWidget
 from qtpy.QtWidgets import QSplitter
 
-from pyqt_openai.image_gen_widget.imageDallEPage import ImageDallEPage
+from pyqt_openai.image_gen_widget.dallEControlWidget import dallEControlWidget
 from pyqt_openai.image_gen_widget.viewWidget import ViewWidget
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.svgButton import SvgButton
@@ -17,7 +17,7 @@ class ImageGeneratingToolWidget(QWidget):
 
     def __initUi(self):
         self.__viewWidget = ViewWidget()
-        self.__rightSideBarWidget = ImageDallEPage()
+        self.__rightSideBarWidget = dallEControlWidget()
         self.__rightSideBarWidget.notifierWidgetActivated.connect(self.notifierWidgetActivated)
         self.__rightSideBarWidget.submitDallE.connect(self.__setResult)
 
@@ -77,19 +77,6 @@ class ImageGeneratingToolWidget(QWidget):
 
     def setAIEnabled(self, f):
         self.__rightSideBarWidget.setEnabled(f)
-
-    def __addImageGroup(self):
-        cur_id = self.__db.insertConv(LangClass.TRANSLATIONS['New Chat'])
-        self.__browser.resetChatWidget(cur_id)
-        self.__leftSideBarWidget.addImageGroup(cur_id)
-        self.__lineEdit.setFocus()
-        print('addImageGroup')
-
-    def __deleteImageGroup(self):
-        print('deleteImageGroup')
-
-    def __exportImageGroup(self):
-        print('exportImageGroup')
 
     def __setResult(self, arg):
         self.__viewWidget.showDallEResult(arg)

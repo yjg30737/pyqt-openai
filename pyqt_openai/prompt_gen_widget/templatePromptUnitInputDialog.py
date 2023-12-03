@@ -3,18 +3,17 @@ import re
 from qtpy.QtCore import Qt
 from qtpy.QtWidgets import QDialog, QVBoxLayout, QLineEdit, QFrame, QPushButton, QHBoxLayout, QWidget
 
+from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.res.language_dict import LangClass
-from pyqt_openai.sqlite import SqliteDatabase
 
 
 class TemplatePromptUnitInputDialog(QDialog):
-    def __init__(self, db: SqliteDatabase, id, parent=None):
+    def __init__(self, id, parent=None):
         super().__init__(parent)
-        self.__initVal(db, id)
+        self.__initVal(id)
         self.__initUi()
 
-    def __initVal(self, db, id):
-        self.__db = db
+    def __initVal(self, id):
         self.__id = id
 
     def __initUi(self):
@@ -55,6 +54,6 @@ class TemplatePromptUnitInputDialog(QDialog):
 
     def __setAccept(self, text):
         m = re.search('^[a-zA-Z_0-9]+$', text)
-        names = [obj[1] for obj in self.__db.selectTemplatePromptUnit(self.__id)]
+        names = [obj[1] for obj in DB.selectTemplatePromptUnit(self.__id)]
         f = (True if m else False) and text not in names
         self.__okBtn.setEnabled(f)

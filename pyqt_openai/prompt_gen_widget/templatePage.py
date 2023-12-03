@@ -1,12 +1,12 @@
-from qtpy.QtWidgets import QLabel, QSpacerItem, QListWidget, QListWidgetItem, QSizePolicy, QStackedWidget, QSplitter
-from qtpy.QtWidgets import QWidget, QDialog, QTableWidget, QVBoxLayout, QHBoxLayout, QHeaderView, QTableWidgetItem, QAbstractItemView
 from qtpy.QtCore import Signal, Qt
+from qtpy.QtWidgets import QLabel, QSpacerItem, QListWidget, QListWidgetItem, QSizePolicy, QStackedWidget, QSplitter
+from qtpy.QtWidgets import QWidget, QDialog, QTableWidget, QVBoxLayout, QHBoxLayout, QHeaderView, QTableWidgetItem, \
+    QAbstractItemView
 
-from pyqt_openai.inputDialog import InputDialog
 from pyqt_openai.prompt_gen_widget.promptGroupInputDialog import PromptGroupInputDialog
 from pyqt_openai.prompt_gen_widget.templatePromptUnitInputDialog import TemplatePromptUnitInputDialog
+from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.res.language_dict import LangClass
-from pyqt_openai.sqlite import SqliteDatabase
 from pyqt_openai.svgButton import SvgButton
 
 
@@ -15,13 +15,9 @@ class TemplateGroupList(QWidget):
     deleted = Signal(int)
     currentRowChanged = Signal(int)
 
-    def __init__(self, db: SqliteDatabase):
+    def __init__(self):
         super().__init__()
-        self.__initVal(db)
         self.__initUi()
-
-    def __initVal(self, db):
-        self.__db = db
 
     def __initUi(self):
         self.__addBtn = SvgButton()
@@ -46,7 +42,7 @@ class TemplateGroupList(QWidget):
 
         self.__templateList = QListWidget()
 
-        defaultPropPromptGroupArr = self.__db.selectTemplatePromptGroup()
+        defaultPropPromptGroupArr = DB.selectTemplatePromptGroup()
 
         for group in defaultPropPromptGroupArr:
             id = group[0]
@@ -75,39 +71,38 @@ class TemplateGroupList(QWidget):
         self.added.emit(id)
 
     def __addGroup(self):
-        dialog = PromptGroupInputDialog(self.__db, self)
+        dialog = PromptGroupInputDialog(self)
         reply = dialog.exec()
         if reply == QDialog.Accepted:
             name = dialog.getPromptGroupName()
-            id = self.__db.insertTemplatePromptGroup({ 'name': name, 'data': [] })
+            id = DB.insertTemplatePromptGroup({ 'name': name, 'data': [] })
             self.__addGroupItem(id, name)
 
     def __deleteGroup(self):
         i = self.__templateList.currentRow()
         item = self.__templateList.takeItem(i)
         id = item.data(Qt.UserRole)
-        self.__db.deleteTemplatePromptGroup(id)
+        DB.deleteTemplatePromptGroup(id)
         self.deleted.emit(i)
 
     def __itemChanged(self, item):
         id = item.data(Qt.UserRole)
-        self.__db.updateTemplatePromptGroup(id, item.text())
+        DB.updateTemplatePromptGroup(id, item.text())
 
 
 class TemplateTable(QWidget):
     updated = Signal(str, str)
 
-    def __init__(self, db: SqliteDatabase, id):
+    def __init__(self, id):
         super().__init__()
-        self.__initVal(db, id)
+        self.__initVal(id)
         self.__initUi()
 
-    def __initVal(self, db, id):
-        self.__db = db
+    def __initVal(self, id):
         self.__id = id
 
-        self.__title = self.__db.selectTemplatePromptGroupId(self.__id)[1]
-        self.__previousPromptTemplateArr = self.__db.selectTemplatePromptUnit(self.__id)
+        self.__title = DB.selectTemplatePromptGroupId(self.__id)[1]
+        self.__previousPromptTemplateArr = DB.selectTemplatePromptUnit(self.__id)
 
     def __initUi(self):
         self.__addBtn = SvgButton()
@@ -177,10 +172,10 @@ class TemplateTable(QWidget):
         id = name_item.data(Qt.UserRole)
         name = name_item.text()
         prompt = self.__table.item(item.row(), 1).text()
-        self.__db.updateTemplatePromptUnit(self.__id, id, name, prompt)
+        DB.updateTemplatePromptUnit(self.__id, id, name, prompt)
         
     def __add(self):
-        dialog = TemplatePromptUnitInputDialog(self.__db, self.__id, self)
+        dialog = TemplatePromptUnitInputDialog(self.__id, self)
         reply = dialog.exec()
         if reply == QDialog.Accepted:
             self.__table.itemChanged.disconnect(self.__saveChangedTemplatePrompt)
@@ -196,7 +191,7 @@ class TemplateTable(QWidget):
             item2.setTextAlignment(Qt.AlignCenter)
             self.__table.setItem(self.__table.rowCount()-1, 1, item2)
 
-            id = self.__db.insertTemplatePromptUnit(self.__id, name)
+            id = DB.insertTemplatePromptUnit(self.__id, name)
             item1.setData(Qt.UserRole, id)
 
             self.__table.itemChanged.connect(self.__saveChangedTemplatePrompt)
@@ -205,23 +200,22 @@ class TemplateTable(QWidget):
         for i in sorted(set([i.row() for i in self.__table.selectedIndexes()]), reverse=True):
             id = self.__table.item(i, 0).data(Qt.UserRole)
             self.__table.removeRow(i)
-            self.__db.deleteTemplatePromptUnit(self.__id, id)
+            DB.deleteTemplatePromptUnit(self.__id, id)
 
 
 class TemplatePage(QWidget):
     updated = Signal(str)
 
-    def __init__(self, db: SqliteDatabase):
+    def __init__(self):
         super().__init__()
-        self.__initVal(db)
+        self.__initVal()
         self.__initUi()
 
-    def __initVal(self, db):
-        self.__db = db
-        self.__previousTemplateGroups = self.__db.selectTemplatePromptGroup()
+    def __initVal(self):
+        self.__previousTemplateGroups = DB.selectTemplatePromptGroup()
 
     def __initUi(self):
-        leftWidget = TemplateGroupList(self.__db)
+        leftWidget = TemplateGroupList()
         leftWidget.added.connect(self.__templateGroupAdded)
         leftWidget.deleted.connect(self.__templateGroupDeleted)
         leftWidget.currentRowChanged.connect(self.__showTemplate)
@@ -229,7 +223,7 @@ class TemplatePage(QWidget):
         self.__rightWidget = QStackedWidget()
 
         for group in self.__previousTemplateGroups:
-            templateTable = TemplateTable(self.__db, id=group[0])
+            templateTable = TemplateTable(id=group[0])
             templateTable.updated.connect(self.updated)
             self.__rightWidget.addWidget(templateTable)
 
@@ -245,7 +239,7 @@ class TemplatePage(QWidget):
         self.setLayout(lay)
 
     def __templateGroupAdded(self, id):
-        templateTable = TemplateTable(self.__db, id)
+        templateTable = TemplateTable(id)
         templateTable.updated.connect(self.updated)
         self.__rightWidget.addWidget(templateTable)
         self.__rightWidget.setCurrentWidget(templateTable)

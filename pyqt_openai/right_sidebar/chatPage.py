@@ -3,7 +3,6 @@ from qtpy.QtWidgets import QWidget, QDoubleSpinBox, QSpinBox, QFormLayout, QFram
 
 from pyqt_openai.pyqt_openai_data import getChatModel
 from pyqt_openai.res.language_dict import LangClass
-from pyqt_openai.sqlite import SqliteDatabase
 
 
 class ChatPage(QWidget):

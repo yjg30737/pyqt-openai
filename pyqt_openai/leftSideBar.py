@@ -1,4 +1,5 @@
 from pyqt_openai.convListWidget import ConvListWidget
+from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.searchBar import SearchBar
 from pyqt_openai.svgButton import SvgButton
@@ -14,13 +15,9 @@ class LeftSideBar(QWidget):
     convUpdated = Signal(int, str)
     export = Signal(list)
 
-    def __init__(self, db):
+    def __init__(self):
         super().__init__()
-        self.__initVal(db)
         self.__initUi()
-
-    def __initVal(self, db):
-        self.__db = db
 
     def __initUi(self):
         searchBar = SearchBar()
@@ -120,7 +117,7 @@ class LeftSideBar(QWidget):
                     item.setHidden(False if text.lower() in widget.text().lower() else True)
         # content
         elif self.__searchOptionCmbBox.currentText() == LangClass.TRANSLATIONS['Content']:
-            convs = self.__db.selectAllContentOfConv()
+            convs = DB.selectAllContentOfConv()
             db_id_real_id_dict = dict()
             for i in range(self.__convListWidget.count()):
                 db_id_real_id_dict[self.__convListWidget.item(i).data(Qt.UserRole)] = self.__convListWidget.item(i)
@@ -136,9 +133,9 @@ class LeftSideBar(QWidget):
                     print('id:', conv[0])
                     print('conv:', [(_['id'], _['conv']) for _ in conv[1]])
 
-    def initHistory(self, db):
+    def initHistory(self):
         try:
-            conv_lst = db.selectAllConv()
+            conv_lst = DB.selectAllConv()
             for conv in conv_lst:
                 id, title = conv[0], conv[1]
                 self.__convListWidget.addConv(title, id)

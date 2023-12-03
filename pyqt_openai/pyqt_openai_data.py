@@ -1,5 +1,9 @@
 import openai
 
+from pyqt_openai.sqlite import SqliteDatabase
+
+DB = SqliteDatabase()
+
 # if openai version is below 1.0, this will be empty and not being used
 OPENAI_STRUCT = ''
 if openai.__version__ >= str(1.0):
