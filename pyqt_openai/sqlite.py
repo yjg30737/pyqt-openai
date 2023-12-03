@@ -63,7 +63,7 @@ class SqliteDatabase:
             self.__createConv()
 
             # create prompt tables
-            self.__initTables()
+            self.__createPrompt()
 
             # create image tables
             self.__createImage()
@@ -353,7 +353,7 @@ class SqliteDatabase:
             print(f"An error occurred: {e}")
             raise
 
-    def __initTables(self):
+    def __createPrompt(self):
         try:
             # prompt information
             self.__createPropPromptGroup()
@@ -584,6 +584,7 @@ class SqliteDatabase:
                               n INT,
                               size VARCHAR(255),
                               quality VARCHAR(255),
+                              url TEXT,
                               update_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
                               insert_dt DATETIME DEFAULT CURRENT_TIMESTAMP)''')
                 # Commit the transaction
@@ -592,11 +593,11 @@ class SqliteDatabase:
             print(f"An error occurred while creating the table: {e}")
             raise
 
-    def insertImage(self, id, prompt, n, size, quality):
+    def insertImage(self, prompt, n, size, quality, url):
         try:
             self.__c.execute(
-                f'INSERT INTO {self.__image_tb_nm} (id, prompt, n, size, quality) VALUES (?, ?, ?, ?, ?)',
-                (id, prompt, n, size, quality))
+                f'INSERT INTO {self.__image_tb_nm} (prompt, n, size, quality, url) VALUES (?, ?, ?, ?, ?)',
+                (prompt, n, size, quality, url))
             new_id = self.__c.lastrowid
             self.__conn.commit()
             return new_id
