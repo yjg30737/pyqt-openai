@@ -21,6 +21,9 @@ class ImageGeneratingToolWidget(QWidget):
         self.__imageNavWidget = ImageNavWidget()
         self.__viewWidget = ThumbnailView()
         self.__rightSideBarWidget = DallEControlWidget()
+
+        self.__imageNavWidget.getUrl.connect(self.__viewWidget.setUrl)
+
         self.__rightSideBarWidget.notifierWidgetActivated.connect(self.notifierWidgetActivated)
         self.__rightSideBarWidget.submitDallE.connect(self.__setResult)
 

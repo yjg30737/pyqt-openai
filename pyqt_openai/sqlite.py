@@ -595,6 +595,7 @@ class SqliteDatabase:
 
     def insertImage(self, prompt, n, size, quality, url):
         try:
+            print(f'url: {url}')
             self.__c.execute(
                 f'INSERT INTO {self.__image_tb_nm} (prompt, n, size, quality, url) VALUES (?, ?, ?, ?, ?)',
                 (prompt, n, size, quality, url))

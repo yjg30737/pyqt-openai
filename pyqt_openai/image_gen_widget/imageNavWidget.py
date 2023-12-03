@@ -44,6 +44,8 @@ class SqlTableModel(QSqlTableModel):
 
 
 class ImageNavWidget(QWidget):
+    getUrl = Signal(str)
+
     def __init__(self):
         super().__init__()
         self.__initUi()
@@ -85,9 +87,10 @@ class ImageNavWidget(QWidget):
         self.__tableView.resizeColumnsToContents()
         self.__tableView.setSelectionMode(QAbstractItemView.ExtendedSelection)
 
-        # sort (ascending order by default)
+        # sort
         self.__tableView.setSortingEnabled(True)
-        self.__tableView.sortByColumn(0, Qt.AscendingOrder)
+        self.__tableView.sortByColumn(6, Qt.DescendingOrder)
+        self.__tableView.clicked.connect(self.__clicked)
 
         # set current index as first record
         self.__tableView.setCurrentIndex(self.__tableView.model().index(0, 0))
@@ -103,3 +106,10 @@ class ImageNavWidget(QWidget):
 
     def refresh(self):
         self.__model.select()
+
+    def __clicked(self, idx):
+        row = idx.row()
+        col = 5
+        idx = self.__model.index(row, col)
+        data = self.__model.data(idx, role=Qt.DisplayRole)
+        self.getUrl.emit(data)
