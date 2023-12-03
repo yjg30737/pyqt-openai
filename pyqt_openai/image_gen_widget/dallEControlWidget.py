@@ -125,3 +125,7 @@ class DallEControlWidget(QWidget):
             self.__notifierWidget.show()
             self.__notifierWidget.doubleClicked.connect(self.notifierWidgetActivated)
         self.__submitBtn.setEnabled(True)
+
+    def getArgument(self):
+        return self.__promptWidget.toPlainText(), self.__n, self.__size, self.__quality
+

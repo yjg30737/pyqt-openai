@@ -1,3 +1,4 @@
+from PyQt5.QtSql import QSqlDatabase
 from qtpy.QtCore import Signal, QSortFilterProxyModel, Qt
 from qtpy.QtSql import QSqlTableModel
 from qtpy.QtWidgets import QWidget, QVBoxLayout, QStyledItemDelegate, QApplication, QTableView, QAbstractItemView
@@ -48,11 +49,16 @@ class ImageNavWidget(QWidget):
         self.__initUi()
 
     def __initUi(self):
+        # Set up the database and table model (you'll need to configure this part based on your database)
+        self.__imageDb = QSqlDatabase.addDatabase('QSQLITE')  # Replace with your database type
+        self.__imageDb.setDatabaseName('conv.db')  # Replace with your database name
+        self.__imageDb.open()
+
         searchBar = SearchBar()
-        columnNames = ['Prompt', 'Size', 'Quality', 'URL']
+        columnNames = ['ID', 'Prompt', 'n', 'Size', 'Quality', 'URL']
 
         self.__model = SqlTableModel(self)
-        self.__model.setEditStrategy(QSqlTableModel.OnFieldChange)
+        self.__model.setTable('image_tb')
         self.__model.beforeUpdate.connect(self.__updated)
         for i in range(len(columnNames)):
             self.__model.setHeaderData(i, Qt.Horizontal, columnNames[i])
@@ -67,6 +73,7 @@ class ImageNavWidget(QWidget):
         # set up the view
         self.__tableView = QTableView()
         self.__tableView.setModel(self.__proxyModel)
+        self.__tableView.setEditTriggers(QTableView.NoEditTriggers)
 
         # align to center
         delegate = AlignDelegate()
@@ -94,13 +101,5 @@ class ImageNavWidget(QWidget):
         # send updated signal
         self.__model.updated.emit(r.value('id'), r.value('name'))
 
-
-
-if __name__ == "__main__":
-    import sys
-
-    app = QApplication(sys.argv)
-    w = ImageNavWidget()
-    w.show()
-    sys.exit(app.exec())
-
+    def refresh(self):
+        self.__model.select()

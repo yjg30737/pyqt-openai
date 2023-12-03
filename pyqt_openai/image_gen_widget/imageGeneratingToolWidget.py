@@ -82,5 +82,8 @@ class ImageGeneratingToolWidget(QWidget):
     def setAIEnabled(self, f):
         self.__rightSideBarWidget.setEnabled(f)
 
-    def __setResult(self, arg):
-        self.__viewWidget.setUrl(arg)
+    def __setResult(self, url):
+        arg = self.__rightSideBarWidget.getArgument()
+        self.__viewWidget.setUrl(url)
+        DB.insertImage(*arg, url)
+        self.__imageNavWidget.refresh()
