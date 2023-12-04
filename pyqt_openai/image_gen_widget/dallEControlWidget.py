@@ -15,19 +15,21 @@ class DallEThread(QThread):
     replyGenerated = Signal(str)
     errorGenerated = Signal(str)
 
-    def __init__(self, openai_arg, *args, **kwargs):
+    def __init__(self, openai_arg, number_of_images, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.__openai_arg = openai_arg
+        self.__number_of_images = number_of_images
 
     def run(self):
         try:
-            response = OPENAI_STRUCT.images.generate(
-                **self.__openai_arg
-            )
+            for _ in range(self.__number_of_images):
+                response = OPENAI_STRUCT.images.generate(
+                    **self.__openai_arg
+                )
 
-            for image_data in response.data:
-                image_url = image_data.url
-                self.replyGenerated.emit(image_url)
+                for image_data in response.data:
+                    image_url = image_data.url
+                    self.replyGenerated.emit(image_url)
         except Exception as e:
             self.errorGenerated.emit(str(e))
 
@@ -193,7 +195,9 @@ class DallEControlWidget(QWidget):
             "size": self.__size,
             'quality': self.__quality
         }
-        self.__t = DallEThread(openai_arg)
+        number_of_images = self.__number_of_images_to_create if self.__continue_generation else 1
+
+        self.__t = DallEThread(openai_arg, number_of_images)
         self.__t.start()
         self.__t.started.connect(self.__toggleWidget)
         self.__t.replyGenerated.connect(self.__afterGenerated)
@@ -214,11 +218,13 @@ class DallEControlWidget(QWidget):
 
     def __afterGenerated(self, image_url):
         self.submitDallE.emit(image_url)
-        if not self.isVisible():
-            self.__notifierWidget = NotifierWidget(informative_text=LangClass.TRANSLATIONS['Response 👌'], detailed_text=LangClass.TRANSLATIONS['Click this!'])
-            self.__notifierWidget.show()
-            self.__notifierWidget.doubleClicked.connect(self.notifierWidgetActivated)
 
     def getArgument(self):
         return self.__promptWidget.toPlainText(), self.__n, self.__size, self.__quality
+
+    def isSavedEnabled(self):
+        return self.__is_save
+
+    def getDirectory(self):
+        return self.__directory
 
