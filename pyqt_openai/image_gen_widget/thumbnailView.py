@@ -71,6 +71,7 @@ class ThumbnailView(QGraphicsView):
         self.__refreshSceneAndView()
 
     def setUrl(self, url):
+        print(url)
         self._scene = QGraphicsScene()
         response = requests.get(url)
         self._p.loadFromData(response.content)

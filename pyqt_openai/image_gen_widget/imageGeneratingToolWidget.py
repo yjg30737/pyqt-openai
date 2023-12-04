@@ -1,3 +1,5 @@
+import os
+
 from qtpy.QtCore import Qt, Signal, QSettings
 from qtpy.QtWidgets import QHBoxLayout, QVBoxLayout, QFrame, QWidget, QCheckBox, QSplitter, QSpinBox
 
@@ -20,15 +22,25 @@ class ImageGeneratingToolWidget(QWidget):
         self.__initUi()
 
     def __initVal(self):
+        default_directory = 'image_result'
+
         self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.IniFormat)
         self.__settings_ini.beginGroup('DALLE')
+
         if not self.__settings_ini.contains('directory'):
-            self.__settings_ini.setValue('directory', '.')
+            self.__settings_ini.setValue('directory', os.path.join(os.path.expanduser('~'), default_directory))
         if not self.__settings_ini.contains('is_save'):
             self.__settings_ini.setValue('is_save', True)
+        if not self.__settings_ini.contains('continue_genearation'):
+            self.__settings_ini.setValue('continue_genearation', False)
+        if not self.__settings_ini.contains('number_of_images_to_create'):
+            self.__settings_ini.setValue('number_of_images_to_create', 2)
 
         self.__directory = self.__settings_ini.value('directory', type=str)
         self.__is_save = self.__settings_ini.value('is_save', type=bool)
+        self.__continue_generation = self.__settings_ini.value('continue_genearation', type=bool)
+        self.__number_of_images_to_create = self.__settings_ini.value('number_of_images_to_create', type=int)
+
         self.__settings_ini.endGroup()
 
     def __initUi(self):
@@ -70,9 +82,13 @@ class ImageGeneratingToolWidget(QWidget):
         sep.setFrameShadow(QFrame.Sunken)
 
         self.__continueGenerationChkBox = QCheckBox('Continue Image Generation')
+        self.__continueGenerationChkBox.setChecked(self.__continue_generation)
         self.__continueGenerationChkBox.stateChanged.connect(self.__continueGenerationChkBoxStateChanged)
 
         self.__numberOfImagesToCreateSpinBox = QSpinBox()
+        self.__numberOfImagesToCreateSpinBox.setRange(2, 1000)
+        self.__numberOfImagesToCreateSpinBox.setValue(self.__number_of_images_to_create)
+        self.__numberOfImagesToCreateSpinBox.valueChanged.connect(self.__numberOfImagesToCreateSpinBoxValueChanged)
 
         lay = QHBoxLayout()
         lay.addWidget(self.__settingBtn)
@@ -134,19 +150,28 @@ class ImageGeneratingToolWidget(QWidget):
         self.__imageNavWidget.refresh()
 
     def __setSaveDirectory(self, directory):
-        self.__settings_ini.beginGroup('DALLE')
         self.__directory = directory
+        self.__settings_ini.beginGroup('DALLE')
         self.__settings_ini.setValue('directory', self.__directory)
         self.__settings_ini.endGroup()
 
     def __saveChkBoxStateChanged(self, state):
         f = state == 2
+        self.__is_save = f
         self.__settings_ini.beginGroup('DALLE')
-        self.__settings_ini.setValue('is_save', f)
+        self.__settings_ini.setValue('is_save', self.__is_save)
         self.__settings_ini.endGroup()
 
     def __continueGenerationChkBoxStateChanged(self, state):
         f = state == 2
+        self.__continue_generation = f
         self.__settings_ini.beginGroup('DALLE')
-        self.__settings_ini.setValue('continue_generation', f)
+        self.__settings_ini.setValue('continue_generation', self.__continue_generation)
+        self.__settings_ini.endGroup()
+        self.__numberOfImagesToCreateSpinBox.setEnabled(f)
+
+    def __numberOfImagesToCreateSpinBoxValueChanged(self, value):
+        self.__number_of_images_to_create = value
+        self.__settings_ini.beginGroup('DALLE')
+        self.__settings_ini.setValue('number_of_images_to_create', self.__number_of_images_to_create)
         self.__settings_ini.endGroup()
