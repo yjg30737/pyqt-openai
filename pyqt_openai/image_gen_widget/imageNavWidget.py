@@ -1,8 +1,6 @@
-from PyQt5.QtSql import QSqlDatabase
 from qtpy.QtCore import Signal, QSortFilterProxyModel, Qt
-from qtpy.QtSql import QSqlTableModel
-from qtpy.QtWidgets import QWidget, QVBoxLayout, QStyledItemDelegate, QApplication, QTableView, QAbstractItemView
-
+from qtpy.QtSql import QSqlTableModel, QSqlDatabase
+from qtpy.QtWidgets import QWidget, QVBoxLayout, QStyledItemDelegate, QTableView, QAbstractItemView
 
 # for search feature
 from pyqt_openai.searchBar import SearchBar
