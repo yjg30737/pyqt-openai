@@ -18,30 +18,7 @@ class ImageGeneratingToolWidget(QWidget):
 
     def __init__(self):
         super().__init__()
-        self.__initVal()
         self.__initUi()
-
-    def __initVal(self):
-        default_directory = 'image_result'
-
-        self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.IniFormat)
-        self.__settings_ini.beginGroup('DALLE')
-
-        if not self.__settings_ini.contains('directory'):
-            self.__settings_ini.setValue('directory', os.path.join(os.path.expanduser('~'), default_directory))
-        if not self.__settings_ini.contains('is_save'):
-            self.__settings_ini.setValue('is_save', True)
-        if not self.__settings_ini.contains('continue_genearation'):
-            self.__settings_ini.setValue('continue_genearation', False)
-        if not self.__settings_ini.contains('number_of_images_to_create'):
-            self.__settings_ini.setValue('number_of_images_to_create', 2)
-
-        self.__directory = self.__settings_ini.value('directory', type=str)
-        self.__is_save = self.__settings_ini.value('is_save', type=bool)
-        self.__continue_generation = self.__settings_ini.value('continue_genearation', type=bool)
-        self.__number_of_images_to_create = self.__settings_ini.value('number_of_images_to_create', type=int)
-
-        self.__settings_ini.endGroup()
 
     def __initUi(self):
         self.__imageNavWidget = ImageNavWidget()
@@ -67,37 +44,9 @@ class ImageGeneratingToolWidget(QWidget):
         self.__settingBtn.setChecked(True)
         self.__settingBtn.toggled.connect(self.__rightSideBarWidget.setVisible)
 
-        self.__findPathWidget = FindPathWidget()
-        self.__findPathWidget.setAsDirectory(True)
-        self.__findPathWidget.getLineEdit().setPlaceholderText('Choose Directory to Save...')
-        self.__findPathWidget.getLineEdit().setText(self.__directory)
-        self.__findPathWidget.added.connect(self.__setSaveDirectory)
-
-        self.__saveChkBox = QCheckBox('Save After Submit')
-        self.__saveChkBox.setChecked(self.__is_save)
-        self.__saveChkBox.stateChanged.connect(self.__saveChkBoxStateChanged)
-
-        sep = QFrame()
-        sep.setFrameShape(QFrame.VLine)
-        sep.setFrameShadow(QFrame.Sunken)
-
-        self.__continueGenerationChkBox = QCheckBox('Continue Image Generation')
-        self.__continueGenerationChkBox.setChecked(self.__continue_generation)
-        self.__continueGenerationChkBox.stateChanged.connect(self.__continueGenerationChkBoxStateChanged)
-
-        self.__numberOfImagesToCreateSpinBox = QSpinBox()
-        self.__numberOfImagesToCreateSpinBox.setRange(2, 1000)
-        self.__numberOfImagesToCreateSpinBox.setValue(self.__number_of_images_to_create)
-        self.__numberOfImagesToCreateSpinBox.valueChanged.connect(self.__numberOfImagesToCreateSpinBoxValueChanged)
-
         lay = QHBoxLayout()
         lay.addWidget(self.__settingBtn)
         lay.addWidget(self.__historyBtn)
-        lay.addWidget(self.__findPathWidget)
-        lay.addWidget(self.__saveChkBox)
-        lay.addWidget(sep)
-        lay.addWidget(self.__continueGenerationChkBox)
-        lay.addWidget(self.__numberOfImagesToCreateSpinBox)
         lay.setContentsMargins(2, 2, 2, 2)
         lay.setAlignment(Qt.AlignLeft)
 
@@ -148,30 +97,3 @@ class ImageGeneratingToolWidget(QWidget):
         self.__viewWidget.setUrl(url)
         DB.insertImage(*arg, url)
         self.__imageNavWidget.refresh()
-
-    def __setSaveDirectory(self, directory):
-        self.__directory = directory
-        self.__settings_ini.beginGroup('DALLE')
-        self.__settings_ini.setValue('directory', self.__directory)
-        self.__settings_ini.endGroup()
-
-    def __saveChkBoxStateChanged(self, state):
-        f = state == 2
-        self.__is_save = f
-        self.__settings_ini.beginGroup('DALLE')
-        self.__settings_ini.setValue('is_save', self.__is_save)
-        self.__settings_ini.endGroup()
-
-    def __continueGenerationChkBoxStateChanged(self, state):
-        f = state == 2
-        self.__continue_generation = f
-        self.__settings_ini.beginGroup('DALLE')
-        self.__settings_ini.setValue('continue_generation', self.__continue_generation)
-        self.__settings_ini.endGroup()
-        self.__numberOfImagesToCreateSpinBox.setEnabled(f)
-
-    def __numberOfImagesToCreateSpinBoxValueChanged(self, value):
-        self.__number_of_images_to_create = value
-        self.__settings_ini.beginGroup('DALLE')
-        self.__settings_ini.setValue('number_of_images_to_create', self.__number_of_images_to_create)
-        self.__settings_ini.endGroup()

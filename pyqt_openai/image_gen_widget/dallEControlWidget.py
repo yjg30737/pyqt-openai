@@ -1,7 +1,10 @@
-from qtpy.QtCore import QSettings
-from qtpy.QtCore import Signal, QThread
-from qtpy.QtWidgets import QWidget, QPushButton, QComboBox, QPlainTextEdit, QSpinBox, QFormLayout, QLabel
+import os
 
+from qtpy.QtCore import QThread
+from qtpy.QtCore import Signal, QSettings
+from qtpy.QtWidgets import QFrame, QWidget, QCheckBox, QSpinBox, QGroupBox, QVBoxLayout, QPushButton, QComboBox, QPlainTextEdit, QFormLayout, QLabel
+
+from pyqt_openai.customizeDialog import FindPathWidget
 from pyqt_openai.notifier import NotifierWidget
 from pyqt_openai.pyqt_openai_data import OPENAI_STRUCT
 from pyqt_openai.res.language_dict import LangClass
@@ -39,21 +42,68 @@ class DallEControlWidget(QWidget):
         self.__initUi()
 
     def __initVal(self):
+        default_directory = 'image_result'
+
         self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.IniFormat)
         self.__settings_ini.beginGroup('DALLE')
+
         if not self.__settings_ini.contains('quality'):
             self.__settings_ini.setValue('quality', 'standard')
         if not self.__settings_ini.contains('n'):
             self.__settings_ini.setValue('n', 1)
         if not self.__settings_ini.contains('size'):
             self.__settings_ini.setValue('size', '1024x1024')
+        if not self.__settings_ini.contains('directory'):
+            self.__settings_ini.setValue('directory', os.path.join(os.path.expanduser('~'), default_directory))
+        if not self.__settings_ini.contains('is_save'):
+            self.__settings_ini.setValue('is_save', True)
+        if not self.__settings_ini.contains('continue_genearation'):
+            self.__settings_ini.setValue('continue_genearation', False)
+        if not self.__settings_ini.contains('number_of_images_to_create'):
+            self.__settings_ini.setValue('number_of_images_to_create', 2)
 
         self.__quality = self.__settings_ini.value('quality', type=str)
         self.__n = self.__settings_ini.value('n', type=int)
         self.__size = self.__settings_ini.value('size', type=str)
+        self.__directory = self.__settings_ini.value('directory', type=str)
+        self.__is_save = self.__settings_ini.value('is_save', type=bool)
+        self.__continue_generation = self.__settings_ini.value('continue_genearation', type=bool)
+        self.__number_of_images_to_create = self.__settings_ini.value('number_of_images_to_create', type=int)
+
         self.__settings_ini.endGroup()
 
     def __initUi(self):
+        # generic settings
+        self.__findPathWidget = FindPathWidget()
+        self.__findPathWidget.setAsDirectory(True)
+        self.__findPathWidget.getLineEdit().setPlaceholderText('Choose Directory to Save...')
+        self.__findPathWidget.getLineEdit().setText(self.__directory)
+        self.__findPathWidget.added.connect(self.__setSaveDirectory)
+
+        self.__saveChkBox = QCheckBox('Save After Submit')
+        self.__saveChkBox.setChecked(self.__is_save)
+        self.__saveChkBox.stateChanged.connect(self.__saveChkBoxStateChanged)
+
+        self.__continueGenerationChkBox = QCheckBox('Continue Image Generation')
+        self.__continueGenerationChkBox.setChecked(self.__continue_generation)
+        self.__continueGenerationChkBox.stateChanged.connect(self.__continueGenerationChkBoxStateChanged)
+
+        self.__numberOfImagesToCreateSpinBox = QSpinBox()
+        self.__numberOfImagesToCreateSpinBox.setRange(2, 1000)
+        self.__numberOfImagesToCreateSpinBox.setValue(self.__number_of_images_to_create)
+        self.__numberOfImagesToCreateSpinBox.valueChanged.connect(self.__numberOfImagesToCreateSpinBoxValueChanged)
+
+        self.__generalGrpBox = QGroupBox()
+        self.__generalGrpBox.setTitle('General')
+
+        lay = QVBoxLayout()
+        lay.addWidget(self.__findPathWidget)
+        lay.addWidget(self.__saveChkBox)
+        lay.addWidget(self.__continueGenerationChkBox)
+        lay.addWidget(self.__numberOfImagesToCreateSpinBox)
+        self.__generalGrpBox.setLayout(lay)
+
+        # parameter settings
         self.__qualityCmbBox = QComboBox()
         self.__qualityCmbBox.addItems(['standard', 'hd'])
         self.__qualityCmbBox.setCurrentText(self.__quality)
@@ -75,6 +125,9 @@ class DallEControlWidget(QWidget):
         self.__submitBtn = QPushButton(LangClass.TRANSLATIONS['Submit'])
         self.__submitBtn.clicked.connect(self.__submit)
 
+        paramGrpBox = QGroupBox()
+        paramGrpBox.setTitle('Parameters')
+
         lay = QFormLayout()
         lay.addRow('Quality', self.__qualityCmbBox)
         lay.addRow(LangClass.TRANSLATIONS['Total'], self.__nSpinBox)
@@ -82,6 +135,12 @@ class DallEControlWidget(QWidget):
         lay.addRow(QLabel(LangClass.TRANSLATIONS['Prompt']))
         lay.addRow(self.__promptWidget)
         lay.addRow(self.__submitBtn)
+
+        paramGrpBox.setLayout(lay)
+
+        lay = QVBoxLayout()
+        lay.addWidget(self.__generalGrpBox)
+        lay.addWidget(paramGrpBox)
 
         self.setLayout(lay)
 
@@ -99,24 +158,59 @@ class DallEControlWidget(QWidget):
             self.__settings_ini.setValue('size', self.__size)
         self.__settings_ini.endGroup()
 
+    def __setSaveDirectory(self, directory):
+        self.__directory = directory
+        self.__settings_ini.beginGroup('DALLE')
+        self.__settings_ini.setValue('directory', self.__directory)
+        self.__settings_ini.endGroup()
+
+    def __saveChkBoxStateChanged(self, state):
+        f = state == 2
+        self.__is_save = f
+        self.__settings_ini.beginGroup('DALLE')
+        self.__settings_ini.setValue('is_save', self.__is_save)
+        self.__settings_ini.endGroup()
+
+    def __continueGenerationChkBoxStateChanged(self, state):
+        f = state == 2
+        self.__continue_generation = f
+        self.__settings_ini.beginGroup('DALLE')
+        self.__settings_ini.setValue('continue_generation', self.__continue_generation)
+        self.__settings_ini.endGroup()
+        self.__numberOfImagesToCreateSpinBox.setEnabled(f)
+
+    def __numberOfImagesToCreateSpinBoxValueChanged(self, value):
+        self.__number_of_images_to_create = value
+        self.__settings_ini.beginGroup('DALLE')
+        self.__settings_ini.setValue('number_of_images_to_create', self.__number_of_images_to_create)
+        self.__settings_ini.endGroup()
+
     def __submit(self):
         openai_arg = {
-            "model": "dall-e-3",
+            "model": "dall-e-24",
             "prompt": self.__promptWidget.toPlainText(),
             "n": self.__n,
             "size": self.__size,
             'quality': self.__quality
         }
         self.__t = DallEThread(openai_arg)
-        self.__submitBtn.setEnabled(False)
         self.__t.start()
+        self.__t.started.connect(self.__toggleWidget)
         self.__t.replyGenerated.connect(self.__afterGenerated)
         self.__t.errorGenerated.connect(self.__failToGenerate)
+        self.__t.finished.connect(self.__toggleWidget)
+
+    def __toggleWidget(self):
+        f = not self.__t.isRunning()
+        self.__generalGrpBox.setEnabled(f)
+        self.__qualityCmbBox.setEnabled(f)
+        self.__nSpinBox.setEnabled(f)
+        self.__sizeCmbBox.setEnabled(f)
+        self.__submitBtn.setEnabled(f)
 
     def __failToGenerate(self, e):
         toast = Toast(text=e, duration=3, parent=self)
         toast.show()
-        self.__submitBtn.setEnabled(True)
 
     def __afterGenerated(self, image_url):
         self.submitDallE.emit(image_url)
@@ -124,7 +218,6 @@ class DallEControlWidget(QWidget):
             self.__notifierWidget = NotifierWidget(informative_text=LangClass.TRANSLATIONS['Response 👌'], detailed_text=LangClass.TRANSLATIONS['Click this!'])
             self.__notifierWidget.show()
             self.__notifierWidget.doubleClicked.connect(self.notifierWidgetActivated)
-        self.__submitBtn.setEnabled(True)
 
     def getArgument(self):
         return self.__promptWidget.toPlainText(), self.__n, self.__size, self.__quality
