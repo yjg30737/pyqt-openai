@@ -68,6 +68,8 @@ class ImageNavWidget(QWidget):
         for i in range(len(columnNames)):
             self.__model.setHeaderData(i, Qt.Horizontal, columnNames[i])
         self.__model.select()
+        # descending order by date
+        self.__model.sort(6, Qt.DescendingOrder)
 
         # init the proxy model
         self.__proxyModel = FilterProxyModel()
@@ -91,8 +93,6 @@ class ImageNavWidget(QWidget):
         self.__tableView.setSelectionMode(QAbstractItemView.ExtendedSelection)
 
         # sort
-        # self.__tableView.setSortingEnabled(True)
-        # self.__tableView.sortByColumn(6, Qt.DescendingOrder)
         self.__tableView.clicked.connect(self.__clicked)
 
         lay = QVBoxLayout()
@@ -113,6 +113,7 @@ class ImageNavWidget(QWidget):
     def __clicked(self, idx):
         row = idx.row()
         col = 5
+
         idx = self.__model.index(row, col)
         data = self.__model.data(idx, role=Qt.DisplayRole)
 
