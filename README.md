@@ -180,6 +180,8 @@ I made the command suggestion GUI resemble the Discord command autocomplete popu
 
 ### Image Generation
 
+![image](https://github.com/yjg30737/pyqt-openai/assets/55078043/7f240ab3-f4d7-4d8b-b1c8-cb269f25e05b)
+
 ## How to Install
 1. git clone ~
 2. cd pyqt-openai
