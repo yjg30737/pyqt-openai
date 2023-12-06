@@ -76,7 +76,7 @@ And if you would like to support this project, you can click the button below to
   * support saving generated image to local
   * support continue generation
   * notification when task completes
-* you can copy and download the image if you want. just hover the mouse cursor over the image.
+* you can copy and download the image directly as well. just hover the mouse cursor over the image.
 * you can <b>fine-tune</b> openai with llama-index.
 * support text-based file uploading
 * support searching title and content in the conversation
@@ -108,7 +108,7 @@ If you have any additional languages you would like to add, please feel free to 
 * llama-index - to fine-tune
 
 ## Preview and Usage
-#### Note: A lot of previews below are not from latest version, EXCEPT FOR FIRST ONE! It is slightly different with current GUI. So if you want to really know what this looks like, see it by yourself :) But i will definitely change any image(s) which should be changed.
+#### Note: A lot of previews below are not from latest version. It is slightly different with current GUI. So if you want to really know what this looks like, see it by yourself :) But i will definitely change any image(s) which should be changed.
 
 ### Overview
 ![image](https://github.com/yjg30737/pyqt-openai/assets/55078043/00aab779-37bd-45e8-b21c-9f4ed3e473e8)
