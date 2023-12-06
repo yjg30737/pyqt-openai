@@ -5,9 +5,9 @@ import openai
 from llama_index.response.schema import StreamingResponse
 from qtpy.QtCore import QThread, Signal
 
-from pyqt_openai.apiData import getModelEndpoint
+from pyqt_openai.pyqt_openai_data import getModelEndpoint
 
-from pyqt_openai.openai_public_var import OPENAI_STRUCT
+from pyqt_openai.pyqt_openai_data import OPENAI_STRUCT
 
 
 class OpenAIThread(QThread):

@@ -28,7 +28,7 @@ from pyqt_openai.openAiChatBotWidget import OpenAIChatBotWidget
 
 os.environ['OPENAI_API_KEY'] = ''
 
-from pyqt_openai.openai_public_var import OPENAI_STRUCT
+from pyqt_openai.pyqt_openai_data import OPENAI_STRUCT
 
 # for testing pyside6
 # if you use pyside6 already, you don't have to remove the #

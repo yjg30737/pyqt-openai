@@ -11,7 +11,6 @@ class SqliteDatabase:
         super().__init__()
         self.__initVal(db_filename)
         self.__initDb()
-        self.__createConv()
 
     def __initVal(self, db_filename):
         # db names
@@ -29,9 +28,8 @@ class SqliteDatabase:
         self.__template_prompt_group_tb_nm = 'template_prompt_grp_tb'
         self.__template_prompt_tb_nm = 'template_prompt_tb'
 
-        # model type (chat, etc.)
-        self.__model_type = 1
-
+        # image table names
+        self.__image_tb_nm = 'image_tb'
 
         self.__prop_prompt_unit_default_value = [{'name': 'Task', 'text': ''},
                                                  {'name': 'Topic', 'text': ''},
@@ -58,8 +56,17 @@ class SqliteDatabase:
             self.__conn.execute('PRAGMA foreign_keys = ON;')
             self.__conn.commit()
 
+            # create cursor
             self.__c = self.__conn.cursor()
-            self.__initTables()
+
+            # create conversation tables
+            self.__createConv()
+
+            # create prompt tables
+            self.__createPrompt()
+
+            # create image tables
+            self.__createImage()
         except sqlite3.Error as e:
             print(f"An error occurred while connecting to the database: {e}")
             raise
@@ -262,7 +269,7 @@ class SqliteDatabase:
             print(f"An error occurred: {e}")
             raise
 
-    def updateTemplatePromptGroupName(self, id, name):
+    def updateTemplatePromptGroup(self, id, name):
         try:
             self.__c.execute(f'UPDATE {self.__template_prompt_group_tb_nm} SET name=(?) WHERE id={id}', (name,))
             self.__conn.commit()
@@ -346,7 +353,7 @@ class SqliteDatabase:
             print(f"An error occurred: {e}")
             raise
 
-    def __initTables(self):
+    def __createPrompt(self):
         try:
             # prompt information
             self.__createPropPromptGroup()
@@ -558,6 +565,51 @@ class SqliteDatabase:
             # Commit the transaction
             self.__conn.commit()
             return new_id
+        except sqlite3.Error as e:
+            print(f"An error occurred: {e}")
+            raise
+
+    def __createImage(self):
+        try:
+            # Check if the table exists
+            self.__c.execute(f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{self.__image_tb_nm}'")
+            if self.__c.fetchone()[0] == 1:
+                # each conv table already exists
+                pass
+            else:
+                # Create a table with update_dt and insert_dt columns
+                self.__c.execute(f'''CREATE TABLE {self.__image_tb_nm}
+                             (id INTEGER PRIMARY KEY,
+                              prompt TEXT,
+                              n INT,
+                              size VARCHAR(255),
+                              quality VARCHAR(255),
+                              url TEXT,
+                              update_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
+                              insert_dt DATETIME DEFAULT CURRENT_TIMESTAMP)''')
+                # Commit the transaction
+                self.__conn.commit()
+        except sqlite3.Error as e:
+            print(f"An error occurred while creating the table: {e}")
+            raise
+
+    def insertImage(self, prompt, n, size, quality, url):
+        try:
+            print(f'url: {url}')
+            self.__c.execute(
+                f'INSERT INTO {self.__image_tb_nm} (prompt, n, size, quality, url) VALUES (?, ?, ?, ?, ?)',
+                (prompt, n, size, quality, url))
+            new_id = self.__c.lastrowid
+            self.__conn.commit()
+            return new_id
+        except sqlite3.Error as e:
+            print(f"An error occurred: {e}")
+            raise
+
+    def selectImage(self):
+        try:
+            self.__c.execute(f'SELECT * FROM {self.__image_tb_nm}')
+            return self.__c.fetchall()
         except sqlite3.Error as e:
             print(f"An error occurred: {e}")
             raise

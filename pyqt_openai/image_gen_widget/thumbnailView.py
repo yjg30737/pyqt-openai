@@ -1,10 +1,9 @@
 import os
-import requests
 
 from qtpy.QtCore import Qt, QPointF, Signal
 from qtpy.QtGui import QPixmap, QColor, QBrush, QLinearGradient
-from qtpy.QtWidgets import QGraphicsScene, QGraphicsPixmapItem, QGraphicsView, QApplication, QWidget, QHBoxLayout, QFileDialog, QCheckBox, \
-    QGraphicsProxyWidget
+from qtpy.QtWidgets import QGraphicsScene, QGraphicsPixmapItem, QGraphicsView, QApplication, QWidget, QHBoxLayout, \
+    QFileDialog
 
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.svgButton import SvgButton
@@ -61,6 +60,7 @@ class ThumbnailView(QGraphicsView):
 
     def __refreshSceneAndView(self):
         self._item = self._scene.addPixmap(self._p)
+        self._item.setTransformationMode(Qt.SmoothTransformation)
         self.fitInView(self.sceneRect(), self.__aspectRatioMode)
         self.setScene(self._scene)
 
@@ -68,13 +68,6 @@ class ThumbnailView(QGraphicsView):
         self._scene = QGraphicsScene()
         self._p = QPixmap(filename)
         self.__refreshSceneAndView()
-
-    def setUrl(self, url):
-        self._scene = QGraphicsScene()
-        response = requests.get(url)
-        self._p.loadFromData(response.content)
-        self.__refreshSceneAndView()
-        return response.content
 
     def setContent(self, content):
         self._scene = QGraphicsScene()

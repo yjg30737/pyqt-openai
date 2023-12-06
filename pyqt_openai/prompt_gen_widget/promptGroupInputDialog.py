@@ -3,18 +3,14 @@ import re
 from qtpy.QtCore import Qt
 from qtpy.QtWidgets import QDialog, QVBoxLayout, QLineEdit, QFrame, QPushButton, QHBoxLayout, QWidget
 
+from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.res.language_dict import LangClass
-from pyqt_openai.sqlite import SqliteDatabase
 
 
 class PromptGroupInputDialog(QDialog):
-    def __init__(self, db: SqliteDatabase, parent=None):
+    def __init__(self, parent=None):
         super().__init__(parent)
-        self.__initVal(db)
         self.__initUi()
-
-    def __initVal(self, db):
-        self.__db = db
 
     def __initUi(self):
         self.setWindowTitle(LangClass.TRANSLATIONS['New Prompt'])
@@ -54,6 +50,6 @@ class PromptGroupInputDialog(QDialog):
 
     def __setAccept(self, text):
         m = re.search('^[a-zA-Z_0-9]+$', text)
-        names = [obj[1] for obj in self.__db.selectPropPromptGroup()+self.__db.selectTemplatePromptGroup()]
+        names = [obj[1] for obj in DB.selectPropPromptGroup()+DB.selectTemplatePromptGroup()]
         f = (True if m else False) and text not in names
         self.__okBtn.setEnabled(f)
