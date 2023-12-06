@@ -36,6 +36,7 @@ class DallEThread(QThread):
 
 class DallEControlWidget(QWidget):
     submitDallE = Signal(str)
+    submitDallEAllComplete = Signal()
     notifierWidgetActivated = Signal()
 
     def __init__(self):
@@ -189,7 +190,7 @@ class DallEControlWidget(QWidget):
 
     def __submit(self):
         openai_arg = {
-            "model": "dall-e-24",
+            "model": "dall-e-3",
             "prompt": self.__promptWidget.toPlainText(),
             "n": self.__n,
             "size": self.__size,
@@ -203,6 +204,7 @@ class DallEControlWidget(QWidget):
         self.__t.replyGenerated.connect(self.__afterGenerated)
         self.__t.errorGenerated.connect(self.__failToGenerate)
         self.__t.finished.connect(self.__toggleWidget)
+        self.__t.finished.connect(self.submitDallEAllComplete)
 
     def __toggleWidget(self):
         f = not self.__t.isRunning()

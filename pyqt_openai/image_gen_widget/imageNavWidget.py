@@ -1,3 +1,5 @@
+import requests
+
 from qtpy.QtCore import Signal, QSortFilterProxyModel, Qt
 from qtpy.QtSql import QSqlTableModel, QSqlDatabase
 from qtpy.QtWidgets import QWidget, QVBoxLayout, QStyledItemDelegate, QTableView, QAbstractItemView
@@ -42,7 +44,7 @@ class SqlTableModel(QSqlTableModel):
 
 
 class ImageNavWidget(QWidget):
-    getUrl = Signal(str)
+    getContent = Signal(bytes)
 
     def __init__(self):
         super().__init__()
@@ -54,7 +56,10 @@ class ImageNavWidget(QWidget):
         self.__imageDb.setDatabaseName('conv.db')  # Replace with your database name
         self.__imageDb.open()
 
-        searchBar = SearchBar()
+        self.__searchBar = SearchBar()
+        self.__searchBar.setPlaceHolder('Search...')
+        self.__searchBar.searched.connect(self.__showResult)
+
         columnNames = ['ID', 'Prompt', 'n', 'Size', 'Quality', 'URL']
 
         self.__model = SqlTableModel(self)
@@ -86,17 +91,17 @@ class ImageNavWidget(QWidget):
         self.__tableView.setSelectionMode(QAbstractItemView.ExtendedSelection)
 
         # sort
-        self.__tableView.setSortingEnabled(True)
-        self.__tableView.sortByColumn(6, Qt.DescendingOrder)
+        # self.__tableView.setSortingEnabled(True)
+        # self.__tableView.sortByColumn(6, Qt.DescendingOrder)
         self.__tableView.clicked.connect(self.__clicked)
 
-        # set current index as first record
-        self.__tableView.setCurrentIndex(self.__tableView.model().index(0, 0))
-
         lay = QVBoxLayout()
-        lay.addWidget(searchBar)
+        lay.addWidget(self.__searchBar)
         lay.addWidget(self.__tableView)
         self.setLayout(lay)
+
+        # show default result (which means "show all")
+        self.__showResult('')
 
     def __updated(self, i, r):
         # send updated signal
@@ -110,4 +115,13 @@ class ImageNavWidget(QWidget):
         col = 5
         idx = self.__model.index(row, col)
         data = self.__model.data(idx, role=Qt.DisplayRole)
-        self.getUrl.emit(data)
+
+        content = requests.get(data).content
+        self.getContent.emit(content)
+
+    def __showResult(self, text):
+        # index -1 will be read from all columns
+        # otherwise it will be read the current column number indicated by combobox
+        self.__proxyModel.setFilterKeyColumn(-1)
+        # regular expression can be used
+        self.__proxyModel.setFilterRegularExpression(text)

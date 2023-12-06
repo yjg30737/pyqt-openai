@@ -105,6 +105,9 @@ def generate_random_string(length):
 def get_image_filename_for_saving(arg):
     ext = '.png'
     # arg[0] is prompt
-    arg[0] = arg[0][:20]
-    arg[0] = '_'.join(''.join(re.findall('[a-zA-Z0-9\s]', arg[0])).split(' '))
-    return '_'.join(map(str, arg)) + generate_random_string(8) + ext
+    filename_prompt_prefix = '_'.join(''.join(re.findall('[a-zA-Z0-9\s]', arg[0][:20])).split(' '))
+    print(filename_prompt_prefix)
+    print('_'.join(map(str, [filename_prompt_prefix] + list(arg[1:]))) + '_' + generate_random_string(8) + ext)
+    filename = '_'.join(map(str, [filename_prompt_prefix] + list(arg[1:]))) + '_' + generate_random_string(8) + ext
+
+    return filename

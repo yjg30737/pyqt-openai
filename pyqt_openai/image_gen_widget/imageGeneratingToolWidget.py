@@ -11,7 +11,7 @@ from pyqt_openai.notifier import NotifierWidget
 from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.svgButton import SvgButton
-from pyqt_openai.util.script import get_image_filename_for_saving
+from pyqt_openai.util.script import get_image_filename_for_saving, open_directory
 
 
 class ImageGeneratingToolWidget(QWidget):
@@ -26,10 +26,11 @@ class ImageGeneratingToolWidget(QWidget):
         self.__viewWidget = ThumbnailView()
         self.__rightSideBarWidget = DallEControlWidget()
 
-        self.__imageNavWidget.getUrl.connect(self.__viewWidget.setContent)
+        self.__imageNavWidget.getContent.connect(self.__viewWidget.setContent)
 
         self.__rightSideBarWidget.notifierWidgetActivated.connect(self.notifierWidgetActivated)
         self.__rightSideBarWidget.submitDallE.connect(self.__setResult)
+        self.__rightSideBarWidget.submitDallEAllComplete.connect(self.__imageGenerationAllComplete)
 
         self.__historyBtn = SvgButton()
         self.__historyBtn.setIcon('ico/history.svg')
@@ -90,10 +91,6 @@ class ImageGeneratingToolWidget(QWidget):
         self.__rightSideBarWidget.setEnabled(f)
 
     def __setResult(self, url):
-        if not self.isVisible():
-            self.__notifierWidget = NotifierWidget(informative_text=LangClass.TRANSLATIONS['Response 👌'], detailed_text = 'Image Generation Complete!')
-            self.__notifierWidget.show()
-            self.__notifierWidget.doubleClicked.connect(self.notifierWidgetActivated)
         arg = self.__rightSideBarWidget.getArgument()
         content = requests.get(url).content
 
@@ -107,6 +104,15 @@ class ImageGeneratingToolWidget(QWidget):
 
     def __saveResultImage(self, arg, content):
         directory = self.__rightSideBarWidget.getDirectory()
+        os.makedirs(directory, exist_ok=True)
         filename = os.path.join(directory, get_image_filename_for_saving(arg))
         with open(filename, 'wb') as f:
             f.write(content)
+
+    def __imageGenerationAllComplete(self):
+        if not self.isVisible():
+            self.__notifierWidget = NotifierWidget(informative_text=LangClass.TRANSLATIONS['Response 👌'], detailed_text = 'Image Generation complete.')
+            self.__notifierWidget.show()
+            self.__notifierWidget.doubleClicked.connect(self.notifierWidgetActivated)
+
+        open_directory(self.__rightSideBarWidget.getDirectory())
