@@ -2,6 +2,8 @@ import os
 import re
 import sys
 import zipfile
+import string
+import random
 
 from jinja2 import Template
 
@@ -95,3 +97,17 @@ def conv_unit_to_html(db, id, title):
 def add_file_to_zip(file_content, file_name, output_zip_file):
     with zipfile.ZipFile(output_zip_file, 'a') as zipf:
         zipf.writestr(file_name, file_content)
+
+def generate_random_string(length):
+    letters = string.ascii_letters + string.digits
+    return ''.join(random.choice(letters) for _ in range(length))
+
+def get_image_filename_for_saving(arg):
+    ext = '.png'
+    # arg[0] is prompt
+    filename_prompt_prefix = '_'.join(''.join(re.findall('[a-zA-Z0-9\s]', arg[0][:20])).split(' '))
+    print(filename_prompt_prefix)
+    print('_'.join(map(str, [filename_prompt_prefix] + list(arg[1:]))) + '_' + generate_random_string(8) + ext)
+    filename = '_'.join(map(str, [filename_prompt_prefix] + list(arg[1:]))) + '_' + generate_random_string(8) + ext
+
+    return filename

@@ -20,7 +20,7 @@ If you want to study openai with Python-only good old desktop software, this is 
 
 The OpenAI model this package uses is the <a href="https://platform.openai.com/docs/models/gpt-3-5">gpt-3.5-turbo</a> model by default. You can use gpt-4 as well.
 
-Image generation feature(DALL-E) is also available.
+Image generation feature(DALL-E3) is also available.
 
 This is using <b>sqlite</b> as a database.
 
@@ -72,8 +72,11 @@ And if you would like to support this project, you can click the button below to
 * you can <b>run this in background</b> application
   * notification will pop up when response is generated
 * you can make window stack on top or control its transparency
-* image generation (DALL-E)
-* you can copy and download the image if you want. just hover the mouse cursor over the image.
+* image generation (DALL-E3)
+  * support saving generated image to local
+  * support continue generation
+  * notification when task completes
+* you can copy and download the image directly as well. just hover the mouse cursor over the image.
 * you can <b>fine-tune</b> openai with llama-index.
 * support text-based file uploading
 * support searching title and content in the conversation
@@ -105,7 +108,7 @@ If you have any additional languages you would like to add, please feel free to 
 * llama-index - to fine-tune
 
 ## Preview and Usage
-#### Note: A lot of previews below are not from latest version, EXCEPT FOR FIRST ONE! It is slightly different with current GUI. So if you want to really know what this looks like, see it by yourself :) But i will definitely change any image(s) which should be changed.
+#### Note: A lot of previews below are not from latest version. It is slightly different with current GUI. So if you want to really know what this looks like, see it by yourself :) But i will definitely change any image(s) which should be changed.
 
 ### Overview
 ![image](https://github.com/yjg30737/pyqt-openai/assets/55078043/00aab779-37bd-45e8-b21c-9f4ed3e473e8)
@@ -174,6 +177,10 @@ https://github.com/yjg30737/pyqt-openai/assets/55078043/df0d3923-1fbe-4dda-af6f-
 In this preview, i pressed the keyboard shortcut of each actions(show beginning, show ending, support prompt command) to use it rather than clicking them with mouse.
 
 I made the command suggestion GUI resemble the Discord command autocomplete popup, with which a lot of people have become accustomed.
+
+### Image Generation
+
+![image](https://github.com/yjg30737/pyqt-openai/assets/55078043/7f240ab3-f4d7-4d8b-b1c8-cb269f25e05b)
 
 ## How to Install
 1. git clone ~

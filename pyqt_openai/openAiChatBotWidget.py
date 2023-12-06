@@ -11,9 +11,9 @@ from pyqt_openai.leftSideBar import LeftSideBar
 from pyqt_openai.notifier import NotifierWidget
 from pyqt_openai.openAiThread import OpenAIThread, LlamaOpenAIThread
 from pyqt_openai.prompt_gen_widget.promptGeneratorWidget import PromptGeneratorWidget
+from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.right_sidebar.aiPlaygroundWidget import AIPlaygroundWidget
-from pyqt_openai.sqlite import SqliteDatabase
 from pyqt_openai.svgButton import SvgButton
 from pyqt_openai.util.llamapage_script import GPTLLamaIndexClass
 from pyqt_openai.util.script import open_directory, get_generic_ext_out_of_qt_ext, conv_unit_to_txt, conv_unit_to_html, \
@@ -29,9 +29,6 @@ class OpenAIChatBotWidget(QWidget):
         self.__initUi()
 
     def __initVal(self):
-        # db
-        self.__db = SqliteDatabase()
-
         # ini
         self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.IniFormat)
 
@@ -39,11 +36,11 @@ class OpenAIChatBotWidget(QWidget):
         self.__llama_class = GPTLLamaIndexClass()
 
     def __initUi(self):
-        self.__leftSideBarWidget = LeftSideBar(self.__db)
+        self.__leftSideBarWidget = LeftSideBar()
         self.__chatWidget = ChatWidget()
         self.__browser = self.__chatWidget.getChatBrowser()
 
-        self.__prompt = Prompt(self.__db)
+        self.__prompt = Prompt()
         self.__prompt.onStoppedClicked.connect(self.__stopResponse)
         self.__prompt.onContinuedClicked.connect(self.__continueResponse)
         self.__prompt.onRegenerateClicked.connect(self.__regenerateResponse)
@@ -56,7 +53,7 @@ class OpenAIChatBotWidget(QWidget):
         except Exception as e:
             QMessageBox.critical(self, "Error", str(e))
 
-        self.__promptGeneratorWidget = PromptGeneratorWidget(self.__db)
+        self.__promptGeneratorWidget = PromptGeneratorWidget()
 
         self.__sideBarBtn = SvgButton()
         self.__sideBarBtn.setIcon('ico/sidebar.svg')
@@ -105,7 +102,7 @@ class OpenAIChatBotWidget(QWidget):
         sep.setFrameShape(QFrame.HLine)
         sep.setFrameShadow(QFrame.Sunken)
 
-        self.__leftSideBarWidget.initHistory(self.__db)
+        self.__leftSideBarWidget.initHistory()
         self.__leftSideBarWidget.added.connect(self.__addConv)
         self.__leftSideBarWidget.changed.connect(self.__changeConv)
         self.__leftSideBarWidget.deleted.connect(self.__deleteConv)
@@ -294,7 +291,7 @@ class OpenAIChatBotWidget(QWidget):
     def __changeConv(self, item: QListWidgetItem):
         if item:
             id = item.data(Qt.UserRole)
-            conv_data = self.__db.selectCertainConv(id)
+            conv_data = DB.selectCertainConv(id)
             self.__browser.replaceConv(id, conv_data)
         else:
             self.__browser.resetChatWidget(0)
@@ -302,18 +299,18 @@ class OpenAIChatBotWidget(QWidget):
         self.__prompt.activateAfterResponseWidget(False)
 
     def __addConv(self):
-        cur_id = self.__db.insertConv(LangClass.TRANSLATIONS['New Chat'])
+        cur_id = DB.insertConv(LangClass.TRANSLATIONS['New Chat'])
         self.__browser.resetChatWidget(cur_id)
         self.__leftSideBarWidget.addToList(cur_id)
         self.__lineEdit.setFocus()
 
     def __updateConv(self, id, title=None):
         if title:
-            self.__db.updateConv(id, title)
+            DB.updateConv(id, title)
 
     def __deleteConv(self, id_lst):
         for id in id_lst:
-            self.__db.deleteConv(id)
+            DB.deleteConv(id)
 
     def __export(self, ids):
         file_data = QFileDialog.getSaveFileName(self, LangClass.TRANSLATIONS['Save'], os.path.expanduser('~'), 'SQLite DB file (*.db);;txt files Compressed File (*.zip);;html files Compressed File (*.zip)')
@@ -324,14 +321,14 @@ class OpenAIChatBotWidget(QWidget):
                 compressed_file_type = file_data[1].split(' ')[0].lower()
                 ext_dict = {'txt': {'ext':'.txt', 'func':conv_unit_to_txt}, 'html': {'ext':'.html', 'func':conv_unit_to_html}}
                 for id in ids:
-                    title = self.__db.selectConv(id)[1]
+                    title = DB.selectConv(id)[1]
                     txt_filename = f'{title}{ext_dict[compressed_file_type]["ext"]}'
-                    txt_content = ext_dict[compressed_file_type]['func'](self.__db, id, title)
+                    txt_content = ext_dict[compressed_file_type]['func'](DB, id, title)
                     add_file_to_zip(txt_content, txt_filename, os.path.splitext(filename)[0] + '.zip')
             elif ext == '.db':
-                self.__db.export(ids, filename)
+                DB.export(ids, filename)
             open_directory(os.path.dirname(filename))
 
     def __updateConvUnit(self, id, user_f, conv_unit=None, info=None):
         if conv_unit:
-            self.__db.insertConvUnit(id, user_f, conv_unit, info=info)
+            DB.insertConvUnit(id, user_f, conv_unit, info=info)

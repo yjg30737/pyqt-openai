@@ -6,25 +6,20 @@ from qtpy.QtCore import Qt
 from pyqt_openai.prompt_gen_widget.propPage import PropPage
 from pyqt_openai.prompt_gen_widget.templatePage import TemplatePage
 from pyqt_openai.res.language_dict import LangClass
-from pyqt_openai.sqlite import SqliteDatabase
 
 
 class PromptGeneratorWidget(QScrollArea):
-    def __init__(self, db: SqliteDatabase):
+    def __init__(self):
         super().__init__()
-        self.__initVal(db)
         self.__initUi()
-
-    def __initVal(self, db):
-        self.__db = db
 
     def __initUi(self):
         propmtLbl = QLabel(LangClass.TRANSLATIONS['Prompt'])
 
-        propPage = PropPage(self.__db)
+        propPage = PropPage()
         propPage.updated.connect(self.__textChanged)
 
-        templatePage = TemplatePage(self.__db)
+        templatePage = TemplatePage()
         templatePage.updated.connect(self.__textChanged)
 
         self.__prompt = QTextBrowser()

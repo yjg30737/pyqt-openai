@@ -4,7 +4,6 @@ from qtpy.QtWidgets import QVBoxLayout, QWidget
 
 from pyqt_openai.chat_widget.textEditPrompt import TextEditPrompt
 from pyqt_openai.res.language_dict import LangClass
-from pyqt_openai.sqlite import SqliteDatabase
 
 
 class TextEditPropmtGroup(QWidget):
@@ -12,13 +11,9 @@ class TextEditPropmtGroup(QWidget):
     onUpdateSuggestion = Signal()
     onSendKeySignalToSuggestion = Signal(str)
 
-    def __init__(self, db: SqliteDatabase):
+    def __init__(self):
         super().__init__()
-        self.__initVal(db)
         self.__initUi()
-
-    def __initVal(self, db):
-        self.__db = db
 
     def __initUi(self):
         self.__beginningTextEdit = TextEditPrompt()
@@ -26,11 +21,6 @@ class TextEditPropmtGroup(QWidget):
 
         self.__textEdit = TextEditPrompt()
         self.__textEdit.setPlaceholderText(LangClass.TRANSLATIONS['Write some text...'])
-
-        # old code
-        # self.__textEdit.textChanged.connect(self.textChanged)
-        # self.__textEdit.sendSuggestionWidget.connect(self.__initPromptCommandAutocomplete)
-        # self.__textEdit.setPlaceholderText(LangClass.TRANSLATIONS['Write some text...'])
 
         self.__endingTextEdit = TextEditPrompt()
         self.__endingTextEdit.setPlaceholderText(LangClass.TRANSLATIONS['Ending'])

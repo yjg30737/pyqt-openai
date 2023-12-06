@@ -1,13 +1,12 @@
-from qtpy.QtCore import Signal, Qt, QEvent
-from qtpy.QtWidgets import QTableWidget, QLineEdit, QSizePolicy, QSpacerItem, QStackedWidget, QLabel, \
+from qtpy.QtCore import Signal, Qt
+from qtpy.QtWidgets import QTableWidget, QSizePolicy, QSpacerItem, QStackedWidget, QLabel, \
     QAbstractItemView, QTableWidgetItem, QHeaderView, QHBoxLayout, \
     QVBoxLayout, QWidget, QDialog, QListWidget, QListWidgetItem, QSplitter
 
-from pyqt_openai.inputDialog import InputDialog
 from pyqt_openai.prompt_gen_widget.promptGroupInputDialog import PromptGroupInputDialog
 from pyqt_openai.prompt_gen_widget.propPromptUnitInputDialog import PropPromptUnitInputDialog
+from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.res.language_dict import LangClass
-from pyqt_openai.sqlite import SqliteDatabase
 from pyqt_openai.svgButton import SvgButton
 
 
@@ -16,13 +15,9 @@ class PropGroupList(QWidget):
     deleted = Signal(int)
     currentRowChanged = Signal(int)
 
-    def __init__(self, db: SqliteDatabase):
+    def __init__(self):
         super().__init__()
-        self.__initVal(db)
         self.__initUi()
-
-    def __initVal(self, db):
-        self.__db = db
 
     def __initUi(self):
         self.__addBtn = SvgButton()
@@ -45,7 +40,7 @@ class PropGroupList(QWidget):
         topWidget = QWidget()
         topWidget.setLayout(lay)
 
-        defaultPropPromptGroupArr = self.__db.selectPropPromptGroup()
+        defaultPropPromptGroupArr = DB.selectPropPromptGroup()
 
         self.__propList = QListWidget()
 
@@ -77,23 +72,23 @@ class PropGroupList(QWidget):
         self.added.emit(id)
 
     def __addGroup(self):
-        dialog = PromptGroupInputDialog(self.__db, self)
+        dialog = PromptGroupInputDialog(self)
         reply = dialog.exec()
         if reply == QDialog.Accepted:
             name = dialog.getPromptGroupName()
-            id = self.__db.insertPropPromptGroup(name)
+            id = DB.insertPropPromptGroup(name)
             self.__addGroupItem(id, name)
 
     def __deleteGroup(self):
         i = self.__propList.currentRow()
         item = self.__propList.takeItem(i)
         id = item.data(Qt.UserRole)
-        self.__db.deletePropPromptGroup(id)
+        DB.deletePropPromptGroup(id)
         self.deleted.emit(i)
 
     def __itemChanged(self, item):
         id = item.data(Qt.UserRole)
-        self.__db.updatePropPromptGroup(id, item.text())
+        DB.updatePropPromptGroup(id, item.text())
 
 
 class PropTable(QWidget):
@@ -102,17 +97,16 @@ class PropTable(QWidget):
     """
     updated = Signal(str)
 
-    def __init__(self, db: SqliteDatabase, id):
+    def __init__(self, id):
         super().__init__()
-        self.__initVal(db, id)
+        self.__initVal(id)
         self.__initUi()
 
-    def __initVal(self, db, id):
-        self.__db = db
+    def __initVal(self, id):
         self.__id = id
 
-        self.__title = self.__db.selectPropPromptGroupId(self.__id)[1]
-        self.__previousPromptPropArr = self.__db.selectPropPromptAttribute(self.__id)
+        self.__title = DB.selectPropPromptGroupId(self.__id)[1]
+        self.__previousPromptPropArr = DB.selectPropPromptAttribute(self.__id)
 
     def __initUi(self):
         self.__addBtn = SvgButton()
@@ -184,10 +178,10 @@ class PropTable(QWidget):
         id = name.data(Qt.UserRole)
         name = name.text()
         value = self.__table.item(item.row(), 1).text()
-        self.__db.updatePropPromptAttribute(self.__id, id, name, value)
+        DB.updatePropPromptAttribute(self.__id, id, name, value)
 
     def __add(self):
-        dialog = PropPromptUnitInputDialog(self.__db, self.__id, self)
+        dialog = PropPromptUnitInputDialog(self.__id, self)
         reply = dialog.exec()
         if reply == QDialog.Accepted:
             self.__table.itemChanged.disconnect(self.__saveChangedPropPrompt)
@@ -203,7 +197,7 @@ class PropTable(QWidget):
             item2.setTextAlignment(Qt.AlignCenter)
             self.__table.setItem(self.__table.rowCount()-1, 1, item2)
 
-            id = self.__db.insertPropPromptAttribute(self.__id, name)
+            id = DB.insertPropPromptAttribute(self.__id, name)
             item1.setData(Qt.UserRole, id)
 
             self.__table.itemChanged.connect(self.__saveChangedPropPrompt)
@@ -212,23 +206,22 @@ class PropTable(QWidget):
         for i in sorted(set([i.row() for i in self.__table.selectedIndexes()]), reverse=True):
             id = self.__table.item(i, 0).data(Qt.UserRole)
             self.__table.removeRow(i)
-            self.__db.deletePropPromptAttribute(self.__id, id)
+            DB.deletePropPromptAttribute(self.__id, id)
 
 
 class PropPage(QWidget):
     updated = Signal(str)
 
-    def __init__(self, db: SqliteDatabase):
+    def __init__(self):
         super().__init__()
-        self.__initVal(db)
+        self.__initVal()
         self.__initUi()
 
-    def __initVal(self, db):
-        self.__db = db
-        self.__previousPropGroups = self.__db.selectPropPromptGroup()
+    def __initVal(self):
+        self.__previousPropGroups = DB.selectPropPromptGroup()
 
     def __initUi(self):
-        leftWidget = PropGroupList(self.__db)
+        leftWidget = PropGroupList()
         leftWidget.added.connect(self.__propGroupAdded)
         leftWidget.deleted.connect(self.__propGroupDeleted)
         leftWidget.currentRowChanged.connect(self.__showProp)
@@ -236,7 +229,7 @@ class PropPage(QWidget):
         self.__rightWidget = QStackedWidget()
 
         for group in self.__previousPropGroups:
-            propTable = PropTable(self.__db, id=group[0])
+            propTable = PropTable(id=group[0])
             propTable.updated.connect(self.updated)
             self.__rightWidget.addWidget(propTable)
 
@@ -252,7 +245,7 @@ class PropPage(QWidget):
         self.setLayout(lay)
 
     def __propGroupAdded(self, id):
-        propTable = PropTable(self.__db, id)
+        propTable = PropTable(id)
         propTable.updated.connect(self.updated)
         self.__rightWidget.addWidget(propTable)
         self.__rightWidget.setCurrentWidget(propTable)
