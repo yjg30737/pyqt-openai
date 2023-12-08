@@ -107,6 +107,8 @@ If you have any additional languages you would like to add, please feel free to 
 * jinja2 - for saving the conversation with html file
 * llama-index - to fine-tune
 
+It is not listed in requirements.txt, but you can use **PyQt6** if you want.
+
 ## Preview and Usage
 #### Note: A lot of previews below are not from latest version. It is slightly different with current GUI. So if you want to really know what this looks like, see it by yourself :) But i will definitely change any image(s) which should be changed.
 
