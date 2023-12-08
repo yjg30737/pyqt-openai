@@ -116,6 +116,7 @@ class ConvListWidget(QListWidget):
     def toggleState(self, state):
         for i in range(self.count()):
             item = self.item(i)
+            state = Qt.CheckState(state)
             if item.checkState() != state:
                 item.setCheckState(state)
 

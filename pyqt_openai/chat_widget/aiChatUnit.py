@@ -122,7 +122,7 @@ class AIChatUnit(QWidget):
         self.setLayout(lay)
 
         palette = QPalette()
-        palette.setColor(QPalette.Background, QColor(220, 220, 220))
+        palette.setColor(QPalette.Window, QColor(220, 220, 220))
         self.setPalette(palette)
         self.setAutoFillBackground(True)
 

@@ -130,8 +130,6 @@ class LeftSideBar(QWidget):
                         item.setHidden(False)
                     else:
                         item.setHidden(True)
-                    print('id:', conv[0])
-                    print('conv:', [(_['id'], _['conv']) for _ in conv[1]])
 
     def initHistory(self):
         try:
