@@ -13,6 +13,12 @@ project_root = os.path.dirname(os.path.dirname(script_path))
 sys.path.insert(0, project_root)
 sys.path.insert(0, os.getcwd())  # Add the current directory as well
 
+# for testing pyside6
+# os.environ['QT_API'] = 'pyside6'
+
+# for testing pyqt6
+# os.environ['QT_API'] = 'pyqt6'
+
 from qtpy.QtGui import QGuiApplication, QFont, QIcon, QColor
 from qtpy.QtWidgets import QMainWindow, QToolBar, QHBoxLayout, QDialog, QLineEdit, QPushButton, QWidgetAction, QSpinBox, QLabel, QWidget, QApplication, \
     QComboBox, QSizePolicy, QStackedWidget, QAction, QMenu, QSystemTrayIcon, \
@@ -30,15 +36,12 @@ os.environ['OPENAI_API_KEY'] = ''
 
 from pyqt_openai.pyqt_openai_data import OPENAI_STRUCT
 
-# for testing pyside6
-# if you use pyside6 already, you don't have to remove the #
-# os.environ['QT_API'] = 'pyside6'
 
-QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
-QCoreApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)  # HighDPI support
+# HighDPI support
 # qt version should be above 5.14
-# todo check the qt version with qtpy
-if os.environ['QT_API'] == 'pyqt5' or os.environ['QT_API'] != 'pyside6':
+if os.environ['QT_API'] == 'pyqt5':
+    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
+    QCoreApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
     QGuiApplication.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
 
 QApplication.setFont(QFont('Arial', 12))

@@ -55,6 +55,8 @@ class LeftSideBar(QWidget):
         lay.addWidget(self.__saveBtn)
         lay.setContentsMargins(0, 0, 0, 0)
 
+        self.__toggleButton(False)
+
         navWidget = QWidget()
         navWidget.setLayout(lay)
 
@@ -76,6 +78,7 @@ class LeftSideBar(QWidget):
 
         self.__convListWidget = ConvListWidget()
         self.__convListWidget.changed.connect(self.changed)
+        self.__convListWidget.checked.connect(self.__checked)
         self.__convListWidget.convUpdated.connect(self.convUpdated)
 
         lay = QVBoxLayout()
@@ -86,6 +89,14 @@ class LeftSideBar(QWidget):
 
     def __addClicked(self):
         self.added.emit()
+
+    def __toggleButton(self, f):
+        self.__delBtn.setEnabled(f)
+        self.__saveBtn.setEnabled(f)
+
+    def __checked(self, ids):
+        f = len(ids) > 0
+        self.__toggleButton(f)
 
     def addToList(self, id):
         self.__convListWidget.addConv(LangClass.TRANSLATIONS['New Chat'], id)
@@ -106,6 +117,7 @@ class LeftSideBar(QWidget):
 
     def __stateChanged(self, f):
         self.__convListWidget.toggleState(f)
+        self.__toggleButton(f)
 
     def __search(self, text):
         # title
@@ -130,8 +142,6 @@ class LeftSideBar(QWidget):
                         item.setHidden(False)
                     else:
                         item.setHidden(True)
-                    print('id:', conv[0])
-                    print('conv:', [(_['id'], _['conv']) for _ in conv[1]])
 
     def initHistory(self):
         try:

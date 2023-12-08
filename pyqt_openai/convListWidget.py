@@ -82,6 +82,7 @@ class ConvItemWidget(QWidget):
 
 class ConvListWidget(QListWidget):
     changed = Signal(QListWidgetItem)
+    checked = Signal(list)
     convUpdated = Signal(int, str)
 
     def __init__(self, *args, **kwargs):
@@ -112,10 +113,12 @@ class ConvListWidget(QListWidget):
                         item.setCheckState(Qt.Unchecked)
                     else:
                         item.setCheckState(Qt.Checked)
+                    self.checked.emit(self.getCheckedRowsIds())
 
     def toggleState(self, state):
         for i in range(self.count()):
             item = self.item(i)
+            state = Qt.CheckState(state)
             if item.checkState() != state:
                 item.setCheckState(state)
 
