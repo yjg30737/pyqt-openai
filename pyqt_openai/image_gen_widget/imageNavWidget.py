@@ -1,4 +1,5 @@
 import requests
+from qtpy.QtWidgets import QLabel
 
 from qtpy.QtCore import Signal, QSortFilterProxyModel, Qt
 from qtpy.QtSql import QSqlTableModel, QSqlDatabase
@@ -56,6 +57,9 @@ class ImageNavWidget(QWidget):
         self.__imageDb.setDatabaseName('conv.db')  # Replace with your database name
         self.__imageDb.open()
 
+        imageGenerationHistoryLbl = QLabel()
+        imageGenerationHistoryLbl.setText('History')
+
         self.__searchBar = SearchBar()
         self.__searchBar.setPlaceHolder('Search...')
         self.__searchBar.searched.connect(self.__showResult)
@@ -92,10 +96,10 @@ class ImageNavWidget(QWidget):
         self.__tableView.resizeColumnsToContents()
         self.__tableView.setSelectionMode(QAbstractItemView.ExtendedSelection)
 
-        # sort
         self.__tableView.clicked.connect(self.__clicked)
 
         lay = QVBoxLayout()
+        lay.addWidget(imageGenerationHistoryLbl)
         lay.addWidget(self.__searchBar)
         lay.addWidget(self.__tableView)
         self.setLayout(lay)

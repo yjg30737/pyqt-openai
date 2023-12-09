@@ -2,10 +2,10 @@ import os
 
 from qtpy.QtCore import QThread
 from qtpy.QtCore import Signal, QSettings
-from qtpy.QtWidgets import QFrame, QWidget, QCheckBox, QSpinBox, QGroupBox, QVBoxLayout, QPushButton, QComboBox, QPlainTextEdit, QFormLayout, QLabel
+from qtpy.QtWidgets import QWidget, QCheckBox, QSpinBox, QGroupBox, QVBoxLayout, QPushButton, QComboBox, QPlainTextEdit, \
+    QFormLayout, QLabel
 
 from pyqt_openai.customizeDialog import FindPathWidget
-from pyqt_openai.notifier import NotifierWidget
 from pyqt_openai.pyqt_openai_data import OPENAI_STRUCT
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.toast import Toast
