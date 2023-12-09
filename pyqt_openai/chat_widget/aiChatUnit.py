@@ -1,19 +1,12 @@
-import re
-
 import pyperclip
-
 from qtpy.QtCore import Qt
 from qtpy.QtGui import QPalette, QColor
 from qtpy.QtWidgets import QLabel, QWidget, QVBoxLayout, QApplication, QHBoxLayout, QSpacerItem, QSizePolicy, \
-    QTextBrowser, QAbstractScrollArea, QPushButton
-from pygments import highlight
-from pygments.formatters.html import HtmlFormatter
-from pygments.lexers import get_lexer_by_name
+    QTextBrowser, QAbstractScrollArea
 
 from pyqt_openai.chat_widget.convUnitResultDialog import ConvUnitResultDialog
+from pyqt_openai.circleProfileImage import RoundedImage
 from pyqt_openai.svgButton import SvgButton
-
-from circleProfileImage import RoundedImage
 
 
 class SourceBrowser(QWidget):

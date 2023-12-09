@@ -1,8 +1,5 @@
-import os, openai
-
-from llama_index import GPTVectorStoreIndex, SimpleDirectoryReader, LLMPredictor, ServiceContext
 from langchain.chat_models import ChatOpenAI
-
+from llama_index import GPTVectorStoreIndex, SimpleDirectoryReader, LLMPredictor, ServiceContext
 
 
 class GPTLLamaIndexClass:
@@ -66,33 +63,3 @@ class GPTLLamaIndexClass:
         )
 
         return response
-
-
-# openai_arg = {
-#                     'model': 'gpt-3.5-turbo',
-#                     'temperature': 0.7,
-#                     'top_p': 1,
-#                     'frequency_penalty': 0,
-#                     'presence_penalty': 0,
-#                     'stream': False,
-#                 }
-#
-# c = GPTLLamaIndexClass()
-# c.set_directory('./llama_example')
-# c.set_openai_arg(**openai_arg)
-#
-# response = c.get_response(
-#     "Hello, who is yjg30737 and what language is he good at?",
-# )
-# print(response)
-# response = c.get_response(
-#     "What is pyqt-openai?",
-# )
-# print(response)
-# response = c.get_response(
-#     "Can i use gpt-4 in pyqt-openai?",
-# )
-# print(response)
-# # BeautifulSoupWebReader
-# # DiscordReader
-# # GithubRepositoryReader

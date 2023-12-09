@@ -6,3 +6,7 @@ openai
 pyperclip
 jinja2
 llama-index
+
+requests
+langchain
+pillow
