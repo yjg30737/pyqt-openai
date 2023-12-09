@@ -614,6 +614,17 @@ class SqliteDatabase:
             print(f"An error occurred: {e}")
             raise
 
+    def removeImage(self, id=None):
+        try:
+            query = f'DELETE FROM {self.__image_tb_nm}'
+            if id:
+                query += f' WHERE id = {id}'
+            self.__c.execute(query)
+            self.__conn.commit()
+        except sqlite3.Error as e:
+            print(f"An error occurred: {e}")
+            raise
+
     def export(self, ids, saved_filename):
         shutil.copy2(self.__db_filename, saved_filename)
 
