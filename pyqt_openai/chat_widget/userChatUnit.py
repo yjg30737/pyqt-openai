@@ -4,7 +4,7 @@ from qtpy.QtWidgets import QSpacerItem, QSizePolicy, QWidget, QVBoxLayout, QHBox
 
 from pyqt_openai.svgButton import SvgButton
 
-from circleProfileImage import RoundedImage
+from pyqt_openai.circleProfileImage import RoundedImage
 
 
 class UserChatUnit(QWidget):

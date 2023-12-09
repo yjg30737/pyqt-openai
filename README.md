@@ -105,7 +105,12 @@ If you have any additional languages you would like to add, please feel free to 
 * aiohttp - for openai dependency 
 * pyperclip - to copy prompt text from prompt generator
 * jinja2 - for saving the conversation with html file
-* llama-index - to fine-tune
+* llama-index - to fine-tune gpt with llamaindex
+* requests - for getting response from web
+* langchain - for connecting llama-index with gpt
+* pillow - for preventing ModuleNotFoundError from llama-index
+
+You can install these requirements with only one line command "pip install -r requirements.txt". Just see "How to Install" section below.
 
 It is not listed in requirements.txt, but you can use **PyQt6** if you want.
 
@@ -272,6 +277,3 @@ SOFTWARE.
 ## Disclaimer
 
 Please do not distribute this commercially without my permission, by claiming it as your own creation.
-
-## TODO list
-* tokenizer
