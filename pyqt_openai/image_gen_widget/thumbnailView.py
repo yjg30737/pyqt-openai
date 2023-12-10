@@ -23,6 +23,8 @@ class ThumbnailView(QGraphicsView):
         self._item = QGraphicsPixmapItem()
         self.__aspectRatioMode = Qt.KeepAspectRatio
 
+        self.__factor = 1.1  # Zoom factor
+
     def __initUi(self):
         self.__setControlWidget()
 
@@ -49,9 +51,21 @@ class ThumbnailView(QGraphicsView):
         saveBtn.setIcon('ico/save_light.svg')
         saveBtn.clicked.connect(self.__save)
 
+        # zoom in
+        zoomInBtn = SvgButton()
+        zoomInBtn.setIcon('ico/add.svg')
+        zoomInBtn.clicked.connect(self.__zoomIn)
+
+        # zoom out
+        zoomOutBtn = SvgButton()
+        zoomOutBtn.setIcon('ico/delete.svg')
+        zoomOutBtn.clicked.connect(self.__zoomOut)
+
         lay = QHBoxLayout()
         lay.addWidget(copyBtn)
         lay.addWidget(saveBtn)
+        lay.addWidget(zoomInBtn)
+        lay.addWidget(zoomOutBtn)
 
         self.__controlWidget = QWidget(self)
         self.__controlWidget.setLayout(lay)
@@ -91,6 +105,12 @@ class ThumbnailView(QGraphicsView):
             filename = filename[0]
             self._p.save(filename)
 
+    def __zoomIn(self):
+        self.scale(self.__factor, self.__factor)
+
+    def __zoomOut(self):
+        self.scale(1 / self.__factor, 1 / self.__factor)
+
     def enterEvent(self, e):
         # Show the button when the mouse enters the view
         if self._item.pixmap().width():
@@ -114,3 +134,16 @@ class ThumbnailView(QGraphicsView):
     def mousePressEvent(self, e):
         self.clicked.emit(self._p)
         return super().mousePressEvent(e)
+
+    def wheelEvent(self, event):
+        if event.modifiers() == Qt.ControlModifier:
+            # Check if Ctrl key is pressed
+            if event.angleDelta().y() > 0:
+                # Ctrl + wheel up, zoom in
+                self.__zoomIn()
+            else:
+                # Ctrl + wheel down, zoom out
+                self.__zoomOut()
+            event.accept()  # Accept the event if Ctrl is pressed
+        else:
+            super().wheelEvent(event)  # Default behavior for other cases

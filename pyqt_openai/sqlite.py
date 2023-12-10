@@ -476,9 +476,6 @@ class SqliteDatabase:
                     statement = f'ALTER TABLE {name[0]} ADD COLUMN {field_name} {type}'
                     self.__c.execute(statement)
 
-        # self.__c.execute(f'''ALTER TABLE {self.__conv_unit_tb_nm}{id_fk}
-        #                         ADD COLUMN new_column_name data_type''')
-
     def __createConvUnit(self, id_fk):
         try:
             # Check if the table exists
@@ -574,31 +571,63 @@ class SqliteDatabase:
             # Check if the table exists
             self.__c.execute(f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{self.__image_tb_nm}'")
             if self.__c.fetchone()[0] == 1:
-                # each conv table already exists
-                pass
+                # If image table already exists, execute query for applying latest update
+                # To rename column, create a new temporary table
+                temp_image_tb_nm = 'temp_image_tb'
+
+                self.__c.execute(
+                    f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{temp_image_tb_nm}'")
+                if self.__c.fetchone()[0] == 1:
+                    pass
+                else:
+                    self.__c.execute(f'''CREATE TABLE {temp_image_tb_nm}
+                                 (id INTEGER PRIMARY KEY,
+                                  prompt TEXT,
+                                  n INT,
+                                  size VARCHAR(255),
+                                  quality VARCHAR(255),
+                                  data BLOB,
+                                  style VARCHAR(255),
+                                  revised_prompt TEXT,
+                                  update_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
+                                  insert_dt DATETIME DEFAULT CURRENT_TIMESTAMP)''')
+                # Copy the data from the old table to the new table
+                # self.__c.execute(f'INSERT INTO {temp_image_tb_nm} VALUES (data, style, revised_prompt)')
+                self.__c.execute(f'SELECT * FROM {self.__image_tb_nm}')
+                for row in self.__c.fetchall():
+                    self.__c.execute(f'''INSERT INTO {temp_image_tb_nm}
+                                       (id, prompt, n, size, quality, data, style, revised_prompt, update_dt, insert_dt)
+                                       VALUES
+                                       (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                                    ''', row)
+
+                # Delete the old table
+                self.__c.execute(f'DROP TABLE {self.__image_tb_nm}')
+                # Rename the new table to the original name
+                self.__c.execute(f'ALTER TABLE {temp_image_tb_nm} RENAME TO {self.__image_tb_nm}')
             else:
-                # Create a table with update_dt and insert_dt columns
                 self.__c.execute(f'''CREATE TABLE {self.__image_tb_nm}
                              (id INTEGER PRIMARY KEY,
                               prompt TEXT,
                               n INT,
                               size VARCHAR(255),
                               quality VARCHAR(255),
-                              url TEXT,
+                              data BLOB,
+                              style VARCHAR(255),
+                              revised_prompt TEXT,
                               update_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
                               insert_dt DATETIME DEFAULT CURRENT_TIMESTAMP)''')
                 # Commit the transaction
-                self.__conn.commit()
+            self.__conn.commit()
         except sqlite3.Error as e:
             print(f"An error occurred while creating the table: {e}")
             raise
 
-    def insertImage(self, prompt, n, size, quality, url):
+    def insertImage(self, prompt, n, size, quality, style, data, revised_prompt):
         try:
-            print(f'url: {url}')
             self.__c.execute(
-                f'INSERT INTO {self.__image_tb_nm} (prompt, n, size, quality, url) VALUES (?, ?, ?, ?, ?)',
-                (prompt, n, size, quality, url))
+                f'INSERT INTO {self.__image_tb_nm} (prompt, n, size, quality, data, style, revised_prompt) VALUES (?, ?, ?, ?, ?, ?, ?)',
+                (prompt, n, size, quality, data, style, revised_prompt))
             new_id = self.__c.lastrowid
             self.__conn.commit()
             return new_id
@@ -610,6 +639,17 @@ class SqliteDatabase:
         try:
             self.__c.execute(f'SELECT * FROM {self.__image_tb_nm}')
             return self.__c.fetchall()
+        except sqlite3.Error as e:
+            print(f"An error occurred: {e}")
+            raise
+
+    def removeImage(self, id=None):
+        try:
+            query = f'DELETE FROM {self.__image_tb_nm}'
+            if id:
+                query += f' WHERE id = {id}'
+            self.__c.execute(query)
+            self.__conn.commit()
         except sqlite3.Error as e:
             print(f"An error occurred: {e}")
             raise

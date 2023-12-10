@@ -4,8 +4,11 @@ import sys
 import zipfile
 import string
 import random
+from pathlib import Path
 
 from jinja2 import Template
+
+from pyqt_openai.notifier import NotifierWidget
 
 
 def get_generic_ext_out_of_qt_ext(text):
@@ -111,3 +114,7 @@ def get_image_filename_for_saving(arg):
     filename = '_'.join(map(str, [filename_prompt_prefix] + list(arg[1:]))) + '_' + generate_random_string(8) + ext
 
     return filename
+
+def get_image_prompt_filename_for_saving(directory, filename):
+    txt_filename = os.path.join(directory, Path(filename).stem + '.txt')
+    return txt_filename

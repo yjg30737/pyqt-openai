@@ -1,11 +1,14 @@
-import requests
+from qtpy.QtWidgets import QHBoxLayout
+from qtpy.QtWidgets import QLabel
 
-from qtpy.QtCore import Signal, QSortFilterProxyModel, Qt
+from qtpy.QtCore import Signal, QSortFilterProxyModel, Qt, QByteArray
 from qtpy.QtSql import QSqlTableModel, QSqlDatabase
 from qtpy.QtWidgets import QWidget, QVBoxLayout, QStyledItemDelegate, QTableView, QAbstractItemView
 
 # for search feature
+from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.searchBar import SearchBar
+from pyqt_openai.svgButton import SvgButton
 
 
 class FilterProxyModel(QSortFilterProxyModel):
@@ -56,11 +59,33 @@ class ImageNavWidget(QWidget):
         self.__imageDb.setDatabaseName('conv.db')  # Replace with your database name
         self.__imageDb.open()
 
+        imageGenerationHistoryLbl = QLabel()
+        imageGenerationHistoryLbl.setText('History')
+
         self.__searchBar = SearchBar()
         self.__searchBar.setPlaceHolder('Search...')
         self.__searchBar.searched.connect(self.__showResult)
 
-        columnNames = ['ID', 'Prompt', 'n', 'Size', 'Quality', 'URL']
+        self.__deleteBtn = SvgButton()
+        self.__deleteBtn.setIcon('ico/delete.svg')
+        self.__deleteBtn.clicked.connect(self.__delete)
+        self.__deleteBtn.setToolTip('Delete Certain Row')
+
+        self.__clearBtn = SvgButton()
+        self.__clearBtn.setIcon('ico/close.svg')
+        self.__clearBtn.clicked.connect(self.__clear)
+        self.__deleteBtn.setToolTip('Remove All')
+
+        lay = QHBoxLayout()
+        lay.addWidget(self.__searchBar)
+        lay.addWidget(self.__deleteBtn)
+        lay.addWidget(self.__clearBtn)
+        lay.setContentsMargins(0, 0, 0, 0)
+
+        menuWidget = QWidget()
+        menuWidget.setLayout(lay)
+
+        columnNames = ['ID', 'Prompt', 'n', 'Size', 'Quality', 'Data', 'Revised Prompt']
 
         self.__model = SqlTableModel(self)
         self.__model.setTable('image_tb')
@@ -69,7 +94,7 @@ class ImageNavWidget(QWidget):
             self.__model.setHeaderData(i, Qt.Horizontal, columnNames[i])
         self.__model.select()
         # descending order by date
-        self.__model.sort(6, Qt.DescendingOrder)
+        self.__model.sort(7, Qt.DescendingOrder)
 
         # init the proxy model
         self.__proxyModel = FilterProxyModel()
@@ -92,11 +117,11 @@ class ImageNavWidget(QWidget):
         self.__tableView.resizeColumnsToContents()
         self.__tableView.setSelectionMode(QAbstractItemView.ExtendedSelection)
 
-        # sort
         self.__tableView.clicked.connect(self.__clicked)
 
         lay = QVBoxLayout()
-        lay.addWidget(self.__searchBar)
+        lay.addWidget(imageGenerationHistoryLbl)
+        lay.addWidget(menuWidget)
         lay.addWidget(self.__tableView)
         self.setLayout(lay)
 
@@ -116,9 +141,8 @@ class ImageNavWidget(QWidget):
 
         idx = self.__model.index(row, col)
         data = self.__model.data(idx, role=Qt.DisplayRole)
-
-        content = requests.get(data).content
-        self.getContent.emit(content)
+        data = QByteArray(data).data()
+        self.getContent.emit(data)
 
     def __showResult(self, text):
         # index -1 will be read from all columns
@@ -126,3 +150,16 @@ class ImageNavWidget(QWidget):
         self.__proxyModel.setFilterKeyColumn(-1)
         # regular expression can be used
         self.__proxyModel.setFilterRegularExpression(text)
+
+    def __delete(self):
+        idx_s = self.__tableView.selectedIndexes()
+        for idx in idx_s:
+            idx = idx.siblingAtColumn(0)
+            id = self.__model.data(idx, role=Qt.DisplayRole)
+            DB.removeImage(id)
+        self.__model.select()
+
+    def __clear(self):
+        DB.removeImage()
+        self.__model.select()
+
