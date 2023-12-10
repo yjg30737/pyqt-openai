@@ -1,4 +1,4 @@
-import os
+import os, base64
 
 from PyQt5.QtWidgets import QFrame
 from qtpy.QtCore import QThread
@@ -35,9 +35,10 @@ class DallEThread(QThread):
                     **self.__openai_arg
                 )
 
-                for image_data in response.data:
-                    image_url = image_data.url
-                    self.replyGenerated.emit(image_url)
+                for _ in response.data:
+                    image_data = _.b64_json
+                    image_data = base64.b64encode(image_data)
+                    self.replyGenerated.emit(image_data)
         except Exception as e:
             self.errorGenerated.emit(str(e))
 
@@ -258,8 +259,8 @@ class DallEControlWidget(QWidget):
         toast = Toast(text=e, duration=3, parent=self)
         toast.show()
 
-    def __afterGenerated(self, image_url):
-        self.submitDallE.emit(image_url)
+    def __afterGenerated(self, image_data):
+        self.submitDallE.emit(image_data)
 
     def getArgument(self):
         return self.__promptWidget.toPlainText(), self.__n, self.__size, self.__quality

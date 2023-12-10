@@ -593,7 +593,7 @@ class SqliteDatabase:
             print(f"An error occurred while creating the table: {e}")
             raise
 
-    def insertImage(self, prompt, n, size, quality, data, revised_prompt):
+    def insertImage(self, prompt, n, size, quality, revised_prompt, data):
         try:
             self.__c.execute(
                 f'INSERT INTO {self.__image_tb_nm} (prompt, n, size, quality, data, style, revised_prompt) VALUES (?, ?, ?, ?, ?, ?, ?)',

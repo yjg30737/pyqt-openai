@@ -1,3 +1,5 @@
+import base64
+
 import requests
 import os
 
@@ -90,16 +92,15 @@ class ImageGeneratingToolWidget(QWidget):
     def setAIEnabled(self, f):
         self.__rightSideBarWidget.setEnabled(f)
 
-    def __setResult(self, url):
+    def __setResult(self, image_data):
         arg = self.__rightSideBarWidget.getArgument()
-        content = requests.get(url).content
 
         # save
         if self.__rightSideBarWidget.isSavedEnabled():
-            self.__saveResultImage(arg, content)
+            self.__saveResultImage(arg, image_data)
 
-        self.__viewWidget.setContent(content)
-        DB.insertImage(*arg, url)
+        self.__viewWidget.setContent(image_data)
+        DB.insertImage(*arg, image_data)
         self.__imageNavWidget.refresh()
 
     def __saveResultImage(self, arg, content):
