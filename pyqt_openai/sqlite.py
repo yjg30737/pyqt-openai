@@ -571,40 +571,48 @@ class SqliteDatabase:
             # Check if the table exists
             self.__c.execute(f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{self.__image_tb_nm}'")
             if self.__c.fetchone()[0] == 1:
-                # If image table already exists, execute query for applying latest update
-                # To rename column, create a new temporary table
-                temp_image_tb_nm = 'temp_image_tb'
-
-                self.__c.execute(
-                    f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{temp_image_tb_nm}'")
-                if self.__c.fetchone()[0] == 1:
+                # To not make table every time to change column's name and type
+                self.__c.execute(f'PRAGMA table_info({self.__image_tb_nm})')
+                new_columns = {'data', 'style', 'revised_prompt'}
+                common_columns = set([column[1] for column in self.__c.fetchall()]).intersection(
+                    new_columns)
+                if list(common_columns) == len(new_columns):
                     pass
                 else:
-                    self.__c.execute(f'''CREATE TABLE {temp_image_tb_nm}
-                                 (id INTEGER PRIMARY KEY,
-                                  prompt TEXT,
-                                  n INT,
-                                  size VARCHAR(255),
-                                  quality VARCHAR(255),
-                                  data BLOB,
-                                  style VARCHAR(255),
-                                  revised_prompt TEXT,
-                                  update_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
-                                  insert_dt DATETIME DEFAULT CURRENT_TIMESTAMP)''')
-                # Copy the data from the old table to the new table
-                # self.__c.execute(f'INSERT INTO {temp_image_tb_nm} VALUES (data, style, revised_prompt)')
-                self.__c.execute(f'SELECT * FROM {self.__image_tb_nm}')
-                for row in self.__c.fetchall():
-                    self.__c.execute(f'''INSERT INTO {temp_image_tb_nm}
-                                       (id, prompt, n, size, quality, data, style, revised_prompt, update_dt, insert_dt)
-                                       VALUES
-                                       (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                                    ''', row)
+                    # If image table already exists, execute query for applying latest update
+                    # To rename column, create a new temporary table
+                    temp_image_tb_nm = 'temp_image_tb'
 
-                # Delete the old table
-                self.__c.execute(f'DROP TABLE {self.__image_tb_nm}')
-                # Rename the new table to the original name
-                self.__c.execute(f'ALTER TABLE {temp_image_tb_nm} RENAME TO {self.__image_tb_nm}')
+                    self.__c.execute(
+                        f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{temp_image_tb_nm}'")
+                    if self.__c.fetchone()[0] == 1:
+                        pass
+                    else:
+                        self.__c.execute(f'''CREATE TABLE {temp_image_tb_nm}
+                                     (id INTEGER PRIMARY KEY,
+                                      prompt TEXT,
+                                      n INT,
+                                      size VARCHAR(255),
+                                      quality VARCHAR(255),
+                                      data BLOB,
+                                      style VARCHAR(255),
+                                      revised_prompt TEXT,
+                                      update_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
+                                      insert_dt DATETIME DEFAULT CURRENT_TIMESTAMP)''')
+                    # Copy the data from the old table to the new table
+                    # self.__c.execute(f'INSERT INTO {temp_image_tb_nm} VALUES (data, style, revised_prompt)')
+                    self.__c.execute(f'SELECT * FROM {self.__image_tb_nm}')
+                    for row in self.__c.fetchall():
+                        self.__c.execute(f'''INSERT INTO {temp_image_tb_nm}
+                                           (id, prompt, n, size, quality, data, style, revised_prompt, update_dt, insert_dt)
+                                           VALUES
+                                           (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                                        ''', row)
+
+                    # Delete the old table
+                    self.__c.execute(f'DROP TABLE {self.__image_tb_nm}')
+                    # Rename the new table to the original name
+                    self.__c.execute(f'ALTER TABLE {temp_image_tb_nm} RENAME TO {self.__image_tb_nm}')
             else:
                 self.__c.execute(f'''CREATE TABLE {self.__image_tb_nm}
                              (id INTEGER PRIMARY KEY,
