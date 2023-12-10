@@ -574,17 +574,17 @@ class SqliteDatabase:
             # Check if the table exists
             self.__c.execute(f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{self.__image_tb_nm}'")
             if self.__c.fetchone()[0] == 1:
-                # each conv table already exists
+                # if image table already exists
                 pass
             else:
-                # Create a table with update_dt and insert_dt columns
                 self.__c.execute(f'''CREATE TABLE {self.__image_tb_nm}
                              (id INTEGER PRIMARY KEY,
                               prompt TEXT,
                               n INT,
                               size VARCHAR(255),
                               quality VARCHAR(255),
-                              url TEXT,
+                              data BLOB,
+                              revised_prompt TEXT,
                               update_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
                               insert_dt DATETIME DEFAULT CURRENT_TIMESTAMP)''')
                 # Commit the transaction
@@ -593,12 +593,11 @@ class SqliteDatabase:
             print(f"An error occurred while creating the table: {e}")
             raise
 
-    def insertImage(self, prompt, n, size, quality, url):
+    def insertImage(self, prompt, n, size, quality, data, revised_prompt):
         try:
-            print(f'url: {url}')
             self.__c.execute(
-                f'INSERT INTO {self.__image_tb_nm} (prompt, n, size, quality, url) VALUES (?, ?, ?, ?, ?)',
-                (prompt, n, size, quality, url))
+                f'INSERT INTO {self.__image_tb_nm} (prompt, n, size, quality, data, style, revised_prompt) VALUES (?, ?, ?, ?, ?, ?, ?)',
+                (prompt, n, size, quality, data, revised_prompt))
             new_id = self.__c.lastrowid
             self.__conn.commit()
             return new_id

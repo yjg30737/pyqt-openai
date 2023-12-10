@@ -157,9 +157,9 @@ class DallEControlWidget(QWidget):
         lay.addRow('Quality', self.__qualityCmbBox)
         lay.addRow(LangClass.TRANSLATIONS['Total'], self.__nSpinBox)
         lay.addRow(LangClass.TRANSLATIONS['Size'], self.__sizeCmbBox)
+        lay.addRow('Style', self.__styleCmbBox)
         lay.addRow(QLabel(LangClass.TRANSLATIONS['Prompt']))
         lay.addRow(self.__promptWidget)
-        lay.addRow(self.__styleCmbBox)
 
         paramGrpBox.setLayout(lay)
 

@@ -86,7 +86,7 @@ class ImageNavWidget(QWidget):
         menuWidget = QWidget()
         menuWidget.setLayout(lay)
 
-        columnNames = ['ID', 'Prompt', 'n', 'Size', 'Quality', 'Data']
+        columnNames = ['ID', 'Prompt', 'n', 'Size', 'Quality', 'Data', 'Revised Prompt']
 
         self.__model = SqlTableModel(self)
         self.__model.setTable('image_tb')
