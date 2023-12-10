@@ -347,14 +347,14 @@ class MainWindow(QMainWindow):
         closeMessageBox.setStandardButtons(QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
         reply = closeMessageBox.exec()
         # Cancel
-        if reply == 4194304:
+        if reply == QMessageBox.Cancel:
             return True
         else:
             # Yes
-            if reply == 16384:
+            if reply == QMessageBox.Yes:
                 self.close()
             # No
-            elif reply == 65536:
+            elif reply == QMessageBox.No:
                 app.quit()
 
     def closeEvent(self, e):
