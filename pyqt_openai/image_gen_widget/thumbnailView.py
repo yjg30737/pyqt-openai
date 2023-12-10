@@ -75,6 +75,10 @@ class ThumbnailView(QGraphicsView):
     def __refreshSceneAndView(self):
         self._item = self._scene.addPixmap(self._p)
         self._item.setTransformationMode(Qt.SmoothTransformation)
+        rect = self.sceneRect() \
+            if (self._item.boundingRect().width() > self.sceneRect().width()) or (self._item.boundingRect().height() > self.sceneRect().height()) \
+            else self._item.boundingRect()
+        self.fitInView(rect, self.__aspectRatioMode)
         self.setScene(self._scene)
 
     def setFilename(self, filename: str):

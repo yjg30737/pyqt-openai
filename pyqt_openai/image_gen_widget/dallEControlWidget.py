@@ -2,7 +2,7 @@ import os
 
 from qtpy.QtCore import QThread
 from qtpy.QtCore import Signal, QSettings
-from qtpy.QtWidgets import QWidget, QCheckBox, QSpinBox, QGroupBox, QVBoxLayout, QPushButton, QComboBox, QPlainTextEdit, \
+from qtpy.QtWidgets import QMessageBox, QWidget, QCheckBox, QSpinBox, QGroupBox, QVBoxLayout, QPushButton, QComboBox, QPlainTextEdit, \
     QFormLayout, QLabel, QFrame
 
 from pyqt_openai.customizeDialog import FindPathWidget
@@ -275,9 +275,12 @@ class DallEControlWidget(QWidget):
             toast = Toast(text=e, duration=3, parent=self)
             toast.show()
         else:
-            self.__notifierWidget = NotifierWidget(informative_text='Error 😥', detailed_text = e)
+            informative_text = 'Error 😥'
+            detailed_text = e
+            self.__notifierWidget = NotifierWidget(informative_text=informative_text, detailed_text = detailed_text)
             self.__notifierWidget.show()
             self.__notifierWidget.doubleClicked.connect(self.window().show)
+            QMessageBox.critical(self, informative_text, detailed_text)
 
     def __afterGenerated(self, image_data, revised_prompt):
         self.submitDallE.emit(image_data, revised_prompt)
