@@ -47,7 +47,6 @@ class DallEThread(QThread):
 class DallEControlWidget(QWidget):
     submitDallE = Signal(str, str)
     submitDallEAllComplete = Signal()
-    notifierWidgetActivated = Signal()
 
     def __init__(self):
         super().__init__()
@@ -278,7 +277,7 @@ class DallEControlWidget(QWidget):
         else:
             self.__notifierWidget = NotifierWidget(informative_text='Error 😥', detailed_text = e)
             self.__notifierWidget.show()
-            self.__notifierWidget.doubleClicked.connect(self.notifierWidgetActivated)
+            self.__notifierWidget.doubleClicked.connect(self.window().show)
 
     def __afterGenerated(self, image_data, revised_prompt):
         self.submitDallE.emit(image_data, revised_prompt)

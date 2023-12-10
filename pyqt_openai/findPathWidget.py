@@ -1,3 +1,5 @@
+import os
+
 import subprocess
 
 from qtpy.QtCore import Qt, Signal
@@ -102,14 +104,14 @@ class FindPathWidget(QWidget):
 
     def __find(self):
         if self.isForDirectory():
-            filename = QFileDialog.getExistingDirectory(self, 'Open Directory', '', QFileDialog.ShowDirsOnly)
+            filename = QFileDialog.getExistingDirectory(self, 'Open Directory', os.path.expanduser('~'), QFileDialog.ShowDirsOnly)
             if filename:
                 pass
             else:
                 return
         else:
             str_exp_files_to_open = self.__ext_of_files if self.__ext_of_files else 'All Files (*.*)'
-            filename = QFileDialog.getOpenFileName(self, 'Find', '', str_exp_files_to_open)
+            filename = QFileDialog.getOpenFileName(self, 'Find', os.path.expanduser('~'), str_exp_files_to_open)
             if filename[0]:
                 filename = filename[0]
             else:

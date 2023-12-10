@@ -16,7 +16,6 @@ from pyqt_openai.util.script import get_image_filename_for_saving, open_director
 
 
 class ImageGeneratingToolWidget(QWidget):
-    notifierWidgetActivated = Signal()
 
     def __init__(self):
         super().__init__()
@@ -29,7 +28,6 @@ class ImageGeneratingToolWidget(QWidget):
 
         self.__imageNavWidget.getContent.connect(self.__viewWidget.setContent)
 
-        self.__rightSideBarWidget.notifierWidgetActivated.connect(self.notifierWidgetActivated)
         self.__rightSideBarWidget.submitDallE.connect(self.__setResult)
         self.__rightSideBarWidget.submitDallEAllComplete.connect(self.__imageGenerationAllComplete)
 
@@ -120,6 +118,6 @@ class ImageGeneratingToolWidget(QWidget):
         if not self.isVisible():
             self.__notifierWidget = NotifierWidget(informative_text=LangClass.TRANSLATIONS['Response 👌'], detailed_text = 'Image Generation complete.')
             self.__notifierWidget.show()
-            self.__notifierWidget.doubleClicked.connect(self.notifierWidgetActivated)
+            self.__notifierWidget.doubleClicked.connect(self.window().show)
 
         open_directory(self.__rightSideBarWidget.getDirectory())
