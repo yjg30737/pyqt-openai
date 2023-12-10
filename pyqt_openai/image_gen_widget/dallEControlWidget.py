@@ -1,20 +1,21 @@
-import os, base64
+import os
 
-from PyQt5.QtWidgets import QFrame
 from qtpy.QtCore import QThread
 from qtpy.QtCore import Signal, QSettings
 from qtpy.QtWidgets import QWidget, QCheckBox, QSpinBox, QGroupBox, QVBoxLayout, QPushButton, QComboBox, QPlainTextEdit, \
-    QFormLayout, QLabel
+    QFormLayout, QLabel, QFrame
 
 from pyqt_openai.customizeDialog import FindPathWidget
+from pyqt_openai.notifier import NotifierWidget
 from pyqt_openai.pyqt_openai_data import OPENAI_STRUCT
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.toast import Toast
 
 
 class DallEThread(QThread):
-    replyGenerated = Signal(str)
+    replyGenerated = Signal(str, str)
     errorGenerated = Signal(str)
+    allReplyGenerated = Signal()
 
     def __init__(self, openai_arg, number_of_images, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -37,14 +38,14 @@ class DallEThread(QThread):
 
                 for _ in response.data:
                     image_data = _.b64_json
-                    image_data = base64.b64encode(image_data)
-                    self.replyGenerated.emit(image_data)
+                    self.replyGenerated.emit(image_data, _.revised_prompt)
+            self.allReplyGenerated.emit()
         except Exception as e:
             self.errorGenerated.emit(str(e))
 
 
 class DallEControlWidget(QWidget):
-    submitDallE = Signal(str)
+    submitDallE = Signal(str, str)
     submitDallEAllComplete = Signal()
     notifierWidgetActivated = Signal()
 
@@ -77,6 +78,8 @@ class DallEControlWidget(QWidget):
             self.__settings_ini.setValue('style', 'vivid')
         if not self.__settings_ini.contains('response_format'):
             self.__settings_ini.setValue('response_format', 'b64_json')
+        if not self.__settings_ini.contains('save_prompt_as_text'):
+            self.__settings_ini.setValue('save_prompt_as_text', True)
 
         self.__quality = self.__settings_ini.value('quality', type=str)
         self.__n = self.__settings_ini.value('n', type=int)
@@ -87,6 +90,7 @@ class DallEControlWidget(QWidget):
         self.__number_of_images_to_create = self.__settings_ini.value('number_of_images_to_create', type=int)
         self.__style = self.__settings_ini.value('style', type=str)
         self.__response_format = self.__settings_ini.value('response_format', type=str)
+        self.__save_prompt_as_text = self.__settings_ini.value('save_prompt_as_text', type=bool)
 
         self.__settings_ini.endGroup()
 
@@ -111,6 +115,10 @@ class DallEControlWidget(QWidget):
         self.__numberOfImagesToCreateSpinBox.setValue(self.__number_of_images_to_create)
         self.__numberOfImagesToCreateSpinBox.valueChanged.connect(self.__numberOfImagesToCreateSpinBoxValueChanged)
 
+        self.__savePromptAsTextChkBox = QCheckBox('Save Prompt as Text')
+        self.__savePromptAsTextChkBox.setChecked(self.__save_prompt_as_text)
+        self.__savePromptAsTextChkBox.stateChanged.connect(self.__savePromptAsTextChkBoxStateChanged)
+
         self.__generalGrpBox = QGroupBox()
         self.__generalGrpBox.setTitle('General')
 
@@ -119,6 +127,7 @@ class DallEControlWidget(QWidget):
         lay.addWidget(self.__saveChkBox)
         lay.addWidget(self.__continueGenerationChkBox)
         lay.addWidget(self.__numberOfImagesToCreateSpinBox)
+        lay.addWidget(self.__savePromptAsTextChkBox)
         self.__generalGrpBox.setLayout(lay)
 
         # parameter settings
@@ -221,6 +230,12 @@ class DallEControlWidget(QWidget):
         self.__settings_ini.setValue('number_of_images_to_create', self.__number_of_images_to_create)
         self.__settings_ini.endGroup()
 
+    def __savePromptAsTextChkBoxStateChanged(self, value):
+        self.__save_prompt_as_text = value
+        self.__settings_ini.beginGroup('DALLE')
+        self.__settings_ini.setValue('save_prompt_as_text', self.__save_prompt_as_text)
+        self.__settings_ini.endGroup()
+
     def __submit(self):
         openai_arg = {
             "model": "dall-e-3",
@@ -239,7 +254,7 @@ class DallEControlWidget(QWidget):
         self.__t.replyGenerated.connect(self.__afterGenerated)
         self.__t.errorGenerated.connect(self.__failToGenerate)
         self.__t.finished.connect(self.__toggleWidget)
-        self.__t.finished.connect(self.submitDallEAllComplete)
+        self.__t.allReplyGenerated.connect(self.submitDallEAllComplete)
 
     def __toggleWidget(self):
         f = not self.__t.isRunning()
@@ -248,6 +263,7 @@ class DallEControlWidget(QWidget):
         self.__nSpinBox.setEnabled(f)
         self.__sizeCmbBox.setEnabled(f)
         self.__submitBtn.setEnabled(f)
+        self.__styleCmbBox.setEnabled(f)
         if self.__continue_generation:
             self.__stopGeneratingImageBtn.setEnabled(not f)
 
@@ -256,14 +272,22 @@ class DallEControlWidget(QWidget):
             self.__t.stop()
 
     def __failToGenerate(self, e):
-        toast = Toast(text=e, duration=3, parent=self)
-        toast.show()
+        if self.isVisible():
+            toast = Toast(text=e, duration=3, parent=self)
+            toast.show()
+        else:
+            self.__notifierWidget = NotifierWidget(informative_text='Error 😥', detailed_text = e)
+            self.__notifierWidget.show()
+            self.__notifierWidget.doubleClicked.connect(self.notifierWidgetActivated)
 
-    def __afterGenerated(self, image_data):
-        self.submitDallE.emit(image_data)
+    def __afterGenerated(self, image_data, revised_prompt):
+        self.submitDallE.emit(image_data, revised_prompt)
 
     def getArgument(self):
-        return self.__promptWidget.toPlainText(), self.__n, self.__size, self.__quality
+        return self.__promptWidget.toPlainText(), self.__n, self.__size, self.__quality, self.__style
+
+    def getSavePromptAsText(self):
+        return self.__save_prompt_as_text
 
     def isSavedEnabled(self):
         return self.__is_save

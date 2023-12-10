@@ -1,8 +1,7 @@
-import requests
 from qtpy.QtWidgets import QHBoxLayout
 from qtpy.QtWidgets import QLabel
 
-from qtpy.QtCore import Signal, QSortFilterProxyModel, Qt
+from qtpy.QtCore import Signal, QSortFilterProxyModel, Qt, QByteArray
 from qtpy.QtSql import QSqlTableModel, QSqlDatabase
 from qtpy.QtWidgets import QWidget, QVBoxLayout, QStyledItemDelegate, QTableView, QAbstractItemView
 
@@ -95,7 +94,7 @@ class ImageNavWidget(QWidget):
             self.__model.setHeaderData(i, Qt.Horizontal, columnNames[i])
         self.__model.select()
         # descending order by date
-        self.__model.sort(6, Qt.DescendingOrder)
+        self.__model.sort(7, Qt.DescendingOrder)
 
         # init the proxy model
         self.__proxyModel = FilterProxyModel()
@@ -142,9 +141,8 @@ class ImageNavWidget(QWidget):
 
         idx = self.__model.index(row, col)
         data = self.__model.data(idx, role=Qt.DisplayRole)
-
-        content = requests.get(data).content
-        self.getContent.emit(content)
+        data = QByteArray(data).data()
+        self.getContent.emit(data)
 
     def __showResult(self, text):
         # index -1 will be read from all columns

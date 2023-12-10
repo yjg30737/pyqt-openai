@@ -1,7 +1,6 @@
 import base64
-
-import requests
 import os
+from pathlib import Path
 
 from qtpy.QtCore import Qt, Signal
 from qtpy.QtWidgets import QHBoxLayout, QVBoxLayout, QFrame, QWidget, QSplitter
@@ -13,7 +12,7 @@ from pyqt_openai.notifier import NotifierWidget
 from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.svgButton import SvgButton
-from pyqt_openai.util.script import get_image_filename_for_saving, open_directory
+from pyqt_openai.util.script import get_image_filename_for_saving, open_directory, get_image_prompt_filename_for_saving
 
 
 class ImageGeneratingToolWidget(QWidget):
@@ -92,23 +91,30 @@ class ImageGeneratingToolWidget(QWidget):
     def setAIEnabled(self, f):
         self.__rightSideBarWidget.setEnabled(f)
 
-    def __setResult(self, image_data):
+    def __setResult(self, image_data, revised_prompt):
         arg = self.__rightSideBarWidget.getArgument()
+
+        image_data = base64.b64decode(image_data)
 
         # save
         if self.__rightSideBarWidget.isSavedEnabled():
-            self.__saveResultImage(arg, image_data)
+            self.__saveResultImage(arg, image_data, revised_prompt)
 
         self.__viewWidget.setContent(image_data)
-        DB.insertImage(*arg, image_data)
+        DB.insertImage(*arg, image_data, revised_prompt)
         self.__imageNavWidget.refresh()
 
-    def __saveResultImage(self, arg, content):
+    def __saveResultImage(self, arg, image_data, revised_prompt):
         directory = self.__rightSideBarWidget.getDirectory()
         os.makedirs(directory, exist_ok=True)
         filename = os.path.join(directory, get_image_filename_for_saving(arg))
         with open(filename, 'wb') as f:
-            f.write(content)
+            f.write(image_data)
+
+        if self.__rightSideBarWidget.getSavePromptAsText():
+            txt_filename = get_image_prompt_filename_for_saving(directory, filename)
+            with open(txt_filename, 'w') as f:
+                f.write(revised_prompt)
 
     def __imageGenerationAllComplete(self):
         if not self.isVisible():
