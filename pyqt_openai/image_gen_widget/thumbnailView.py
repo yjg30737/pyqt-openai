@@ -53,12 +53,12 @@ class ThumbnailView(QGraphicsView):
 
         # zoom in
         zoomInBtn = SvgButton()
-        zoomInBtn.setIcon('ico/add.svg')
+        zoomInBtn.setIcon('ico/add_light.svg')
         zoomInBtn.clicked.connect(self.__zoomIn)
 
         # zoom out
         zoomOutBtn = SvgButton()
-        zoomOutBtn.setIcon('ico/delete.svg')
+        zoomOutBtn.setIcon('ico/delete_light.svg')
         zoomOutBtn.clicked.connect(self.__zoomOut)
 
         lay = QHBoxLayout()
