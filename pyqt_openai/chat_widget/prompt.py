@@ -245,7 +245,7 @@ class Prompt(QWidget):
         self.__textEditGroup.setCommandEnabled(f)
 
     def __readingFiles(self):
-        filenames = QFileDialog.getOpenFileNames(self, 'Find', '', 'All Files (*.*)')
+        filenames = QFileDialog.getOpenFileNames(self, 'Find', os.path.expanduser('~'), 'All Files (*.*)')
         if filenames[0]:
             filenames = filenames[0]
             source_context = ''

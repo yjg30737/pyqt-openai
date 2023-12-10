@@ -53,12 +53,12 @@ class ThumbnailView(QGraphicsView):
 
         # zoom in
         zoomInBtn = SvgButton()
-        zoomInBtn.setIcon('ico/add.svg')
+        zoomInBtn.setIcon('ico/add_light.svg')
         zoomInBtn.clicked.connect(self.__zoomIn)
 
         # zoom out
         zoomOutBtn = SvgButton()
-        zoomOutBtn.setIcon('ico/delete.svg')
+        zoomOutBtn.setIcon('ico/delete_light.svg')
         zoomOutBtn.clicked.connect(self.__zoomOut)
 
         lay = QHBoxLayout()
@@ -75,7 +75,10 @@ class ThumbnailView(QGraphicsView):
     def __refreshSceneAndView(self):
         self._item = self._scene.addPixmap(self._p)
         self._item.setTransformationMode(Qt.SmoothTransformation)
-        self.fitInView(self.sceneRect(), self.__aspectRatioMode)
+        rect = self.sceneRect() \
+            if (self._item.boundingRect().width() > self.sceneRect().width()) or (self._item.boundingRect().height() > self.sceneRect().height()) \
+            else self._item.boundingRect()
+        self.fitInView(rect, self.__aspectRatioMode)
         self.setScene(self._scene)
 
     def setFilename(self, filename: str):
@@ -127,7 +130,6 @@ class ThumbnailView(QGraphicsView):
 
     def resizeEvent(self, e):
         if self._item.pixmap().width():
-            self.fitInView(self.sceneRect(), self.__aspectRatioMode)
             self.setScene(self._scene)
         return super().resizeEvent(e)
 

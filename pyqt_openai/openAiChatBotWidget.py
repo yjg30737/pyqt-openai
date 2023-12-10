@@ -21,8 +21,6 @@ from pyqt_openai.util.script import open_directory, get_generic_ext_out_of_qt_ex
 
 
 class OpenAIChatBotWidget(QWidget):
-    notifierWidgetActivated = Signal()
-
     def __init__(self):
         super().__init__()
         self.__initVal()
@@ -279,14 +277,13 @@ class OpenAIChatBotWidget(QWidget):
         self.__lineEdit.clear()
 
     def __afterGenerated(self):
-        # TODO 2023-11-11
         continue_f = self.__browser.getLastFinishReason() == 'Finish Reason: length'
         self.__toggleWidgetWhileChatting(True, continue_f)
         self.__lineEdit.setFocus()
         if not self.isVisible():
             self.__notifierWidget = NotifierWidget(informative_text=LangClass.TRANSLATIONS['Response 👌'], detailed_text = self.__browser.getLastResponse())
             self.__notifierWidget.show()
-            self.__notifierWidget.doubleClicked.connect(self.notifierWidgetActivated)
+            self.__notifierWidget.doubleClicked.connect(self.window().show)
 
     def __changeConv(self, item: QListWidgetItem):
         if item:

@@ -67,9 +67,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle(LangClass.TRANSLATIONS['PyQt OpenAI Chatbot'])
 
         self.__openAiChatBotWidget = OpenAIChatBotWidget()
-        self.__openAiChatBotWidget.notifierWidgetActivated.connect(self.show)
         self.__imageGeneratingToolWidget = ImageGeneratingToolWidget()
-        self.__imageGeneratingToolWidget.notifierWidgetActivated.connect(self.show)
         self.__mainWidget = QStackedWidget()
         self.__mainWidget.addWidget(self.__openAiChatBotWidget)
         self.__mainWidget.addWidget(self.__imageGeneratingToolWidget)
