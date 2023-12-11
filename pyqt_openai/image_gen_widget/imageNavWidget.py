@@ -1,9 +1,6 @@
-from qtpy.QtWidgets import QHBoxLayout
-from qtpy.QtWidgets import QLabel
-
 from qtpy.QtCore import Signal, QSortFilterProxyModel, Qt, QByteArray
 from qtpy.QtSql import QSqlTableModel, QSqlDatabase
-from qtpy.QtWidgets import QWidget, QVBoxLayout, QStyledItemDelegate, QTableView, QAbstractItemView
+from qtpy.QtWidgets import QWidget, QVBoxLayout, QStyledItemDelegate, QTableView, QAbstractItemView, QHBoxLayout, QMessageBox, QLabel
 
 # for search feature
 from pyqt_openai.pyqt_openai_data import DB
@@ -141,8 +138,11 @@ class ImageNavWidget(QWidget):
 
         idx = self.__model.index(row, col)
         data = self.__model.data(idx, role=Qt.DisplayRole)
-        data = QByteArray(data).data()
-        self.getContent.emit(data)
+        if isinstance(data, str):
+            QMessageBox.critical(self, 'Error', f'Image URL can\'t bee seen after v0.2.51, Now it is replaced with b64_json.')
+        else:
+            data = QByteArray(data).data()
+            self.getContent.emit(data)
 
     def __showResult(self, text):
         # index -1 will be read from all columns
