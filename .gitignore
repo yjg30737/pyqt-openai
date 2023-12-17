@@ -128,8 +128,8 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# For avoiding merge conflict
-./idea
+# Ignore JetBrains IDE configuration
+.idea/
 
 # pyqt_openai
 pyqt_openai/pyqt_openai.ini
