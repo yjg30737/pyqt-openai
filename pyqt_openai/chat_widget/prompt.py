@@ -3,8 +3,8 @@ import os
 from qtpy.QtCore import Qt, Signal
 from qtpy.QtWidgets import QVBoxLayout, QPushButton, QFileDialog, QToolButton, QMenu, QAction, QWidget, QHBoxLayout
 
-from pyqt_openai.chat_widget.textEditPropmtGroup import TextEditPropmtGroup
-from pyqt_openai.propmt_command_completer.commandSuggestionWidget import CommandSuggestionWidget
+from pyqt_openai.chat_widget.textEditPromptGroup import TextEditPromptGroup
+from pyqt_openai.prompt_command_completer.commandSuggestionWidget import CommandSuggestionWidget
 from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.svgToolButton import SvgToolButton
@@ -61,7 +61,7 @@ class Prompt(QWidget):
         self.__suggestionWidget = CommandSuggestionWidget()
         self.__suggestion_list = self.__suggestionWidget.getCommandList()
 
-        self.__textEditGroup = TextEditPropmtGroup()
+        self.__textEditGroup = TextEditPromptGroup()
         self.__textEditGroup.textChanged.connect(self.updateHeight)
 
         # set command suggestion
