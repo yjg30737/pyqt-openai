@@ -1,9 +1,12 @@
 import os
+from pathlib import Path
 
+from PyQt5.QtWidgets import QListWidget
 from qtpy.QtCore import Qt, Signal
 from qtpy.QtWidgets import QVBoxLayout, QPushButton, QFileDialog, QToolButton, QMenu, QAction, QWidget, QHBoxLayout
 
 from pyqt_openai.chat_widget.textEditPromptGroup import TextEditPromptGroup
+from pyqt_openai.chat_widget.uploadedFileWidget import UploadedFileWidget
 from pyqt_openai.prompt_command_completer.commandSuggestionWidget import CommandSuggestionWidget
 from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.res.language_dict import LangClass
@@ -61,6 +64,8 @@ class Prompt(QWidget):
         self.__suggestionWidget = CommandSuggestionWidget()
         self.__suggestion_list = self.__suggestionWidget.getCommandList()
 
+        self.__uploadedFileWidget = UploadedFileWidget()
+
         self.__textEditGroup = TextEditPromptGroup()
         self.__textEditGroup.textChanged.connect(self.updateHeight)
 
@@ -72,6 +77,7 @@ class Prompt(QWidget):
 
         lay = QVBoxLayout()
         lay.addWidget(self.__suggestionWidget)
+        lay.addWidget(self.__uploadedFileWidget)
         lay.addWidget(self.__textEditGroup)
         lay.setContentsMargins(0, 0, 0, 0)
         lay.setSpacing(0)
@@ -245,19 +251,24 @@ class Prompt(QWidget):
         self.__textEditGroup.setCommandEnabled(f)
 
     def __readingFiles(self):
-        filenames = QFileDialog.getOpenFileNames(self, 'Find', os.path.expanduser('~'), 'All Files (*.*)')
+        filenames = QFileDialog.getOpenFileNames(self, 'Find', os.path.expanduser('~'), 'Text Files (*.txt);;Image Files (*.jpg, *.png)')
         if filenames[0]:
             filenames = filenames[0]
-            source_context = ''
-            for filename in filenames:
-                base_filename = os.path.basename(filename)
-                source_context += f'=== {base_filename} start ==='
-                source_context += '\n'*2
-                with open(filename, 'r', encoding='utf-8') as f:
-                    source_context += f.read()
-                source_context += '\n'*2
-                source_context += f'=== {base_filename} end ==='
-                source_context += '\n'*2
-            prompt_context = f'== Source Start ==\n{source_context}== Source End =='
-
-            self.__textEditGroup.getGroup()[1].setText(prompt_context)
+            cur_file_extension = Path(filenames[0]).suffix
+            # Text
+            if cur_file_extension == '.txt':
+                source_context = ''
+                for filename in filenames:
+                    base_filename = os.path.basename(filename)
+                    source_context += f'=== {base_filename} start ==='
+                    source_context += '\n'*2
+                    with open(filename, 'r', encoding='utf-8') as f:
+                        source_context += f.read()
+                    source_context += '\n'*2
+                    source_context += f'=== {base_filename} end ==='
+                    source_context += '\n'*2
+                prompt_context = f'== Source Start ==\n{source_context}== Source End =='
+                self.__textEditGroup.getGroup()[1].setText(prompt_context)
+            # Image
+            elif cur_file_extension in ['.jpg', '.png']:
+                self.__uploadedFileWidget.addFiles(filenames)
