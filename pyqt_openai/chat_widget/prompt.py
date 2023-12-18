@@ -6,7 +6,7 @@ from qtpy.QtCore import Qt, Signal
 from qtpy.QtWidgets import QVBoxLayout, QPushButton, QFileDialog, QToolButton, QMenu, QAction, QWidget, QHBoxLayout
 
 from pyqt_openai.chat_widget.textEditPromptGroup import TextEditPromptGroup
-from pyqt_openai.chat_widget.uploadedFileWidget import UploadedFileWidget
+from pyqt_openai.chat_widget.uploadedImageFileWidget import UploadedImageFileWidget
 from pyqt_openai.prompt_command_completer.commandSuggestionWidget import CommandSuggestionWidget
 from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.res.language_dict import LangClass
@@ -64,7 +64,7 @@ class Prompt(QWidget):
         self.__suggestionWidget = CommandSuggestionWidget()
         self.__suggestion_list = self.__suggestionWidget.getCommandList()
 
-        self.__uploadedFileWidget = UploadedFileWidget()
+        self.__uploadedImageFileWidget = UploadedImageFileWidget()
 
         self.__textEditGroup = TextEditPromptGroup()
         self.__textEditGroup.textChanged.connect(self.updateHeight)
@@ -77,7 +77,7 @@ class Prompt(QWidget):
 
         lay = QVBoxLayout()
         lay.addWidget(self.__suggestionWidget)
-        lay.addWidget(self.__uploadedFileWidget)
+        lay.addWidget(self.__uploadedImageFileWidget)
         lay.addWidget(self.__textEditGroup)
         lay.setContentsMargins(0, 0, 0, 0)
         lay.setSpacing(0)
@@ -271,4 +271,7 @@ class Prompt(QWidget):
                 self.__textEditGroup.getGroup()[1].setText(prompt_context)
             # Image
             elif cur_file_extension in ['.jpg', '.png']:
-                self.__uploadedFileWidget.addFiles(filenames)
+                self.__uploadedImageFileWidget.addFiles(filenames)
+
+    def getUploadedImageFiles(self):
+        return self.__uploadedImageFileWidget.getFiles()

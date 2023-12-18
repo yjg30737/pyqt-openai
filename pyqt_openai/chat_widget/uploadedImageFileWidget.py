@@ -3,7 +3,7 @@ from qtpy.QtWidgets import QWidget, QLabel, QVBoxLayout, QListWidget, QPushButto
 from pyqt_openai.res.language_dict import LangClass
 
 
-class UploadedFileWidget(QWidget):
+class UploadedImageFileWidget(QWidget):
     def __init__(self):
         super().__init__()
         self.__initVal()
