@@ -32,6 +32,9 @@ setup(
         'openai',
         'pyperclip',
         'jinja2',
-        'llama-index'
+        'llama-index',
+        'requests',
+        'langchain',
+        'pillow',
     ]
 )

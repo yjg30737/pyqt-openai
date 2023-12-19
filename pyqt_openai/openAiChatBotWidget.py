@@ -11,7 +11,7 @@ from pyqt_openai.leftSideBar import LeftSideBar
 from pyqt_openai.notifier import NotifierWidget
 from pyqt_openai.openAiThread import OpenAIThread, LlamaOpenAIThread
 from pyqt_openai.prompt_gen_widget.promptGeneratorWidget import PromptGeneratorWidget
-from pyqt_openai.pyqt_openai_data import DB
+from pyqt_openai.pyqt_openai_data import DB, get_argument
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.right_sidebar.aiPlaygroundWidget import AIPlaygroundWidget
 from pyqt_openai.svgButton import SvgButton
@@ -186,6 +186,7 @@ class OpenAIChatBotWidget(QWidget):
 
     def __chat(self, continue_f=False):
         try:
+            # Get necessary parameters
             stream = self.__settings_ini.value('stream', type=bool)
             model = self.__settings_ini.value('model', type=str)
             system = self.__settings_ini.value('system', type=str)
@@ -196,33 +197,29 @@ class OpenAIChatBotWidget(QWidget):
             presence_penalty = self.__settings_ini.value('presence_penalty', type=float)
             use_llama_index = self.__settings_ini.value('use_llama_index', type=bool)
 
-            openai_arg = {
-                'model': model,
-                'messages': [
-                    {"role": "system", "content": system},
-                    {"role": "assistant", "content": self.__browser.getAllText()},
-                    {"role": "user", "content": self.__prompt.getContent()},
-                ],
-                'temperature': temperature,
-                'top_p': top_p,
-                'frequency_penalty': frequency_penalty,
-                'presence_penalty': presence_penalty,
-                'stream': stream,
-            }
+            # Get image files
+            images = self.__prompt.getUploadedImageFiles()
 
+            previous_text = self.__browser.getAllText()
+
+            cur_text = self.__prompt.getContent()
+
+            # Check llamaindex is available
             is_llama_available = self.__llama_class.get_directory() and use_llama_index
-            # check llamaindex is available
-            if is_llama_available:
-                del openai_arg['messages']
             use_max_tokens = self.__settings_ini.value('use_max_tokens', type=bool)
-            if use_max_tokens:
-                openai_arg['max_tokens'] = max_tokens
 
+            openai_arg = get_argument(model, system, previous_text, cur_text, temperature, top_p, frequency_penalty, presence_penalty, stream,
+                                      use_max_tokens, max_tokens,
+                                      images,
+                                      is_llama_available)
+
+            # If there is no current conversation selected on the list to the left, make a new one.
             if self.__leftSideBarWidget.isCurrentConvExists():
                 pass
             else:
                 self.__addConv()
 
+            # Conversation result information after response
             info = {
                 'model_name': openai_arg['model'],
                 'finish_reason': '',
@@ -240,6 +237,7 @@ class OpenAIChatBotWidget(QWidget):
                 query_text = self.__prompt.getContent()
             self.__browser.showLabel(query_text, True, False, info)
 
+            # Run a different thread based on whether the llama-index is enabled or not.
             if is_llama_available:
                 self.__t = LlamaOpenAIThread(self.__llama_class, openai_arg=openai_arg, query_text=query_text, info=info)
             else:
@@ -249,6 +247,10 @@ class OpenAIChatBotWidget(QWidget):
             self.__t.streamFinished.connect(self.__browser.streamFinished)
             self.__t.start()
             self.__t.finished.connect(self.__afterGenerated)
+
+            # Remove image files widget from the window
+            self.__prompt.resetUploadImageFileWidget()
+
         except Exception as e:
             QMessageBox.critical(self, "Error", str(e))
 

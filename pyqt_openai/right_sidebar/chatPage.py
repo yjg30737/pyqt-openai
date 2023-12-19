@@ -1,7 +1,7 @@
 from qtpy.QtCore import Qt, Signal, QSettings
 from qtpy.QtWidgets import QWidget, QDoubleSpinBox, QSpinBox, QFormLayout, QFrame, QSizePolicy, QComboBox, QTextEdit, QLabel, QVBoxLayout, QCheckBox, QPushButton
 
-from pyqt_openai.pyqt_openai_data import getChatModel
+from pyqt_openai.pyqt_openai_data import get_chat_model
 from pyqt_openai.res.language_dict import LangClass
 
 
@@ -63,7 +63,7 @@ class ChatPage(QWidget):
         saveSystemBtn.clicked.connect(self.__saveSystem)
 
         modelCmbBox = QComboBox()
-        modelCmbBox.addItems(getChatModel())
+        modelCmbBox.addItems(get_chat_model())
         modelCmbBox.setCurrentText(self.__model)
         modelCmbBox.currentTextChanged.connect(self.__modelChanged)
 

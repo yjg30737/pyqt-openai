@@ -14,7 +14,7 @@ class PromptGeneratorWidget(QScrollArea):
         self.__initUi()
 
     def __initUi(self):
-        propmtLbl = QLabel(LangClass.TRANSLATIONS['Prompt'])
+        promptLbl = QLabel(LangClass.TRANSLATIONS['Prompt'])
 
         propPage = PropPage()
         propPage.updated.connect(self.__textChanged)
@@ -35,7 +35,7 @@ class PromptGeneratorWidget(QScrollArea):
         copyBtn.clicked.connect(self.__copy)
 
         lay = QVBoxLayout()
-        lay.addWidget(propmtLbl)
+        lay.addWidget(promptLbl)
         lay.addWidget(promptTabWidget)
 
         topWidget = QWidget()

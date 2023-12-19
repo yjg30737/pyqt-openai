@@ -6,7 +6,7 @@ from pyqt_openai.chat_widget.textEditPrompt import TextEditPrompt
 from pyqt_openai.res.language_dict import LangClass
 
 
-class TextEditPropmtGroup(QWidget):
+class TextEditPromptGroup(QWidget):
     textChanged = Signal()
     onUpdateSuggestion = Signal()
     onSendKeySignalToSuggestion = Signal(str)
