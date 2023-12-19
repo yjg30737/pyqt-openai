@@ -1,5 +1,9 @@
+from json import JSONDecodeError
+
 import openai
 import base64
+import requests
+import json
 
 from pyqt_openai.sqlite import SqliteDatabase
 
@@ -92,7 +96,7 @@ def get_argument(model, system, previous_text, cur_text, temperature, top_p, fre
 
     # If current model is "gpt-4-1106-preview", default max token set to very low number by openai,
     # so let's set this to 4096 which is relatively better.
-    if model == 'gpt-4-1106-preview':
+    if is_gpt_vision(model):
         openai_arg['max_tokens'] = 4096
 
     if is_llama_available:
@@ -102,3 +106,36 @@ def get_argument(model, system, previous_text, cur_text, temperature, top_p, fre
 
     return openai_arg
 
+def form_response(response, info_dict):
+    response_text = response['choices'][0]['message']['content']
+    info_dict['prompt_tokens'] = response['usage']['prompt_tokens']
+    info_dict['completion_tokens'] = response['usage']['completion_tokens']
+    info_dict['total_tokens'] = response['usage']['total_tokens']
+    info_dict['finish_reason'] = response['choices'][0]['finish_reason']
+    return response_text, info_dict
+
+def get_vision_response(openai_arg, info_dict):
+    headers = {
+      "Content-Type": "application/json",
+      "Authorization": f"Bearer {OPENAI_STRUCT.api_key}"
+    }
+
+    if openai_arg['stream'] == True:
+        with requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=openai_arg,
+                           stream=True) as resp:
+            # FIXME
+            # This is very poorly handled, so i will change soon
+            try:
+                for line in resp.iter_lines():
+                    if line:
+                        yield json.loads(':'.join(line.decode('utf8').split(':')[1:]).strip())
+            except JSONDecodeError as e:
+                pass
+    else:
+        response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=openai_arg)
+        response = json.loads(response.text)
+        response_text, info_dict = form_response(response, info_dict)
+        return response_text, info_dict
+
+def is_gpt_vision(model: str):
+    return model == 'gpt-4-vision-preview'

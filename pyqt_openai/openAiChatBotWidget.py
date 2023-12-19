@@ -247,6 +247,10 @@ class OpenAIChatBotWidget(QWidget):
             self.__t.streamFinished.connect(self.__browser.streamFinished)
             self.__t.start()
             self.__t.finished.connect(self.__afterGenerated)
+
+            # Remove image files widget from the window
+            self.__prompt.resetUploadImageFileWidget()
+
         except Exception as e:
             QMessageBox.critical(self, "Error", str(e))
 

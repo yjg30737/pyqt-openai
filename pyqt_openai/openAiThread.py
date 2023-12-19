@@ -1,14 +1,11 @@
 import inspect
-import requests
 
 import openai
-
 from llama_index.response.schema import StreamingResponse
 from qtpy.QtCore import QThread, Signal
 
-from pyqt_openai.pyqt_openai_data import get_model_endpoint
-
 from pyqt_openai.pyqt_openai_data import OPENAI_STRUCT
+from pyqt_openai.pyqt_openai_data import get_model_endpoint, form_response, get_vision_response, is_gpt_vision
 
 
 class OpenAIThread(QThread):
@@ -41,7 +38,7 @@ class OpenAIThread(QThread):
                     response = openai.ChatCompletion.create(
                            **self.__openai_arg
                     )
-                    # if it is streaming, type will be generator
+                    # If it is streaming, type will be generator
                     if inspect.isgenerator(response):
                         for chunk in response:
                             if self.__stop_streaming:
@@ -57,20 +54,12 @@ class OpenAIThread(QThread):
                                     self.__info_dict['finish_reason'] = chunk['choices'][0].get('finish_reason', '')
                                     self.streamFinished.emit(self.__info_dict)
                     else:
-                        response_text = response['choices'][0]['message']['content']
-                        self.__info_dict['prompt_tokens'] = response['usage']['prompt_tokens']
-                        self.__info_dict['completion_tokens'] = response['usage']['completion_tokens']
-                        self.__info_dict['total_tokens'] = response['usage']['total_tokens']
-                        self.__info_dict['finish_reason'] = response['choices'][0]['finish_reason']
+                        response_text, self.__info_dict = form_response(response, self.__info_dict)
                         self.replyGenerated.emit(response_text, False, False, self.__info_dict)
                 elif openai.__version__ >= str(1.0):
-                    if self.__openai_arg['model'] == 'gpt-4-vision-preview':
-                        headers = {
-                          "Content-Type": "application/json",
-                          "Authorization": f"Bearer {OPENAI_STRUCT.api_key}"
-                        }
-                        response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=self.__openai_arg).json()
-                        self.replyGenerated.emit(response['choices'][0]['message']['content'], False, False, self.__info_dict)
+                    if is_gpt_vision(self.__openai_arg['model']):
+                        response_text, self.__info_dict = get_vision_response(self.__openai_arg, self.__info_dict)
+                        self.replyGenerated.emit(response_text, False, False, self.__info_dict)
                     else:
                         response = OPENAI_STRUCT.chat.completions.create(
                             **self.__openai_arg
@@ -89,11 +78,7 @@ class OpenAIThread(QThread):
                                         self.__info_dict['finish_reason'] = chunk.choices[0].finish_reason
                                         self.streamFinished.emit(self.__info_dict)
                         else:
-                            response_text = response.choices[0].message.content
-                            self.__info_dict['prompt_tokens'] = response.usage.prompt_tokens
-                            self.__info_dict['completion_tokens'] = response.usage.completion_tokens
-                            self.__info_dict['total_tokens'] = response.usage.total_tokens
-                            self.__info_dict['finish_reason'] = response.choices[0].finish_reason
+                            response_text, self.__info_dict = form_response(response, self.__info_dict)
                             self.replyGenerated.emit(response_text, False, False, self.__info_dict)
 
         except openai.error.InvalidRequestError as e:

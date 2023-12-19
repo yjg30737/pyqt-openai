@@ -275,3 +275,7 @@ class Prompt(QWidget):
 
     def getUploadedImageFiles(self):
         return self.__uploadedImageFileWidget.getFiles()
+
+    def resetUploadImageFileWidget(self):
+        self.__uploadedImageFileWidget.setVisible(False)
+        self.__uploadedImageFileWidget.clear()

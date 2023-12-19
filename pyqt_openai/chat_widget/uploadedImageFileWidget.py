@@ -6,11 +6,7 @@ from pyqt_openai.res.language_dict import LangClass
 class UploadedImageFileWidget(QWidget):
     def __init__(self):
         super().__init__()
-        self.__initVal()
         self.__initUi()
-
-    def __initVal(self):
-        self.__filenames = []
 
     def __initUi(self):
         lbl = QLabel('Uploaded Files (Only Images)')
@@ -47,10 +43,13 @@ class UploadedImageFileWidget(QWidget):
         self.__toggle()
 
     def getFiles(self):
-        return self.__filenames
+        return [self.__listWidget.item(i).text() for i in range(self.__listWidget.count())]
 
     def __delete(self):
         rows = reversed([self.__listWidget.row(item) for item in self.__listWidget.selectedItems()])
         for r in rows:
             self.__listWidget.takeItem(r)
         self.__toggle()
+
+    def clear(self):
+        self.__listWidget.clear()
