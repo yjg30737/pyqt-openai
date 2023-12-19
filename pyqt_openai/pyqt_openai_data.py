@@ -120,22 +120,24 @@ def get_vision_response(openai_arg, info_dict):
       "Authorization": f"Bearer {OPENAI_STRUCT.api_key}"
     }
 
-    if openai_arg['stream'] == True:
-        with requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=openai_arg,
-                           stream=True) as resp:
-            # FIXME
-            # This is very poorly handled, so i will change soon
-            try:
-                for line in resp.iter_lines():
-                    if line:
-                        yield json.loads(':'.join(line.decode('utf8').split(':')[1:]).strip())
-            except JSONDecodeError as e:
-                pass
-    else:
-        response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=openai_arg)
-        response = json.loads(response.text)
-        response_text, info_dict = form_response(response, info_dict)
-        return response_text, info_dict
+    # TODO
+    # Support stream
+    # Before that, i will temporarily set stream as false
+    openai_arg['stream'] = False
+    response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=openai_arg)
+    response = json.loads(response.text)
+    response_text, info_dict = form_response(response, info_dict)
+    return response_text, info_dict
+
+    # with requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=openai_arg,
+    #                    stream=True) as resp:
+    #     # try/except way to handle JSONDecodeError is not recommended, so i will change soon
+    #     try:
+    #         for line in resp.iter_lines():
+    #             if line:
+    #                 yield json.loads(':'.join(line.decode('utf8').split(':')[1:]).strip())
+    #     except JSONDecodeError as e:
+    #         pass
 
 def is_gpt_vision(model: str):
     return model == 'gpt-4-vision-preview'
