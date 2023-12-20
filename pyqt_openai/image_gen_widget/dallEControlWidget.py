@@ -123,12 +123,12 @@ class DallEControlWidget(QWidget):
         self.__numberOfImagesToCreateSpinBox.setValue(self.__number_of_images_to_create)
         self.__numberOfImagesToCreateSpinBox.valueChanged.connect(self.__numberOfImagesToCreateSpinBoxValueChanged)
 
-        self.__savePromptAsTextChkBox = QCheckBox('Save Prompt as Text')
+        self.__savePromptAsTextChkBox = QCheckBox('Save Prompt (Revised) as Text')
         self.__savePromptAsTextChkBox.setChecked(True)
         self.__savePromptAsTextChkBox.toggled.connect(self.__savePromptAsTextChkBoxToggled)
         self.__savePromptAsTextChkBox.setChecked(self.__save_prompt_as_text)
 
-        self.__showPromptOnImageChkBox = QCheckBox('Show Prompt on Image')
+        self.__showPromptOnImageChkBox = QCheckBox('Show Prompt on Image (Working)')
         self.__showPromptOnImageChkBox.setChecked(True)
         self.__showPromptOnImageChkBox.toggled.connect(self.__showPromptOnImageChkBoxToggled)
         self.__showPromptOnImageChkBox.setChecked(self.__show_prompt_on_image)
