@@ -20,7 +20,7 @@ setup(
                                       'next.svg', 'prev.svg', 'regex.svg', 'word.svg',
                                       'vertical_three_dots.svg',
                                       'add_light.svg', 'delete_light.svg']},
-    description='PyQt/PySide(Python cross-platform GUI toolkit) OpenAI Chatbot which supports more than 8 languages (you can see the list below)',
+    description='PyQt/PySide(Python cross-platform GUI toolkit) OpenAI Chatbot',
     url='https://github.com/yjg30737/pyqt-openai.git',
     long_description_content_type='text/markdown',
     long_description=long_description,
