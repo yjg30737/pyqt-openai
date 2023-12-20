@@ -43,13 +43,17 @@ And if you would like to support this project, you can click the button below to
 * [Supported Languages](#supported-languages)
 * [Requirements](#requirements)
 * [Preview and Usage](#preview-and-usage)
+  * [Overview](#overview)
+  * [Conversation](#conversation)
+  * [Prompt Generator](#prompt-generator)
+  * [Use GPT Vision](#use-gpt-vision)
+  * [Image Generation](#image-generation)
 * [How to Install](#how-to-install)
 * [Troubleshooting](#troubleshooting)
 * [Contact](#contact)
 * [Note](#note)
 * [LICENSE](#license)
 * [Disclaimer](#disclaimer)
-* [See Also](#see-also)
 
 ## Feature
 * Basically this is <b>desktop application version of ChatGPT</b> with image generation tool. 
@@ -185,6 +189,21 @@ https://github.com/yjg30737/pyqt-openai/assets/55078043/df0d3923-1fbe-4dda-af6f-
 In this preview, i pressed the keyboard shortcut of each actions(show beginning, show ending, support prompt command) to use it rather than clicking them with mouse.
 
 I made the command suggestion GUI resemble the Discord command autocomplete popup, with which a lot of people have become accustomed.
+
+### Use GPT Vision
+#### How to Use it
+1. Select "gpt-4-vision-preview"
+
+![image](https://github.com/yjg30737/pyqt-openai/assets/55078043/1d1ce632-3078-4cb7-863e-fc447b146f8a)
+
+2. Select image files from local with clicking "Upload Files"
+
+![image](https://github.com/yjg30737/pyqt-openai/assets/55078043/aef216d5-9b7c-4f22-9bc3-88c90f4d9e73)
+
+3. Ask something about images
+
+![image](https://github.com/yjg30737/pyqt-openai/assets/55078043/3ef4f091-9f5f-46b3-a160-be35215977c7)
+
 
 ### Image Generation
 
