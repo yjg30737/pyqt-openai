@@ -1,9 +1,9 @@
-from json import JSONDecodeError
+import base64
+import json
 
 import openai
-import base64
 import requests
-import json
+from openai.types.chat import ChatCompletion
 
 from pyqt_openai.sqlite import SqliteDatabase
 
@@ -107,11 +107,18 @@ def get_argument(model, system, previous_text, cur_text, temperature, top_p, fre
     return openai_arg
 
 def form_response(response, info_dict):
-    response_text = response['choices'][0]['message']['content']
-    info_dict['prompt_tokens'] = response['usage']['prompt_tokens']
-    info_dict['completion_tokens'] = response['usage']['completion_tokens']
-    info_dict['total_tokens'] = response['usage']['total_tokens']
-    info_dict['finish_reason'] = response['choices'][0]['finish_reason']
+    if isinstance(response, ChatCompletion):
+        response_text = response.choices[0].message.content
+        info_dict['prompt_tokens'] = response.usage.prompt_tokens
+        info_dict['completion_tokens'] = response.usage.completion_tokens
+        info_dict['total_tokens'] = response.usage.total_tokens
+        info_dict['finish_reason'] = response.choices[0].finish_reason
+    else:
+        response_text = response['choices'][0]['message']['content']
+        info_dict['prompt_tokens'] = response['usage']['prompt_tokens']
+        info_dict['completion_tokens'] = response['usage']['completion_tokens']
+        info_dict['total_tokens'] = response['usage']['total_tokens']
+        info_dict['finish_reason'] = response['choices'][0]['finish_reason']
     return response_text, info_dict
 
 def get_vision_response(openai_arg, info_dict):
