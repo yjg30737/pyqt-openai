@@ -53,7 +53,7 @@ class FileListWidget(QWidget):
         self.setLayout(lay)
 
     def __setDir(self):
-        directory = QFileDialog.getExistingDirectory(self, LangClass.TRANSLATIONS['Select Directory'])
+        directory = QFileDialog.getExistingDirectory(self, LangClass.TRANSLATIONS['Select Directory'], os.path.expanduser('~'), QFileDialog.ShowDirsOnly)
         ext_lst = ['.txt']
         if directory:
             self.__listWidget.clear()

@@ -12,7 +12,7 @@ PyQt/PySide(Python cross-platform GUI toolkit) OpenAI Chatbot which supports mor
 
 <b>This supports Windows, MacOS, Linux.</b>
 
-You can use OpenAI models(GPT4, DALL-E, etc.) with PyQt as a chatbot.
+You can use OpenAI models(GPT4, DALL-E, GPT4 Vision, etc.) with PyQt as a chatbot.
 
 The major advantage of this package is that you don't need to know other language aside from Python.
 
@@ -52,36 +52,37 @@ And if you would like to support this project, you can click the button below to
 * [See Also](#see-also)
 
 ## Feature
-* basically this is <b>desktop application version of ChatGPT</b> with image generation tool. 
-  * text streaming (enable by default, you can disable it)
+* Basically this is <b>desktop application version of ChatGPT</b> with image generation tool. 
+  * Text streaming (enable by default, you can disable it)
   * AI remembers past conversation
-  * support copy button
-  * able to stop response in the middle of text generation
-* <b>conversation management</b>
-  * add & delete conversations
-  * save conversations - SQlite db, text files compressed file, html files compressed file (both are zip)
-  * rename conversation
+  * Support copy button
+  * Able to stop response in the middle of text generation
+* <b>Conversation management</b>
+  * Add & delete conversations
+  * Save conversations - SQlite db, text files compressed file, html files compressed file (both are zip)
+  * Rename conversation
   * everything above is saved in an SQLite database file named conv.db.
-* support controlling parameters(temperature, top_p, etc) just like openai playground
-* able to see the reason why stream is finished
-* support token count (only for non-streaming response)
-* support latest model such as <b>GPT-4-1106-preview</b>
-* support <b>prompt generator</b> (manageable, autosaved in database) 
-* support <b>slash commands</b>
-* support beginning and ending part of the prompt
-* you can <b>run this in background</b> application
+* Support controlling parameters(temperature, top_p, etc) just like openai playground
+* Able to see the reason why stream is finished
+* Support token count (only for non-streaming response)
+* Support latest model such as <b>GPT-4-1106-preview</b>
+* Support <b>prompt generator</b> (manageable, autosaved in database) 
+* Support <b>slash commands</b>
+* Support beginning and ending part of the prompt
+* You can <b>run this in background</b> application
   * notification will pop up when response is generated
-* you can make window stack on top or control its transparency
-* image generation (DALL-E3)
-  * support saving generated image to local
-  * support continue generation
-  * notification when task completes
-* you can copy and download the image directly as well. just hover the mouse cursor over the image.
-* you can <b>fine-tune</b> openai with llama-index.
-* support text-based file uploading
-* support searching title and content in the conversation
-* support "find text" feature (match word, case-sensitive, regex, etc.)
-* support customizing feature (homepage, user and AI profile image) 
+* You can make window stack on top or control its transparency
+* Image generation (DALL-E3)
+  * Support saving generated image to local
+  * Support continue generation
+  * Notification when task completes
+* You can copy and download the image directly as well. just hover the mouse cursor over the image.
+* You can <b>fine-tune</b> openai with llama-index.
+* Support text(*.txt), image(*.png, *.jpg) file uploading
+  * You can send uploaded image files to GPT 4 Vision.  
+* Support searching title and content in the conversation
+* Support "find text" feature (match word, case-sensitive, regex, etc.)
+* Support customizing feature (homepage, user and AI profile image) 
 
 ## Supported Languages
 * English

@@ -1,9 +1,8 @@
 import os
 
-from qtpy.QtCore import QThread
-from qtpy.QtCore import Signal, QSettings
+from qtpy.QtCore import QThread, Qt, Signal, QSettings
 from qtpy.QtWidgets import QMessageBox, QWidget, QCheckBox, QSpinBox, QGroupBox, QVBoxLayout, QPushButton, QComboBox, QPlainTextEdit, \
-    QFormLayout, QLabel, QFrame
+    QFormLayout, QLabel, QFrame, QRadioButton
 
 from pyqt_openai.customizeDialog import FindPathWidget
 from pyqt_openai.notifier import NotifierWidget
@@ -79,6 +78,10 @@ class DallEControlWidget(QWidget):
             self.__settings_ini.setValue('response_format', 'b64_json')
         if not self.__settings_ini.contains('save_prompt_as_text'):
             self.__settings_ini.setValue('save_prompt_as_text', True)
+        if not self.__settings_ini.contains('show_prompt_on_image'):
+            self.__settings_ini.setValue('show_prompt_on_image', False)
+        if not self.__settings_ini.contains('prompt_type'):
+            self.__settings_ini.setValue('prompt_type', 1)
 
         self.__quality = self.__settings_ini.value('quality', type=str)
         self.__n = self.__settings_ini.value('n', type=int)
@@ -90,10 +93,15 @@ class DallEControlWidget(QWidget):
         self.__style = self.__settings_ini.value('style', type=str)
         self.__response_format = self.__settings_ini.value('response_format', type=str)
         self.__save_prompt_as_text = self.__settings_ini.value('save_prompt_as_text', type=bool)
+        self.__show_prompt_on_image = self.__settings_ini.value('show_prompt_on_image', type=bool)
+        self.__prompt_type = self.__settings_ini.value('prompt_type', type=int)
 
         self.__settings_ini.endGroup()
 
     def __initUi(self):
+        self.__numberOfImagesToCreateSpinBox = QSpinBox()
+        self.__promptTypeToShowRadioGrpBox = QGroupBox('Prompt Type To Show')
+
         # generic settings
         self.__findPathWidget = FindPathWidget()
         self.__findPathWidget.setAsDirectory(True)
@@ -102,21 +110,44 @@ class DallEControlWidget(QWidget):
         self.__findPathWidget.added.connect(self.__setSaveDirectory)
 
         self.__saveChkBox = QCheckBox('Save After Submit')
+        self.__saveChkBox.setChecked(True)
+        self.__saveChkBox.toggled.connect(self.__saveChkBoxToggled)
         self.__saveChkBox.setChecked(self.__is_save)
-        self.__saveChkBox.stateChanged.connect(self.__saveChkBoxStateChanged)
 
         self.__continueGenerationChkBox = QCheckBox('Continue Image Generation')
+        self.__continueGenerationChkBox.setChecked(True)
+        self.__continueGenerationChkBox.toggled.connect(self.__continueGenerationChkBoxToggled)
         self.__continueGenerationChkBox.setChecked(self.__continue_generation)
-        self.__continueGenerationChkBox.stateChanged.connect(self.__continueGenerationChkBoxStateChanged)
 
-        self.__numberOfImagesToCreateSpinBox = QSpinBox()
         self.__numberOfImagesToCreateSpinBox.setRange(2, 1000)
         self.__numberOfImagesToCreateSpinBox.setValue(self.__number_of_images_to_create)
         self.__numberOfImagesToCreateSpinBox.valueChanged.connect(self.__numberOfImagesToCreateSpinBoxValueChanged)
 
-        self.__savePromptAsTextChkBox = QCheckBox('Save Prompt as Text')
+        self.__savePromptAsTextChkBox = QCheckBox('Save Prompt (Revised) as Text')
+        self.__savePromptAsTextChkBox.setChecked(True)
+        self.__savePromptAsTextChkBox.toggled.connect(self.__savePromptAsTextChkBoxToggled)
         self.__savePromptAsTextChkBox.setChecked(self.__save_prompt_as_text)
-        self.__savePromptAsTextChkBox.stateChanged.connect(self.__savePromptAsTextChkBoxStateChanged)
+
+        self.__showPromptOnImageChkBox = QCheckBox('Show Prompt on Image (Working)')
+        self.__showPromptOnImageChkBox.setChecked(True)
+        self.__showPromptOnImageChkBox.toggled.connect(self.__showPromptOnImageChkBoxToggled)
+        self.__showPromptOnImageChkBox.setChecked(self.__show_prompt_on_image)
+
+        self.__normalOne = QRadioButton('Normal')
+        self.__revisedOne = QRadioButton('Revised')
+
+        if self.__prompt_type == 1:
+            self.__normalOne.setChecked(True)
+        else:
+            self.__revisedOne.setChecked(True)
+
+        self.__normalOne.toggled.connect(self.__promptTypeToggled)
+        self.__revisedOne.toggled.connect(self.__promptTypeToggled)
+
+        lay = QVBoxLayout()
+        lay.addWidget(self.__normalOne)
+        lay.addWidget(self.__revisedOne)
+        self.__promptTypeToShowRadioGrpBox.setLayout(lay)
 
         self.__generalGrpBox = QGroupBox()
         self.__generalGrpBox.setTitle('General')
@@ -127,6 +158,8 @@ class DallEControlWidget(QWidget):
         lay.addWidget(self.__continueGenerationChkBox)
         lay.addWidget(self.__numberOfImagesToCreateSpinBox)
         lay.addWidget(self.__savePromptAsTextChkBox)
+        lay.addWidget(self.__showPromptOnImageChkBox)
+        lay.addWidget(self.__promptTypeToShowRadioGrpBox)
         self.__generalGrpBox.setLayout(lay)
 
         # parameter settings
@@ -208,15 +241,13 @@ class DallEControlWidget(QWidget):
         self.__settings_ini.setValue('directory', self.__directory)
         self.__settings_ini.endGroup()
 
-    def __saveChkBoxStateChanged(self, state):
-        f = state == 2
+    def __saveChkBoxToggled(self, f):
         self.__is_save = f
         self.__settings_ini.beginGroup('DALLE')
         self.__settings_ini.setValue('is_save', self.__is_save)
         self.__settings_ini.endGroup()
 
-    def __continueGenerationChkBoxStateChanged(self, state):
-        f = state == 2
+    def __continueGenerationChkBoxToggled(self, f):
         self.__continue_generation = f
         self.__settings_ini.beginGroup('DALLE')
         self.__settings_ini.setValue('continue_generation', self.__continue_generation)
@@ -229,10 +260,30 @@ class DallEControlWidget(QWidget):
         self.__settings_ini.setValue('number_of_images_to_create', self.__number_of_images_to_create)
         self.__settings_ini.endGroup()
 
-    def __savePromptAsTextChkBoxStateChanged(self, value):
-        self.__save_prompt_as_text = value
+    def __savePromptAsTextChkBoxToggled(self, f):
+        self.__save_prompt_as_text = f
         self.__settings_ini.beginGroup('DALLE')
         self.__settings_ini.setValue('save_prompt_as_text', self.__save_prompt_as_text)
+        self.__settings_ini.endGroup()
+        
+    def __showPromptOnImageChkBoxToggled(self, f):
+        self.__show_prompt_on_image = f
+        self.__settings_ini.beginGroup('DALLE')
+        self.__settings_ini.setValue('show_prompt_on_image', self.__show_prompt_on_image)
+        self.__settings_ini.endGroup()
+        self.__promptTypeToShowRadioGrpBox.setEnabled(self.__show_prompt_on_image)
+
+    def __promptTypeToggled(self, f):
+        sender = self.sender()
+        self.__settings_ini.beginGroup('DALLE')
+        # Prompt type to show on the image
+        # 1 is normal, 2 is revised
+        if sender == self.__normalOne:
+            self.__prompt_type = 1
+            self.__settings_ini.setValue('prompt_type', self.__prompt_type)
+        elif sender == self.__revisedOne:
+            self.__prompt_type = 2
+            self.__settings_ini.setValue('prompt_type', self.__prompt_type)
         self.__settings_ini.endGroup()
 
     def __submit(self):
