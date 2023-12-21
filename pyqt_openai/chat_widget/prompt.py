@@ -1,7 +1,6 @@
 import os
 from pathlib import Path
 
-from PyQt5.QtWidgets import QListWidget
 from qtpy.QtCore import Qt, Signal
 from qtpy.QtWidgets import QVBoxLayout, QPushButton, QFileDialog, QToolButton, QMenu, QAction, QWidget, QHBoxLayout
 
