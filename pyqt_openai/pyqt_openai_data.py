@@ -19,7 +19,7 @@ if openai.__version__ >= str(1.0):
 
 # https://platform.openai.com/docs/models/model-endpoint-compatibility
 ENDPOINT_DICT = {
-    '/v1/chat/completions': ['gpt-4', 'gpt-4-1106-preview', 'gpt-4-vision-preview',
+    '/v1/chat/completions': ['gpt-4-0125-preview', 'gpt-4', 'gpt-4-1106-preview', 'gpt-4-vision-preview',
                              'gpt-3.5-turbo', 'gpt-3.5-turbo-16k'],
     '/v1/completions': [
         'text-davinci-003', 'text-davinci-002', 'text-curie-001', 'text-babbage-001', 'text-ada-001', 'davinci',
