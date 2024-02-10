@@ -35,6 +35,9 @@ If you have any questions or you want to make AI related software with PyQt or P
 And if you would like to support this project, you can click the button below to make a donation. Your contribution will greatly assist various projects, including this one!
 
 <a href="https://www.buymeacoffee.com/yjg30737" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
+<a href="https://paypal.me/yjg30737">
+  <img src="https://github.com/yjg30737/yjg30737/assets/55078043/3366b496-3e1e-491c-841e-19871da55c40" alt="Donate with PayPal" style="height: 60px; width: 170px" />
+</a>
 
 <b>This officially supports openai>=1.0.0 and llama-index 0.9.2, but it also supports old version of openai(below 1.0.0). If there is an error related to old version of openai, you have to either upgrade openai and llama-index to recent version or find the matching version. But i highly recommend that use recent version if you meet the error.</b> 
 
