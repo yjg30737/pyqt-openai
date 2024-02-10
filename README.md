@@ -18,7 +18,7 @@ The major advantage of this package is that you don't need to know other languag
 
 If you want to study openai with Python-only good old desktop software, this is for you.
 
-The OpenAI model this package uses is the <a href="https://platform.openai.com/docs/models/gpt-3-5">gpt-3.5-turbo</a> model by default. You can use gpt-4 as well.
+The OpenAI model this package uses is the <a href="https://platform.openai.com/docs/models/gpt-3-5">gpt-3.5-turbo</a> model by default. You can use latest gpt-4 model as well.
 
 Image generation feature(DALL-E3) is also available.
 
@@ -72,7 +72,7 @@ And if you would like to support this project, you can click the button below to
 * Support controlling parameters(temperature, top_p, etc) just like openai playground
 * Able to see the reason why stream is finished
 * Support token count (only for non-streaming response)
-* Support latest model such as <b>GPT-4-1106-preview</b>
+* Support latest model such as <b>GPT-4-0125-preview</b>
 * Support <b>prompt generator</b> (manageable, autosaved in database) 
 * Support <b>slash commands</b>
 * Support beginning and ending part of the prompt
