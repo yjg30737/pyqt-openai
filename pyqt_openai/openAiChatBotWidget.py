@@ -252,7 +252,7 @@ class OpenAIChatBotWidget(QWidget):
         pass
 
     def __toggleWidgetWhileChatting(self, f, continue_f=False):
-        self.__lineEdit.setEnabled(f)
+        self.__lineEdit.setExecuteEnabled(f)
         self.__leftSideBarWidget.setEnabled(f)
         self.__prompt.activateDuringGeneratingWidget(not f)
         # TODO
