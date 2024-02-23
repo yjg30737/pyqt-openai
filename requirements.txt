@@ -5,7 +5,4 @@ aiohttp
 openai
 pyperclip
 jinja2
-
 requests
-langchain
-pillow
