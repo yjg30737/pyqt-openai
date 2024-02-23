@@ -18,7 +18,7 @@ The major advantage of this package is that you don't need to know other languag
 
 If you want to study openai with Python-only good old desktop software, this is for you.
 
-The OpenAI model this package uses is the <a href="https://platform.openai.com/docs/models/gpt-3-5">gpt-3.5-turbo</a> model by default. You can use gpt-4 as well.
+The OpenAI model this package uses is the <a href="https://platform.openai.com/docs/models/gpt-3-5">gpt-3.5-turbo</a> model by default. You can use latest gpt-4 model as well.
 
 Image generation feature(DALL-E3) is also available.
 
@@ -35,6 +35,9 @@ If you have any questions or you want to make AI related software with PyQt or P
 And if you would like to support this project, you can click the button below to make a donation. Your contribution will greatly assist various projects, including this one!
 
 <a href="https://www.buymeacoffee.com/yjg30737" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
+<a href="https://paypal.me/yjg30737">
+  <img src="https://github.com/yjg30737/yjg30737/assets/55078043/3366b496-3e1e-491c-841e-19871da55c40" alt="Donate with PayPal" style="height: 60px; width: 170px" />
+</a>
 
 <b>This officially supports openai>=1.0.0 and llama-index 0.9.2, but it also supports old version of openai(below 1.0.0). If there is an error related to old version of openai, you have to either upgrade openai and llama-index to recent version or find the matching version. But i highly recommend that use recent version if you meet the error.</b> 
 
@@ -69,7 +72,7 @@ And if you would like to support this project, you can click the button below to
 * Support controlling parameters(temperature, top_p, etc) just like openai playground
 * Able to see the reason why stream is finished
 * Support token count (only for non-streaming response)
-* Support latest model such as <b>GPT-4-1106-preview</b>
+* Support latest model such as <b>GPT-4-0125-preview</b>
 * Support <b>prompt generator</b> (manageable, autosaved in database) 
 * Support <b>slash commands</b>
 * Support beginning and ending part of the prompt

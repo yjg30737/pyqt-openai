@@ -19,7 +19,7 @@ if openai.__version__ >= str(1.0):
 
 # https://platform.openai.com/docs/models/model-endpoint-compatibility
 ENDPOINT_DICT = {
-    '/v1/chat/completions': ['gpt-4', 'gpt-4-1106-preview', 'gpt-4-vision-preview',
+    '/v1/chat/completions': ['gpt-4-0125-preview', 'gpt-4', 'gpt-4-1106-preview', 'gpt-4-vision-preview',
                              'gpt-3.5-turbo', 'gpt-3.5-turbo-16k'],
     '/v1/completions': [
         'text-davinci-003', 'text-davinci-002', 'text-curie-001', 'text-babbage-001', 'text-ada-001', 'davinci',
@@ -56,8 +56,7 @@ def get_image_url_from_local(image_path):
 
 def get_argument(model, system, previous_text, cur_text, temperature, top_p, frequency_penalty, presence_penalty, stream,
                  use_max_tokens, max_tokens,
-                 images,
-                 is_llama_available):
+                 images):
     # Form argument
     openai_arg = {
         'model': model,
@@ -98,9 +97,6 @@ def get_argument(model, system, previous_text, cur_text, temperature, top_p, fre
     # so let's set this to 4096 which is relatively better.
     if is_gpt_vision(model):
         openai_arg['max_tokens'] = 4096
-
-    if is_llama_available:
-        del openai_arg['messages']
     if use_max_tokens:
         openai_arg['max_tokens'] = max_tokens
 
