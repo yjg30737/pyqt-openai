@@ -26,8 +26,6 @@ This is using <b>sqlite</b> as a database.
 
 You can select the model and change each parameters of openai from the right side bar.
 
-Also you can combine openai with llama-index feature to make gpt model answer your question based on information you had provided!
-
 An internet connection is required.
 
 If you have any questions or you want to make AI related software with PyQt or PySide, feel free to join Discord server of pyqt-openai.
@@ -39,7 +37,7 @@ And if you would like to support this project, you can click the button below to
   <img src="https://github.com/yjg30737/yjg30737/assets/55078043/3366b496-3e1e-491c-841e-19871da55c40" alt="Donate with PayPal" style="height: 60px; width: 170px" />
 </a>
 
-<b>This officially supports openai>=1.0.0 and llama-index 0.9.2, but it also supports old version of openai(below 1.0.0). If there is an error related to old version of openai, you have to either upgrade openai and llama-index to recent version or find the matching version. But i highly recommend that use recent version if you meet the error.</b> 
+<b>This officially supports openai>=1.0.0, but it also supports old version of openai(below 1.0.0). If there is an error related to old version of openai, you have to upgrade openai. But i highly recommend that use recent version if you meet the error.</b> 
 
 ## Table of Contents
 * [Feature](#feature)
@@ -84,7 +82,6 @@ And if you would like to support this project, you can click the button below to
   * Support continue generation
   * Notification when task completes
 * You can copy and download the image directly as well. just hover the mouse cursor over the image.
-* You can <b>fine-tune</b> openai with llama-index.
 * Support text(*.txt), image(*.png, *.jpg) file uploading
   * You can send uploaded image files to GPT 4 Vision.  
 * Support searching title and content in the conversation
@@ -113,10 +110,7 @@ If you have any additional languages you would like to add, please feel free to 
 * aiohttp - for openai dependency 
 * pyperclip - to copy prompt text from prompt generator
 * jinja2 - for saving the conversation with html file
-* llama-index - to fine-tune gpt with llamaindex
 * requests - for getting response from web
-* langchain - for connecting llama-index with gpt
-* pillow - for preventing ModuleNotFoundError from llama-index
 
 You can install these requirements with only one line command "pip install -r requirements.txt". Just see "How to Install" section below.
 
@@ -132,11 +126,6 @@ It is not listed in requirements.txt, but you can use **PyQt6** if you want.
 You can change screen between text chatbot and image generating tool screen.
 
 ![image](https://github.com/yjg30737/pyqt-openai/assets/55078043/78260aaf-2626-4267-9309-07655cab2061)
-
-### Using LlamaIndex
-![image](https://github.com/yjg30737/pyqt-openai/assets/55078043/e161b551-91dc-4c4d-8a33-28179d72fb64)
-
-If you want to use this with your personal chatbot based on data you've given, then you can check the llamaindex checkbox and go to the tab, select the directory which includes .txt files containing the data.
 
 ### Conversation
 #### Preview 1
