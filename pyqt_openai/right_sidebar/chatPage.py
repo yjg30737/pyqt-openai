@@ -106,11 +106,6 @@ class ChatPage(QWidget):
         streamChkBox.toggled.connect(self.__streamChecked)
         streamChkBox.setText(LangClass.TRANSLATIONS['Stream'])
 
-        llamaChkBox = QCheckBox()
-        llamaChkBox.setChecked(self.__use_llama_index)
-        llamaChkBox.toggled.connect(self.__use_llama_indexChecked)
-        llamaChkBox.setText(LangClass.TRANSLATIONS['Use LlamaIndex'])
-
         sep = QFrame()
         sep.setFrameShape(QFrame.HLine)
         sep.setFrameShadow(QFrame.Sunken)
@@ -140,7 +135,6 @@ class ChatPage(QWidget):
         lay.addWidget(modelCmbBox)
         lay.addWidget(streamChkBox)
         lay.addWidget(useMaxTokenChkBox)
-        lay.addWidget(llamaChkBox)
         lay.addWidget(sep)
         lay.addWidget(paramWidget)
         lay.setAlignment(Qt.AlignTop)
@@ -158,11 +152,6 @@ class ChatPage(QWidget):
     def __streamChecked(self, f):
         self.__stream = f
         self.__settings_ini.setValue('stream', f)
-
-    def __use_llama_indexChecked(self, f):
-        self.__use_llama_index = f
-        self.__settings_ini.setValue('use_llama_index', f)
-        self.onToggleLlama.emit(f)
 
     def __useMaxChecked(self, f):
         self.__use_max_tokens = f
