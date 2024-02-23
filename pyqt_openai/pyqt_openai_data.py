@@ -9,13 +9,14 @@ from pyqt_openai.sqlite import SqliteDatabase
 
 DB = SqliteDatabase()
 
-# if openai version is below 1.0, this will be empty and not being used
-OPENAI_STRUCT = ''
-if openai.__version__ >= str(1.0):
-    from openai import OpenAI
+# if openai version is below 1.0, exit the program and suggest to upgrade
+if openai.__version__ < str(1.0):
+    raise Exception('Please upgrade openai package to version 1.0 or higher')
 
-    # initialize
-    OPENAI_STRUCT = OpenAI(api_key='')
+from openai import OpenAI
+
+# initialize
+OPENAI_STRUCT = OpenAI(api_key='')
 
 # https://platform.openai.com/docs/models/model-endpoint-compatibility
 ENDPOINT_DICT = {
@@ -54,16 +55,19 @@ def get_image_url_from_local(image_path):
     base64_image = encode_image(image_path)
     return f'data:image/jpeg;base64,{base64_image}'
 
-def get_argument(model, system, previous_text, cur_text, temperature, top_p, frequency_penalty, presence_penalty, stream,
+def get_message_obj(role, content):
+    return {"role": role, "content": content}
+
+def get_argument(model, system, messages, cur_text, temperature, top_p, frequency_penalty, presence_penalty, stream,
                  use_max_tokens, max_tokens,
                  images):
+    system_obj = get_message_obj("system", system)
+    messages = [system_obj] + messages
+
     # Form argument
     openai_arg = {
         'model': model,
-        'messages': [
-            {"role": "system", "content": system},
-            {"role": "assistant", "content": previous_text},
-        ],
+        'messages': messages,
         'temperature': temperature,
         'top_p': top_p,
         'frequency_penalty': frequency_penalty,

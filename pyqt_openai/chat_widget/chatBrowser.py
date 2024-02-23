@@ -5,6 +5,7 @@ from qtpy.QtWidgets import QScrollArea, QVBoxLayout, QWidget, QLabel
 
 from pyqt_openai.chat_widget.aiChatUnit import AIChatUnit
 from pyqt_openai.chat_widget.userChatUnit import UserChatUnit
+from pyqt_openai.pyqt_openai_data import get_message_obj
 from pyqt_openai.util.script import is_valid_regex
 
 
@@ -95,19 +96,21 @@ class ChatBrowser(QScrollArea):
             self.verticalScrollBar().setSliderPosition(self.verticalScrollBar().maximum())
         return super().event(e)
 
-    def getAllText(self):
+    def getMessages(self):
         all_text_lst = []
         lay = self.widget().layout()
         if lay:
             for i in range(lay.count()):
                 if lay.itemAt(i) and lay.itemAt(i).widget():
                     widget = lay.itemAt(i).widget()
-                    if isinstance(widget, AIChatUnit):
-                        all_text_lst.append(f'Answer: {widget.text()}')
-                    elif isinstance(widget, UserChatUnit):
-                        all_text_lst.append(f'Question: {widget.text()}')
 
-        return '\n'.join(all_text_lst)
+                    # Form message object for each label
+                    if isinstance(widget, AIChatUnit):
+                        all_text_lst.append(get_message_obj("assistant", widget.text()))
+                    elif isinstance(widget, UserChatUnit):
+                        all_text_lst.append(get_message_obj("user", widget.text()))
+
+        return all_text_lst
 
     def getLastResponse(self):
         lay = self.widget().layout()

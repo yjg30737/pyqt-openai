@@ -190,13 +190,13 @@ class OpenAIChatBotWidget(QWidget):
             # Get image files
             images = self.__prompt.getUploadedImageFiles()
 
-            previous_text = self.__browser.getAllText()
+            messages = self.__browser.getMessages()
 
             cur_text = self.__prompt.getContent()
 
             use_max_tokens = self.__settings_ini.value('use_max_tokens', type=bool)
 
-            openai_arg = get_argument(model, system, previous_text, cur_text, temperature, top_p, frequency_penalty, presence_penalty, stream,
+            openai_arg = get_argument(model, system, messages, cur_text, temperature, top_p, frequency_penalty, presence_penalty, stream,
                                       use_max_tokens, max_tokens,
                                       images,
                                       )
