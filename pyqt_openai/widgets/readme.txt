@@ -1,0 +1,1 @@
+This directory contains widget scripts which are used commonly in the app.

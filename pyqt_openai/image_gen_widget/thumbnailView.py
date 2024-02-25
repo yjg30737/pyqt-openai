@@ -6,7 +6,7 @@ from qtpy.QtWidgets import QGraphicsScene, QGraphicsPixmapItem, QGraphicsView, Q
     QFileDialog
 
 from pyqt_openai.res.language_dict import LangClass
-from pyqt_openai.svgButton import SvgButton
+from pyqt_openai.widgets.svgButton import SvgButton
 
 
 class ThumbnailView(QGraphicsView):

@@ -1,5 +1,6 @@
 import base64
 import json
+import os.path
 
 import openai
 import requests
@@ -17,6 +18,8 @@ from openai import OpenAI
 
 # initialize
 OPENAI_STRUCT = OpenAI(api_key='')
+
+ROOT_DIR = os.path.dirname(__file__)
 
 # https://platform.openai.com/docs/models/model-endpoint-compatibility
 ENDPOINT_DICT = {
@@ -148,3 +151,5 @@ def get_vision_response(openai_arg, info_dict):
 
 def is_gpt_vision(model: str):
     return model == 'gpt-4-vision-preview'
+
+

@@ -1,0 +1,27 @@
+@import "../var/variables";
+@import "../ico/icons";
+
+QLabel#searchIconLabel
+{
+    background-image: url($search);
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+QWidget#searchBarParent
+{
+    padding: 5px;
+}
+
+QWidget#searchBar
+{
+    background: $widgetcolor;
+    border: 1px solid $bordercolor;
+}
+
+QLineEdit#searchBarLineEdit
+{
+	background: transparent;
+	color: $textcolor;
+	border: none;
+}

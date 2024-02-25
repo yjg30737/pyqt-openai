@@ -1,0 +1,13 @@
+// default theme
+$bgcolor: #555555;
+$widgetcolor: darken($bgcolor, 10);
+$altwidgetcolor: lighten($widgetcolor, 18);
+$textcolor: #DDDDDD;
+$hovercolor: lighten($widgetcolor, 6);
+$bordercolor: lighten($widgetcolor, 20);
+$selectcolor: darken($widgetcolor, 6);
+$disabledcolor: #AAAAAA;
+$textwidgetcolor: darken($widgetcolor, 15);
+$scrollhandlecolor: lighten($widgetcolor, 30);
+$splitterhandlecolor: darken($widgetcolor, 10);
+$fontattr: 14pt "Arial";

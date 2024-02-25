@@ -1,0 +1,12 @@
+$bgcolor: #D4D4D4;
+$widgetcolor: darken($bgcolor, 10);
+$altwidgetcolor: darken($widgetcolor, 18);
+$textcolor: #222222;
+$hovercolor: lighten($widgetcolor, 6);
+$bordercolor: darken($widgetcolor, 20);
+$selectcolor: darken($widgetcolor, 6);
+$disabledcolor: #767676;
+$textwidgetcolor: lighten($widgetcolor, 12);
+$scrollhandlecolor: darken($widgetcolor, 30);
+$splitterhandlecolor: darken($widgetcolor, 10);
+$fontattr: 14pt "Arial";

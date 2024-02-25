@@ -1,0 +1,26 @@
+@import "../var/variables";
+
+QPushButton, QToolButton
+{
+border:0;
+background:transparent;
+padding:2px;
+}
+
+QPushButton:hover, QToolButton:hover
+{
+background-color:$hovercolor;
+border-radius: 2px;
+}
+
+QPushButton:pressed, QToolButton:pressed
+{
+background-color:$selectcolor;
+border-radius: 2px;
+}
+
+QPushButton:checked, QToolButton:checked
+{
+background-color: $selectcolor;
+border: none;
+}

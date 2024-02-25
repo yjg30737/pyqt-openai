@@ -23,7 +23,7 @@ class NotifierWidget(QWidget):
 
         closeBtn = QPushButton()
         closeBtn.clicked.connect(self.close)
-        closeBtn.setIcon(QIcon('ico/close.svg'))
+        closeBtn.setIcon(QIcon('../ico/close.svg'))
 
         lay = QHBoxLayout()
         lay.setContentsMargins(0, 0, 0, 0)

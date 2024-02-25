@@ -1,49 +1,10 @@
 from qtpy.QtCore import Qt, QSettings
-from qtpy.QtGui import QPixmap
 from qtpy.QtWidgets import QDialog, QFrame, QPushButton, QHBoxLayout, QVBoxLayout, QWidget, QFormLayout
-from qtpy.QtWidgets import QGraphicsScene, QGraphicsView
 
 from pyqt_openai.circleProfileImage import RoundedImage
-from pyqt_openai.findPathWidget import FindPathWidget
+from pyqt_openai.widgets.findPathWidget import FindPathWidget
 from pyqt_openai.res.language_dict import LangClass
-
-
-class SingleImageGraphicsView(QGraphicsView):
-    def __init__(self):
-        super().__init__()
-        self.__aspectRatioMode = Qt.KeepAspectRatio
-        self.__initVal()
-
-    def __initVal(self):
-        self._scene = QGraphicsScene()
-        self._p = QPixmap()
-        self._item = ''
-
-    def setFilename(self, filename: str):
-        if filename == '':
-            pass
-        else:
-            self._p = QPixmap(filename)
-            self._setPixmap(self._p)
-
-    def setPixmap(self, p):
-        self._setPixmap(p)
-
-    def _setPixmap(self, p):
-        self._p = p
-        self._scene = QGraphicsScene()
-        self._item = self._scene.addPixmap(self._p)
-        self.setScene(self._scene)
-        self.fitInView(self._item, self.__aspectRatioMode)
-
-    def setAspectRatioMode(self, mode):
-        self.__aspectRatioMode = mode
-
-    def resizeEvent(self, e):
-        if self._item:
-            self.fitInView(self._item, self.__aspectRatioMode)
-        return super().resizeEvent(e)
-
+from pyqt_openai.widgets.imageView import ImageView
 
 
 class CustomizeDialog(QDialog):
@@ -53,7 +14,7 @@ class CustomizeDialog(QDialog):
         self.__initUi()
 
     def __initVal(self):
-        self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.IniFormat)
+        self.__settings_ini = QSettings('../pyqt_openai.ini', QSettings.IniFormat)
 
         if not self.__settings_ini.contains('background_image'):
             self.__settings_ini.setValue('background_image', '')
@@ -70,7 +31,7 @@ class CustomizeDialog(QDialog):
         self.setWindowTitle(LangClass.TRANSLATIONS['Customize (working)'])
         self.setWindowFlags(Qt.Window | Qt.WindowCloseButtonHint)
 
-        self.__homePageGraphicsView = SingleImageGraphicsView()
+        self.__homePageGraphicsView = ImageView()
         self.__homePageGraphicsView.setFilename(self.__background_image)
 
         self.__userImage = RoundedImage()

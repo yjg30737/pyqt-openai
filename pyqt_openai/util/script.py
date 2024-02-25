@@ -8,8 +8,6 @@ from pathlib import Path
 
 from jinja2 import Template
 
-from pyqt_openai.notifier import NotifierWidget
-
 
 def get_generic_ext_out_of_qt_ext(text):
     pattern = r'\((\*\.(.+))\)'

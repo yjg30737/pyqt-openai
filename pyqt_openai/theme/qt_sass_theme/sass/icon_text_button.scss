@@ -1,0 +1,36 @@
+@import "../var/variables";
+
+QPushButton, QToolButton
+{
+	border-width:1px;
+	border-radius: 0.5em;
+    border-style: solid;
+	border-color: $bordercolor;
+	min-width: 5em;
+	min-height: 1em;
+	padding: 6px;
+	background-color: $widgetcolor;
+	color: $textcolor;
+}
+
+QPushButton:hover, QToolButton:hover
+{
+background-color:$hovercolor;
+border-radius: 10px;
+}
+
+QPushButton:pressed, QToolButton:pressed
+{
+background-color:$selectcolor;
+border-radius: 10px;
+}
+
+QPushButton:checked, QToolButton:checked
+{
+border: none;
+}
+
+QPushButton:disabled, QToolButton:disabled
+{
+color: $disabledcolor;
+}
