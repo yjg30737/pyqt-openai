@@ -1,12 +1,12 @@
 import os, math, colorsys, posixpath
 
-from PyQt5.QtCore import QPoint, Qt, pyqtSignal
-from PyQt5.QtWidgets import QWidget, QLabel
+from qtpy.QtCore import QPoint, Qt, Signal
+from qtpy.QtWidgets import QWidget, QLabel
 
 
 class ColorHueBarWidget(QWidget):
-    hueChanged = pyqtSignal(int)
-    hueChangedByEditor = pyqtSignal(int)
+    hueChanged = Signal(int)
+    hueChangedByEditor = Signal(int)
 
     def __init__(self, color):
         super().__init__()

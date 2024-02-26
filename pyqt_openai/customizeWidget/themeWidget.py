@@ -1,12 +1,13 @@
-from PyQt5.QtGui import QFont, QColor
-from PyQt5.QtWidgets import QWidget, QHBoxLayout, QPushButton, QSpinBox, QVBoxLayout, QFrame, QLabel
+from PyQt5.QtWidgets import QGroupBox
+from qtpy.QtGui import QFont, QColor
+from qtpy.QtWidgets import QWidget, QVBoxLayout
 
-from theme.qt_sass_theme import QtSassTheme
-from widgets.pyqt.pyqt_color_picker import ColorPickerWidget
-from widgets.pyqt.pyqt_font_dialog.fontWidget import FontWidget
+from pyqt_openai.theme.qt_sass_theme.qtSassTheme import QtSassTheme
+from pyqt_openai.widgets.pyqt_color_picker import ColorPickerWidget
+from pyqt_openai.widgets.pyqt_font_dialog.fontWidget import FontWidget
 
 
-class RightWidget(QWidget):
+class ThemeWidget(QWidget):
     def __init__(self):
         super().__init__()
         self.__initVal()
@@ -19,33 +20,54 @@ class RightWidget(QWidget):
         self.__widgetToControl = ''
 
     def __initUi(self):
+        # TODO translation
+        themeGroupBox = QGroupBox()
+        themeGroupBox.setTitle('Theme')
+
         lay = QVBoxLayout()
-        fontWidget = FontWidget()
-        fontWidget.fontChanged.connect(self.__fontChanged)
-        fontWidget.layout().setContentsMargins(0, 0, 0, 0)
-        self.__currentFont = fontWidget.getFont()
+        self.__fontWidget = FontWidget()
+        self.__fontWidget.fontChanged.connect(self.__fontChanged)
+        self.__fontWidget.layout().setContentsMargins(0, 0, 0, 0)
+        self.__currentFont = self.__fontWidget.getFont()
 
         self.__colorPicker = ColorPickerWidget(orientation='vertical')
         self.__colorPicker.colorChanged.connect(self.__colorChanged)
         self.__currentColor = self.__colorPicker.getCurrentColor().name()
 
-        lay.addWidget(fontWidget)
+        lay.addWidget(self.__fontWidget)
         lay.addWidget(self.__colorPicker)
-        lay.setContentsMargins(0, 0, 0, 0)
+
+        themeGroupBox.setLayout(lay)
+
+        lay = QVBoxLayout()
+        lay.addWidget(themeGroupBox)
+
         self.setLayout(lay)
 
-    def __setSampleStyle(self):
-        self.__theme.getThemeFiles(theme=self.__currentColor, font=self.__currentFont)
-        self.__theme.setThemeFiles(main_window=self.__widgetToControl)
+    def getColor(self):
+        return self.__currentColor
 
-    def setWidgetToControl(self, widget: QWidget):
-        self.__widgetToControl = widget
-        self.__setSampleStyle()
+    def getFont(self):
+        return self.__currentFont
+
+    def setColor(self, color):
+        self.__currentColor = color
+
+    def setFont(self, font):
+        self.__currentFont = font
+
+    # def __setSampleStyle(self):
+    #     self.__theme.getThemeFiles(theme=self.__currentColor, font=self.__currentFont)
+    #     self.__theme.setThemeFiles(main_window=self.__widgetToControl)
+
+    # def setWidgetToControl(self, widget: QWidget):
+    #     self.__widgetToControl = widget
+    #     self.__setSampleStyle()
 
     def __fontChanged(self, font: QFont):
         self.__currentFont = font
-        self.__setSampleStyle()
+        # self.__setSampleStyle()
 
     def __colorChanged(self, color: QColor):
         self.__currentColor = color.name()
-        self.__setSampleStyle()
+        # self.__setSampleStyle()

@@ -1,16 +1,16 @@
 import colorsys
 
-from PyQt5.QtGui import QColor
-from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtWidgets import QWidget, QHBoxLayout, QGridLayout
+from qtpy.QtGui import QColor
+from qtpy.QtCore import Qt, Signal
+from qtpy.QtWidgets import QWidget, QHBoxLayout, QGridLayout
 
-from widgets.pyqt.pyqt_color_picker.colorHueBarWidget import ColorHueBarWidget
-from widgets.pyqt.pyqt_color_picker.colorEditorWidget import ColorEditorWidget
-from widgets.pyqt.pyqt_color_picker.colorSquareWidget import ColorSquareWidget
+from pyqt_openai.widgets.pyqt_color_picker.colorHueBarWidget import ColorHueBarWidget
+from pyqt_openai.widgets.pyqt_color_picker.colorEditorWidget import ColorEditorWidget
+from pyqt_openai.widgets.pyqt_color_picker.colorSquareWidget import ColorSquareWidget
 
 
 class ColorPickerWidget(QWidget):
-    colorChanged = pyqtSignal(QColor)
+    colorChanged = Signal(QColor)
 
     def __init__(self, color=QColor(255, 255, 255), orientation='horizontal'):
         super().__init__()

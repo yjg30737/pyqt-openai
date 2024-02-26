@@ -1,10 +1,10 @@
-from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtGui import QColor, QFont
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QFormLayout, QSpinBox, QLineEdit
+from qtpy.QtCore import Qt, Signal
+from qtpy.QtGui import QColor, QFont
+from qtpy.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QFormLayout, QSpinBox, QLineEdit
 
 
 class ColorEditorWidget(QWidget):
-    colorChanged = pyqtSignal(QColor)
+    colorChanged = Signal(QColor)
 
     def __init__(self, color, orientation):
         super().__init__()

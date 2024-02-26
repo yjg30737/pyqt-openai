@@ -1,11 +1,11 @@
-from PyQt5.QtCore import pyqtSignal, Qt
-from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QGroupBox, QCheckBox, QGridLayout
+from qtpy.QtCore import Signal, Qt
+from qtpy.QtGui import QFont
+from qtpy.QtWidgets import QWidget, QVBoxLayout, QGroupBox, QCheckBox, QGridLayout
 
 
 class StyleWidget(QWidget):
-    boldChecked = pyqtSignal(int)
-    italicChecked = pyqtSignal(int)
+    boldChecked = Signal(int)
+    italicChecked = Signal(int)
 
     def __init__(self, font: QFont = QFont('Arial', 10)):
         super().__init__()

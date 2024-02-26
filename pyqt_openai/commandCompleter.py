@@ -1,4 +1,4 @@
-from qtpy.QtCore import Qt, pyqtSignal
+from qtpy.QtCore import Qt, Signal
 from qtpy.QtWidgets import QTableWidget, QHeaderView, QScrollArea, QStyledItemDelegate, \
     QStyle, QTableWidgetItem
 
@@ -15,7 +15,7 @@ class CommandCompleterTableWidgetDelegate(QStyledItemDelegate):
 
 
 class CommandCompleterTableWidget(QTableWidget):
-    showText = pyqtSignal(str)
+    showText = Signal(str)
 
     def __init__(self):
         super().__init__()
@@ -78,7 +78,7 @@ class CommandCompleterTableWidget(QTableWidget):
 
 
 class CommandCompleter(QScrollArea):
-    showText = pyqtSignal(str)
+    showText = Signal(str)
 
     def __init__(self):
         super().__init__()

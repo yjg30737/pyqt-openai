@@ -1,8 +1,8 @@
-from PyQt5.QtGui import QColor
-from PyQt5.QtWidgets import QDialog, QHBoxLayout, QPushButton, QWidget, QVBoxLayout, QFrame
-from PyQt5.QtCore import Qt
+from qtpy.QtGui import QColor
+from qtpy.QtWidgets import QDialog, QHBoxLayout, QPushButton, QWidget, QVBoxLayout, QFrame
+from qtpy.QtCore import Qt
 
-from widgets.pyqt.pyqt_color_picker.colorPickerWidget import ColorPickerWidget
+from pyqt_openai.widgets.pyqt_color_picker.colorPickerWidget import ColorPickerWidget
 
 
 class ColorPickerDialog(QDialog):

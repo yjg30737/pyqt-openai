@@ -1,7 +1,7 @@
-from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QDialog, \
+from qtpy.QtGui import QFont
+from qtpy.QtWidgets import QDialog, \
     QVBoxLayout, QWidget, QHBoxLayout, QPushButton
-from PyQt5.QtCore import Qt
+from qtpy.QtCore import Qt
 
 from .fontWidget import FontWidget
 

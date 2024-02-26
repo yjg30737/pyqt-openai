@@ -1,6 +1,6 @@
-from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QLabel, QSizePolicy, \
+from qtpy.QtCore import Signal
+from qtpy.QtGui import QFont
+from qtpy.QtWidgets import QLabel, QSizePolicy, \
     QTextEdit, QVBoxLayout, QWidget, QHBoxLayout
 
 from .fontItemWidget import FontItemWidget
@@ -9,7 +9,7 @@ from .styleWidget import StyleWidget
 
 
 class FontWidget(QWidget):
-    fontChanged = pyqtSignal(QFont)
+    fontChanged = Signal(QFont)
 
     def __init__(self, font: QFont = QFont('Arial', 10)):
         super().__init__()

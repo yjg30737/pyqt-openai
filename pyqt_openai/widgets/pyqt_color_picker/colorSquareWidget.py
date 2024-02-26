@@ -1,12 +1,12 @@
 import os, math, colorsys, posixpath
 
-from PyQt5.QtWidgets import QWidget, QGridLayout, QLabel
+from qtpy.QtWidgets import QWidget, QGridLayout, QLabel
 
-from PyQt5.QtCore import Qt, QPoint, pyqtSignal, QRect
+from qtpy.QtCore import Qt, QPoint, Signal, QRect
 
 
 class ColorSquareWidget(QWidget):
-    colorChanged = pyqtSignal(float, float, float)
+    colorChanged = Signal(float, float, float)
 
     def __init__(self, color):
         super().__init__()

@@ -1,10 +1,10 @@
-from PyQt5.QtCore import pyqtSignal, Qt
-from PyQt5.QtGui import QFontDatabase, QFont
-from PyQt5.QtWidgets import QListWidget, QWidget, QVBoxLayout, QLabel, QLineEdit, QListWidgetItem
+from qtpy.QtCore import Signal, Qt
+from qtpy.QtGui import QFontDatabase, QFont
+from qtpy.QtWidgets import QListWidget, QWidget, QVBoxLayout, QLabel, QLineEdit, QListWidgetItem
 
 
 class SizeWidget(QWidget):
-    sizeItemChanged = pyqtSignal(int)
+    sizeItemChanged = Signal(int)
 
     def __init__(self, font: QFont = QFont('Arial', 10)):
         super().__init__()

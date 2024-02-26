@@ -1,7 +1,9 @@
+from qtpy.QtWidgets import QSplitter, QSizePolicy
 from qtpy.QtCore import Qt, QSettings
 from qtpy.QtWidgets import QDialog, QFrame, QPushButton, QHBoxLayout, QVBoxLayout, QWidget, QFormLayout
 
 from pyqt_openai.circleProfileImage import RoundedImage
+from pyqt_openai.customizeWidget.themeWidget import ThemeWidget
 from pyqt_openai.widgets.findPathWidget import FindPathWidget
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.widgets.imageView import ImageView
@@ -22,10 +24,16 @@ class CustomizeDialog(QDialog):
             self.__settings_ini.setValue('user_image', 'ico/user.svg')
         if not self.__settings_ini.contains('ai_image'):
             self.__settings_ini.setValue('ai_image', 'ico/openai.svg')
+        if not self.__settings_ini.contains('theme_color'):
+            self.__settings_ini.setValue('theme_color', 'ico/openai.svg')
+        if not self.__settings_ini.contains('theme_font'):
+            self.__settings_ini.setValue('theme_font', 'ico/openai.svg')
 
         self.__background_image = self.__settings_ini.value('background_image', type=str)
         self.__user_image = self.__settings_ini.value('user_image', type=str)
         self.__ai_image = self.__settings_ini.value('ai_image', type=str)
+        self.__theme_color = self.__settings_ini.value('color', type=str)
+        self.__theme_font = self.__settings_ini.value('font', type=str)
 
     def __initUi(self):
         self.setWindowTitle(LangClass.TRANSLATIONS['Customize (working)'])
@@ -77,8 +85,8 @@ class CustomizeDialog(QDialog):
         lay.addRow(LangClass.TRANSLATIONS['User Image'], userWidget)
         lay.addRow(LangClass.TRANSLATIONS['AI Image'], aiWidget)
 
-        self.__topWidget = QWidget()
-        self.__topWidget.setLayout(lay)
+        self.__profileWidget = QWidget()
+        self.__profileWidget.setLayout(lay)
 
         sep = QFrame()
         sep.setFrameShape(QFrame.HLine)
@@ -100,14 +108,36 @@ class CustomizeDialog(QDialog):
         okCancelWidget.setLayout(lay)
 
         lay = QVBoxLayout()
-        lay.addWidget(self.__topWidget)
+        lay.addWidget(self.__profileWidget)
+
+        leftWidget = QWidget()
+        leftWidget.setLayout(lay)
+
+        # TODO
+        self.__rightWidget = ThemeWidget()
+        # set the color
+        # set the font
+
+        self.__splitter = QSplitter()
+        self.__splitter.addWidget(leftWidget)
+        self.__splitter.addWidget(self.__rightWidget)
+        self.__splitter.setHandleWidth(1)
+        self.__splitter.setChildrenCollapsible(False)
+        self.__splitter.setSizes([500, 500])
+        self.__splitter.setStyleSheet(
+            "QSplitterHandle {background-color: lightgray;}")
+        self.__splitter.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
+
+        lay = QVBoxLayout()
+        lay.addWidget(self.__splitter)
         lay.addWidget(sep)
         lay.addWidget(okCancelWidget)
-
         self.setLayout(lay)
 
     def __accept(self):
         self.__settings_ini.setValue('background_image', self.__findPathWidget1.getFileName())
         self.__settings_ini.setValue('user_image', self.__findPathWidget2.getFileName())
         self.__settings_ini.setValue('ai_image', self.__findPathWidget3.getFileName())
+        self.__settings_ini.setValue('theme_color', self.__rightWidget.getColor())
+        self.__settings_ini.setValue('theme_font', self.__rightWidget.getFont())
         self.accept()
