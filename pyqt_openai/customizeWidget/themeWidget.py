@@ -2,7 +2,6 @@ from PyQt5.QtWidgets import QGroupBox
 from qtpy.QtGui import QFont, QColor
 from qtpy.QtWidgets import QWidget, QVBoxLayout
 
-from pyqt_openai.theme.qt_sass_theme.qtSassTheme import QtSassTheme
 from pyqt_openai.widgets.pyqt_color_picker import ColorPickerWidget
 from pyqt_openai.widgets.pyqt_font_dialog.fontWidget import FontWidget
 
@@ -14,7 +13,6 @@ class ThemeWidget(QWidget):
         self.__initUi()
 
     def __initVal(self):
-        self.__theme = QtSassTheme()
         self.__currentColor = ''
         self.__currentFont = ''
         self.__widgetToControl = ''
