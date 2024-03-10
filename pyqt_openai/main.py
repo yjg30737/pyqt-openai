@@ -44,7 +44,6 @@ if os.environ['QT_API'] == 'pyqt5':
     QCoreApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
     QGuiApplication.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
 
-QApplication.setFont(QFont('Arial', 12))
 QApplication.setWindowIcon(QIcon('ico/openai.svg'))
 
 

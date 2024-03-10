@@ -1,4 +1,4 @@
-import os
+import os, sys
 import webbrowser
 
 from qtpy.QtCore import Qt, QSettings
@@ -236,7 +236,17 @@ class OpenAIChatBotWidget(QWidget):
             self.__prompt.resetUploadImageFileWidget()
 
         except Exception as e:
-            QMessageBox.critical(self, "Error", str(e))
+            # get the line of error and filename
+            exc_type, exc_obj, tb = sys.exc_info()
+            f = tb.tb_frame
+            lineno = tb.tb_lineno
+            filename = f.f_code.co_filename
+
+            QMessageBox.critical(self, "Error", f'''
+            {str(e)},
+            'File: {filename}',
+            'Line: {lineno}'
+            ''')
 
     def __stopResponse(self):
         self.__t.stop_streaming()
@@ -284,7 +294,7 @@ class OpenAIChatBotWidget(QWidget):
     def __addConv(self):
         cur_id = DB.insertConv(LangClass.TRANSLATIONS['New Chat'])
         self.__browser.resetChatWidget(cur_id)
-        self.__leftSideBarWidget.addToList(cur_id)
+        self.__leftSideBarWidget.addToTable(cur_id)
         self.__lineEdit.setFocus()
 
     def __updateConv(self, id, title=None):
