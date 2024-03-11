@@ -1,16 +1,16 @@
-from pyqt_openai.convListWidget import ConvListWidget
+from pyqt_openai.convTableWidget import ConvTableWidget
 from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.widgets.searchBar import SearchBar
 from pyqt_openai.widgets.svgButton import SvgButton
 from qtpy.QtCore import Signal, Qt
 from qtpy.QtWidgets import QWidget, QComboBox, QCheckBox, QVBoxLayout, QHBoxLayout, QSpacerItem, QSizePolicy, \
-    QListWidgetItem
+    QTableWidgetItem
 
 
 class LeftSideBar(QWidget):
     added = Signal()
-    changed = Signal(QListWidgetItem)
+    changed = Signal(QTableWidgetItem)
     deleted = Signal(list)
     convUpdated = Signal(int, str)
     export = Signal(list)
@@ -76,14 +76,14 @@ class LeftSideBar(QWidget):
         topWidget.setLayout(lay)
         lay.setContentsMargins(0, 0, 0, 0)
 
-        self.__convListWidget = ConvListWidget()
-        self.__convListWidget.changed.connect(self.changed)
-        self.__convListWidget.checked.connect(self.__checked)
-        self.__convListWidget.convUpdated.connect(self.convUpdated)
+        self.__convTableWidget = ConvTableWidget()
+        self.__convTableWidget.changed.connect(self.changed)
+        self.__convTableWidget.checked.connect(self.__checked)
+        self.__convTableWidget.convUpdated.connect(self.convUpdated)
 
         lay = QVBoxLayout()
         lay.addWidget(topWidget)
-        lay.addWidget(self.__convListWidget)
+        lay.addWidget(self.__convTableWidget)
 
         self.setLayout(lay)
 
@@ -98,41 +98,41 @@ class LeftSideBar(QWidget):
         f = len(ids) > 0
         self.__toggleButton(f)
 
-    def addToList(self, id):
-        self.__convListWidget.addConv(LangClass.TRANSLATIONS['New Chat'], id)
-        self.__convListWidget.setCurrentRow(0)
+    def addToTable(self, id):
+        self.__convTableWidget.addConv(LangClass.TRANSLATIONS['New Chat'], id)
+        self.__convTableWidget.setCurrentItem(self.__convTableWidget.item(0, 0))
 
     def isCurrentConvExists(self):
-        return self.__convListWidget.count() > 0 and self.__convListWidget.currentItem()
+        return self.__convTableWidget.rowCount() > 0 and self.__convTableWidget.currentItem()
 
     def __deleteClicked(self):
         # get the ID of row, not actual index (because list is in a stacked form)
-        rows = self.__convListWidget.getCheckedRowsIds()
-        self.__convListWidget.removeCheckedRows()
+        rows = self.__convTableWidget.getCheckedRowsIds()
+        self.__convTableWidget.removeCheckedRows()
         self.deleted.emit(rows)
         self.__allCheckBox.setChecked(False)
 
     def __saveClicked(self):
-        self.export.emit(self.__convListWidget.getCheckedRowsIds())
+        self.export.emit(self.__convTableWidget.getCheckedRowsIds())
 
     def __stateChanged(self, f):
-        self.__convListWidget.toggleState(f)
+        self.__convTableWidget.toggleState(f)
         self.__toggleButton(f)
 
     def __search(self, text):
         # title
         if self.__searchOptionCmbBox.currentText() == LangClass.TRANSLATIONS['Title']:
-            for i in range(self.__convListWidget.count()):
-                item = self.__convListWidget.item(i)
+            for i in range(self.__convTableWidget.rowCount()):
+                item = self.__convTableWidget.item(i)
                 if item:
-                    widget = self.__convListWidget.itemWidget(item)
+                    widget = self.__convTableWidget.itemWidget(item)
                     item.setHidden(False if text.lower() in widget.text().lower() else True)
         # content
         elif self.__searchOptionCmbBox.currentText() == LangClass.TRANSLATIONS['Content']:
             convs = DB.selectAllContentOfConv()
             db_id_real_id_dict = dict()
-            for i in range(self.__convListWidget.count()):
-                db_id_real_id_dict[self.__convListWidget.item(i).data(Qt.UserRole)] = self.__convListWidget.item(i)
+            for i in range(self.__convTableWidget.rowCount()):
+                db_id_real_id_dict[self.__convTableWidget.item(i).data(Qt.UserRole)] = self.__convTableWidget.item(i)
             for conv in convs:
                 i = conv[0]
                 each_content_arr = list(filter(lambda x: x.find(text) != -1, [_['conv'] for _ in conv[1]]))
@@ -148,6 +148,6 @@ class LeftSideBar(QWidget):
             conv_lst = DB.selectAllConv()
             for conv in conv_lst:
                 id, title = conv[0], conv[1]
-                self.__convListWidget.addConv(title, id)
+                self.__convTableWidget.addConv(title, id)
         except Exception as e:
             print(e)

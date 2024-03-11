@@ -1,1 +1,0 @@
-from theme.qt_sass_theme.qtSassTheme import QtSassTheme
