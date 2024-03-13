@@ -14,7 +14,7 @@ sys.path.insert(0, project_root)
 sys.path.insert(0, os.getcwd())  # Add the current directory as well
 
 # for testing pyside6
-os.environ['QT_API'] = 'pyside6'
+# os.environ['QT_API'] = 'pyside6'
 
 # for testing pyqt6
 # os.environ['QT_API'] = 'pyqt6'
@@ -35,6 +35,8 @@ from pyqt_openai.openAiChatBotWidget import OpenAIChatBotWidget
 os.environ['OPENAI_API_KEY'] = ''
 
 from pyqt_openai.pyqt_openai_data import OPENAI_STRUCT
+
+from pyqt_openai.theme.script import apply_theme_in_runtime
 
 
 # HighDPI support
@@ -370,4 +372,7 @@ if __name__ == "__main__":
     app.setQuitOnLastWindowClosed(False)
     w = MainWindow()
     w.show()
+    settings = QSettings('pyqt_openai.ini', QSettings.IniFormat)
+    if settings.contains('theme'):
+        apply_theme_in_runtime(settings.value('theme', type=str), QApplication.instance())
     sys.exit(app.exec())

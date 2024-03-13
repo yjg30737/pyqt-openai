@@ -15,7 +15,7 @@ class CustomizeDialog(QDialog):
         self.__initUi()
 
     def __initVal(self):
-        self.__settings_ini = QSettings('../pyqt_openai.ini', QSettings.IniFormat)
+        self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.IniFormat)
 
         if not self.__settings_ini.contains('background_image'):
             self.__settings_ini.setValue('background_image', '')
