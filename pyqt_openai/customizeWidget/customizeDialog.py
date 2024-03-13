@@ -1,9 +1,10 @@
+from qtpy.QtCore import Qt, QSettings
+from qtpy.QtWidgets import QApplication, QComboBox, QSpinBox, QDialog, QFrame, QPushButton, QHBoxLayout, QVBoxLayout, QWidget, QFormLayout
+
 from pyqt_openai.circleProfileImage import RoundedImage
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.widgets.findPathWidget import FindPathWidget
 from pyqt_openai.widgets.imageView import ImageView
-from qtpy.QtCore import Qt, QSettings
-from qtpy.QtWidgets import QApplication, QComboBox, QDialog, QFrame, QPushButton, QHBoxLayout, QVBoxLayout, QWidget, QFormLayout
 
 from pyqt_openai.theme.script import THEME_DATA, apply_theme_in_runtime
 
@@ -25,11 +26,14 @@ class CustomizeDialog(QDialog):
             self.__settings_ini.setValue('ai_image', 'ico/openai.svg')
         if not self.__settings_ini.contains('theme'):
             self.__settings_ini.setValue('theme', list(THEME_DATA.keys())[0])
+        if not self.__settings_ini.contains('font_size'):
+            self.__settings_ini.setValue('font_size', 12)
 
         self.__background_image = self.__settings_ini.value('background_image', type=str)
         self.__user_image = self.__settings_ini.value('user_image', type=str)
         self.__ai_image = self.__settings_ini.value('ai_image', type=str)
         self.__theme = self.__settings_ini.value('theme', type=str)
+        self.__font_size = self.__settings_ini.value('font_size', type=int)
 
     def __initUi(self):
         self.setWindowTitle(LangClass.TRANSLATIONS['Customize (working)'])
@@ -80,11 +84,15 @@ class CustomizeDialog(QDialog):
         self.__materialCmbBox.addItems(list(THEME_DATA.keys()))
         self.__materialCmbBox.setCurrentText(self.__theme)
 
+        self.__fontSizeSpinBox = QSpinBox()
+        self.__fontSizeSpinBox.setValue(self.__font_size)
+
         lay = QFormLayout()
         lay.addRow(LangClass.TRANSLATIONS['Home Image'], homePageWidget)
         lay.addRow(LangClass.TRANSLATIONS['User Image'], userWidget)
         lay.addRow(LangClass.TRANSLATIONS['AI Image'], aiWidget)
         lay.addRow('Theme', self.__materialCmbBox)
+        lay.addRow('Font Size', self.__fontSizeSpinBox)
 
         self.__profileWidget = QWidget()
         self.__profileWidget.setLayout(lay)
@@ -125,5 +133,6 @@ class CustomizeDialog(QDialog):
         self.__settings_ini.setValue('user_image', self.__findPathWidget2.getFileName())
         self.__settings_ini.setValue('ai_image', self.__findPathWidget3.getFileName())
         self.__settings_ini.setValue('theme', self.__materialCmbBox.currentText())
-        apply_theme_in_runtime(self.__materialCmbBox.currentText(), QApplication.instance())
+        self.__settings_ini.setValue('font_size', self.__fontSizeSpinBox.value())
+        apply_theme_in_runtime(self.__materialCmbBox.currentText(), QApplication.instance(), font_size=self.__fontSizeSpinBox.value())
         self.accept()

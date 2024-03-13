@@ -90,8 +90,6 @@ class MainWindow(QMainWindow):
             self.__apiCheckPreviewLbl.hide()
 
         self.setCentralWidget(self.__mainWidget)
-        self.resize(1024, 768)
-
     def __setActions(self):
         # menu action
         self.__exitAction = QAction(LangClass.TRANSLATIONS['Exit'], self)
@@ -374,5 +372,5 @@ if __name__ == "__main__":
     w.show()
     settings = QSettings('pyqt_openai.ini', QSettings.IniFormat)
     if settings.contains('theme'):
-        apply_theme_in_runtime(settings.value('theme', type=str), QApplication.instance())
+        apply_theme_in_runtime(settings.value('theme', type=str), QApplication.instance(), settings.value('font_size', type=int))
     sys.exit(app.exec())
