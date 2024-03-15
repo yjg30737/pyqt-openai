@@ -120,19 +120,19 @@ class LeftSideBar(QWidget):
         self.__toggleButton(f)
 
     def __search(self, text):
+        # TODO : search by content - Change this to QSqlModel
         # title
         if self.__searchOptionCmbBox.currentText() == LangClass.TRANSLATIONS['Title']:
             for i in range(self.__convTableWidget.rowCount()):
-                item = self.__convTableWidget.item(i)
+                item = self.__convTableWidget.item(i, 0)
                 if item:
-                    widget = self.__convTableWidget.itemWidget(item)
-                    item.setHidden(False if text.lower() in widget.text().lower() else True)
+                    item.setHidden(False if text.lower() in item.text().lower() else True)
         # content
         elif self.__searchOptionCmbBox.currentText() == LangClass.TRANSLATIONS['Content']:
             convs = DB.selectAllContentOfConv()
             db_id_real_id_dict = dict()
             for i in range(self.__convTableWidget.rowCount()):
-                db_id_real_id_dict[self.__convTableWidget.item(i).data(Qt.UserRole)] = self.__convTableWidget.item(i)
+                db_id_real_id_dict[self.__convTableWidget.item(i, 0).data(Qt.UserRole)] = self.__convTableWidget.item(i, 0)
             for conv in convs:
                 i = conv[0]
                 each_content_arr = list(filter(lambda x: x.find(text) != -1, [_['conv'] for _ in conv[1]]))

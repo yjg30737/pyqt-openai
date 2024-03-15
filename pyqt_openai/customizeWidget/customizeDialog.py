@@ -1,5 +1,5 @@
 from qtpy.QtCore import Qt, QSettings
-from qtpy.QtWidgets import QApplication, QComboBox, QSpinBox, QDialog, QFrame, QPushButton, QHBoxLayout, QVBoxLayout, QWidget, QFormLayout
+from qtpy.QtWidgets import QApplication, QLabel, QComboBox, QSpinBox, QDialog, QFrame, QPushButton, QHBoxLayout, QVBoxLayout, QWidget, QFormLayout
 
 from pyqt_openai.circleProfileImage import RoundedImage
 from pyqt_openai.res.language_dict import LangClass
@@ -87,11 +87,14 @@ class CustomizeDialog(QDialog):
         self.__fontSizeSpinBox = QSpinBox()
         self.__fontSizeSpinBox.setValue(self.__font_size)
 
+        themeLbl = QLabel('Theme (Not Recommended)')
+        themeLbl.setToolTip('Changing theme in runtime is not recommended. It may cause unexpected behavior.')
+
         lay = QFormLayout()
         lay.addRow(LangClass.TRANSLATIONS['Home Image'], homePageWidget)
         lay.addRow(LangClass.TRANSLATIONS['User Image'], userWidget)
         lay.addRow(LangClass.TRANSLATIONS['AI Image'], aiWidget)
-        lay.addRow('Theme', self.__materialCmbBox)
+        lay.addRow(themeLbl, self.__materialCmbBox)
         lay.addRow('Font Size', self.__fontSizeSpinBox)
 
         self.__profileWidget = QWidget()

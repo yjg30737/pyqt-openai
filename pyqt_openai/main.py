@@ -98,9 +98,6 @@ class MainWindow(QMainWindow):
         self.__aboutAction = QAction(LangClass.TRANSLATIONS['About...'], self)
         self.__aboutAction.triggered.connect(self.__showAboutDialog)
 
-        self.__buyMeCoffeeAction = QAction('Buy me a coffee!', self)
-        self.__buyMeCoffeeAction.triggered.connect(self.__buyMeCoffee)
-
         # toolbar action
         self.__chooseAiAction = QWidgetAction(self)
         self.__chooseAiCmbBox = QComboBox()
@@ -215,7 +212,6 @@ class MainWindow(QMainWindow):
         menubar.addMenu(helpMenu)
 
         helpMenu.addAction(self.__aboutAction)
-        helpMenu.addAction(self.__buyMeCoffeeAction)
 
     def __setTrayMenu(self):
         # background app
@@ -311,9 +307,6 @@ class MainWindow(QMainWindow):
         aboutDialog = AboutDialog()
         aboutDialog.exec()
 
-    def __buyMeCoffee(self):
-        webbrowser.open('https://www.buymeacoffee.com/yjg30737')
-
     def __stackToggle(self, f):
         if f:
             self.setWindowFlags(self.windowFlags() | Qt.WindowStaysOnTopHint)
@@ -371,6 +364,10 @@ if __name__ == "__main__":
     w = MainWindow()
     w.show()
     settings = QSettings('pyqt_openai.ini', QSettings.IniFormat)
+    # Get default font size if there is no font size in the settings
+    font_size = 12
+    if settings.contains('font_size'):
+        font_size = settings.value('font_size', type=int)
     if settings.contains('theme'):
-        apply_theme_in_runtime(settings.value('theme', type=str), QApplication.instance(), settings.value('font_size', type=int))
+        apply_theme_in_runtime(settings.value('theme', type=str), QApplication.instance(), font_size)
     sys.exit(app.exec())
