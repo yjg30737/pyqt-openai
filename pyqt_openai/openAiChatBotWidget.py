@@ -15,7 +15,7 @@ from pyqt_openai.pyqt_openai_data import DB, get_argument
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.right_sidebar.aiPlaygroundWidget import AIPlaygroundWidget
 from pyqt_openai.svgButton import SvgButton
-from pyqt_openai.util.llamapage_script import GPTLLamaIndexClass
+from pyqt_openai.util.llamapage_script import GPTLLamaIndexWrapper
 from pyqt_openai.util.script import open_directory, get_generic_ext_out_of_qt_ext, conv_unit_to_txt, conv_unit_to_html, \
     add_file_to_zip
 
@@ -31,7 +31,7 @@ class OpenAIChatBotWidget(QWidget):
         self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.IniFormat)
 
         # llamaindex
-        self.__llama_class = GPTLLamaIndexClass()
+        self.__llama_class = GPTLLamaIndexWrapper()
 
     def __initUi(self):
         self.__leftSideBarWidget = LeftSideBar()

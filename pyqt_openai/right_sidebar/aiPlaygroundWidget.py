@@ -27,9 +27,10 @@ class AIPlaygroundWidget(QScrollArea):
             self.__settings_ini.setValue('TAB_IDX', str(self.__cur_idx))
 
         if self.__settings_ini.contains('use_llama_index'):
-            self.__settings_ini.setValue('use_llama_index', False)
-
-        self.__use_llama_index = self.__settings_ini.value('use_llama_index', type=bool)
+            self.__use_llama_index = self.__settings_ini.value('use_llama_index', type=bool)
+        else:
+            self.__use_llama_index = False
+            self.__settings_ini.setValue('use_llama_index', self.__use_llama_index)
 
     def __initUi(self):
         tabWidget = QTabWidget()
@@ -41,8 +42,7 @@ class AIPlaygroundWidget(QScrollArea):
         tabWidget.addTab(chatPage, LangClass.TRANSLATIONS['Chat'], )
         tabWidget.addTab(self.__llamaPage, 'LlamaIndex', )
         tabWidget.currentChanged.connect(self.__tabChanged)
-        use_llama_index_tab_f = self.__settings_ini.value('use_llama_index', type=bool)
-        tabWidget.setTabEnabled(1, use_llama_index_tab_f)
+        tabWidget.setTabEnabled(1, self.__use_llama_index)
         tabWidget.setCurrentIndex(self.__cur_idx)
 
         partial_func = partial(tabWidget.setTabEnabled, 1)

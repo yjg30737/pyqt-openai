@@ -1,7 +1,5 @@
 import inspect
-
 import openai
-from llama_index.response.schema import StreamingResponse
 from qtpy.QtCore import QThread, Signal
 
 from pyqt_openai.pyqt_openai_data import OPENAI_STRUCT
@@ -103,19 +101,18 @@ class LlamaOpenAIThread(QThread):
 
     def run(self):
         try:
-            self.__llama_idx_instance.set_openai_arg(**self.__openai_arg)
             resp = self.__llama_idx_instance.get_response(self.__query_text)
-            f = isinstance(resp, StreamingResponse)
-            if f:
-                for response_text in resp.response_gen:
-                    if self.__stop_streaming:
-                        break
-                    else:
-                        self.__info_dict['finish_reason'] = 'stopped by user'
-                        self.replyGenerated.emit(response_text, False, f, self.__info_dict)
-                self.streamFinished.emit(self.__info_dict)
-            else:
-                self.replyGenerated.emit(resp.response, False, f, self.__info_dict)
+            # f = isinstance(resp, StreamingResponse)
+            # if f:
+            #     for response_text in resp.response_gen:
+            #         if self.__stop_streaming:
+            #             break
+            #         else:
+            #             self.__info_dict['finish_reason'] = 'stopped by user'
+            #             self.replyGenerated.emit(response_text, False, f, self.__info_dict)
+            #     self.streamFinished.emit(self.__info_dict)
+            # else:
+            self.replyGenerated.emit(resp, False, False, self.__info_dict)
         except Exception as e:
             self.__info_dict['finish_reason'] = 'Error'
             self.replyGenerated.emit(f'<p style="color:red">{e}</p>', False, False, self.__info_dict)

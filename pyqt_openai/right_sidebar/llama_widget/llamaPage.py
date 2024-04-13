@@ -5,7 +5,7 @@ from qtpy.QtWidgets import QWidget, QLabel, QVBoxLayout
 
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.right_sidebar.llama_widget.listWidget import FileListWidget
-from pyqt_openai.util.llamapage_script import GPTLLamaIndexClass
+from pyqt_openai.util.llamapage_script import GPTLLamaIndexWrapper
 
 
 class LlamaPage(QWidget):
@@ -16,7 +16,7 @@ class LlamaPage(QWidget):
         self.__initUi()
 
     def __initVal(self, db, ini_etc_dict, model_data):
-        self.__gptLLamaIndexClass = GPTLLamaIndexClass()
+        self.__gptLLamaIndexWrapper = GPTLLamaIndexWrapper()
 
     def __initUi(self):
         self.setWindowTitle('PyQt LlamaIndex')
