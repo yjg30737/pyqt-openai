@@ -5,6 +5,7 @@ import webbrowser
 import requests
 
 # Get the absolute path of the current script file
+
 script_path = os.path.abspath(__file__)
 
 # Get the root directory by going up one level from the script directory
@@ -34,8 +35,7 @@ from pyqt_openai.openAiChatBotWidget import OpenAIChatBotWidget
 
 os.environ['OPENAI_API_KEY'] = ''
 
-from pyqt_openai.pyqt_openai_data import OPENAI_STRUCT
-
+from pyqt_openai.pyqt_openai_data import OPENAI_STRUCT, LLAMAINDEX_WRAPPER
 
 # HighDPI support
 # qt version should be above 5.14
@@ -281,6 +281,10 @@ class MainWindow(QMainWindow):
             self.__setApiKeyAndClient(self.__settings_struct.value('API_KEY'))
         else:
             self.__settings_struct.setValue('API_KEY', '')
+
+        # Set llama index directory if it exists
+        if self.__settings_struct.contains('llama_index_directory'):
+            LLAMAINDEX_WRAPPER.set_directory(self.__settings_struct.value('llama_index_directory'))
 
     def __setAIEnabled(self, f):
         self.__openAiChatBotWidget.setAIEnabled(f)

@@ -1,11 +1,11 @@
-from qtpy.QtCore import Qt, Signal
+from qtpy.QtCore import Qt, Signal, QSettings
 from qtpy.QtGui import QFont
 from qtpy.QtWidgets import QFrame, QTextBrowser
 from qtpy.QtWidgets import QWidget, QLabel, QVBoxLayout
 
+from pyqt_openai.pyqt_openai_data import LLAMAINDEX_WRAPPER
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.right_sidebar.llama_widget.listWidget import FileListWidget
-from pyqt_openai.util.llamapage_script import GPTLLamaIndexWrapper
 
 
 class LlamaPage(QWidget):
@@ -14,9 +14,6 @@ class LlamaPage(QWidget):
     def __init__(self):
         super().__init__()
         self.__initUi()
-
-    def __initVal(self, db, ini_etc_dict, model_data):
-        self.__gptLLamaIndexWrapper = GPTLLamaIndexWrapper()
 
     def __initUi(self):
         self.setWindowTitle('PyQt LlamaIndex')
@@ -43,10 +40,18 @@ class LlamaPage(QWidget):
 
         self.setLayout(lay)
 
+        self.setDirectory()
+
     def __onDirectorySelected(self):
-        selected_dirname = self.__listWidget.getDir()
+        selected_dirname = self.__listWidget.getDirectory()
         self.onDirectorySelected.emit(selected_dirname)
 
     def __setTextInBrowser(self, txt_file):
         with open(txt_file, 'r', encoding='utf-8') as f:
             self.__txtBrowser.setText(f.read())
+
+    def setDirectory(self):
+        self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.IniFormat)
+        if self.__settings_ini.contains('llama_index_directory'):
+            directory = self.__settings_ini.value('llama_index_directory', type=str)
+            self.__listWidget.setDirectory(directory)

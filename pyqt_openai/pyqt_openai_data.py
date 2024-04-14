@@ -6,8 +6,11 @@ import requests
 from openai.types.chat import ChatCompletion
 
 from pyqt_openai.sqlite import SqliteDatabase
+from pyqt_openai.util.llamapage_script import GPTLLamaIndexWrapper
 
 DB = SqliteDatabase()
+
+LLAMAINDEX_WRAPPER = GPTLLamaIndexWrapper()
 
 # if openai version is below 1.0, this will be empty and not being used
 OPENAI_STRUCT = ''
