@@ -1,8 +1,8 @@
 import datetime
 
-from qtpy.QtCore import Qt, QUrl
-from qtpy.QtGui import QPixmap, QDesktopServices
-from qtpy.QtWidgets import QDialog, QPushButton, QHBoxLayout, QWidget, QVBoxLayout, QLabel
+from PySide6.QtCore import Qt, QUrl
+from PySide6.QtGui import QPixmap, QDesktopServices
+from PySide6.QtWidgets import QDialog, QPushButton, QHBoxLayout, QWidget, QVBoxLayout, QLabel
 
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.widgets.svgLabel import SvgLabel
@@ -54,7 +54,7 @@ class AboutDialog(QDialog):
         descWidget3 = QLabel()
         descWidget3.setText(f'''
         <br/><br/>Contact: yjg30737@gmail.com<br/>
-        <p>{LangClass.TRANSLATIONS['Powered by qtpy']}</p>
+        <p>{LangClass.TRANSLATIONS['Powered by PySide6']}</p>
         ''')
 
         descWidget1.setAlignment(Qt.AlignTop)

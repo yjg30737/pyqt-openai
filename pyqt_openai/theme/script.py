@@ -1,4 +1,6 @@
-from qtpy.QtGui import QFont
+import os.path
+
+from PySide6.QtGui import QFont
 
 from qt_material import apply_stylesheet
 
@@ -13,7 +15,7 @@ def apply_theme_in_runtime(value, instance, font_size=12):
         'density_scale': '-2',
     }
     if value:
-        apply_stylesheet(instance, theme=value, invert_secondary=True, extra=extra)
+        apply_stylesheet(instance, theme=value, invert_secondary=True, extra=extra, css_file='style.css')
     else:
         instance.setStyleSheet('')
     instance.setFont(QFont('Arial', font_size))

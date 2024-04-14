@@ -1,4 +1,4 @@
-from qtpy.QtWidgets import QWidget, QLabel, QVBoxLayout, QListWidget, QPushButton, QHBoxLayout, QSpacerItem, QSizePolicy, QAbstractItemView
+from PySide6.QtWidgets import QWidget, QLabel, QVBoxLayout, QListWidget, QPushButton, QHBoxLayout, QSpacerItem, QSizePolicy, QAbstractItemView
 
 from pyqt_openai.res.language_dict import LangClass
 

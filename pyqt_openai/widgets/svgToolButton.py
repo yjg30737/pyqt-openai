@@ -1,7 +1,7 @@
 import os.path, posixpath
 
-from qtpy.QtGui import QColor, QPalette, qGray
-from qtpy.QtWidgets import QGraphicsColorizeEffect, QWidget, QApplication, QToolButton
+from PySide6.QtGui import QColor, QPalette, qGray
+from PySide6.QtWidgets import QGraphicsColorizeEffect, QWidget, QApplication, QToolButton
 
 from pyqt_openai.pyqt_openai_data import ROOT_DIR
 

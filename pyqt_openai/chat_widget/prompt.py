@@ -1,8 +1,9 @@
 import os
 from pathlib import Path
 
-from qtpy.QtCore import Qt, Signal
-from qtpy.QtWidgets import QVBoxLayout, QPushButton, QFileDialog, QToolButton, QMenu, QAction, QWidget, QHBoxLayout
+from PySide6.QtGui import QAction
+from PySide6.QtCore import Qt, Signal
+from PySide6.QtWidgets import QVBoxLayout, QPushButton, QFileDialog, QToolButton, QMenu, QWidget, QHBoxLayout
 
 from pyqt_openai.chat_widget.textEditPromptGroup import TextEditPromptGroup
 from pyqt_openai.chat_widget.uploadedImageFileWidget import UploadedImageFileWidget

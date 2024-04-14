@@ -1,7 +1,7 @@
 import pyperclip
-from qtpy.QtCore import Qt
-from qtpy.QtGui import QPalette, QColor
-from qtpy.QtWidgets import QLabel, QWidget, QVBoxLayout, QApplication, QHBoxLayout, QSpacerItem, QSizePolicy, \
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QPalette, QColor
+from PySide6.QtWidgets import QLabel, QWidget, QVBoxLayout, QApplication, QHBoxLayout, QSpacerItem, QSizePolicy, \
     QTextBrowser, QAbstractScrollArea
 
 from pyqt_openai.chat_widget.convUnitResultDialog import ConvUnitResultDialog

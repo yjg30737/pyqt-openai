@@ -1,8 +1,8 @@
 import os, sys
 import webbrowser
 
-from qtpy.QtCore import Qt, QSettings
-from qtpy.QtWidgets import QHBoxLayout, QWidget, QSizePolicy, QVBoxLayout, QFrame, QSplitter, \
+from PySide6.QtCore import Qt, QSettings
+from PySide6.QtWidgets import QHBoxLayout, QWidget, QSizePolicy, QVBoxLayout, QFrame, QSplitter, \
     QListWidgetItem, QFileDialog, QMessageBox, QPushButton
 
 from pyqt_openai.chat_widget.chatWidget import ChatWidget

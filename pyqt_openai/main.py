@@ -1,6 +1,5 @@
 import os
 import sys
-import webbrowser
 
 import requests
 
@@ -13,17 +12,11 @@ project_root = os.path.dirname(os.path.dirname(script_path))
 sys.path.insert(0, project_root)
 sys.path.insert(0, os.getcwd())  # Add the current directory as well
 
-# for testing pyside6
-# os.environ['QT_API'] = 'pyside6'
-
-# for testing pyqt6
-# os.environ['QT_API'] = 'pyqt6'
-
-from qtpy.QtGui import QGuiApplication, QFont, QIcon, QColor
-from qtpy.QtWidgets import QMainWindow, QToolBar, QHBoxLayout, QDialog, QLineEdit, QPushButton, QWidgetAction, QSpinBox, QLabel, QWidget, QApplication, \
-    QComboBox, QSizePolicy, QStackedWidget, QAction, QMenu, QSystemTrayIcon, \
+from PySide6.QtGui import QAction, QFont, QIcon, QColor
+from PySide6.QtWidgets import QMainWindow, QToolBar, QHBoxLayout, QDialog, QLineEdit, QPushButton, QWidgetAction, QSpinBox, QLabel, QWidget, QApplication, \
+    QComboBox, QSizePolicy, QStackedWidget, QMenu, QSystemTrayIcon, \
     QMessageBox, QCheckBox
-from qtpy.QtCore import Qt, QCoreApplication, QSettings
+from PySide6.QtCore import Qt, QSettings
 
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.aboutDialog import AboutDialog
@@ -37,14 +30,6 @@ os.environ['OPENAI_API_KEY'] = ''
 from pyqt_openai.pyqt_openai_data import OPENAI_STRUCT
 
 from pyqt_openai.theme.script import apply_theme_in_runtime
-
-
-# HighDPI support
-# qt version should be above 5.14
-if os.environ['QT_API'] == 'pyqt5':
-    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
-    QCoreApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
-    QGuiApplication.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
 
 QApplication.setWindowIcon(QIcon('ico/openai.svg'))
 

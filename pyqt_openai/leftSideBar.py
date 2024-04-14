@@ -3,8 +3,8 @@ from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.widgets.searchBar import SearchBar
 from pyqt_openai.widgets.svgButton import SvgButton
-from qtpy.QtCore import Signal, Qt
-from qtpy.QtWidgets import QWidget, QComboBox, QCheckBox, QVBoxLayout, QHBoxLayout, QSpacerItem, QSizePolicy, \
+from PySide6.QtCore import Signal, Qt
+from PySide6.QtWidgets import QWidget, QComboBox, QCheckBox, QVBoxLayout, QHBoxLayout, QSpacerItem, QSizePolicy, \
     QTableWidgetItem
 
 

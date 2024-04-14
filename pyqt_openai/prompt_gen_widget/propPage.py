@@ -1,5 +1,5 @@
-from qtpy.QtCore import Signal, Qt
-from qtpy.QtWidgets import QTableWidget, QSizePolicy, QSpacerItem, QStackedWidget, QLabel, \
+from PySide6.QtCore import Signal, Qt
+from PySide6.QtWidgets import QTableWidget, QSizePolicy, QSpacerItem, QStackedWidget, QLabel, \
     QAbstractItemView, QTableWidgetItem, QHeaderView, QHBoxLayout, \
     QVBoxLayout, QWidget, QDialog, QListWidget, QListWidgetItem, QSplitter
 

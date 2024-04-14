@@ -1,7 +1,7 @@
-from qtpy import QtGui
-from qtpy.QtCore import Qt, QPoint, Signal, QTimer, QPropertyAnimation
-from qtpy.QtGui import QFont, QIcon
-from qtpy.QtWidgets import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QSizePolicy, QPushButton, \
+from PySide6 import QtGui
+from PySide6.QtCore import Qt, QPoint, Signal, QTimer, QPropertyAnimation
+from PySide6.QtGui import QFont, QIcon
+from PySide6.QtWidgets import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QSizePolicy, QPushButton, \
     QApplication
 
 

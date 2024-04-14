@@ -2,10 +2,11 @@ import os
 
 import subprocess
 
-from qtpy.QtCore import Qt, Signal
-from qtpy.QtWidgets import QLineEdit, QMenu, QAction
-from qtpy.QtWidgets import QPushButton, QHBoxLayout, QWidget, QLabel, \
+from PySide6.QtCore import Qt, Signal
+from PySide6.QtWidgets import QLineEdit, QMenu
+from PySide6.QtWidgets import QPushButton, QHBoxLayout, QWidget, QLabel, \
     QFileDialog
+from PySide6.QtGui import QAction
 
 from pyqt_openai.res.language_dict import LangClass
 

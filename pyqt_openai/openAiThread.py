@@ -1,7 +1,7 @@
 import inspect
 
 import openai
-from qtpy.QtCore import QThread, Signal
+from PySide6.QtCore import QThread, Signal
 
 from pyqt_openai.pyqt_openai_data import OPENAI_STRUCT
 from pyqt_openai.pyqt_openai_data import get_model_endpoint, form_response, get_vision_response, is_gpt_vision

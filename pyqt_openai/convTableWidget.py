@@ -1,5 +1,5 @@
-from qtpy.QtCore import Qt, Signal
-from qtpy.QtWidgets import QTableWidget, QDialog, QTableWidgetItem, QLabel, QHBoxLayout, QWidget, QApplication, QVBoxLayout
+from PySide6.QtCore import Qt, Signal
+from PySide6.QtWidgets import QTableWidget, QDialog, QTableWidgetItem, QLabel, QHBoxLayout, QWidget, QApplication, QVBoxLayout
 
 from pyqt_openai.widgets.inputDialog import InputDialog
 from pyqt_openai.widgets.svgButton import SvgButton

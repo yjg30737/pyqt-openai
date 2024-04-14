@@ -1,6 +1,6 @@
-from qtpy.QtCore import Signal, Qt
-from qtpy.QtWidgets import QLabel, QSpacerItem, QListWidget, QListWidgetItem, QSizePolicy, QSplitter
-from qtpy.QtWidgets import QWidget, QDialog, QTableWidget, QVBoxLayout, QHBoxLayout, QHeaderView, QTableWidgetItem, \
+from PySide6.QtCore import Signal, Qt
+from PySide6.QtWidgets import QLabel, QSpacerItem, QListWidget, QListWidgetItem, QSizePolicy, QSplitter
+from PySide6.QtWidgets import QWidget, QDialog, QTableWidget, QVBoxLayout, QHBoxLayout, QHeaderView, QTableWidgetItem, \
     QAbstractItemView
 
 from pyqt_openai.prompt_gen_widget.promptGroupInputDialog import PromptGroupInputDialog

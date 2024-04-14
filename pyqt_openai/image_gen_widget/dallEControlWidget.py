@@ -1,7 +1,7 @@
 import os
 
-from qtpy.QtCore import QThread, Signal, QSettings
-from qtpy.QtWidgets import QMessageBox, QWidget, QCheckBox, QSpinBox, QGroupBox, QVBoxLayout, QPushButton, QComboBox, QPlainTextEdit, \
+from PySide6.QtCore import QThread, Signal, QSettings
+from PySide6.QtWidgets import QMessageBox, QWidget, QCheckBox, QSpinBox, QGroupBox, QVBoxLayout, QPushButton, QComboBox, QPlainTextEdit, \
     QFormLayout, QLabel, QFrame, QRadioButton
 
 from pyqt_openai.customizeWidget.customizeDialog import FindPathWidget

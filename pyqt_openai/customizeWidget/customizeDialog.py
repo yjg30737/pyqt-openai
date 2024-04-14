@@ -1,5 +1,5 @@
-from qtpy.QtCore import Qt, QSettings
-from qtpy.QtWidgets import QApplication, QLabel, QComboBox, QSpinBox, QDialog, QFrame, QPushButton, QHBoxLayout, QVBoxLayout, QWidget, QFormLayout
+from PySide6.QtCore import Qt, QSettings
+from PySide6.QtWidgets import QApplication, QLabel, QComboBox, QSpinBox, QDialog, QFrame, QPushButton, QHBoxLayout, QVBoxLayout, QWidget, QFormLayout
 
 from pyqt_openai.circleProfileImage import RoundedImage
 from pyqt_openai.res.language_dict import LangClass
