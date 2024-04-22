@@ -103,6 +103,7 @@ class ImageNavWidget(QWidget):
         self.__tableView = QTableView()
         self.__tableView.setModel(self.__proxyModel)
         self.__tableView.setEditTriggers(QTableView.NoEditTriggers)
+        self.__tableView.setSortingEnabled(True)
 
         # align to center
         delegate = AlignDelegate()
