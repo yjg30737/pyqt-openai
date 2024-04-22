@@ -8,13 +8,13 @@ from qtpy.QtWidgets import QHBoxLayout, QWidget, QSizePolicy, QVBoxLayout, QFram
 from pyqt_openai.chat_widget.chatWidget import ChatWidget
 from pyqt_openai.chat_widget.prompt import Prompt
 from pyqt_openai.leftSideBar import LeftSideBar
-from pyqt_openai.notifier import NotifierWidget
+from pyqt_openai.widgets.notifier import NotifierWidget
 from pyqt_openai.openAiThread import OpenAIThread, LlamaOpenAIThread
 from pyqt_openai.prompt_gen_widget.promptGeneratorWidget import PromptGeneratorWidget
 from pyqt_openai.pyqt_openai_data import DB, get_argument, LLAMAINDEX_WRAPPER
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.right_sidebar.aiPlaygroundWidget import AIPlaygroundWidget
-from pyqt_openai.svgButton import SvgButton
+from pyqt_openai.widgets.svgButton import SvgButton
 from pyqt_openai.util.script import open_directory, get_generic_ext_out_of_qt_ext, conv_unit_to_txt, conv_unit_to_html, \
     add_file_to_zip
 

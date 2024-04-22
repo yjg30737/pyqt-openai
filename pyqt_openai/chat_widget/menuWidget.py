@@ -3,7 +3,7 @@ from qtpy.QtCore import QPropertyAnimation, QAbstractAnimation
 from qtpy.QtWidgets import QWidget, QHBoxLayout, QFrame
 
 from pyqt_openai.chat_widget.chatBrowser import ChatBrowser
-from pyqt_openai.svgButton import SvgButton
+from pyqt_openai.widgets.svgButton import SvgButton
 
 
 class MenuWidget(QWidget):

@@ -5,8 +5,8 @@ from qtpy.QtWidgets import QLabel, QWidget, QVBoxLayout, QApplication, QHBoxLayo
     QTextBrowser, QAbstractScrollArea
 
 from pyqt_openai.chat_widget.convUnitResultDialog import ConvUnitResultDialog
-from pyqt_openai.circleProfileImage import RoundedImage
-from pyqt_openai.svgButton import SvgButton
+from pyqt_openai.widgets.circleProfileImage import RoundedImage
+from pyqt_openai.widgets.svgButton import SvgButton
 
 
 class SourceBrowser(QWidget):

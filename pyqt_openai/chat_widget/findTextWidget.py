@@ -7,7 +7,7 @@ from qtpy.QtWidgets import QWidget, QLabel, \
 from pyqt_openai.chat_widget.aiChatUnit import AIChatUnit
 from pyqt_openai.chat_widget.chatBrowser import ChatBrowser
 from pyqt_openai.chat_widget.userChatUnit import UserChatUnit
-from pyqt_openai.svgButton import SvgButton
+from pyqt_openai.widgets.svgButton import SvgButton
 
 
 class FindTextWidget(QWidget):

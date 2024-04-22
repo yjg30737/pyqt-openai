@@ -10,7 +10,7 @@ from pyqt_openai.chat_widget.uploadedImageFileWidget import UploadedImageFileWid
 from pyqt_openai.prompt_command_completer.commandSuggestionWidget import CommandSuggestionWidget
 from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.res.language_dict import LangClass
-from pyqt_openai.svgToolButton import SvgToolButton
+from pyqt_openai.widgets.svgToolButton import SvgToolButton
 
 
 class Prompt(QWidget):
