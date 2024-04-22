@@ -1,9 +1,7 @@
-from chat_widget.findTextWidget import FindTextWidget
-from qtpy.QtCore import QPropertyAnimation, QAbstractAnimation
-from qtpy.QtWidgets import QWidget, QHBoxLayout, QFrame
+from qtpy.QtWidgets import QWidget, QHBoxLayout
 
+from pyqt_openai.chat_widget.findTextWidget import FindTextWidget
 from pyqt_openai.chat_widget.chatBrowser import ChatBrowser
-from pyqt_openai.widgets.svgButton import SvgButton
 
 
 class MenuWidget(QWidget):

@@ -28,7 +28,7 @@ from qtpy.QtCore import Qt, QCoreApplication, QSettings
 
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.aboutDialog import AboutDialog
-from pyqt_openai.customizeDialog import CustomizeDialog
+from pyqt_openai.customizeWidget.customizeDialog import CustomizeDialog
 from pyqt_openai.widgets.svgButton import SvgButton
 from pyqt_openai.image_gen_widget.imageGeneratingToolWidget import ImageGeneratingToolWidget
 from pyqt_openai.openAiChatBotWidget import OpenAIChatBotWidget
