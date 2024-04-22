@@ -69,18 +69,18 @@ class SearchBar(QWidget):
     def __setStyle(self):
         self.__searchIconLbl.setSvgFile('ico/search.svg')
         self.setStyleSheet(
-            '''
+            f'''
             QLineEdit
-            {
+            {{
                 background: transparent;
                 color:  #333333;
                 border: none;
-            }
+            }}
             QWidget#searchBar
-            {
+            {{
                 border: 1px solid gray;
-            }
-            QWidget { padding: 5px; }
+            }}
+            QWidget {{ padding: 5px; }}
             '''
         )
 

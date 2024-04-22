@@ -3,6 +3,7 @@ import os.path, posixpath
 from qtpy.QtGui import QColor, QPalette, qGray
 from qtpy.QtWidgets import QGraphicsColorizeEffect, QWidget, QApplication, QToolButton
 
+from pyqt_openai.pyqt_openai_data import ROOT_DIR
 
 class SvgToolButton(QToolButton):
     def __init__(self, base_widget: QWidget = None, *args, **kwargs):
@@ -101,7 +102,7 @@ class SvgToolButton(QToolButton):
         self.setStyleSheet(self.__btn_style)
 
     def setIcon(self, icon: str):
-        self.__icon = os.path.join(os.path.dirname(__file__), icon).replace(os.sep, posixpath.sep)
+        self.__icon = os.path.join(ROOT_DIR, icon).replace(os.sep, posixpath.sep)
         self.__styleInit()
 
     def eventFilter(self, obj, e):
