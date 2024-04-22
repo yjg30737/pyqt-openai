@@ -39,7 +39,7 @@ And if you would like to support this project, you can click the button below to
   <img src="https://github.com/yjg30737/yjg30737/assets/55078043/3366b496-3e1e-491c-841e-19871da55c40" alt="Donate with PayPal" style="height: 60px; width: 170px" />
 </a>
 
-<b>This officially supports openai>=1.0.0 and llama-index 0.9.2.</b> 
+<b>This officially supports openai>=1.0.0 and llama-index>=0.9.2.</b> 
 
 ## Table of Contents
 * [Feature](#feature)
