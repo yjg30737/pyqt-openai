@@ -1,5 +1,6 @@
 import base64
 import json
+import os.path
 
 import openai
 import requests
@@ -12,17 +13,20 @@ DB = SqliteDatabase()
 
 LLAMAINDEX_WRAPPER = GPTLLamaIndexWrapper()
 
-# if openai version is below 1.0, this will be empty and not being used
-OPENAI_STRUCT = ''
-if openai.__version__ >= str(1.0):
-    from openai import OpenAI
+# if openai version is below 1.0, exit the program and suggest to upgrade
+if openai.__version__ < str(1.0):
+    raise Exception('Please upgrade openai package to version 1.0 or higher')
 
-    # initialize
-    OPENAI_STRUCT = OpenAI(api_key='')
+from openai import OpenAI
+
+# initialize
+OPENAI_STRUCT = OpenAI(api_key='')
+
+ROOT_DIR = os.path.dirname(__file__)
 
 # https://platform.openai.com/docs/models/model-endpoint-compatibility
 ENDPOINT_DICT = {
-    '/v1/chat/completions': ['gpt-4', 'gpt-4-1106-preview', 'gpt-4-vision-preview',
+    '/v1/chat/completions': ['gpt-4-0125-preview', 'gpt-4', 'gpt-4-1106-preview', 'gpt-4-vision-preview',
                              'gpt-3.5-turbo', 'gpt-3.5-turbo-16k'],
     '/v1/completions': [
         'text-davinci-003', 'text-davinci-002', 'text-curie-001', 'text-babbage-001', 'text-ada-001', 'davinci',
@@ -57,17 +61,20 @@ def get_image_url_from_local(image_path):
     base64_image = encode_image(image_path)
     return f'data:image/jpeg;base64,{base64_image}'
 
-def get_argument(model, system, previous_text, cur_text, temperature, top_p, frequency_penalty, presence_penalty, stream,
+def get_message_obj(role, content):
+    return {"role": role, "content": content}
+
+def get_argument(model, system, messages, cur_text, temperature, top_p, frequency_penalty, presence_penalty, stream,
                  use_max_tokens, max_tokens,
                  images,
-                 is_llama_available):
+                 is_llama_available=False):
+    system_obj = get_message_obj("system", system)
+    messages = [system_obj] + messages
+
     # Form argument
     openai_arg = {
         'model': model,
-        'messages': [
-            {"role": "system", "content": system},
-            {"role": "assistant", "content": previous_text},
-        ],
+        'messages': messages,
         'temperature': temperature,
         'top_p': top_p,
         'frequency_penalty': frequency_penalty,

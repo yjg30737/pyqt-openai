@@ -1,26 +1,33 @@
-from qtpy.QtCore import Qt
-from qtpy.QtGui import QPixmap
-from qtpy.QtWidgets import QGraphicsScene, QGraphicsView, QPushButton
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QPixmap
+from PySide6.QtWidgets import QGraphicsScene, QGraphicsView
 
 
-class CurrentImageView(QGraphicsView):
-    def __init__(self):
+class ImageView(QGraphicsView):
+    def __init__(self, mouse_tracking=False):
         super().__init__()
         self.__aspectRatioMode = Qt.KeepAspectRatio
-        self.__gradient_enabled = False
-        self.__initVal()
+        self.__initVal(mouse_tracking)
         self.__initUi()
 
-    def __initVal(self):
+    def __initVal(self, mouse_tracking):
         self._scene = QGraphicsScene()
         self._p = QPixmap()
         self._item = ''
+        self.__mouse_tracking = mouse_tracking
 
     def __initUi(self):
-        self.setMouseTracking(True)
+        self.setMouseTracking(self.__mouse_tracking)
 
     def setFilename(self, filename: str):
-        self._p = QPixmap(filename)
+        if filename == '':
+            pass
+        else:
+            self._p = QPixmap(filename)
+            self.setPixmap(self._p)
+
+    def setPixmap(self, p):
+        self._p = p
         self._scene = QGraphicsScene()
         self._item = self._scene.addPixmap(self._p)
 
