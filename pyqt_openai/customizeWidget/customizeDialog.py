@@ -3,8 +3,8 @@ from qtpy.QtGui import QPixmap
 from qtpy.QtWidgets import QDialog, QFrame, QPushButton, QHBoxLayout, QVBoxLayout, QWidget, QFormLayout
 from qtpy.QtWidgets import QGraphicsScene, QGraphicsView
 
-from pyqt_openai.circleProfileImage import RoundedImage
-from pyqt_openai.findPathWidget import FindPathWidget
+from pyqt_openai.widgets.circleProfileImage import RoundedImage
+from pyqt_openai.widgets.findPathWidget import FindPathWidget
 from pyqt_openai.res.language_dict import LangClass
 
 

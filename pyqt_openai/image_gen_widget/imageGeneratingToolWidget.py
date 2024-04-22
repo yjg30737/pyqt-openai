@@ -8,10 +8,10 @@ from qtpy.QtWidgets import QHBoxLayout, QVBoxLayout, QFrame, QWidget, QSplitter
 from pyqt_openai.image_gen_widget.dallEControlWidget import DallEControlWidget
 from pyqt_openai.image_gen_widget.imageNavWidget import ImageNavWidget
 from pyqt_openai.image_gen_widget.thumbnailView import ThumbnailView
-from pyqt_openai.notifier import NotifierWidget
+from pyqt_openai.widgets.notifier import NotifierWidget
 from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.res.language_dict import LangClass
-from pyqt_openai.svgButton import SvgButton
+from pyqt_openai.widgets.svgButton import SvgButton
 from pyqt_openai.util.script import get_image_filename_for_saving, open_directory, get_image_prompt_filename_for_saving
 
 

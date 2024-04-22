@@ -5,7 +5,7 @@ from qtpy.QtGui import QPixmap, QDesktopServices
 from qtpy.QtWidgets import QDialog, QPushButton, QHBoxLayout, QWidget, QVBoxLayout, QLabel
 
 from pyqt_openai.res.language_dict import LangClass
-from pyqt_openai.svgLabel import SvgLabel
+from pyqt_openai.widgets.svgLabel import SvgLabel
 from pyqt_openai.util.script import get_version
 
 

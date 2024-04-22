@@ -4,8 +4,8 @@ from qtpy.QtWidgets import QWidget, QVBoxLayout, QStyledItemDelegate, QTableView
 
 # for search feature
 from pyqt_openai.pyqt_openai_data import DB
-from pyqt_openai.searchBar import SearchBar
-from pyqt_openai.svgButton import SvgButton
+from pyqt_openai.widgets.searchBar import SearchBar
+from pyqt_openai.widgets.svgButton import SvgButton
 
 
 class FilterProxyModel(QSortFilterProxyModel):
@@ -103,6 +103,7 @@ class ImageNavWidget(QWidget):
         self.__tableView = QTableView()
         self.__tableView.setModel(self.__proxyModel)
         self.__tableView.setEditTriggers(QTableView.NoEditTriggers)
+        self.__tableView.setSortingEnabled(True)
 
         # align to center
         delegate = AlignDelegate()

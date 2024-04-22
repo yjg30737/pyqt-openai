@@ -1,13 +1,17 @@
 import base64
 import json
+import os.path
 
 import openai
 import requests
 from openai.types.chat import ChatCompletion
 
 from pyqt_openai.sqlite import SqliteDatabase
+from pyqt_openai.util.llamapage_script import GPTLLamaIndexWrapper
 
 DB = SqliteDatabase()
+
+LLAMAINDEX_WRAPPER = GPTLLamaIndexWrapper()
 
 # if openai version is below 1.0, exit the program and suggest to upgrade
 if openai.__version__ < str(1.0):
@@ -17,6 +21,8 @@ from openai import OpenAI
 
 # initialize
 OPENAI_STRUCT = OpenAI(api_key='')
+
+ROOT_DIR = os.path.dirname(__file__)
 
 # https://platform.openai.com/docs/models/model-endpoint-compatibility
 ENDPOINT_DICT = {
@@ -60,7 +66,8 @@ def get_message_obj(role, content):
 
 def get_argument(model, system, messages, cur_text, temperature, top_p, frequency_penalty, presence_penalty, stream,
                  use_max_tokens, max_tokens,
-                 images):
+                 images,
+                 is_llama_available=False):
     system_obj = get_message_obj("system", system)
     messages = [system_obj] + messages
 
@@ -101,6 +108,9 @@ def get_argument(model, system, messages, cur_text, temperature, top_p, frequenc
     # so let's set this to 4096 which is relatively better.
     if is_gpt_vision(model):
         openai_arg['max_tokens'] = 4096
+
+    if is_llama_available:
+        del openai_arg['messages']
     if use_max_tokens:
         openai_arg['max_tokens'] = max_tokens
 
