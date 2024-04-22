@@ -5,9 +5,12 @@ from qtpy.QtWidgets import QScrollArea, QWidget, QTabWidget, QGridLayout
 
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.right_sidebar.chatPage import ChatPage
+from pyqt_openai.right_sidebar.llama_widget.llamaPage import LlamaPage
 
 
 class AIPlaygroundWidget(QScrollArea):
+    onDirectorySelected = Signal(str)
+
     def __init__(self):
         super().__init__()
         self.__initVal()
@@ -24,19 +27,27 @@ class AIPlaygroundWidget(QScrollArea):
             self.__settings_ini.setValue('TAB_IDX', str(self.__cur_idx))
 
         if self.__settings_ini.contains('use_llama_index'):
-            self.__settings_ini.setValue('use_llama_index', False)
+            self.__use_llama_index = self.__settings_ini.value('use_llama_index', type=bool)
+        else:
+            self.__use_llama_index = False
+            self.__settings_ini.setValue('use_llama_index', self.__use_llama_index)
 
-        self.__use_llama_index = self.__settings_ini.value('use_llama_index', type=bool)
+        # load saved llamaindex directory
+        self.__llama_index_directory = ''
+        if self.__settings_ini.contains('llama_index_directory'):
+            self.__llama_index_directory = self.__settings_ini.value('llama_index_directory', type=str)
 
     def __initUi(self):
         tabWidget = QTabWidget()
 
         chatPage = ChatPage()
+        self.__llamaPage = LlamaPage()
+        self.__llamaPage.onDirectorySelected.connect(self.__onDirectorySelected)
 
         tabWidget.addTab(chatPage, LangClass.TRANSLATIONS['Chat'], )
+        tabWidget.addTab(self.__llamaPage, 'LlamaIndex', )
         tabWidget.currentChanged.connect(self.__tabChanged)
-        use_llama_index_tab_f = self.__settings_ini.value('use_llama_index', type=bool)
-        tabWidget.setTabEnabled(1, use_llama_index_tab_f)
+        tabWidget.setTabEnabled(1, self.__use_llama_index)
         tabWidget.setCurrentIndex(self.__cur_idx)
 
         partial_func = partial(tabWidget.setTabEnabled, 1)
@@ -55,3 +66,8 @@ class AIPlaygroundWidget(QScrollArea):
 
     def __tabChanged(self, idx):
         self.__settings_ini.setValue('TAB_IDX', idx)
+
+    def __onDirectorySelected(self, selected_dirname):
+        self.__llama_index_directory = selected_dirname
+        self.__settings_ini.setValue('llama_index_directory', selected_dirname)
+        self.onDirectorySelected.emit(selected_dirname)

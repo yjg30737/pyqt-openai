@@ -6,7 +6,7 @@ from qtpy.QtWidgets import QGraphicsScene, QGraphicsPixmapItem, QGraphicsView, Q
     QFileDialog
 
 from pyqt_openai.res.language_dict import LangClass
-from pyqt_openai.svgButton import SvgButton
+from pyqt_openai.widgets.svgButton import SvgButton
 
 
 class ThumbnailView(QGraphicsView):
@@ -43,22 +43,22 @@ class ThumbnailView(QGraphicsView):
     def __setControlWidget(self):
         # copy the image
         copyBtn = SvgButton()
-        copyBtn.setIcon('ico/copy_light.svg')
+        copyBtn.setIcon('ico/copy.svg')
         copyBtn.clicked.connect(self.__copy)
 
         # download the image
         saveBtn = SvgButton()
-        saveBtn.setIcon('ico/save_light.svg')
+        saveBtn.setIcon('ico/save.svg')
         saveBtn.clicked.connect(self.__save)
 
         # zoom in
         zoomInBtn = SvgButton()
-        zoomInBtn.setIcon('ico/add_light.svg')
+        zoomInBtn.setIcon('ico/add.svg')
         zoomInBtn.clicked.connect(self.__zoomIn)
 
         # zoom out
         zoomOutBtn = SvgButton()
-        zoomOutBtn.setIcon('ico/delete_light.svg')
+        zoomOutBtn.setIcon('ico/delete.svg')
         zoomOutBtn.clicked.connect(self.__zoomOut)
 
         lay = QHBoxLayout()

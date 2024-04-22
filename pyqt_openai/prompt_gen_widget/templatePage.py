@@ -7,7 +7,7 @@ from pyqt_openai.prompt_gen_widget.promptGroupInputDialog import PromptGroupInpu
 from pyqt_openai.prompt_gen_widget.templatePromptUnitInputDialog import TemplatePromptUnitInputDialog
 from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.res.language_dict import LangClass
-from pyqt_openai.svgButton import SvgButton
+from pyqt_openai.widgets.svgButton import SvgButton
 
 
 class TemplateGroupList(QWidget):
