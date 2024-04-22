@@ -1,14 +1,12 @@
 import os
+import random
 import re
+import string
 import sys
 import zipfile
-import string
-import random
 from pathlib import Path
 
 from jinja2 import Template
-
-from pyqt_openai.widgets.notifier import NotifierWidget
 
 
 def get_generic_ext_out_of_qt_ext(text):

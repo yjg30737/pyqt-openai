@@ -1,4 +1,4 @@
-import os
+import os, sys
 import webbrowser
 
 from qtpy.QtCore import Qt, QSettings
@@ -196,7 +196,7 @@ class OpenAIChatBotWidget(QWidget):
             # Get image files
             images = self.__prompt.getUploadedImageFiles()
 
-            previous_text = self.__browser.getAllText()
+            messages = self.__browser.getMessages()
 
             cur_text = self.__prompt.getContent()
 
@@ -204,7 +204,7 @@ class OpenAIChatBotWidget(QWidget):
             is_llama_available = LLAMAINDEX_WRAPPER.get_directory() and use_llama_index
             use_max_tokens = self.__settings_ini.value('use_max_tokens', type=bool)
 
-            openai_arg = get_argument(model, system, previous_text, cur_text, temperature, top_p, frequency_penalty, presence_penalty, stream,
+            openai_arg = get_argument(model, system, messages, cur_text, temperature, top_p, frequency_penalty, presence_penalty, stream,
                                       use_max_tokens, max_tokens,
                                       images,
                                       is_llama_available)
@@ -247,8 +247,18 @@ class OpenAIChatBotWidget(QWidget):
             # Remove image files widget from the window
             self.__prompt.resetUploadImageFileWidget()
 
+
         except Exception as e:
-            QMessageBox.critical(self, "Error", str(e))
+            # get the line of error and filename
+            exc_type, exc_obj, tb = sys.exc_info()
+            f = tb.tb_frame
+            lineno = tb.tb_lineno
+            filename = f.f_code.co_filename
+            QMessageBox.critical(self, "Error", f'''
+            {str(e)},
+            'File: {filename}',
+            'Line: {lineno}'
+            ''')
 
     def __stopResponse(self):
         self.__t.stop_streaming()
@@ -264,7 +274,7 @@ class OpenAIChatBotWidget(QWidget):
         pass
 
     def __toggleWidgetWhileChatting(self, f, continue_f=False):
-        self.__lineEdit.setEnabled(f)
+        self.__lineEdit.setExecuteEnabled(f)
         self.__leftSideBarWidget.setEnabled(f)
         self.__prompt.activateDuringGeneratingWidget(not f)
         # TODO
