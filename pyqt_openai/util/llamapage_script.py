@@ -74,11 +74,14 @@ class GPTLLamaIndexWrapper:
         self.__query_engine = None
 
     def set_directory(self, directory):
-        self._directory = directory
-        documents = SimpleDirectoryReader(self._directory).load_data()
-        index = VectorStoreIndex.from_documents(documents)
+        try:
+            self._directory = directory
+            documents = SimpleDirectoryReader(self._directory).load_data()
+            index = VectorStoreIndex.from_documents(documents)
 
-        self._query_engine = index.as_query_engine()
+            self._query_engine = index.as_query_engine()
+        except Exception as e:
+            print(e)
 
     def get_directory(self):
         return self._directory
