@@ -68,7 +68,6 @@ And if you would like to support this project, you can click the button below to
 * Support controlling parameters(temperature, top_p, etc) just like openai playground
 * Able to see the reason why stream is finished
 * Support token count (only for non-streaming response)
-* Support latest model such as <b>GPT-4-1106-preview</b>
 * Support <b>prompt generator</b> (manageable, autosaved in database) 
 * Support <b>slash commands</b>
 * Support beginning and ending part of the prompt
@@ -82,7 +81,6 @@ And if you would like to support this project, you can click the button below to
 * You can copy and download the image directly as well. just hover the mouse cursor over the image.
 * You can <b>fine-tune</b> openai with llama-index.
 * Support text(*.txt), image(*.png, *.jpg) file uploading
-  * You can send uploaded image files to GPT 4 Vision.  
 * Support searching title and content in the conversation
 * Support "find text" feature (match word, case-sensitive, regex, etc.)
 * Support customizing feature (homepage, user and AI profile image) 
