@@ -1,5 +1,5 @@
 PyQt5>=5.14
-PySide6
+PyQt6
 qtpy
 aiohttp
 openai
