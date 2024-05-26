@@ -101,8 +101,8 @@ And if you would like to support this project, you can click the button below to
 If you have any additional languages you would like to add, please feel free to make a request by mail, issue, discord, etc at any time.
 
 ## Requirements
-* qtpy - the package allowing you to write code that works with both PyQt and PySide
-* PyQt5 >= 5.14 or PySide6
+* qtpy - the package allowing you to write code that works with both PyQt5 and PyQt6
+* PyQt5 >= 5.14 or PyQt6
 * openai
 * aiohttp - for openai dependency 
 * pyperclip - to copy prompt text from prompt generator
@@ -113,8 +113,6 @@ If you have any additional languages you would like to add, please feel free to 
 * pillow - for preventing ModuleNotFoundError from llama-index
 
 You can install these requirements with only one line command "pip install -r requirements.txt". Just see "How to Install" section below.
-
-It is not listed in requirements.txt, but you can use **PyQt6** if you want.
 
 ## Preview and Usage
 #### Note: A lot of previews below are not from latest version. It is slightly different with current GUI. So if you want to really know what this looks like, see it by yourself :) But i will definitely change any image(s) which should be changed.
