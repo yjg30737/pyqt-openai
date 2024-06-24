@@ -68,9 +68,12 @@ class MainWindow(QMainWindow):
 
         self.__openAiChatBotWidget = OpenAIChatBotWidget()
         self.__imageGeneratingToolWidget = ImageGeneratingToolWidget()
+        self.__replicateWidget = ReplicateWidget()
+
         self.__mainWidget = QStackedWidget()
         self.__mainWidget.addWidget(self.__openAiChatBotWidget)
         self.__mainWidget.addWidget(self.__imageGeneratingToolWidget)
+        self.__mainWidget.addWidget(self.__replicateWidget)
 
         self.__setActions()
         self.__setMenuBar()
@@ -105,7 +108,7 @@ class MainWindow(QMainWindow):
         # toolbar action
         self.__chooseAiAction = QWidgetAction(self)
         self.__chooseAiCmbBox = QComboBox()
-        self.__chooseAiCmbBox.addItems([LangClass.TRANSLATIONS['Chat'], LangClass.TRANSLATIONS['Image']])
+        self.__chooseAiCmbBox.addItems([LangClass.TRANSLATIONS['Chat'], LangClass.TRANSLATIONS['Image'], 'Replicate'])
         self.__chooseAiCmbBox.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
         self.__chooseAiCmbBox.currentIndexChanged.connect(self.__aiTypeChanged)
         self.__chooseAiAction.setDefaultWidget(self.__chooseAiCmbBox)
