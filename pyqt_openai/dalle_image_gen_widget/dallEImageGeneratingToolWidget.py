@@ -1,34 +1,34 @@
 import base64
 import os
 
-from pyqt_openai.image_gen_widget.replicateControlWidget import ReplicateControlWidget
 from qtpy.QtCore import Qt
 from qtpy.QtWidgets import QHBoxLayout, QVBoxLayout, QFrame, QWidget, QSplitter
 
-from pyqt_openai.image_gen_widget.imageNavWidget import ImageNavWidget
-from pyqt_openai.image_gen_widget.thumbnailView import ThumbnailView
+from pyqt_openai.dalle_image_gen_widget.dallEControlWidget import DallEControlWidget
 from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.util.script import get_image_filename_for_saving, open_directory, get_image_prompt_filename_for_saving
+from pyqt_openai.widgets.imageNavWidget import ImageNavWidget
 from pyqt_openai.widgets.notifier import NotifierWidget
 from pyqt_openai.widgets.svgButton import SvgButton
+from pyqt_openai.widgets.thumbnailView import ThumbnailView
 
 
-class ReplicateImageGeneratingToolWidget(QWidget):
+class DallEImageGeneratingToolWidget(QWidget):
 
     def __init__(self):
         super().__init__()
         self.__initUi()
 
     def __initUi(self):
-        self.__imageNavWidget = ImageNavWidget()
+        self.__imageNavWidget = ImageNavWidget(['ID', 'Prompt', 'n', 'Size', 'Quality', 'Data', 'Revised Prompt'])
         self.__viewWidget = ThumbnailView()
-        self.__rightSideBarWidget = ReplicateControlWidget()
+        self.__rightSideBarWidget = DallEControlWidget()
 
         self.__imageNavWidget.getContent.connect(self.__viewWidget.setContent)
 
-        self.__rightSideBarWidget.submitReplicate.connect(self.__setResult)
-        self.__rightSideBarWidget.submitReplicateAllComplete.connect(self.__imageGenerationAllComplete)
+        self.__rightSideBarWidget.submitDallE.connect(self.__setResult)
+        self.__rightSideBarWidget.submitDallEAllComplete.connect(self.__imageGenerationAllComplete)
 
         self.__historyBtn = SvgButton()
         self.__historyBtn.setIcon('ico/history.svg')
@@ -88,17 +88,17 @@ class ReplicateImageGeneratingToolWidget(QWidget):
     def setAIEnabled(self, f):
         self.__rightSideBarWidget.setEnabled(f)
 
-    def __setResult(self, image_data, prompt):
+    def __setResult(self, image_data, revised_prompt):
         arg = self.__rightSideBarWidget.getArgument()
 
         image_data = base64.b64decode(image_data)
 
         # save
         if self.__rightSideBarWidget.isSavedEnabled():
-            self.__saveResultImage(arg, image_data, prompt)
+            self.__saveResultImage(arg, image_data, revised_prompt)
 
         self.__viewWidget.setContent(image_data)
-        DB.insertImage(*arg, image_data, prompt)
+        DB.insertImage(*arg, image_data, revised_prompt)
         self.__imageNavWidget.refresh()
 
     def __saveResultImage(self, arg, image_data, revised_prompt):

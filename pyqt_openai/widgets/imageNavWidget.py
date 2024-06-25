@@ -46,9 +46,13 @@ class SqlTableModel(QSqlTableModel):
 class ImageNavWidget(QWidget):
     getContent = Signal(bytes)
 
-    def __init__(self):
+    def __init__(self, columns):
         super().__init__()
+        self.__initVal(columns)
         self.__initUi()
+
+    def __initVal(self, columns):
+        self.__columns = columns
 
     def __initUi(self):
         # Set up the database and table model (you'll need to configure this part based on your database)
@@ -82,13 +86,11 @@ class ImageNavWidget(QWidget):
         menuWidget = QWidget()
         menuWidget.setLayout(lay)
 
-        columnNames = ['ID', 'Prompt', 'n', 'Size', 'Quality', 'Data', 'Revised Prompt']
-
         self.__model = SqlTableModel(self)
         self.__model.setTable('image_tb')
         self.__model.beforeUpdate.connect(self.__updated)
-        for i in range(len(columnNames)):
-            self.__model.setHeaderData(i, Qt.Horizontal, columnNames[i])
+        for i in range(len(self.__columns)):
+            self.__model.setHeaderData(i, Qt.Horizontal, self.__columns[i])
         self.__model.select()
         # descending order by date
         self.__model.sort(7, Qt.DescendingOrder)

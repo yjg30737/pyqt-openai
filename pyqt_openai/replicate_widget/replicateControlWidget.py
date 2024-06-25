@@ -1,10 +1,12 @@
+import os
+
 from qtpy.QtCore import QThread, Signal, QSettings
 from qtpy.QtWidgets import QMessageBox, QWidget, QCheckBox, QSpinBox, QGroupBox, QVBoxLayout, QPushButton, QComboBox, \
     QPlainTextEdit, \
     QFormLayout, QLabel, QFrame
 
 from pyqt_openai.res.language_dict import LangClass
-from pyqt_openai.util.replicate_example import ReplicateWrapper
+from pyqt_openai.util.replicate_script import ReplicateWrapper
 from pyqt_openai.widgets.findPathWidget import FindPathWidget
 from pyqt_openai.widgets.notifier import NotifierWidget
 from pyqt_openai.widgets.toast import Toast
@@ -48,22 +50,50 @@ class ReplicateControlWidget(QWidget):
         self.__initUi()
 
     def __initVal(self):
+        default_directory = 'image_result'
+
         self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.IniFormat)
+        self.__settings_ini.beginGroup('REPLICATE')
         if not self.__settings_ini.contains('REPLICATE_API_TOKEN'):
             self.__settings_ini.setValue('REPLICATE_API_TOKEN', '')
+        if not self.__settings_ini.contains('model'):
             self.__settings_ini.setValue('model', 'stability-ai/sdxl:39ed52f2a78e934b3ba6e2a89f5b1c712de7dfea535525255b1aa35c5565e08b')
+        if not self.__settings_ini.contains('width'):
             self.__settings_ini.setValue('width', 768)
+        if not self.__settings_ini.contains('height'):
             self.__settings_ini.setValue('height', 768)
+        if not self.__settings_ini.contains('prompt'):
             self.__settings_ini.setValue('prompt', "Astronaut in a jungle, cold color palette, muted colors, detailed, 8k")
+        if not self.__settings_ini.contains('negative_prompt'):
             self.__settings_ini.setValue('negative_prompt', "ugly, deformed, noisy, blurry, distorted")
+        if not self.__settings_ini.contains('directory'):
+            self.__settings_ini.setValue('directory', os.path.join(os.path.expanduser('~'), default_directory))
+        if not self.__settings_ini.contains('is_save'):
+            self.__settings_ini.setValue('is_save', True)
+        if not self.__settings_ini.contains('continue_generation'):
+            self.__settings_ini.setValue('continue_generation', False)
+        if not self.__settings_ini.contains('number_of_images_to_create'):
+            self.__settings_ini.setValue('number_of_images_to_create', 2)
+        if not self.__settings_ini.contains('save_prompt_as_text'):
+            self.__settings_ini.setValue('save_prompt_as_text', True)
+        if not self.__settings_ini.contains('show_prompt_on_image'):
+            self.__settings_ini.setValue('show_prompt_on_image', False)
+
+        self.__directory = self.__settings_ini.value('directory', type=str)
         self.__api_key = self.__settings_ini.value('REPLICATE_API_TOKEN', type=str)
         self.__model = self.__settings_ini.value('model', type=str)
         self.__width = self.__settings_ini.value('width', type=int)
         self.__height = self.__settings_ini.value('height', type=int)
         self.__prompt = self.__settings_ini.value('prompt', type=str)
         self.__negative_prompt = self.__settings_ini.value('negative_prompt', type=str)
+        self.__is_save = self.__settings_ini.value('is_save', type=bool)
+        self.__continue_generation = self.__settings_ini.value('continue_generation', type=bool)
+        self.__number_of_images_to_create = self.__settings_ini.value('number_of_images_to_create', type=int)
+        self.__save_prompt_as_text = self.__settings_ini.value('save_prompt_as_text', type=bool)
+        self.__show_prompt_on_image = self.__settings_ini.value('show_prompt_on_image', type=bool)
 
         self.__wrapper = ReplicateWrapper(self.__api_key)
+        self.__settings_ini.endGroup()
 
     def __initUi(self):
         self.__numberOfImagesToCreateSpinBox = QSpinBox()

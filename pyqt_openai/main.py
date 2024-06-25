@@ -30,8 +30,9 @@ from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.aboutDialog import AboutDialog
 from pyqt_openai.customizeWidget.customizeDialog import CustomizeDialog
 from pyqt_openai.widgets.svgButton import SvgButton
-from pyqt_openai.image_gen_widget.imageGeneratingToolWidget import ImageGeneratingToolWidget
+from pyqt_openai.dalle_image_gen_widget.dallEImageGeneratingToolWidget import DallEImageGeneratingToolWidget
 from pyqt_openai.openAiChatBotWidget import OpenAIChatBotWidget
+from pyqt_openai.replicate_widget.replicateWidget import ReplicateWidget
 
 os.environ['OPENAI_API_KEY'] = ''
 
@@ -67,7 +68,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle(LangClass.TRANSLATIONS['PyQt OpenAI Chatbot'])
 
         self.__openAiChatBotWidget = OpenAIChatBotWidget()
-        self.__imageGeneratingToolWidget = ImageGeneratingToolWidget()
+        self.__imageGeneratingToolWidget = DallEImageGeneratingToolWidget()
         self.__replicateWidget = ReplicateWidget()
 
         self.__mainWidget = QStackedWidget()

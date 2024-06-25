@@ -2,7 +2,7 @@ import os
 
 import replicate
 
-from script import download_image_as_base64
+from pyqt_openai.util.script import download_image_as_base64
 
 
 class ReplicateWrapper:
