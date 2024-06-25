@@ -1,11 +1,13 @@
 import base64
 import os
+import webbrowser
 
 from pyqt_openai.replicate_widget.replicateControlWidget import ReplicateControlWidget
 from qtpy.QtCore import Qt
-from qtpy.QtWidgets import QHBoxLayout, QVBoxLayout, QFrame, QWidget, QSplitter
+from qtpy.QtWidgets import QHBoxLayout, QVBoxLayout, QFrame, QWidget, QSplitter, QLabel
 
 from pyqt_openai.widgets.imageNavWidget import ImageNavWidget
+from pyqt_openai.widgets.linkLabel import LinkLabel
 from pyqt_openai.widgets.thumbnailView import ThumbnailView
 from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.res.language_dict import LangClass
@@ -44,9 +46,33 @@ class ReplicateWidget(QWidget):
         self.__settingBtn.setChecked(True)
         self.__settingBtn.toggled.connect(self.__rightSideBarWidget.setVisible)
 
+        self.__toReplicateLabel = LinkLabel('To Replicate', 'https://replicate.com/')
+
+        self.__whatIsReplicateLabel = LinkLabel('What is Replicate', 'https://replicate.com/')
+
+        self.__howToUseReplicateLabel = LinkLabel('How to use Replicate', 'https://replicate.com/docs')
+
+        sep1 = QFrame()
+        sep1.setFrameShape(QFrame.VLine)
+        sep1.setFrameShadow(QFrame.Sunken)
+
+        sep2 = QFrame()
+        sep2.setFrameShape(QFrame.VLine)
+        sep2.setFrameShadow(QFrame.Sunken)
+
+        sep3 = QFrame()
+        sep3.setFrameShape(QFrame.VLine)
+        sep3.setFrameShadow(QFrame.Sunken)
+
         lay = QHBoxLayout()
         lay.addWidget(self.__settingBtn)
         lay.addWidget(self.__historyBtn)
+        lay.addWidget(sep1)
+        lay.addWidget(self.__toReplicateLabel)
+        lay.addWidget(sep2)
+        lay.addWidget(self.__whatIsReplicateLabel)
+        lay.addWidget(sep3)
+        lay.addWidget(self.__howToUseReplicateLabel)
         lay.setContentsMargins(2, 2, 2, 2)
         lay.setAlignment(Qt.AlignLeft)
 

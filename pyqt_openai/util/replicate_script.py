@@ -8,9 +8,9 @@ from pyqt_openai.util.script import download_image_as_base64
 class ReplicateWrapper:
     def __init__(self, api_key):
         self.__api_key = api_key
-        self.request_and_set_api(api_key)
+        self.set_api(api_key)
 
-    def request_and_set_api(self, api_key):
+    def set_api(self, api_key):
         """
         True all the time
         There is no way to know if the api key is valid or not

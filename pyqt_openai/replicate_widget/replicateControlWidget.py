@@ -1,9 +1,10 @@
 import os
 
-from qtpy.QtCore import QThread, Signal, QSettings
-from qtpy.QtWidgets import QMessageBox, QWidget, QCheckBox, QSpinBox, QGroupBox, QVBoxLayout, QPushButton, QComboBox, \
+from qtpy.QtCore import QThread, Signal, QSettings, Qt
+from qtpy.QtWidgets import QLineEdit, QScrollArea, QMessageBox, QWidget, QCheckBox, QSpinBox, QGroupBox, QVBoxLayout, QPushButton, \
+    QComboBox, \
     QPlainTextEdit, \
-    QFormLayout, QLabel, QFrame
+    QFormLayout, QLabel, QFrame, QSplitter
 
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.util.replicate_script import ReplicateWrapper
@@ -40,7 +41,7 @@ class Thread(QThread):
             self.errorGenerated.emit(str(e))
 
 
-class ReplicateControlWidget(QWidget):
+class ReplicateControlWidget(QScrollArea):
     submitReplicate = Signal(str, str)
     submitReplicateAllComplete = Signal()
 
@@ -96,6 +97,10 @@ class ReplicateControlWidget(QWidget):
         self.__settings_ini.endGroup()
 
     def __initUi(self):
+        self.__apiKeyLineEdit = QLineEdit()
+        self.__apiKeyLineEdit.setPlaceholderText('Enter Replicate API Key...')
+        self.__apiKeyLineEdit.setText(self.__api_key)
+
         self.__numberOfImagesToCreateSpinBox = QSpinBox()
         self.__promptTypeToShowRadioGrpBox = QGroupBox('Prompt Type To Show')
 
@@ -133,7 +138,7 @@ class ReplicateControlWidget(QWidget):
         self.__numberOfImagesToCreateSpinBox.setValue(self.__number_of_images_to_create)
         self.__numberOfImagesToCreateSpinBox.valueChanged.connect(self.__numberOfImagesToCreateSpinBoxValueChanged)
 
-        self.__savePromptAsTextChkBox = QCheckBox('Save Prompt (Revised) as Text')
+        self.__savePromptAsTextChkBox = QCheckBox('Save Prompt as Text')
         self.__savePromptAsTextChkBox.setChecked(True)
         self.__savePromptAsTextChkBox.toggled.connect(self.__savePromptAsTextChkBoxToggled)
         self.__savePromptAsTextChkBox.setChecked(self.__save_prompt_as_text)
@@ -147,6 +152,7 @@ class ReplicateControlWidget(QWidget):
         self.__generalGrpBox.setTitle('General')
 
         lay = QVBoxLayout()
+        lay.addWidget(self.__apiKeyLineEdit)
         lay.addWidget(self.__findPathWidget)
         lay.addWidget(self.__saveChkBox)
         lay.addWidget(self.__continueGenerationChkBox)
@@ -177,15 +183,34 @@ class ReplicateControlWidget(QWidget):
         paramGrpBox = QGroupBox()
         paramGrpBox.setTitle('Parameters')
 
+        lay = QVBoxLayout()
+        lay.addWidget(QLabel(LangClass.TRANSLATIONS['Prompt']))
+        lay.addWidget(self.__promptWidget)
+        lay.addWidget(QLabel('Negative Prompt'))
+        lay.addWidget(self.__negativePromptWidget)
+        promptWidget = QWidget()
+        promptWidget.setLayout(lay)
+
         lay = QFormLayout()
         lay.addRow('Model', self.__modelCmbBox)
         lay.addRow('Width', self.__widthSpinBox)
         lay.addRow('Height', self.__heightSpinBox)
         lay.addRow('Style', self.__styleCmbBox)
-        lay.addRow(QLabel(LangClass.TRANSLATIONS['Prompt']))
-        lay.addRow(self.__promptWidget)
-        lay.addRow('Negative Prompt', self.__negativePromptWidget)
+        otherParamWidget = QWidget()
+        otherParamWidget.setLayout(lay)
 
+        splitter = QSplitter()
+        splitter.addWidget(otherParamWidget)
+        splitter.addWidget(promptWidget)
+        splitter.setHandleWidth(1)
+        splitter.setOrientation(Qt.Orientation.Vertical)
+        splitter.setChildrenCollapsible(False)
+        splitter.setSizes([500, 500])
+        splitter.setStyleSheet(
+            "QSplitterHandle {background-color: lightgray;}")
+
+        lay = QVBoxLayout()
+        lay.addWidget(splitter)
         paramGrpBox.setLayout(lay)
 
         sep = QFrame()
@@ -199,7 +224,11 @@ class ReplicateControlWidget(QWidget):
         lay.addWidget(self.__submitBtn)
         lay.addWidget(self.__stopGeneratingImageBtn)
 
-        self.setLayout(lay)
+        mainWidget = QWidget()
+        mainWidget.setLayout(lay)
+
+        self.setWidget(mainWidget)
+        self.setWidgetResizable(True)
 
     def __replicateChanged(self, v):
         sender = self.sender()
@@ -262,6 +291,9 @@ class ReplicateControlWidget(QWidget):
             "height": self.__height,
         }
         number_of_images = self.__number_of_images_to_create if self.__continue_generation else 1
+
+        self.__api_key = self.__apiKeyLineEdit.text().strip()
+        self.__wrapper.set_api(self.__api_key)
 
         self.__t = Thread(self.__wrapper, self.__model, arg, number_of_images)
         self.__t.start()
