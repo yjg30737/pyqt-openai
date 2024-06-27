@@ -101,7 +101,8 @@ class OpenAIChatBotWidget(QWidget):
         self.__leftSideBarWidget.changed.connect(self.__changeConv)
         self.__leftSideBarWidget.deleted.connect(self.__deleteConv)
         self.__leftSideBarWidget.convUpdated.connect(self.__updateConv)
-        self.__leftSideBarWidget.export.connect(self.__export)
+        self.__leftSideBarWidget.onImport.connect(self.__importConv)
+        self.__leftSideBarWidget.onExport.connect(self.__exportConv)
 
         self.__lineEdit.returnPressed.connect(self.__chat)
 
@@ -246,8 +247,6 @@ class OpenAIChatBotWidget(QWidget):
 
             # Remove image files widget from the window
             self.__prompt.resetUploadImageFileWidget()
-
-
         except Exception as e:
             # get the line of error and filename
             exc_type, exc_obj, tb = sys.exc_info()
@@ -317,7 +316,27 @@ class OpenAIChatBotWidget(QWidget):
         for id in id_lst:
             DB.deleteConv(id)
 
-    def __export(self, ids):
+    def __importConv(self, filename):
+        old_conv = DB.selectAllConv()
+        if old_conv and len(old_conv) > 0:
+            message = '''
+            There are already conversations. Would you export them before importing? 
+            Warning: If you do not export, you will lose the current conversations.
+            '''
+            messageBox = QMessageBox(self)
+            messageBox.setWindowTitle('Information')
+            messageBox.setText(message)
+            messageBox.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+            reply = messageBox.exec()
+            if reply == QMessageBox.Yes:
+                # Export previous conversation
+                self.__exportConv([_['id'] for _ in old_conv])
+            else:
+                pass
+        else:
+            print(f'Import {filename}')
+
+    def __exportConv(self, ids):
         file_data = QFileDialog.getSaveFileName(self, LangClass.TRANSLATIONS['Save'], os.path.expanduser('~'), 'SQLite DB file (*.db);;txt files Compressed File (*.zip);;html files Compressed File (*.zip)')
         if file_data[0]:
             filename = file_data[0]

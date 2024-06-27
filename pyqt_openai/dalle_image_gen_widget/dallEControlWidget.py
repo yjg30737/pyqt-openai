@@ -338,7 +338,13 @@ class DallEControlWidget(QWidget):
         self.submitDallE.emit(image_data, revised_prompt)
 
     def getArgument(self):
-        return self.__promptWidget.toPlainText(), self.__n, self.__size, self.__quality, self.__style
+        return {
+            'prompt': self.__promptWidget.toPlainText(),
+            'n': self.__n,
+            'size': self.__size,
+            'quality': self.__quality,
+            'style': self.__style
+        }
 
     def getSavePromptAsText(self):
         return self.__save_prompt_as_text

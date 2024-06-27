@@ -46,11 +46,8 @@ class ReplicateWidget(QWidget):
         self.__settingBtn.setChecked(True)
         self.__settingBtn.toggled.connect(self.__rightSideBarWidget.setVisible)
 
-        self.__toReplicateLabel = LinkLabel('To Replicate', 'https://replicate.com/')
-
-        self.__whatIsReplicateLabel = LinkLabel('What is Replicate', 'https://replicate.com/')
-
-        self.__howToUseReplicateLabel = LinkLabel('How to use Replicate', 'https://replicate.com/docs')
+        self.__toReplicateLabel = LinkLabel('To Replicate / What is Replicate?', 'https://replicate.com/')
+        self.__howToUseReplicateLabel = LinkLabel('Get Replicate API Token (Need to sign in first)', 'https://replicate.com/account/api-tokens')
 
         sep1 = QFrame()
         sep1.setFrameShape(QFrame.VLine)
@@ -60,18 +57,12 @@ class ReplicateWidget(QWidget):
         sep2.setFrameShape(QFrame.VLine)
         sep2.setFrameShadow(QFrame.Sunken)
 
-        sep3 = QFrame()
-        sep3.setFrameShape(QFrame.VLine)
-        sep3.setFrameShadow(QFrame.Sunken)
-
         lay = QHBoxLayout()
         lay.addWidget(self.__settingBtn)
         lay.addWidget(self.__historyBtn)
         lay.addWidget(sep1)
         lay.addWidget(self.__toReplicateLabel)
         lay.addWidget(sep2)
-        lay.addWidget(self.__whatIsReplicateLabel)
-        lay.addWidget(sep3)
         lay.addWidget(self.__howToUseReplicateLabel)
         lay.setContentsMargins(2, 2, 2, 2)
         lay.setAlignment(Qt.AlignLeft)
@@ -130,6 +121,7 @@ class ReplicateWidget(QWidget):
     def __saveResultImage(self, arg, image_data, revised_prompt):
         directory = self.__rightSideBarWidget.getDirectory()
         os.makedirs(directory, exist_ok=True)
+        print(arg)
         filename = os.path.join(directory, get_image_filename_for_saving(arg))
         with open(filename, 'wb') as f:
             f.write(image_data)

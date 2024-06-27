@@ -90,7 +90,6 @@ class DallEImageGeneratingToolWidget(QWidget):
 
     def __setResult(self, image_data, revised_prompt):
         arg = self.__rightSideBarWidget.getArgument()
-
         image_data = base64.b64decode(image_data)
 
         # save

@@ -100,6 +100,9 @@ class ReplicateControlWidget(QScrollArea):
         self.__apiKeyLineEdit = QLineEdit()
         self.__apiKeyLineEdit.setPlaceholderText('Enter Replicate API Key...')
         self.__apiKeyLineEdit.setText(self.__api_key)
+        self.__apiKeyLineEdit.setEchoMode(QLineEdit.EchoMode.Password)
+        self.__apiKeyLineEdit.textChanged.connect(self.__replicateChanged)
+        # nanana
 
         self.__numberOfImagesToCreateSpinBox = QSpinBox()
         self.__promptTypeToShowRadioGrpBox = QGroupBox('Prompt Type To Show')
@@ -233,6 +236,9 @@ class ReplicateControlWidget(QScrollArea):
     def __replicateChanged(self, v):
         sender = self.sender()
         self.__settings_ini.beginGroup('REPLICATE')
+        if sender == self.__apiKeyLineEdit:
+            self.__api_key = v
+            self.__settings_ini.setValue('REPLICATE_API_TOKEN', self.__api_key)
         if sender == self.__widthSpinBox:
             self.__width = v
             self.__settings_ini.setValue('width', self.__width)
