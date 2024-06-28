@@ -2,6 +2,7 @@ import base64
 import os
 import webbrowser
 
+from pyqt_openai.models import ImagePromptContainer
 from pyqt_openai.replicate_widget.replicateControlWidget import ReplicateControlWidget
 from qtpy.QtCore import Qt
 from qtpy.QtWidgets import QHBoxLayout, QVBoxLayout, QFrame, QWidget, QSplitter, QLabel
@@ -115,8 +116,13 @@ class ReplicateWidget(QWidget):
             self.__saveResultImage(arg, image_data, prompt)
 
         self.__viewWidget.setContent(image_data)
-        DB.insertImage(*arg, image_data, prompt)
-        self.__imageNavWidget.refresh()
+        print(*arg, prompt)
+        arg = ImagePromptContainer(arg)
+        dicto = arg.__dict__
+        del dicto['data']
+        print(dicto)
+        DB.insertImage(*arg.__dict__, image_data, prompt)
+        # self.__imageNavWidget.refresh()
 
     def __saveResultImage(self, arg, image_data, revised_prompt):
         directory = self.__rightSideBarWidget.getDirectory()
