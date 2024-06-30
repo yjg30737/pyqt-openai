@@ -1,8 +1,10 @@
+from PyQt5.QtSql import QSqlQuery
 from qtpy.QtCore import Signal, QSortFilterProxyModel, Qt, QByteArray
 from qtpy.QtSql import QSqlTableModel, QSqlDatabase
 from qtpy.QtWidgets import QWidget, QVBoxLayout, QStyledItemDelegate, QTableView, QAbstractItemView, QHBoxLayout, QMessageBox, QLabel
 
 # for search feature
+from pyqt_openai.models import ImagePromptContainer
 from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.widgets.searchBar import SearchBar
 from pyqt_openai.widgets.svgButton import SvgButton
@@ -89,11 +91,16 @@ class ImageNavWidget(QWidget):
         self.__model = SqlTableModel(self)
         self.__model.setTable('image_tb')
         self.__model.beforeUpdate.connect(self.__updated)
+
+        # Set the query to fetch columns in the defined order
+        self.__model.setQuery(QSqlQuery(f"SELECT {','.join(ImagePromptContainer.get_keys())} FROM image_tb"))
+
         for i in range(len(self.__columns)):
-            self.__model.setHeaderData(i, Qt.Horizontal, self.__columns[i])
+            self.__model.setHeaderData(i, Qt.Orientation.Horizontal, self.__columns[i])
         self.__model.select()
-        # descending order by date
-        self.__model.sort(7, Qt.DescendingOrder)
+        # descending order by insert date
+        idx = ImagePromptContainer.get_keys().index('insert_dt')
+        self.__model.sort(idx, Qt.SortOrder.DescendingOrder)
 
         # init the proxy model
         self.__proxyModel = FilterProxyModel()
@@ -137,15 +144,22 @@ class ImageNavWidget(QWidget):
 
     def __clicked(self, idx):
         row = idx.row()
-        col = 5
+        col = ImagePromptContainer.get_keys().index('data')
 
         idx = self.__model.index(row, col)
-        data = self.__model.data(idx, role=Qt.DisplayRole)
+        data = self.__model.data(idx, role=Qt.ItemDataRole.DisplayRole)
         if isinstance(data, str):
             QMessageBox.critical(self, 'Error', f'Image URL can\'t bee seen after v0.2.51, Now it is replaced with b64_json.')
         else:
             data = QByteArray(data).data()
             self.getContent.emit(data)
+
+        # data = self.__model.data(idx, role=Qt.DisplayRole)
+        # if isinstance(data, str):
+        #     QMessageBox.critical(self, 'Error', f'Image URL can\'t bee seen after v0.2.51, Now it is replaced with b64_json.')
+        # else:
+        #     data = QByteArray(data).data()
+        #     self.getContent.emit(data)
 
     def __showResult(self, text):
         # index -1 will be read from all columns

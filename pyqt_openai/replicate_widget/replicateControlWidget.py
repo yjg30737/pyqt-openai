@@ -6,6 +6,7 @@ from qtpy.QtWidgets import QLineEdit, QScrollArea, QMessageBox, QWidget, QCheckB
     QPlainTextEdit, \
     QFormLayout, QLabel, QFrame, QSplitter
 
+from pyqt_openai.models import ImagePromptContainer
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.util.replicate_script import ReplicateWrapper
 from pyqt_openai.widgets.findPathWidget import FindPathWidget
@@ -14,7 +15,7 @@ from pyqt_openai.widgets.toast import Toast
 
 
 class Thread(QThread):
-    replyGenerated = Signal(str, str)
+    replyGenerated = Signal(ImagePromptContainer)
     errorGenerated = Signal(str)
     allReplyGenerated = Signal()
 
@@ -34,15 +35,15 @@ class Thread(QThread):
             for _ in range(self.__number_of_images):
                 if self.__stop:
                     break
-                image = self.__wrapper.get_image_response(model=self.__model, input_args=self.__input_args)
-                self.replyGenerated.emit(image, self.__input_args['prompt'])
+                result = self.__wrapper.get_image_response(model=self.__model, input_args=self.__input_args)
+                self.replyGenerated.emit(result)
             self.allReplyGenerated.emit()
         except Exception as e:
             self.errorGenerated.emit(str(e))
 
 
 class ReplicateControlWidget(QScrollArea):
-    submitReplicate = Signal(str, str)
+    submitReplicate = Signal(ImagePromptContainer)
     submitReplicateAllComplete = Signal()
 
     def __init__(self):
@@ -102,10 +103,8 @@ class ReplicateControlWidget(QScrollArea):
         self.__apiKeyLineEdit.setText(self.__api_key)
         self.__apiKeyLineEdit.setEchoMode(QLineEdit.EchoMode.Password)
         self.__apiKeyLineEdit.textChanged.connect(self.__replicateChanged)
-        # nanana
 
         self.__numberOfImagesToCreateSpinBox = QSpinBox()
-        self.__promptTypeToShowRadioGrpBox = QGroupBox('Prompt Type To Show')
 
         # generic settings
         self.__findPathWidget = FindPathWidget()
@@ -124,18 +123,21 @@ class ReplicateControlWidget(QScrollArea):
         self.__continueGenerationChkBox.toggled.connect(self.__continueGenerationChkBoxToggled)
         self.__continueGenerationChkBox.setChecked(self.__continue_generation)
 
-        self.__modelCmbBox = QPlainTextEdit()
-        self.__modelCmbBox.setPlainText(self.__model)
+        self.__modelTextEdit = QPlainTextEdit()
+        self.__modelTextEdit.setPlainText(self.__model)
+        self.__modelTextEdit.textChanged.connect(self.__replicateTextChanged)
 
         self.__widthSpinBox = QSpinBox()
         self.__widthSpinBox.setRange(512, 1392)
         self.__widthSpinBox.setSingleStep(8)
         self.__widthSpinBox.setValue(self.__width)
+        self.__widthSpinBox.valueChanged.connect(self.__replicateChanged)
 
         self.__heightSpinBox = QSpinBox()
         self.__heightSpinBox.setRange(512, 1392)
         self.__heightSpinBox.setSingleStep(8)
         self.__heightSpinBox.setValue(self.__height)
+        self.__heightSpinBox.valueChanged.connect(self.__replicateChanged)
 
         self.__numberOfImagesToCreateSpinBox.setRange(2, 1000)
         self.__numberOfImagesToCreateSpinBox.setValue(self.__number_of_images_to_create)
@@ -162,19 +164,16 @@ class ReplicateControlWidget(QScrollArea):
         lay.addWidget(self.__numberOfImagesToCreateSpinBox)
         lay.addWidget(self.__savePromptAsTextChkBox)
         lay.addWidget(self.__showPromptOnImageChkBox)
-        lay.addWidget(self.__promptTypeToShowRadioGrpBox)
         self.__generalGrpBox.setLayout(lay)
 
         self.__promptWidget = QPlainTextEdit()
         self.__promptWidget.setPlainText(self.__prompt)
+        self.__promptWidget.textChanged.connect(self.__replicateTextChanged)
 
         self.__negativePromptWidget = QPlainTextEdit()
         self.__negativePromptWidget.setPlaceholderText('ugly, deformed, noisy, blurry, distorted')
         self.__negativePromptWidget.setPlainText(self.__negative_prompt)
-
-        self.__styleCmbBox = QComboBox()
-        self.__styleCmbBox.addItems(['vivid', 'natural'])
-        self.__styleCmbBox.currentTextChanged.connect(self.__replicateChanged)
+        self.__negativePromptWidget.textChanged.connect(self.__replicateTextChanged)
 
         self.__submitBtn = QPushButton(LangClass.TRANSLATIONS['Submit'])
         self.__submitBtn.clicked.connect(self.__submit)
@@ -195,10 +194,9 @@ class ReplicateControlWidget(QScrollArea):
         promptWidget.setLayout(lay)
 
         lay = QFormLayout()
-        lay.addRow('Model', self.__modelCmbBox)
+        lay.addRow('Model', self.__modelTextEdit)
         lay.addRow('Width', self.__widthSpinBox)
         lay.addRow('Height', self.__heightSpinBox)
-        lay.addRow('Style', self.__styleCmbBox)
         otherParamWidget = QWidget()
         otherParamWidget.setLayout(lay)
 
@@ -239,15 +237,26 @@ class ReplicateControlWidget(QScrollArea):
         if sender == self.__apiKeyLineEdit:
             self.__api_key = v
             self.__settings_ini.setValue('REPLICATE_API_TOKEN', self.__api_key)
-        if sender == self.__widthSpinBox:
+        elif sender == self.__widthSpinBox:
             self.__width = v
             self.__settings_ini.setValue('width', self.__width)
         elif sender == self.__heightSpinBox:
             self.__height = v
             self.__settings_ini.setValue('height', self.__height)
-        elif sender == self.__heightSpinBox:
-            self.__height = v
-            self.__settings_ini.setValue('height', self.__height)
+        self.__settings_ini.endGroup()
+
+    def __replicateTextChanged(self):
+        sender = self.sender()
+        self.__settings_ini.beginGroup('REPLICATE')
+        if sender == self.__modelTextEdit:
+            self.__model = sender.toPlainText()
+            self.__settings_ini.setValue('model', self.__model)
+        elif sender == self.__promptWidget:
+            self.__prompt = sender.toPlainText()
+            self.__settings_ini.setValue('prompt', self.__prompt)
+        elif sender == self.__negativePromptWidget:
+            self.__negative_prompt = sender.toPlainText()
+            self.__settings_ini.setValue('negative_prompt', self.__negative_prompt)
         self.__settings_ini.endGroup()
 
     def __setSaveDirectory(self, directory):
@@ -286,7 +295,6 @@ class ReplicateControlWidget(QScrollArea):
         self.__settings_ini.beginGroup('REPLICATE')
         self.__settings_ini.setValue('show_prompt_on_image', self.__show_prompt_on_image)
         self.__settings_ini.endGroup()
-        self.__promptTypeToShowRadioGrpBox.setEnabled(self.__show_prompt_on_image)
 
     def __submit(self):
         arg = {
@@ -334,8 +342,8 @@ class ReplicateControlWidget(QScrollArea):
             self.__notifierWidget.doubleClicked.connect(self.window().show)
             QMessageBox.critical(self, informative_text, detailed_text)
 
-    def __afterGenerated(self, image_data, prompt):
-        self.submitReplicate.emit(image_data, prompt)
+    def __afterGenerated(self, result):
+        self.submitReplicate.emit(result)
 
     def getArgument(self):
         return {

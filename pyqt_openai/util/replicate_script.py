@@ -2,6 +2,7 @@ import os
 
 import replicate
 
+from pyqt_openai.models import ImagePromptContainer
 from pyqt_openai.util.script import download_image_as_base64
 
 
@@ -48,7 +49,20 @@ class ReplicateWrapper:
             )
 
             if output is not None and len(output) > 0:
-                return download_image_as_base64(output[0])
+                arg = {
+                    "model": model,
+                    "prompt": input_args["prompt"],
+                    "size": f"{input_args['width']}x{input_args['height']}",
+                    "quality": "high",
+                    "data": download_image_as_base64(output[0]),
+                    "style": "",
+                    "revised_prompt": "",
+                    "width": input_args["width"],
+                    "height": input_args["height"],
+                    "negative_prompt": input_args["negative_prompt"],
+                }
+                arg = ImagePromptContainer(**arg)
+                return arg
             else:
                 raise Exception("No output")
         except Exception as e:

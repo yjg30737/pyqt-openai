@@ -24,7 +24,7 @@ class ReplicateWidget(QWidget):
         self.__initUi()
 
     def __initUi(self):
-        self.__imageNavWidget = ImageNavWidget(['ID', 'Prompt', 'Negative Prompt', 'Width', 'Height', 'Data'])
+        self.__imageNavWidget = ImageNavWidget(ImagePromptContainer.get_keys())
         self.__viewWidget = ThumbnailView()
         self.__rightSideBarWidget = ReplicateControlWidget()
 
@@ -106,36 +106,26 @@ class ReplicateWidget(QWidget):
     def setAIEnabled(self, f):
         self.__rightSideBarWidget.setEnabled(f)
 
-    def __setResult(self, image_data, prompt):
-        arg = self.__rightSideBarWidget.getArgument()
-
-        image_data = base64.b64decode(image_data)
-
+    def __setResult(self, result):
         # save
         if self.__rightSideBarWidget.isSavedEnabled():
-            self.__saveResultImage(arg, image_data, prompt)
+            self.__saveResultImage(result)
 
-        self.__viewWidget.setContent(image_data)
-        print(*arg, prompt)
-        arg = ImagePromptContainer(arg)
-        dicto = arg.__dict__
-        del dicto['data']
-        print(dicto)
-        DB.insertImage(*arg.__dict__, image_data, prompt)
-        # self.__imageNavWidget.refresh()
+        self.__viewWidget.setContent(result.data)
+        DB.insertImage(result)
+        self.__imageNavWidget.refresh()
 
-    def __saveResultImage(self, arg, image_data, revised_prompt):
+    def __saveResultImage(self, result):
         directory = self.__rightSideBarWidget.getDirectory()
         os.makedirs(directory, exist_ok=True)
-        print(arg)
-        filename = os.path.join(directory, get_image_filename_for_saving(arg))
+        filename = os.path.join(directory, get_image_filename_for_saving(result))
         with open(filename, 'wb') as f:
-            f.write(image_data)
+            f.write(result.data)
 
         if self.__rightSideBarWidget.getSavePromptAsText():
             txt_filename = get_image_prompt_filename_for_saving(directory, filename)
             with open(txt_filename, 'w') as f:
-                f.write(revised_prompt)
+                f.write(result.prompt)
 
     def __imageGenerationAllComplete(self):
         if not self.isVisible():

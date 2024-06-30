@@ -1,10 +1,12 @@
 import os
+import base64
 
 from qtpy.QtCore import QThread, Signal, QSettings
 from qtpy.QtWidgets import QMessageBox, QWidget, QCheckBox, QSpinBox, QGroupBox, QVBoxLayout, QPushButton, QComboBox, \
     QPlainTextEdit, \
     QFormLayout, QLabel, QFrame, QRadioButton
 
+from pyqt_openai.models import ImagePromptContainer
 from pyqt_openai.widgets.findPathWidget import FindPathWidget
 from pyqt_openai.pyqt_openai_data import OPENAI_STRUCT
 from pyqt_openai.res.language_dict import LangClass
@@ -13,7 +15,7 @@ from pyqt_openai.widgets.toast import Toast
 
 
 class DallEThread(QThread):
-    replyGenerated = Signal(str, str)
+    replyGenerated = Signal(ImagePromptContainer)
     errorGenerated = Signal(str)
     allReplyGenerated = Signal()
 
@@ -35,17 +37,19 @@ class DallEThread(QThread):
                 response = OPENAI_STRUCT.images.generate(
                     **self.__openai_arg
                 )
-
+                container = ImagePromptContainer(**self.__openai_arg)
                 for _ in response.data:
-                    image_data = _.b64_json
-                    self.replyGenerated.emit(image_data, _.revised_prompt)
+                    image_data = base64.b64decode(_.b64_json)
+                    container.data = image_data
+                    container.revised_prompt = _.revised_prompt
+                    self.replyGenerated.emit(container)
             self.allReplyGenerated.emit()
         except Exception as e:
             self.errorGenerated.emit(str(e))
 
 
 class DallEControlWidget(QWidget):
-    submitDallE = Signal(str, str)
+    submitDallE = Signal(ImagePromptContainer)
     submitDallEAllComplete = Signal()
 
     def __init__(self):
@@ -334,8 +338,8 @@ class DallEControlWidget(QWidget):
             self.__notifierWidget.doubleClicked.connect(self.window().show)
             QMessageBox.critical(self, informative_text, detailed_text)
 
-    def __afterGenerated(self, image_data, revised_prompt):
-        self.submitDallE.emit(image_data, revised_prompt)
+    def __afterGenerated(self, arg):
+        self.submitDallE.emit(arg)
 
     def getArgument(self):
         return {
