@@ -11,7 +11,7 @@ from pyqt_openai.res.language_dict import LangClass
 class SingleImageGraphicsView(QGraphicsView):
     def __init__(self):
         super().__init__()
-        self.__aspectRatioMode = Qt.KeepAspectRatio
+        self.__aspectRatioMode = Qt.AspectRatioMode.KeepAspectRatio
         self.__initVal()
 
     def __initVal(self):
@@ -53,7 +53,7 @@ class CustomizeDialog(QDialog):
         self.__initUi()
 
     def __initVal(self):
-        self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.IniFormat)
+        self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.Format.IniFormat)
 
         if not self.__settings_ini.contains('background_image'):
             self.__settings_ini.setValue('background_image', '')
@@ -68,7 +68,7 @@ class CustomizeDialog(QDialog):
 
     def __initUi(self):
         self.setWindowTitle(LangClass.TRANSLATIONS['Customize (working)'])
-        self.setWindowFlags(Qt.Window | Qt.WindowCloseButtonHint)
+        self.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.WindowCloseButtonHint)
 
         self.__homePageGraphicsView = SingleImageGraphicsView()
         self.__homePageGraphicsView.setFilename(self.__background_image)
@@ -120,8 +120,8 @@ class CustomizeDialog(QDialog):
         self.__topWidget.setLayout(lay)
 
         sep = QFrame()
-        sep.setFrameShape(QFrame.HLine)
-        sep.setFrameShadow(QFrame.Sunken)
+        sep.setFrameShape(QFrame.Shape.HLine)
+        sep.setFrameShadow(QFrame.Shadow.Sunken)
 
         self.__okBtn = QPushButton(LangClass.TRANSLATIONS['OK'])
         self.__okBtn.clicked.connect(self.__accept)
@@ -132,7 +132,7 @@ class CustomizeDialog(QDialog):
         lay = QHBoxLayout()
         lay.addWidget(self.__okBtn)
         lay.addWidget(cancelBtn)
-        lay.setAlignment(Qt.AlignRight)
+        lay.setAlignment(Qt.AlignmentFlag.AlignRight)
         lay.setContentsMargins(0, 0, 0, 0)
 
         okCancelWidget = QWidget()

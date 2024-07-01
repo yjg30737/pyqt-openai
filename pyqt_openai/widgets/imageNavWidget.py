@@ -28,7 +28,7 @@ class FilterProxyModel(QSortFilterProxyModel):
 class AlignDelegate(QStyledItemDelegate):
     def initStyleOption(self, option, index):
         super().initStyleOption(option, index)
-        option.displayAlignment = Qt.AlignCenter
+        option.displayAlignment = Qt.AlignmentFlag.AlignCenter
 
 
 class SqlTableModel(QSqlTableModel):
@@ -38,9 +38,9 @@ class SqlTableModel(QSqlTableModel):
     addedCol = Signal()
     deletedCol = Signal()
 
-    def flags(self, index) -> Qt.ItemFlags:
+    def flags(self, index):
         if index.column() == 0:
-            return Qt.ItemIsEnabled | Qt.ItemIsSelectable
+            return Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable
         return super().flags(index)
 
 
@@ -92,13 +92,15 @@ class ImageNavWidget(QWidget):
         self.__model.beforeUpdate.connect(self.__updated)
 
         # Set the query to fetch columns in the defined order
-        self.__model.setQuery(QSqlQuery(f"SELECT {','.join(ImagePromptContainer.get_keys())} FROM image_tb"))
+        # Remove DATA for GUI performance
+        self.__columns.remove('data')
+        self.__model.setQuery(QSqlQuery(f"SELECT {','.join(self.__columns)} FROM image_tb"))
 
         for i in range(len(self.__columns)):
             self.__model.setHeaderData(i, Qt.Orientation.Horizontal, self.__columns[i])
         self.__model.select()
         # descending order by insert date
-        idx = ImagePromptContainer.get_keys().index('insert_dt')
+        idx = self.__columns.index('insert_dt')
         self.__model.sort(idx, Qt.SortOrder.DescendingOrder)
 
         # init the proxy model
@@ -110,7 +112,7 @@ class ImageNavWidget(QWidget):
         # set up the view
         self.__tableView = QTableView()
         self.__tableView.setModel(self.__proxyModel)
-        self.__tableView.setEditTriggers(QTableView.NoEditTriggers)
+        self.__tableView.setEditTriggers(QTableView.EditTrigger.NoEditTriggers)
         self.__tableView.setSortingEnabled(True)
 
         # align to center
@@ -119,9 +121,9 @@ class ImageNavWidget(QWidget):
             self.__tableView.setItemDelegateForColumn(i, delegate)
 
         # set selection/resize policy
-        self.__tableView.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.__tableView.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.__tableView.resizeColumnsToContents()
-        self.__tableView.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        self.__tableView.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
 
         self.__tableView.clicked.connect(self.__clicked)
 
@@ -142,23 +144,14 @@ class ImageNavWidget(QWidget):
         self.__model.select()
 
     def __clicked(self, idx):
-        row = idx.row()
-        col = ImagePromptContainer.get_keys().index('data')
-
-        idx = self.__model.index(row, col)
-        data = self.__model.data(idx, role=Qt.ItemDataRole.DisplayRole)
+        cur_id = self.__proxyModel.data(self.__proxyModel.index(idx.row(), self.__columns.index('ID')))
+        # Get data from DB id
+        data = DB.selectCertainImage(cur_id)['data']
         if isinstance(data, str):
             QMessageBox.critical(self, 'Error', f'Image URL can\'t bee seen after v0.2.51, Now it is replaced with b64_json.')
         else:
             data = QByteArray(data).data()
             self.getContent.emit(data)
-
-        # data = self.__model.data(idx, role=Qt.DisplayRole)
-        # if isinstance(data, str):
-        #     QMessageBox.critical(self, 'Error', f'Image URL can\'t bee seen after v0.2.51, Now it is replaced with b64_json.')
-        # else:
-        #     data = QByteArray(data).data()
-        #     self.getContent.emit(data)
 
     def __showResult(self, text):
         # index -1 will be read from all columns
@@ -171,7 +164,7 @@ class ImageNavWidget(QWidget):
         idx_s = self.__tableView.selectedIndexes()
         for idx in idx_s:
             idx = idx.siblingAtColumn(0)
-            id = self.__model.data(idx, role=Qt.DisplayRole)
+            id = self.__model.data(idx, role=Qt.ItemDataRole.DisplayRole)
             DB.removeImage(id)
         self.__model.select()
 

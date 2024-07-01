@@ -27,7 +27,7 @@ class OpenAIChatBotWidget(QWidget):
 
     def __initVal(self):
         # ini
-        self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.IniFormat)
+        self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.Format.IniFormat)
 
     def __initUi(self):
         self.__leftSideBarWidget = LeftSideBar()
@@ -71,8 +71,8 @@ class OpenAIChatBotWidget(QWidget):
         self.__promptBtn.toggled.connect(self.__promptGeneratorWidget.setVisible)
 
         sep = QFrame()
-        sep.setFrameShape(QFrame.VLine)
-        sep.setFrameShadow(QFrame.Sunken)
+        sep.setFrameShape(QFrame.Shape.VLine)
+        sep.setFrameShadow(QFrame.Shadow.Sunken)
 
         toggleMenuWidgetBtn = QPushButton('Show Menu Widget')
         toggleMenuWidgetBtn.setCheckable(True)
@@ -86,15 +86,15 @@ class OpenAIChatBotWidget(QWidget):
         lay.addWidget(sep)
         lay.addWidget(toggleMenuWidgetBtn)
         lay.setContentsMargins(2, 2, 2, 2)
-        lay.setAlignment(Qt.AlignLeft)
+        lay.setAlignment(Qt.AlignmentFlag.AlignLeft)
 
         self.__menuWidget = QWidget()
         self.__menuWidget.setLayout(lay)
         self.__menuWidget.setMaximumHeight(self.__menuWidget.sizeHint().height())
 
         sep = QFrame()
-        sep.setFrameShape(QFrame.HLine)
-        sep.setFrameShadow(QFrame.Sunken)
+        sep.setFrameShape(QFrame.Shape.HLine)
+        sep.setFrameShadow(QFrame.Shadow.Sunken)
 
         self.__leftSideBarWidget.initHistory()
         self.__leftSideBarWidget.added.connect(self.__addConv)
@@ -115,7 +115,7 @@ class OpenAIChatBotWidget(QWidget):
 
         self.__queryWidget = QWidget()
         self.__queryWidget.setLayout(lay)
-        self.__queryWidget.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
+        self.__queryWidget.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Maximum)
 
         lay = QVBoxLayout()
         lay.addWidget(self.__chatWidget)
@@ -127,7 +127,7 @@ class OpenAIChatBotWidget(QWidget):
         chatWidget.setLayout(lay)
 
         self.__rightSideBar = QSplitter()
-        self.__rightSideBar.setOrientation(Qt.Vertical)
+        self.__rightSideBar.setOrientation(Qt.Orientation.Vertical)
         self.__rightSideBar.addWidget(self.__aiPlaygroundWidget)
         self.__rightSideBar.addWidget(self.__promptGeneratorWidget)
         self.__rightSideBar.setSizes([600, 400])
@@ -294,7 +294,7 @@ class OpenAIChatBotWidget(QWidget):
 
     def __changeConv(self, item: QListWidgetItem):
         if item:
-            id = item.data(Qt.UserRole)
+            id = item.data(Qt.ItemDataRole.UserRole)
             conv_data = DB.selectCertainConv(id)
             self.__browser.replaceConv(id, conv_data)
         else:
@@ -325,9 +325,9 @@ class OpenAIChatBotWidget(QWidget):
             messageBox = QMessageBox(self)
             messageBox.setWindowTitle('Information')
             messageBox.setText(message)
-            messageBox.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+            messageBox.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
             reply = messageBox.exec()
-            if reply == QMessageBox.Yes:
+            if reply == QMessageBox.StandardButton.Yes:
                 # Export previous conversation
                 self.__exportConv([_['id'] for _ in old_conv])
             else:

@@ -63,7 +63,7 @@ class DallEControlWidget(QScrollArea):
     def __initVal(self):
         default_directory = 'image_result'
 
-        self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.IniFormat)
+        self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.Format.IniFormat)
         self.__settings_ini.beginGroup('DALLE')
 
         if not self.__settings_ini.contains('quality'):
@@ -236,8 +236,8 @@ class DallEControlWidget(QScrollArea):
         paramGrpBox.setLayout(lay)
 
         sep = QFrame()
-        sep.setFrameShape(QFrame.HLine)
-        sep.setFrameShadow(QFrame.Sunken)
+        sep.setFrameShape(QFrame.Shape.HLine)
+        sep.setFrameShadow(QFrame.Shadow.Sunken)
 
         lay = QVBoxLayout()
         lay.addWidget(self.__generalGrpBox)
@@ -279,9 +279,10 @@ class DallEControlWidget(QScrollArea):
     def __dalleTextChanged(self):
         sender = self.sender()
         self.__settings_ini.beginGroup('DALLE')
-        if sender == self.__promptWidget:
-            self.__prompt = sender.toPlainText()
-            self.__settings_ini.setValue('prompt', self.__prompt)
+        if isinstance(sender, QPlainTextEdit):
+            if sender == self.__promptWidget:
+                self.__prompt = sender.toPlainText()
+                self.__settings_ini.setValue('prompt', self.__prompt)
         self.__settings_ini.endGroup()
 
     def __setSaveDirectory(self, directory):

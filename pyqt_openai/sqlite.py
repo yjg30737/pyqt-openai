@@ -636,6 +636,14 @@ class SqliteDatabase:
             print(f"An error occurred: {e}")
             raise
 
+    def selectCertainImage(self, id):
+        try:
+            self.__c.execute(f'SELECT * FROM {self.__image_tb_nm} WHERE id={id}')
+            return self.__c.fetchone()
+        except sqlite3.Error as e:
+            print(f"An error occurred: {e}")
+            raise
+
     def removeImage(self, id=None):
         try:
             query = f'DELETE FROM {self.__image_tb_nm}'

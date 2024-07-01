@@ -21,7 +21,7 @@ class ThumbnailView(QGraphicsView):
         self._scene = QGraphicsScene()
         self._p = QPixmap()
         self._item = QGraphicsPixmapItem()
-        self.__aspectRatioMode = Qt.KeepAspectRatio
+        self.__aspectRatioMode = Qt.AspectRatioMode.KeepAspectRatio
 
         self.__factor = 1.1  # Zoom factor
 
@@ -74,7 +74,7 @@ class ThumbnailView(QGraphicsView):
 
     def __refreshSceneAndView(self):
         self._item = self._scene.addPixmap(self._p)
-        self._item.setTransformationMode(Qt.SmoothTransformation)
+        self._item.setTransformationMode(Qt.TransformationMode.SmoothTransformation)
         rect = self.sceneRect() \
             if (self._item.boundingRect().width() > self.sceneRect().width()) or (self._item.boundingRect().height() > self.sceneRect().height()) \
             else self._item.boundingRect()
@@ -138,7 +138,7 @@ class ThumbnailView(QGraphicsView):
         return super().mousePressEvent(e)
 
     def wheelEvent(self, event):
-        if event.modifiers() == Qt.ControlModifier:
+        if event.modifiers() == Qt.Modifier.ControlModifier:
             # Check if Ctrl key is pressed
             if event.angleDelta().y() > 0:
                 # Ctrl + wheel up, zoom in

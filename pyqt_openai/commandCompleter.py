@@ -1,4 +1,4 @@
-from qtpy.QtCore import Qt, pyqtSignal
+from qtpy.QtCore import Qt, Signal
 from qtpy.QtWidgets import QTableWidget, QHeaderView, QScrollArea, QStyledItemDelegate, \
     QStyle, QTableWidgetItem
 
@@ -6,28 +6,28 @@ from qtpy.QtWidgets import QTableWidget, QHeaderView, QScrollArea, QStyledItemDe
 class CommandCompleterTableWidgetDelegate(QStyledItemDelegate):
     def paint(self, painter, option, index):
         # Check if the item is selected
-        if option.state & QStyle.State_Active:
+        if option.state & QStyle.StateFlag.State_Active:
             # Set the background color for selected item
-            option.palette.setColor(option.palette.Highlight, Qt.lightGray)
+            option.palette.setColor(option.palette.Highlight, Qt.GlobalColor.lightGray)
 
         # Call the base paint method
         super().paint(painter, option, index)
 
 
 class CommandCompleterTableWidget(QTableWidget):
-    showText = pyqtSignal(str)
+    showText = Signal(str)
 
     def __init__(self):
         super().__init__()
         self.__initUi()
 
     def __initUi(self):
-        self.setWindowFlags(Qt.ToolTip)
+        self.setWindowFlags(Qt.WindowType.ToolTip)
         self.setColumnCount(2)
 
         self.horizontalHeader().setVisible(False)
         self.verticalHeader().setVisible(False)
-        self.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
 
         self.clicked.connect(self.__showText)
 
@@ -59,11 +59,11 @@ class CommandCompleterTableWidget(QTableWidget):
 
             item1 = QTableWidgetItem()
             item1.setText(name)
-            item1.setTextAlignment(Qt.AlignCenter)
+            item1.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
 
             item2 = QTableWidgetItem()
             item2.setText(value)
-            item2.setTextAlignment(Qt.AlignCenter)
+            item2.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
 
             row_idx = self.rowCount()
             self.setRowCount(row_idx + 1)
@@ -78,7 +78,7 @@ class CommandCompleterTableWidget(QTableWidget):
 
 
 class CommandCompleter(QScrollArea):
-    showText = pyqtSignal(str)
+    showText = Signal(str)
 
     def __init__(self):
         super().__init__()

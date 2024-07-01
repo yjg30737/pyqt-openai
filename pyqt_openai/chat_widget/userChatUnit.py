@@ -31,7 +31,7 @@ class UserChatUnit(QWidget):
         copyBtn.clicked.connect(self.__copy)
 
         lay.addWidget(self.__icon)
-        lay.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.MinimumExpanding))
+        lay.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.Policy.MinimumExpanding))
         lay.addWidget(copyBtn)
         lay.setContentsMargins(2, 2, 2, 2)
         lay.setSpacing(1)
@@ -43,9 +43,9 @@ class UserChatUnit(QWidget):
         self.__lbl = QLabel()
         self.__lbl.setStyleSheet('QLabel { padding: 6px }')
 
-        self.__lbl.setAlignment(Qt.AlignLeft)
+        self.__lbl.setAlignment(Qt.AlignmentFlag.AlignLeft)
         self.__lbl.setWordWrap(True)
-        self.__lbl.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        self.__lbl.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
         self.__lbl.setOpenExternalLinks(True)
 
         lay = QVBoxLayout()

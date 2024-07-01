@@ -30,7 +30,7 @@ class FileListWidget(QWidget):
 
         lay = QHBoxLayout()
         lay.addWidget(lbl)
-        lay.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.MinimumExpanding))
+        lay.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.Policy.MinimumExpanding))
         lay.addWidget(setDirBtn)
         lay.setContentsMargins(0, 0, 0, 0)
 
@@ -41,8 +41,8 @@ class FileListWidget(QWidget):
         self.__listWidget.itemClicked.connect(self.__sendDirectory)
 
         sep = QFrame()
-        sep.setFrameShape(QFrame.HLine)
-        sep.setFrameShadow(QFrame.Sunken)
+        sep.setFrameShape(QFrame.Shape.HLine)
+        sep.setFrameShadow(QFrame.Shadow.Sunken)
 
         lay = QVBoxLayout()
         lay.addWidget(topWidget)
@@ -55,7 +55,7 @@ class FileListWidget(QWidget):
     def setDirectory(self, directory=None):
         try:
             if not directory:
-                directory = QFileDialog.getExistingDirectory(self, LangClass.TRANSLATIONS['Select Directory'], os.path.expanduser('~'), QFileDialog.ShowDirsOnly)
+                directory = QFileDialog.getExistingDirectory(self, LangClass.TRANSLATIONS['Select Directory'], os.path.expanduser('~'), QFileDialog.Option.ShowDirsOnly)
             ext_lst = ['.txt']
             if directory:
                 self.__listWidget.clear()

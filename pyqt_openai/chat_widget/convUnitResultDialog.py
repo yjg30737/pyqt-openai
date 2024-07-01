@@ -13,15 +13,15 @@ class ConvUnitResultDialog(QDialog):
 
     def __initUi(self):
         self.setWindowTitle('Conversation Result')
-        self.setWindowFlags(Qt.Window | Qt.WindowCloseButtonHint)
+        self.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.WindowCloseButtonHint)
 
         lbls = []
         for k, v in self.__result_info.items():
             lbls.append(QLabel(f'{k}: {v}'))
 
         sep = QFrame()
-        sep.setFrameShape(QFrame.HLine)
-        sep.setFrameShadow(QFrame.Sunken)
+        sep.setFrameShape(QFrame.Shape.HLine)
+        sep.setFrameShadow(QFrame.Shadow.Sunken)
 
         okBtn = QPushButton('OK')
         okBtn.clicked.connect(self.accept)
@@ -33,13 +33,3 @@ class ConvUnitResultDialog(QDialog):
         lay.addWidget(okBtn)
 
         self.setLayout(lay)
-
-
-
-if __name__ == "__main__":
-    import sys
-
-    app = QApplication(sys.argv)
-    w = ConvUnitResultDialog()
-    w.show()
-    sys.exit(app.exec())

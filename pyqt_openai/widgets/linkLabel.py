@@ -8,8 +8,8 @@ class LinkLabel(QLabel):
         super().__init__(text)
         self.link = link
         self.setText(f"<a href=\"{link}\">{text}</a>")
-        self.setTextInteractionFlags(Qt.TextBrowserInteraction)
+        self.setTextInteractionFlags(Qt.TextInteractionFlag.TextBrowserInteraction)
         self.linkActivated.connect(lambda: webbrowser.open(link))
         self.setContentsMargins(2, 2, 2, 2)
-        self.setAlignment(Qt.AlignLeft)
+        self.setAlignment(Qt.AlignmentFlag.AlignLeft)
         self.setOpenExternalLinks(True)

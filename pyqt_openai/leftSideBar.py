@@ -54,7 +54,7 @@ class LeftSideBar(QWidget):
 
         lay = QHBoxLayout()
         lay.addWidget(self.__allCheckBox)
-        lay.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.MinimumExpanding))
+        lay.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.Policy.MinimumExpanding))
         lay.addWidget(self.__addBtn)
         lay.addWidget(self.__delBtn)
         lay.addWidget(self.__importBtn)
@@ -145,7 +145,7 @@ class LeftSideBar(QWidget):
             convs = DB.selectAllContentOfConv()
             db_id_real_id_dict = dict()
             for i in range(self.__convListWidget.count()):
-                db_id_real_id_dict[self.__convListWidget.item(i).data(Qt.UserRole)] = self.__convListWidget.item(i)
+                db_id_real_id_dict[self.__convListWidget.item(i).data(Qt.ItemDataRole.UserRole)] = self.__convListWidget.item(i)
             for conv in convs:
                 i = conv[0]
                 each_content_arr = list(filter(lambda x: x.find(text) != -1, [_['conv'] for _ in conv[1]]))

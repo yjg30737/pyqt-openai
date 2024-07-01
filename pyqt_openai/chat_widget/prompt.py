@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 
 from qtpy.QtCore import Qt, Signal
-from qtpy.QtWidgets import QVBoxLayout, QPushButton, QFileDialog, QToolButton, QMenu, QAction, QWidget, QHBoxLayout
+from qtpy.QtWidgets import QVBoxLayout, QAction, QPushButton, QFileDialog, QToolButton, QMenu, QWidget, QHBoxLayout
 
 from pyqt_openai.chat_widget.textEditPromptGroup import TextEditPromptGroup
 from pyqt_openai.chat_widget.uploadedImageFileWidget import UploadedImageFileWidget
@@ -38,7 +38,7 @@ class Prompt(QWidget):
         lay.setContentsMargins(0, 0, 0, 0)
         lay.setSpacing(0)
         lay.addWidget(self.__stopBtn)
-        lay.setAlignment(Qt.AlignCenter)
+        lay.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.__controlWidgetDuringGeneration = QWidget()
         self.__controlWidgetDuringGeneration.setLayout(lay)
@@ -54,7 +54,7 @@ class Prompt(QWidget):
         lay.setSpacing(0)
         lay.addWidget(self.__continueBtn)
         lay.addWidget(self.__regenerateBtn)
-        lay.setAlignment(Qt.AlignCenter)
+        lay.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.__controlWidgetAfterGeneration = QWidget()
         self.__controlWidgetAfterGeneration.setLayout(lay)
@@ -118,12 +118,12 @@ class Prompt(QWidget):
 
         # Connect the button to the menu
         settingsBtn.setMenu(menu)
-        settingsBtn.setPopupMode(QToolButton.InstantPopup)
+        settingsBtn.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
 
         lay = QVBoxLayout()
         lay.addWidget(settingsBtn)
         lay.setContentsMargins(1, 1, 1, 1)
-        lay.setAlignment(Qt.AlignBottom)
+        lay.setAlignment(Qt.AlignmentFlag.AlignBottom)
 
         rightWidget = QWidget()
         rightWidget.setLayout(lay)
@@ -231,7 +231,8 @@ class Prompt(QWidget):
 
     def updateHeight(self):
         overallHeight = self.__textEditGroup.adjustHeight()
-        self.setMaximumHeight(overallHeight + self.__suggestionWidget.maximumHeight())
+        # Set the maximum height of the widget - should fit the device screen
+        self.setMaximumHeight(overallHeight + self.__suggestionWidget.height() + self.__uploadedImageFileWidget.height() + 100)
 
     def getTextEdit(self):
         return self.__textEditGroup.getGroup()[1]

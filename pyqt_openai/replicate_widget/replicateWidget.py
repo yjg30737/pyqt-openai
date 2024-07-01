@@ -1,20 +1,18 @@
-import base64
 import os
-import webbrowser
+
+from qtpy.QtCore import Qt
+from qtpy.QtWidgets import QHBoxLayout, QVBoxLayout, QFrame, QWidget, QSplitter
 
 from pyqt_openai.models import ImagePromptContainer
-from pyqt_openai.replicate_widget.replicateControlWidget import ReplicateControlWidget
-from qtpy.QtCore import Qt
-from qtpy.QtWidgets import QHBoxLayout, QVBoxLayout, QFrame, QWidget, QSplitter, QLabel
-
-from pyqt_openai.widgets.imageNavWidget import ImageNavWidget
-from pyqt_openai.widgets.linkLabel import LinkLabel
-from pyqt_openai.widgets.thumbnailView import ThumbnailView
 from pyqt_openai.pyqt_openai_data import DB
+from pyqt_openai.replicate_widget.replicateControlWidget import ReplicateControlWidget
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.util.script import get_image_filename_for_saving, open_directory, get_image_prompt_filename_for_saving
+from pyqt_openai.widgets.imageNavWidget import ImageNavWidget
+from pyqt_openai.widgets.linkLabel import LinkLabel
 from pyqt_openai.widgets.notifier import NotifierWidget
 from pyqt_openai.widgets.svgButton import SvgButton
+from pyqt_openai.widgets.thumbnailView import ThumbnailView
 
 
 class ReplicateWidget(QWidget):
@@ -51,12 +49,12 @@ class ReplicateWidget(QWidget):
         self.__howToUseReplicateLabel = LinkLabel('Get Replicate API Token (Need to sign in first)', 'https://replicate.com/account/api-tokens')
 
         sep1 = QFrame()
-        sep1.setFrameShape(QFrame.VLine)
-        sep1.setFrameShadow(QFrame.Sunken)
+        sep1.setFrameShape(QFrame.Shape.VLine)
+        sep1.setFrameShadow(QFrame.Shadow.Sunken)
 
         sep2 = QFrame()
-        sep2.setFrameShape(QFrame.VLine)
-        sep2.setFrameShadow(QFrame.Sunken)
+        sep2.setFrameShape(QFrame.Shape.VLine)
+        sep2.setFrameShadow(QFrame.Shadow.Sunken)
 
         lay = QHBoxLayout()
         lay.addWidget(self.__settingBtn)
@@ -66,15 +64,15 @@ class ReplicateWidget(QWidget):
         lay.addWidget(sep2)
         lay.addWidget(self.__howToUseReplicateLabel)
         lay.setContentsMargins(2, 2, 2, 2)
-        lay.setAlignment(Qt.AlignLeft)
+        lay.setAlignment(Qt.AlignmentFlag.AlignLeft)
 
         self.__menuWidget = QWidget()
         self.__menuWidget.setLayout(lay)
         self.__menuWidget.setMaximumHeight(self.__menuWidget.sizeHint().height())
 
         sep = QFrame()
-        sep.setFrameShape(QFrame.HLine)
-        sep.setFrameShadow(QFrame.Sunken)
+        sep.setFrameShape(QFrame.Shape.HLine)
+        sep.setFrameShadow(QFrame.Shadow.Sunken)
 
         mainWidget = QSplitter()
         mainWidget.addWidget(self.__imageNavWidget)

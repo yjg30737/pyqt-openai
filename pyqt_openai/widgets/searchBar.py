@@ -54,7 +54,7 @@ class SearchBar(QWidget):
         lay.addWidget(searchWidget)
         lay.setContentsMargins(0, 0, 0, 0)
 
-        self.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Preferred)
+        self.setSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Preferred)
 
         self.__setStyle()
 

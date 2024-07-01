@@ -30,13 +30,13 @@ class LlamaPage(QWidget):
         self.__txtBrowser.setMaximumHeight(150)
 
         sep = QFrame()
-        sep.setFrameShape(QFrame.HLine)
-        sep.setFrameShadow(QFrame.Sunken)
+        sep.setFrameShape(QFrame.Shape.HLine)
+        sep.setFrameShadow(QFrame.Shadow.Sunken)
 
         lay = QVBoxLayout()
         lay.addWidget(self.__listWidget)
         lay.addWidget(self.__txtBrowser)
-        lay.setAlignment(Qt.AlignTop)
+        lay.setAlignment(Qt.AlignmentFlag.AlignTop)
 
         self.setLayout(lay)
 
@@ -51,7 +51,7 @@ class LlamaPage(QWidget):
             self.__txtBrowser.setText(f.read())
 
     def setDirectory(self):
-        self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.IniFormat)
+        self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.Format.IniFormat)
         if self.__settings_ini.contains('llama_index_directory'):
             directory = self.__settings_ini.value('llama_index_directory', type=str)
             self.__listWidget.setDirectory(directory)

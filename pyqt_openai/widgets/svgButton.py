@@ -32,7 +32,7 @@ class SvgButton(QPushButton):
             self.__text_color = '#AAAAAA'
 
     def __initColorByBaseWidget(self):
-        self.__base_color = self.__baseWidget.palette().color(QPalette.Base)
+        self.__base_color = self.__baseWidget.palette().color(QPalette.ColorRole.Base)
         self.__hover_color = self.__getHoverColor(self.__base_color)
         self.__pressed_color = self.__getPressedColor(self.__base_color)
         self.__checked_color = self.__getPressedColor(self.__base_color)
@@ -124,10 +124,10 @@ class SvgButton(QPushButton):
             # catch the StyleChange event of base widget
             if e.type() == 100:
                 # if base widget's background is transparent (#ffffff)
-                if self.__baseWidget.palette().color(QPalette.Base).name() == '#ffffff':
+                if self.__baseWidget.palette().color(QPalette.ColorRole.Base).name() == '#ffffff':
                     # then check the parent widget's background
                     if self.__baseWidget.parent():
-                        if self.__baseWidget.parent().palette().color(QPalette.Base).name() == '#ffffff':
+                        if self.__baseWidget.parent().palette().color(QPalette.ColorRole.Base).name() == '#ffffff':
                             pass
                         else:
                             self.__baseWidget = self.__baseWidget.parent()

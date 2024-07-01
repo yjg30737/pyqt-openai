@@ -54,7 +54,7 @@ class ReplicateControlWidget(QScrollArea):
     def __initVal(self):
         default_directory = 'image_result'
 
-        self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.IniFormat)
+        self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.Format.IniFormat)
         self.__settings_ini.beginGroup('REPLICATE')
         if not self.__settings_ini.contains('REPLICATE_API_TOKEN'):
             self.__settings_ini.setValue('REPLICATE_API_TOKEN', '')
@@ -215,8 +215,8 @@ class ReplicateControlWidget(QScrollArea):
         paramGrpBox.setLayout(lay)
 
         sep = QFrame()
-        sep.setFrameShape(QFrame.HLine)
-        sep.setFrameShadow(QFrame.Sunken)
+        sep.setFrameShape(QFrame.Shape.HLine)
+        sep.setFrameShadow(QFrame.Shadow.Sunken)
 
         lay = QVBoxLayout()
         lay.addWidget(self.__generalGrpBox)
@@ -248,15 +248,16 @@ class ReplicateControlWidget(QScrollArea):
     def __replicateTextChanged(self):
         sender = self.sender()
         self.__settings_ini.beginGroup('REPLICATE')
-        if sender == self.__modelTextEdit:
-            self.__model = sender.toPlainText()
-            self.__settings_ini.setValue('model', self.__model)
-        elif sender == self.__promptWidget:
-            self.__prompt = sender.toPlainText()
-            self.__settings_ini.setValue('prompt', self.__prompt)
-        elif sender == self.__negativePromptWidget:
-            self.__negative_prompt = sender.toPlainText()
-            self.__settings_ini.setValue('negative_prompt', self.__negative_prompt)
+        if isinstance(sender, QPlainTextEdit):
+            if sender == self.__modelTextEdit:
+                self.__model = sender.toPlainText()
+                self.__settings_ini.setValue('model', self.__model)
+            elif sender == self.__promptWidget:
+                self.__prompt = sender.toPlainText()
+                self.__settings_ini.setValue('prompt', self.__prompt)
+            elif sender == self.__negativePromptWidget:
+                self.__negative_prompt = sender.toPlainText()
+                self.__settings_ini.setValue('negative_prompt', self.__negative_prompt)
         self.__settings_ini.endGroup()
 
     def __setSaveDirectory(self, directory):

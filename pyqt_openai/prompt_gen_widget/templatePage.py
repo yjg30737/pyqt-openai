@@ -32,10 +32,10 @@ class TemplateGroupList(QWidget):
 
         lay = QHBoxLayout()
         lay.addWidget(QLabel(LangClass.TRANSLATIONS['Template Group']))
-        lay.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.MinimumExpanding))
+        lay.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.Policy.MinimumExpanding))
         lay.addWidget(self.__addBtn)
         lay.addWidget(self.__delBtn)
-        lay.setAlignment(Qt.AlignRight)
+        lay.setAlignment(Qt.AlignmentFlag.AlignRight)
         lay.setContentsMargins(0, 0, 0, 0)
 
         topWidget = QWidget()
@@ -66,8 +66,8 @@ class TemplateGroupList(QWidget):
 
     def __addGroupItem(self, id, name):
         item = QListWidgetItem()
-        item.setFlags(item.flags() | Qt.ItemIsEditable)
-        item.setData(Qt.UserRole, id)
+        item.setFlags(item.flags() | Qt.ItemFlag.ItemIsEditable)
+        item.setData(Qt.ItemDataRole.UserRole, id)
         item.setText(name)
         self.__templateList.addItem(item)
         self.__templateList.setCurrentItem(item)
@@ -78,7 +78,7 @@ class TemplateGroupList(QWidget):
     def __addGroup(self):
         dialog = PromptGroupInputDialog(self)
         reply = dialog.exec()
-        if reply == QDialog.Accepted:
+        if reply == QDialog.DialogCode.Accepted:
             name = dialog.getPromptGroupName()
             id = DB.insertTemplatePromptGroup({ 'name': name, 'data': [] })
             self.__addGroupItem(id, name)
@@ -86,7 +86,7 @@ class TemplateGroupList(QWidget):
     def __deleteGroup(self):
         i = self.__templateList.currentRow()
         item = self.__templateList.takeItem(i)
-        id = item.data(Qt.UserRole)
+        id = item.data(Qt.ItemDataRole.UserRole)
         DB.deleteTemplatePromptGroup(id)
         self.deleted.emit(id)
 
@@ -95,14 +95,14 @@ class TemplateGroupList(QWidget):
             self.__delBtn.setEnabled(False)
 
     def __itemChanged(self, item):
-        id = item.data(Qt.UserRole)
+        id = item.data(Qt.ItemDataRole.UserRole)
         DB.updateTemplatePromptGroup(id, item.text())
         self.itemChanged.emit(id)
 
     def __currentRowChanged(self, r_idx):
         item = self.__templateList.item(r_idx)
         if item:
-            id = item.data(Qt.UserRole)
+            id = item.data(Qt.ItemDataRole.UserRole)
             self.currentRowChanged.emit(id)
 
 
@@ -132,10 +132,10 @@ class TemplateTable(QWidget):
 
         lay = QHBoxLayout()
         lay.addWidget(self.__titleLbl)
-        lay.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.MinimumExpanding))
+        lay.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.Policy.MinimumExpanding))
         lay.addWidget(self.__addBtn)
         lay.addWidget(self.__delBtn)
-        lay.setAlignment(Qt.AlignRight)
+        lay.setAlignment(Qt.AlignmentFlag.AlignRight)
         lay.setContentsMargins(0, 0, 0, 0)
 
         topWidget = QWidget()
@@ -143,9 +143,9 @@ class TemplateTable(QWidget):
 
         self.__table = QTableWidget()
         self.__table.setColumnCount(2)
-        self.__table.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.__table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.__table.setHorizontalHeaderLabels([LangClass.TRANSLATIONS['Act'], LangClass.TRANSLATIONS['Prompt']])
-        self.__table.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
+        self.__table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
         self.__table.currentItemChanged.connect(self.__rowChanged)
         self.__table.itemChanged.connect(self.__saveChangedTemplatePrompt)
 
@@ -174,11 +174,11 @@ class TemplateTable(QWidget):
             value = self.__previousPromptTemplateArr[i][3]
 
             item1 = QTableWidgetItem(name)
-            item1.setData(Qt.UserRole, self.__previousPromptTemplateArr[i][0])
-            item1.setTextAlignment(Qt.AlignCenter)
+            item1.setData(Qt.ItemDataRole.UserRole, self.__previousPromptTemplateArr[i][0])
+            item1.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
 
             item2 = QTableWidgetItem(value)
-            item2.setTextAlignment(Qt.AlignCenter)
+            item2.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
 
             self.__table.setItem(i, 0, item1)
             self.__table.setItem(i, 1, item2)
@@ -208,7 +208,7 @@ class TemplateTable(QWidget):
 
     def __saveChangedTemplatePrompt(self, item: QTableWidgetItem):
         name_item = self.__table.item(item.row(), 0)
-        id = name_item.data(Qt.UserRole)
+        id = name_item.data(Qt.ItemDataRole.UserRole)
         name = name_item.text()
 
         prompt_item = self.__table.item(item.row(), 1)
@@ -218,28 +218,28 @@ class TemplateTable(QWidget):
     def __add(self):
         dialog = TemplatePromptUnitInputDialog(self.__id, self)
         reply = dialog.exec()
-        if reply == QDialog.Accepted:
+        if reply == QDialog.DialogCode.Accepted:
             self.__table.itemChanged.disconnect(self.__saveChangedTemplatePrompt)
 
             name = dialog.getPromptName()
             self.__table.setRowCount(self.__table.rowCount()+1)
 
             item1 = QTableWidgetItem(name)
-            item1.setTextAlignment(Qt.AlignCenter)
+            item1.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
             self.__table.setItem(self.__table.rowCount()-1, 0, item1)
 
             item2 = QTableWidgetItem('')
-            item2.setTextAlignment(Qt.AlignCenter)
+            item2.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
             self.__table.setItem(self.__table.rowCount()-1, 1, item2)
 
             id = DB.insertTemplatePromptUnit(self.__id, name)
-            item1.setData(Qt.UserRole, id)
+            item1.setData(Qt.ItemDataRole.UserRole, id)
 
             self.__table.itemChanged.connect(self.__saveChangedTemplatePrompt)
 
     def __delete(self):
         for i in sorted(set([i.row() for i in self.__table.selectedIndexes()]), reverse=True):
-            id = self.__table.item(i, 0).data(Qt.UserRole)
+            id = self.__table.item(i, 0).data(Qt.ItemDataRole.UserRole)
             self.__table.removeRow(i)
             DB.deleteTemplatePromptUnit(self.__id, id)
 
