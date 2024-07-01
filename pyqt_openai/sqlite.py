@@ -1,5 +1,7 @@
 import sqlite3, json, shutil
 
+from pyqt_openai.models import ImagePromptContainer
+
 
 class SqliteDatabase:
     """
@@ -573,50 +575,27 @@ class SqliteDatabase:
             if self.__c.fetchone()[0] == 1:
                 # To not make table every time to change column's name and type
                 self.__c.execute(f'PRAGMA table_info({self.__image_tb_nm})')
-                new_columns = {'data', 'style', 'revised_prompt'}
-                common_columns = set([column[1] for column in self.__c.fetchall()]).intersection(
-                    new_columns)
-                if len(common_columns) == len(new_columns):
-                    pass
-                else:
-                    # If image table already exists, execute query for applying latest update
-                    # To rename column, create a new temporary table
-                    temp_image_tb_nm = 'temp_image_tb'
+                existing_columns = set([column[1] for column in self.__c.fetchall()])
+                required_columns = set(ImagePromptContainer.get_keys_for_insert())
 
-                    self.__c.execute(
-                        f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{temp_image_tb_nm}'")
-                    if self.__c.fetchone()[0] == 1:
-                        pass
-                    else:
-                        self.__c.execute(f'''CREATE TABLE {temp_image_tb_nm}
-                                     (id INTEGER PRIMARY KEY,
-                                      prompt TEXT,
-                                      n INT,
-                                      size VARCHAR(255),
-                                      quality VARCHAR(255),
-                                      data BLOB,
-                                      style VARCHAR(255),
-                                      revised_prompt TEXT,
-                                      update_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
-                                      insert_dt DATETIME DEFAULT CURRENT_TIMESTAMP)''')
-                        # Copy the data from the old table to the new table
-                        # self.__c.execute(f'INSERT INTO {temp_image_tb_nm} VALUES (data, style, revised_prompt)')
-                        self.__c.execute(f'SELECT * FROM {self.__image_tb_nm}')
-                        for row in self.__c.fetchall():
-                            revised_row = list(row)[:6] + ['', ''] + list(row)[6:]
-                            self.__c.execute(f'''INSERT INTO {temp_image_tb_nm}
-                                               (id, prompt, n, size, quality, data, style, revised_prompt, update_dt, insert_dt)
-                                               VALUES
-                                               (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                                            ''', revised_row)
+                # Find missing columns
+                missing_columns = required_columns - existing_columns
+                for column in missing_columns:
+                    # Add missing columns to the table
+                    column_type = 'TEXT'  # Default type
+                    if column in ['n', 'width', 'height']:
+                        column_type = 'INT'
+                    elif column == 'data':
+                        column_type = 'BLOB'
+                    elif column in ['model', 'size', 'quality', 'style']:
+                        column_type = 'VARCHAR(255)'
+                    self.__c.execute(f'ALTER TABLE {self.__image_tb_nm} ADD COLUMN {column} {column_type}')
 
-                        # Delete the old table
-                        self.__c.execute(f'DROP TABLE {self.__image_tb_nm}')
-                        # Rename the new table to the original name
-                        self.__c.execute(f'ALTER TABLE {temp_image_tb_nm} RENAME TO {self.__image_tb_nm}')
+                self.__conn.commit()
             else:
                 self.__c.execute(f'''CREATE TABLE {self.__image_tb_nm}
                              (id INTEGER PRIMARY KEY,
+                              model VARCHAR(255),
                               prompt TEXT,
                               n INT,
                               size VARCHAR(255),
@@ -624,24 +603,29 @@ class SqliteDatabase:
                               data BLOB,
                               style VARCHAR(255),
                               revised_prompt TEXT,
+                              width INT,
+                              height INT,
+                              negative_prompt TEXT,
                               update_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
                               insert_dt DATETIME DEFAULT CURRENT_TIMESTAMP)''')
                 # Commit the transaction
-            self.__conn.commit()
+                self.__conn.commit()
         except sqlite3.Error as e:
             print(f"An error occurred while creating the table: {e}")
             raise
 
-    def insertImage(self, prompt, n, size, quality, style, data, revised_prompt):
+    def insertImage(self, arg: ImagePromptContainer):
         try:
-            self.__c.execute(
-                f'INSERT INTO {self.__image_tb_nm} (prompt, n, size, quality, data, style, revised_prompt) VALUES (?, ?, ?, ?, ?, ?, ?)',
-                (prompt, n, size, quality, data, style, revised_prompt))
+            query = arg.create_insert_query(self.__image_tb_nm)
+            values = arg.get_values_for_insert()
+            self.__c.execute(query, values)
+                # f'INSERT INTO {self.__image_tb_nm} (prompt, n, size, quality, data, style, revised_prompt) VALUES (?, ?, ?, ?, ?, ?, ?)',
+                # (prompt, n, size, quality, data, style, revised_prompt))
             new_id = self.__c.lastrowid
             self.__conn.commit()
             return new_id
         except sqlite3.Error as e:
-            print(f"An error occurred: {e}")
+            print(f"An error occurred..")
             raise
 
     def selectImage(self):

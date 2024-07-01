@@ -25,16 +25,17 @@ setup(
     long_description_content_type='text/markdown',
     long_description=long_description,
     install_requires=[
-        'PyQt5>=5.14',
-        'PySide6',
-        'qtpy',
-        'aiohttp',
-        'openai',
-        'pyperclip',
-        'jinja2',
-        'llama-index',
-        'requests',
-        'langchain',
-        'pillow',
+        'PyQt5 >= 5.14'
+        ,'PyQt6'
+        ,'qtpy'
+        ,'aiohttp'
+        ,'openai'
+        ,'pyperclip'
+        ,'jinja2'
+        ,'llama-index'
+        ,'requests'
+        ,'langchain'
+        ,'pillow'
+        ,'replicate'
     ]
 )

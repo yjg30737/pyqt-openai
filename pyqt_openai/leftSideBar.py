@@ -5,7 +5,7 @@ from pyqt_openai.widgets.searchBar import SearchBar
 from pyqt_openai.widgets.svgButton import SvgButton
 from qtpy.QtCore import Signal, Qt
 from qtpy.QtWidgets import QWidget, QComboBox, QCheckBox, QVBoxLayout, QHBoxLayout, QSpacerItem, QSizePolicy, \
-    QListWidgetItem
+    QListWidgetItem, QFileDialog
 
 
 class LeftSideBar(QWidget):
@@ -13,7 +13,8 @@ class LeftSideBar(QWidget):
     changed = Signal(QListWidgetItem)
     deleted = Signal(list)
     convUpdated = Signal(int, str)
-    export = Signal(list)
+    onImport = Signal(str)
+    onExport = Signal(list)
 
     def __init__(self):
         super().__init__()
@@ -30,18 +31,22 @@ class LeftSideBar(QWidget):
 
         self.__addBtn = SvgButton()
         self.__delBtn = SvgButton()
+        self.__importBtn = SvgButton()
         self.__saveBtn = SvgButton()
 
         self.__addBtn.setIcon('ico/add.svg')
         self.__delBtn.setIcon('ico/delete.svg')
+        self.__importBtn.setIcon('ico/import.svg')
         self.__saveBtn.setIcon('ico/save.svg')
 
         self.__addBtn.setToolTip(LangClass.TRANSLATIONS['Add'])
         self.__delBtn.setToolTip(LangClass.TRANSLATIONS['Delete'])
+        self.__importBtn.setToolTip('SQLite DB Import (Working)')
         self.__saveBtn.setToolTip(LangClass.TRANSLATIONS['Save'])
 
         self.__addBtn.clicked.connect(self.__addClicked)
         self.__delBtn.clicked.connect(self.__deleteClicked)
+        self.__importBtn.clicked.connect(self.__importClicked)
         self.__saveBtn.clicked.connect(self.__saveClicked)
 
         self.__allCheckBox = QCheckBox(LangClass.TRANSLATIONS['Check All'])
@@ -52,6 +57,7 @@ class LeftSideBar(QWidget):
         lay.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.MinimumExpanding))
         lay.addWidget(self.__addBtn)
         lay.addWidget(self.__delBtn)
+        lay.addWidget(self.__importBtn)
         lay.addWidget(self.__saveBtn)
         lay.setContentsMargins(0, 0, 0, 0)
 
@@ -112,8 +118,15 @@ class LeftSideBar(QWidget):
         self.deleted.emit(rows)
         self.__allCheckBox.setChecked(False)
 
+    def __importClicked(self):
+        filename = QFileDialog.getOpenFileName(self, 'Import', '', 'SQLite DB files (*.db)')
+        if filename:
+            filename = filename[0]
+
+            self.onImport.emit(filename)
+
     def __saveClicked(self):
-        self.export.emit(self.__convListWidget.getCheckedRowsIds())
+        self.onExport.emit(self.__convListWidget.getCheckedRowsIds())
 
     def __stateChanged(self, f):
         self.__convListWidget.toggleState(f)

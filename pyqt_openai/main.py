@@ -30,8 +30,9 @@ from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.aboutDialog import AboutDialog
 from pyqt_openai.customizeWidget.customizeDialog import CustomizeDialog
 from pyqt_openai.widgets.svgButton import SvgButton
-from pyqt_openai.image_gen_widget.imageGeneratingToolWidget import ImageGeneratingToolWidget
+from pyqt_openai.dalle_image_gen_widget.dallEWidget import DallEWidget
 from pyqt_openai.openAiChatBotWidget import OpenAIChatBotWidget
+from pyqt_openai.replicate_widget.replicateWidget import ReplicateWidget
 
 os.environ['OPENAI_API_KEY'] = ''
 
@@ -67,10 +68,13 @@ class MainWindow(QMainWindow):
         self.setWindowTitle(LangClass.TRANSLATIONS['PyQt OpenAI Chatbot'])
 
         self.__openAiChatBotWidget = OpenAIChatBotWidget()
-        self.__imageGeneratingToolWidget = ImageGeneratingToolWidget()
+        self.__dallEWidget = DallEWidget()
+        self.__replicateWidget = ReplicateWidget()
+
         self.__mainWidget = QStackedWidget()
         self.__mainWidget.addWidget(self.__openAiChatBotWidget)
-        self.__mainWidget.addWidget(self.__imageGeneratingToolWidget)
+        self.__mainWidget.addWidget(self.__dallEWidget)
+        self.__mainWidget.addWidget(self.__replicateWidget)
 
         self.__setActions()
         self.__setMenuBar()
@@ -105,7 +109,7 @@ class MainWindow(QMainWindow):
         # toolbar action
         self.__chooseAiAction = QWidgetAction(self)
         self.__chooseAiCmbBox = QComboBox()
-        self.__chooseAiCmbBox.addItems([LangClass.TRANSLATIONS['Chat'], LangClass.TRANSLATIONS['Image']])
+        self.__chooseAiCmbBox.addItems([LangClass.TRANSLATIONS['Chat'], LangClass.TRANSLATIONS['Image'], 'Replicate'])
         self.__chooseAiCmbBox.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
         self.__chooseAiCmbBox.currentIndexChanged.connect(self.__aiTypeChanged)
         self.__chooseAiAction.setDefaultWidget(self.__chooseAiCmbBox)
@@ -288,7 +292,7 @@ class MainWindow(QMainWindow):
 
     def __setAIEnabled(self, f):
         self.__openAiChatBotWidget.setAIEnabled(f)
-        self.__imageGeneratingToolWidget.setAIEnabled(f)
+        self.__dallEWidget.setAIEnabled(f)
 
     def __setApi(self):
         try:

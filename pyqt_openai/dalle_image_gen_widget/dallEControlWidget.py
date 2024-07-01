@@ -1,19 +1,22 @@
+import base64
 import os
 
 from qtpy.QtCore import QThread, Signal, QSettings
-from qtpy.QtWidgets import QMessageBox, QWidget, QCheckBox, QSpinBox, QGroupBox, QVBoxLayout, QPushButton, QComboBox, \
+from qtpy.QtWidgets import QMessageBox, QScrollArea, QWidget, QCheckBox, QSpinBox, QGroupBox, QVBoxLayout, QPushButton, \
+    QComboBox, \
     QPlainTextEdit, \
     QFormLayout, QLabel, QFrame, QRadioButton
 
-from pyqt_openai.widgets.findPathWidget import FindPathWidget
+from pyqt_openai.models import ImagePromptContainer
 from pyqt_openai.pyqt_openai_data import OPENAI_STRUCT
 from pyqt_openai.res.language_dict import LangClass
+from pyqt_openai.widgets.findPathWidget import FindPathWidget
 from pyqt_openai.widgets.notifier import NotifierWidget
 from pyqt_openai.widgets.toast import Toast
 
 
-class DallEThread(QThread):
-    replyGenerated = Signal(str, str)
+class Thread(QThread):
+    replyGenerated = Signal(ImagePromptContainer)
     errorGenerated = Signal(str)
     allReplyGenerated = Signal()
 
@@ -35,17 +38,21 @@ class DallEThread(QThread):
                 response = OPENAI_STRUCT.images.generate(
                     **self.__openai_arg
                 )
-
+                container = ImagePromptContainer(**self.__openai_arg)
                 for _ in response.data:
-                    image_data = _.b64_json
-                    self.replyGenerated.emit(image_data, _.revised_prompt)
+                    image_data = base64.b64decode(_.b64_json)
+                    container.data = image_data
+                    container.revised_prompt = _.revised_prompt
+                    container.width = self.__openai_arg['size'].split('x')[0]
+                    container.height = self.__openai_arg['size'].split('x')[1]
+                    self.replyGenerated.emit(container)
             self.allReplyGenerated.emit()
         except Exception as e:
             self.errorGenerated.emit(str(e))
 
 
-class DallEControlWidget(QWidget):
-    submitDallE = Signal(str, str)
+class DallEControlWidget(QScrollArea):
+    submitDallE = Signal(ImagePromptContainer)
     submitDallEAllComplete = Signal()
 
     def __init__(self):
@@ -83,6 +90,12 @@ class DallEControlWidget(QWidget):
             self.__settings_ini.setValue('show_prompt_on_image', False)
         if not self.__settings_ini.contains('prompt_type'):
             self.__settings_ini.setValue('prompt_type', 1)
+        if not self.__settings_ini.contains('width'):
+            self.__settings_ini.setValue('width', 1024)
+        if not self.__settings_ini.contains('height'):
+            self.__settings_ini.setValue('height', 1024)
+        if not self.__settings_ini.contains('prompt'):
+            self.__settings_ini.setValue('prompt', "Astronaut in a jungle, cold color palette, muted colors, detailed, 8k")
 
         self.__quality = self.__settings_ini.value('quality', type=str)
         self.__n = self.__settings_ini.value('n', type=int)
@@ -96,6 +109,9 @@ class DallEControlWidget(QWidget):
         self.__save_prompt_as_text = self.__settings_ini.value('save_prompt_as_text', type=bool)
         self.__show_prompt_on_image = self.__settings_ini.value('show_prompt_on_image', type=bool)
         self.__prompt_type = self.__settings_ini.value('prompt_type', type=int)
+        self.__width = self.__settings_ini.value('width', type=int)
+        self.__height = self.__settings_ini.value('height', type=int)
+        self.__prompt = self.__settings_ini.value('prompt', type=str)
 
         self.__settings_ini.endGroup()
 
@@ -175,12 +191,23 @@ class DallEControlWidget(QWidget):
         self.__nSpinBox.valueChanged.connect(self.__dalleChanged)
         self.__nSpinBox.setEnabled(False)
 
-        self.__sizeCmbBox = QComboBox()
-        self.__sizeCmbBox.addItems(['1024x1024', '1024x1792', '1792x1024'])
-        self.__sizeCmbBox.setCurrentText(self.__size)
-        self.__sizeCmbBox.currentTextChanged.connect(self.__dalleChanged)
+        self.__sizeLimitLabel = QLabel('※ Images can have a size of 1024x1024, 1024x1792 or 1792x1024 pixels.')
+        self.__sizeLimitLabel.setWordWrap(True)
+
+        self.__widthCmbBox = QComboBox()
+        self.__widthCmbBox.addItems(['1024', '1792'])
+        self.__widthCmbBox.setCurrentText(str(self.__width))
+        self.__widthCmbBox.currentTextChanged.connect(self.__dalleChanged)
+
+        self.__heightCmbBox = QComboBox()
+        self.__heightCmbBox.addItems(['1024', '1792'])
+        self.__heightCmbBox.setCurrentText(str(self.__height))
+        self.__heightCmbBox.currentTextChanged.connect(self.__dalleChanged)
 
         self.__promptWidget = QPlainTextEdit()
+        self.__promptWidget.setPlaceholderText('Enter prompt here...')
+        self.__promptWidget.setPlainText(self.__settings_ini.value('prompt', type=str))
+        self.__promptWidget.textChanged.connect(self.__dalleTextChanged)
 
         self.__styleCmbBox = QComboBox()
         self.__styleCmbBox.addItems(['vivid', 'natural'])
@@ -199,7 +226,9 @@ class DallEControlWidget(QWidget):
         lay = QFormLayout()
         lay.addRow('Quality', self.__qualityCmbBox)
         lay.addRow(LangClass.TRANSLATIONS['Total'], self.__nSpinBox)
-        lay.addRow(LangClass.TRANSLATIONS['Size'], self.__sizeCmbBox)
+        lay.addRow(self.__sizeLimitLabel)
+        lay.addRow('Width', self.__widthCmbBox)
+        lay.addRow('Height', self.__heightCmbBox)
         lay.addRow('Style', self.__styleCmbBox)
         lay.addRow(QLabel(LangClass.TRANSLATIONS['Prompt']))
         lay.addRow(self.__promptWidget)
@@ -217,7 +246,11 @@ class DallEControlWidget(QWidget):
         lay.addWidget(self.__submitBtn)
         lay.addWidget(self.__stopGeneratingImageBtn)
 
-        self.setLayout(lay)
+        mainWidget = QWidget()
+        mainWidget.setLayout(lay)
+
+        self.setWidget(mainWidget)
+        self.setWidgetResizable(True)
 
     def __dalleChanged(self, v):
         sender = self.sender()
@@ -228,12 +261,27 @@ class DallEControlWidget(QWidget):
         elif sender == self.__nSpinBox:
             self.__n = v
             self.__settings_ini.setValue('n', self.__n)
-        elif sender == self.__sizeCmbBox:
-            self.__size = v
-            self.__settings_ini.setValue('size', self.__size)
+        elif sender == self.__widthCmbBox:
+            if self.__widthCmbBox.currentText() == '1792' and self.__heightCmbBox.currentText() == '1792':
+                self.__heightCmbBox.setCurrentText('1024')
+            self.__width = v
+            self.__settings_ini.setValue('width', self.__width)
+        elif sender == self.__heightCmbBox:
+            if self.__widthCmbBox.currentText() == '1792' and self.__heightCmbBox.currentText() == '1792':
+                self.__widthCmbBox.setCurrentText('1024')
+            self.__height = v
+            self.__settings_ini.setValue('height', self.__height)
         elif sender == self.__styleCmbBox:
             self.__style = v
             self.__settings_ini.setValue('style', self.__style)
+        self.__settings_ini.endGroup()
+
+    def __dalleTextChanged(self):
+        sender = self.sender()
+        self.__settings_ini.beginGroup('DALLE')
+        if sender == self.__promptWidget:
+            self.__prompt = sender.toPlainText()
+            self.__settings_ini.setValue('prompt', self.__prompt)
         self.__settings_ini.endGroup()
 
     def __setSaveDirectory(self, directory):
@@ -292,14 +340,14 @@ class DallEControlWidget(QWidget):
             "model": "dall-e-3",
             "prompt": self.__promptWidget.toPlainText(),
             "n": self.__n,
-            "size": self.__size,
+            "size": f'{self.__width}x{self.__height}',
             'quality': self.__quality,
             "style": self.__style,
-            'response_format': self.__response_format
+            'response_format': self.__response_format,
         }
         number_of_images = self.__number_of_images_to_create if self.__continue_generation else 1
 
-        self.__t = DallEThread(openai_arg, number_of_images)
+        self.__t = Thread(openai_arg, number_of_images)
         self.__t.start()
         self.__t.started.connect(self.__toggleWidget)
         self.__t.replyGenerated.connect(self.__afterGenerated)
@@ -312,7 +360,8 @@ class DallEControlWidget(QWidget):
         self.__generalGrpBox.setEnabled(f)
         self.__qualityCmbBox.setEnabled(f)
         self.__nSpinBox.setEnabled(f)
-        self.__sizeCmbBox.setEnabled(f)
+        self.__widthCmbBox.setEnabled(f)
+        self.__heightCmbBox.setEnabled(f)
         self.__submitBtn.setEnabled(f)
         self.__styleCmbBox.setEnabled(f)
         if self.__continue_generation:
@@ -334,11 +383,17 @@ class DallEControlWidget(QWidget):
             self.__notifierWidget.doubleClicked.connect(self.window().show)
             QMessageBox.critical(self, informative_text, detailed_text)
 
-    def __afterGenerated(self, image_data, revised_prompt):
-        self.submitDallE.emit(image_data, revised_prompt)
+    def __afterGenerated(self, arg):
+        self.submitDallE.emit(arg)
 
     def getArgument(self):
-        return self.__promptWidget.toPlainText(), self.__n, self.__size, self.__quality, self.__style
+        return {
+            'prompt': self.__promptWidget.toPlainText(),
+            'n': self.__n,
+            'size': self.__size,
+            'quality': self.__quality,
+            'style': self.__style
+        }
 
     def getSavePromptAsText(self):
         return self.__save_prompt_as_text

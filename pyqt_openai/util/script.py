@@ -4,9 +4,13 @@ import re
 import string
 import sys
 import zipfile
+import requests
+import base64
 from pathlib import Path
 
 from jinja2 import Template
+
+from pyqt_openai.models import ImagePromptContainer
 
 
 def get_generic_ext_out_of_qt_ext(text):
@@ -103,16 +107,21 @@ def generate_random_string(length):
     letters = string.ascii_letters + string.digits
     return ''.join(random.choice(letters) for _ in range(length))
 
-def get_image_filename_for_saving(arg):
+def get_image_filename_for_saving(arg: ImagePromptContainer):
     ext = '.png'
-    # arg[0] is prompt
-    filename_prompt_prefix = '_'.join(''.join(re.findall('[a-zA-Z0-9\s]', arg[0][:20])).split(' '))
-    print(filename_prompt_prefix)
-    print('_'.join(map(str, [filename_prompt_prefix] + list(arg[1:]))) + '_' + generate_random_string(8) + ext)
-    filename = '_'.join(map(str, [filename_prompt_prefix] + list(arg[1:]))) + '_' + generate_random_string(8) + ext
+    filename_prompt_prefix = '_'.join(''.join(re.findall('[a-zA-Z0-9\\s]', arg.prompt[:20])).split(' '))
+    size = f"{arg.width}x{arg.height}"
+    filename = '_'.join(map(str, [filename_prompt_prefix, size])) + '_' + generate_random_string(8) + ext
 
     return filename
 
 def get_image_prompt_filename_for_saving(directory, filename):
     txt_filename = os.path.join(directory, Path(filename).stem + '.txt')
     return txt_filename
+
+def download_image_as_base64(url: str):
+    response = requests.get(url)
+    response.raise_for_status()  # Check if the URL is correct and raise an exception if there is a problem
+    image_data = response.content
+    base64_encoded = base64.b64decode(base64.b64encode(image_data).decode('utf-8'))
+    return base64_encoded
