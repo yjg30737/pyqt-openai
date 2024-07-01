@@ -1,8 +1,8 @@
 import base64
 import os
 
-from PyQt6.QtCore import QThread, Signal, QSettings
-from PyQt6.QtWidgets import QMessageBox, QScrollArea, QWidget, QCheckBox, QSpinBox, QGroupBox, QVBoxLayout, QPushButton, \
+from qtpy.QtCore import QThread, Signal, QSettings
+from qtpy.QtWidgets import QMessageBox, QScrollArea, QWidget, QCheckBox, QSpinBox, QGroupBox, QVBoxLayout, QPushButton, \
     QComboBox, \
     QPlainTextEdit, \
     QFormLayout, QLabel, QFrame, QRadioButton
@@ -63,7 +63,7 @@ class DallEControlWidget(QScrollArea):
     def __initVal(self):
         default_directory = 'image_result'
 
-        self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.IniFormat)
+        self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.Format.IniFormat)
         self.__settings_ini.beginGroup('DALLE')
 
         if not self.__settings_ini.contains('quality'):

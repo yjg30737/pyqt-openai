@@ -1,5 +1,5 @@
-from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QLabel
+from qtpy.QtCore import Qt
+from qtpy.QtWidgets import QLabel
 import webbrowser
 
 

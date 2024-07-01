@@ -1,8 +1,8 @@
 import os
 
-from PyQt6.QtGui import QPainter
-from PyQt6.QtSvg import QSvgRenderer
-from PyQt6.QtWidgets import QLabel
+from qtpy.QtGui import QPainter
+from qtpy.QtSvg import QSvgRenderer
+from qtpy.QtWidgets import QLabel
 
 from pyqt_openai.pyqt_openai_data import ROOT_DIR
 

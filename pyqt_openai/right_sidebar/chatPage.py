@@ -1,5 +1,5 @@
-from PyQt6.QtCore import Qt, Signal, QSettings
-from PyQt6.QtWidgets import QWidget, QDoubleSpinBox, QSpinBox, QFormLayout, QFrame, QSizePolicy, QComboBox, QTextEdit, QLabel, QVBoxLayout, QCheckBox, QPushButton
+from qtpy.QtCore import Qt, Signal, QSettings
+from qtpy.QtWidgets import QWidget, QDoubleSpinBox, QSpinBox, QFormLayout, QFrame, QSizePolicy, QComboBox, QTextEdit, QLabel, QVBoxLayout, QCheckBox, QPushButton
 
 from pyqt_openai.pyqt_openai_data import get_chat_model
 from pyqt_openai.res.language_dict import LangClass
@@ -14,7 +14,7 @@ class ChatPage(QWidget):
         self.__initUi()
 
     def __initVal(self):
-        self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.IniFormat)
+        self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.Format.IniFormat)
 
         # default value of each properties based on https://platform.openai.com/docs/api-reference/chat/create
         # param

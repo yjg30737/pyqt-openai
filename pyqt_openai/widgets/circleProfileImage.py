@@ -1,6 +1,6 @@
-from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QPixmap, QPainter, QBitmap
-from PyQt6.QtWidgets import QLabel
+from qtpy.QtCore import Qt
+from qtpy.QtGui import QPixmap, QPainter, QBitmap
+from qtpy.QtWidgets import QLabel
 
 
 class RoundedImage(QLabel):

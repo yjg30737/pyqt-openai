@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QListWidget, QPushButton, QHBoxLayout, QSpacerItem, QSizePolicy, QAbstractItemView
+from qtpy.QtWidgets import QWidget, QLabel, QVBoxLayout, QListWidget, QPushButton, QHBoxLayout, QSpacerItem, QSizePolicy, QAbstractItemView
 
 from pyqt_openai.res.language_dict import LangClass
 
@@ -23,7 +23,7 @@ class UploadedImageFileWidget(QWidget):
         topWidget.setLayout(lay)
 
         self.__listWidget = QListWidget()
-        self.__listWidget.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        self.__listWidget.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
 
         lay = QVBoxLayout()
         lay.addWidget(topWidget)

@@ -1,6 +1,6 @@
-from PyQt6.QtCore import Signal, QSortFilterProxyModel, Qt, QByteArray
-from PyQt6.QtSql import QSqlTableModel, QSqlDatabase, QSqlQuery
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QStyledItemDelegate, QTableView, QAbstractItemView, QHBoxLayout, QMessageBox, QLabel
+from qtpy.QtCore import Signal, QSortFilterProxyModel, Qt, QByteArray
+from qtpy.QtSql import QSqlTableModel, QSqlDatabase, QSqlQuery
+from qtpy.QtWidgets import QWidget, QVBoxLayout, QStyledItemDelegate, QTableView, QAbstractItemView, QHBoxLayout, QMessageBox, QLabel
 
 # for search feature
 from pyqt_openai.models import ImagePromptContainer

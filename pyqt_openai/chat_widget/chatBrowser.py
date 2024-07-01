@@ -1,7 +1,7 @@
 import re
 
-from PyQt6.QtCore import Qt, Signal
-from PyQt6.QtWidgets import QScrollArea, QVBoxLayout, QWidget, QLabel
+from qtpy.QtCore import Qt, Signal
+from qtpy.QtWidgets import QScrollArea, QVBoxLayout, QWidget, QLabel
 
 from pyqt_openai.chat_widget.aiChatUnit import AIChatUnit
 from pyqt_openai.chat_widget.userChatUnit import UserChatUnit
@@ -26,7 +26,7 @@ class ChatBrowser(QScrollArea):
 
     def __initUi(self):
         lay = QVBoxLayout()
-        lay.setAlignment(Qt.AlignTop)
+        lay.setAlignment(Qt.AlignmentFlag.AlignTop)
         lay.setSpacing(0)
         lay.setContentsMargins(0, 0, 0, 0)
 

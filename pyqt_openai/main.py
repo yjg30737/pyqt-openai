@@ -20,11 +20,11 @@ sys.path.insert(0, os.getcwd())  # Add the current directory as well
 # for testing pyqt6
 # os.environ['QT_API'] = 'pyqt6'
 
-from PyQt6.QtGui import QGuiApplication, QFont, QIcon, QColor
-from PyQt6.QtWidgets import QMainWindow, QToolBar, QHBoxLayout, QDialog, QLineEdit, QPushButton, QWidgetAction, QSpinBox, QLabel, QWidget, QApplication, \
-    QComboBox, QSizePolicy, QStackedWidget, QAction, QMenu, QSystemTrayIcon, \
-    QMessageBox, QCheckBox
-from PyQt6.QtCore import Qt, QCoreApplication, QSettings
+from qtpy.QtGui import QFont, QIcon, QColor
+from qtpy.QtWidgets import QMainWindow, QToolBar, QHBoxLayout, QDialog, QLineEdit, QPushButton, QWidgetAction, QSpinBox, QLabel, QWidget, QApplication, \
+    QComboBox, QSizePolicy, QStackedWidget, QMenu, QSystemTrayIcon, \
+    QMessageBox, QCheckBox, QAction
+from qtpy.QtCore import Qt, QSettings
 
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.aboutDialog import AboutDialog
@@ -38,13 +38,6 @@ os.environ['OPENAI_API_KEY'] = ''
 
 from pyqt_openai.pyqt_openai_data import OPENAI_STRUCT, LLAMAINDEX_WRAPPER
 
-# HighDPI support
-# qt version should be above 5.14
-if os.environ['QT_API'] == 'pyqt5':
-    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
-    QCoreApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
-    QGuiApplication.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
-
 QApplication.setFont(QFont('Arial', 12))
 QApplication.setWindowIcon(QIcon('ico/openai.svg'))
 
@@ -56,7 +49,7 @@ class MainWindow(QMainWindow):
         self.__initUi()
 
     def __initVal(self):
-        self.__settings_struct = QSettings('pyqt_openai.ini', QSettings.IniFormat)
+        self.__settings_struct = QSettings('pyqt_openai.ini', QSettings.Format.IniFormat)
         self.__lang = None
         if not self.__settings_struct.contains('lang'):
             self.__settings_struct.setValue('lang', LangClass.lang_changed())
@@ -192,7 +185,7 @@ class MainWindow(QMainWindow):
         msg_box.setDefaultButton(QMessageBox.StandardButton.Yes)
 
         # 메시지 상자 표시 및 사용자 입력 처리
-        result = msg_box.exec_()
+        result = msg_box.exec()
 
         if result == QMessageBox.StandardButton.Yes:
             self.__settings_struct.setValue('lang', lang)

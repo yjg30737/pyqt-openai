@@ -1,6 +1,6 @@
-from PyQt6.QtWidgets import QLabel, QWidget, QHBoxLayout, QGraphicsOpacityEffect
-from PyQt6.QtCore import Qt, QTimer, QPropertyAnimation, QAbstractAnimation, QPoint
-from PyQt6.QtGui import QFont, QColor
+from qtpy.QtWidgets import QLabel, QWidget, QHBoxLayout, QGraphicsOpacityEffect
+from qtpy.QtCore import Qt, QTimer, QPropertyAnimation, QAbstractAnimation, QPoint
+from qtpy.QtGui import QFont, QColor
 
 
 class Toast(QWidget):

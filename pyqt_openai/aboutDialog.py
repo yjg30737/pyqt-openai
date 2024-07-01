@@ -1,8 +1,8 @@
 import datetime
 
-from PyQt6.QtCore import Qt, QUrl
-from PyQt6.QtGui import QPixmap, QDesktopServices
-from PyQt6.QtWidgets import QDialog, QPushButton, QHBoxLayout, QWidget, QVBoxLayout, QLabel
+from qtpy.QtCore import Qt, QUrl
+from qtpy.QtGui import QPixmap, QDesktopServices
+from qtpy.QtWidgets import QDialog, QPushButton, QHBoxLayout, QWidget, QVBoxLayout, QLabel
 
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.widgets.svgLabel import SvgLabel
@@ -18,7 +18,7 @@ class ClickableLabel(SvgLabel):
         self.__url = url
 
     def mouseReleaseEvent(self, QMouseEvent):
-        if QMouseEvent.button() == Qt.LeftButton:
+        if QMouseEvent.button() == Qt.MouseButtons.LeftButton:
             QDesktopServices.openUrl(QUrl(self.__url))
 
 
@@ -29,7 +29,7 @@ class AboutDialog(QDialog):
 
     def __initUi(self):
         self.setWindowTitle(LangClass.TRANSLATIONS['About'])
-        self.setWindowFlags(Qt.Window | Qt.WindowCloseButtonHint)
+        self.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.WindowCloseButtonHint)
 
         self.__okBtn = QPushButton(LangClass.TRANSLATIONS['OK'])
         self.__okBtn.clicked.connect(self.accept)
@@ -57,9 +57,9 @@ class AboutDialog(QDialog):
         <p>{LangClass.TRANSLATIONS['Powered by qtpy']}</p>
         ''')
 
-        descWidget1.setAlignment(Qt.AlignTop)
-        descWidget2.setAlignment(Qt.AlignTop)
-        descWidget3.setAlignment(Qt.AlignTop)
+        descWidget1.setAlignment(Qt.AlignmentFlag.AlignTop)
+        descWidget2.setAlignment(Qt.AlignmentFlag.AlignTop)
+        descWidget3.setAlignment(Qt.AlignmentFlag.AlignTop)
 
         self.__githubLbl = ClickableLabel()
         self.__githubLbl.setSvgFile('ico/github.svg')
@@ -73,7 +73,7 @@ class AboutDialog(QDialog):
         lay = QHBoxLayout()
         lay.addWidget(self.__githubLbl)
         lay.addWidget(self.__discordLbl)
-        lay.setAlignment(Qt.AlignLeft)
+        lay.setAlignment(Qt.AlignmentFlag.AlignLeft)
         lay.setContentsMargins(0, 0, 0, 0)
 
         linkWidget = QWidget()
@@ -84,7 +84,7 @@ class AboutDialog(QDialog):
         lay.addWidget(descWidget2)
         lay.addWidget(descWidget3)
         lay.addWidget(linkWidget)
-        lay.setAlignment(Qt.AlignTop)
+        lay.setAlignment(Qt.AlignmentFlag.AlignTop)
         lay.setContentsMargins(0, 0, 0, 0)
 
         rightWidget = QWidget()
@@ -103,7 +103,7 @@ class AboutDialog(QDialog):
         lay = QHBoxLayout()
         lay.addWidget(self.__okBtn)
         lay.addWidget(cancelBtn)
-        lay.setAlignment(Qt.AlignRight)
+        lay.setAlignment(Qt.AlignmentFlag.AlignRight)
         lay.setContentsMargins(0, 0, 0, 0)
 
         okCancelWidget = QWidget()

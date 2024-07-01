@@ -1,7 +1,7 @@
 import os
 
-from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QHBoxLayout, QVBoxLayout, QFrame, QWidget, QSplitter
+from qtpy.QtCore import Qt
+from qtpy.QtWidgets import QHBoxLayout, QVBoxLayout, QFrame, QWidget, QSplitter
 
 from pyqt_openai.dalle_image_gen_widget.dallEControlWidget import DallEControlWidget
 from pyqt_openai.models import ImagePromptContainer
@@ -48,15 +48,15 @@ class DallEWidget(QWidget):
         lay.addWidget(self.__settingBtn)
         lay.addWidget(self.__historyBtn)
         lay.setContentsMargins(2, 2, 2, 2)
-        lay.setAlignment(Qt.AlignLeft)
+        lay.setAlignment(Qt.AlignmentFlag.AlignLeft)
 
         self.__menuWidget = QWidget()
         self.__menuWidget.setLayout(lay)
         self.__menuWidget.setMaximumHeight(self.__menuWidget.sizeHint().height())
 
         sep = QFrame()
-        sep.setFrameShape(QFrame.HLine)
-        sep.setFrameShadow(QFrame.Sunken)
+        sep.setFrameShape(QFrame.Shape.HLine)
+        sep.setFrameShadow(QFrame.Shadow.Sunken)
 
         mainWidget = QSplitter()
         mainWidget.addWidget(self.__imageNavWidget)

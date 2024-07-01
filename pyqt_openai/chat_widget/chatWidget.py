@@ -1,6 +1,6 @@
-from PyQt6.QtGui import QFont, QPixmap
-from PyQt6.QtWidgets import QWidget, QScrollArea, QLabel, QVBoxLayout, QStackedWidget
-from PyQt6.QtCore import Qt, QSettings
+from qtpy.QtGui import QFont, QPixmap
+from qtpy.QtWidgets import QWidget, QScrollArea, QLabel, QVBoxLayout, QStackedWidget
+from qtpy.QtCore import Qt, QSettings
 
 from pyqt_openai.chat_widget.chatBrowser import ChatBrowser
 from pyqt_openai.chat_widget.menuWidget import MenuWidget
@@ -15,7 +15,7 @@ class ChatWidget(QWidget):
 
     def __initVal(self):
         self.__cur_id = 0
-        self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.IniFormat)
+        self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.Format.IniFormat)
 
         if not self.__settings_ini.contains('background_image'):
             self.__settings_ini.setValue('background_image', '')
@@ -31,7 +31,7 @@ class ChatWidget(QWidget):
     def __initUi(self):
         self.__homeWidget = QScrollArea()
         self.__homeLbl = QLabel(LangClass.TRANSLATIONS['Home'])
-        self.__homeLbl.setAlignment(Qt.AlignCenter)
+        self.__homeLbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.__homeLbl.setFont(QFont('Arial', 32))
 
         self.__chatBrowser = ChatBrowser()
@@ -54,9 +54,9 @@ class ChatWidget(QWidget):
         self.__chatBrowser.onReplacedCurrentPage.connect(self.__mainWidget.setCurrentIndex)
 
         lay = QVBoxLayout()
-        lay.setAlignment(Qt.AlignTop)
+        lay.setAlignment(Qt.AlignmentFlag.AlignTop)
         lay.addWidget(self.__mainWidget)
-        lay.setAlignment(Qt.AlignTop)
+        lay.setAlignment(Qt.AlignmentFlag.AlignTop)
         lay.setContentsMargins(0, 0, 0, 0)
         self.setLayout(lay)
 

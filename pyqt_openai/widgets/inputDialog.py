@@ -1,6 +1,6 @@
-from PyQt6.QtWidgets import QDialog, QVBoxLayout, QLineEdit, QFrame, QPushButton, QHBoxLayout, QWidget
-from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QIcon
+from qtpy.QtWidgets import QDialog, QVBoxLayout, QLineEdit, QFrame, QPushButton, QHBoxLayout, QWidget
+from qtpy.QtCore import Qt
+from qtpy.QtGui import QIcon
 
 from pyqt_openai.res.language_dict import LangClass
 

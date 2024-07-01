@@ -1,8 +1,8 @@
 from datetime import datetime
 
-from PyQt6.QtGui import QFont
-from PyQt6.QtCore import Qt, Signal
-from PyQt6.QtWidgets import QListWidget, QDialog, QListWidgetItem, QLabel, QHBoxLayout, QWidget, QApplication, QVBoxLayout
+from qtpy.QtGui import QFont
+from qtpy.QtCore import Qt, Signal
+from qtpy.QtWidgets import QListWidget, QDialog, QListWidgetItem, QLabel, QHBoxLayout, QWidget, QApplication, QVBoxLayout
 
 from pyqt_openai.widgets.inputDialog import InputDialog
 from pyqt_openai.widgets.svgButton import SvgButton

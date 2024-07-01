@@ -1,5 +1,5 @@
-from PyQt6.QtCore import Qt, Signal
-from PyQt6.QtWidgets import QTextEdit
+from qtpy.QtCore import Qt, Signal
+from qtpy.QtWidgets import QTextEdit
 
 
 class TextEditPrompt(QTextEdit):
@@ -26,13 +26,13 @@ class TextEditPrompt(QTextEdit):
 
     def keyPressEvent(self, e):
         if self.__commandSuggestionEnabled:
-            if e.key() == Qt.Key_Up:
+            if e.key() == Qt.Key.Key_Up:
                 self.sendSuggestionWidget.emit('up')
-            elif e.key() == Qt.Key_Down:
+            elif e.key() == Qt.Key.Key_Down:
                 self.sendSuggestionWidget.emit('down')
 
-        if (e.key() == Qt.Key_Return or e.key() == Qt.Key_Enter) and self.__executeEnabled:
-            if e.modifiers() == Qt.ShiftModifier:
+        if (e.key() == Qt.Key.Key_Return or e.key() == Qt.Key.Key_Enter) and self.__executeEnabled:
+            if e.modifiers() == Qt.KeyboardModifier.ShiftModifier:
                 return super().keyPressEvent(e)
             else:
                 if self.__commandSuggestionEnabled:

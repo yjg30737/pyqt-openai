@@ -1,8 +1,8 @@
 import os
 
-from PyQt6.QtCore import Signal, Qt
-from PyQt6.QtGui import QFontMetrics
-from PyQt6.QtWidgets import QListWidget, QWidget, QVBoxLayout, QLabel, QHBoxLayout, QSpacerItem, QPushButton, \
+from qtpy.QtCore import Signal, Qt
+from qtpy.QtGui import QFontMetrics
+from qtpy.QtWidgets import QListWidget, QWidget, QVBoxLayout, QLabel, QHBoxLayout, QSpacerItem, QPushButton, \
     QSizePolicy, QFileDialog, QFrame
 
 from pyqt_openai.res.language_dict import LangClass
@@ -41,8 +41,8 @@ class FileListWidget(QWidget):
         self.__listWidget.itemClicked.connect(self.__sendDirectory)
 
         sep = QFrame()
-        sep.setFrameShape(QFrame.HLine)
-        sep.setFrameShadow(QFrame.Sunken)
+        sep.setFrameShape(QFrame.Shape.HLine)
+        sep.setFrameShadow(QFrame.Shadow.Sunken)
 
         lay = QVBoxLayout()
         lay.addWidget(topWidget)
@@ -55,7 +55,7 @@ class FileListWidget(QWidget):
     def setDirectory(self, directory=None):
         try:
             if not directory:
-                directory = QFileDialog.getExistingDirectory(self, LangClass.TRANSLATIONS['Select Directory'], os.path.expanduser('~'), QFileDialog.ShowDirsOnly)
+                directory = QFileDialog.getExistingDirectory(self, LangClass.TRANSLATIONS['Select Directory'], os.path.expanduser('~'), QFileDialog.Option.ShowDirsOnly)
             ext_lst = ['.txt']
             if directory:
                 self.__listWidget.clear()

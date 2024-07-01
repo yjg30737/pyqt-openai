@@ -1,7 +1,7 @@
 import os
 
-from PyQt6.QtCore import QThread, Signal, QSettings, Qt
-from PyQt6.QtWidgets import QLineEdit, QScrollArea, QMessageBox, QWidget, QCheckBox, QSpinBox, QGroupBox, QVBoxLayout, QPushButton, \
+from qtpy.QtCore import QThread, Signal, QSettings, Qt
+from qtpy.QtWidgets import QLineEdit, QScrollArea, QMessageBox, QWidget, QCheckBox, QSpinBox, QGroupBox, QVBoxLayout, QPushButton, \
     QComboBox, \
     QPlainTextEdit, \
     QFormLayout, QLabel, QFrame, QSplitter
@@ -54,7 +54,7 @@ class ReplicateControlWidget(QScrollArea):
     def __initVal(self):
         default_directory = 'image_result'
 
-        self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.IniFormat)
+        self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.Format.IniFormat)
         self.__settings_ini.beginGroup('REPLICATE')
         if not self.__settings_ini.contains('REPLICATE_API_TOKEN'):
             self.__settings_ini.setValue('REPLICATE_API_TOKEN', '')

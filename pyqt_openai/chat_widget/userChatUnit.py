@@ -1,6 +1,6 @@
 import pyperclip
-from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QSpacerItem, QSizePolicy, QWidget, QVBoxLayout, QHBoxLayout, QLabel
+from qtpy.QtCore import Qt
+from qtpy.QtWidgets import QSpacerItem, QSizePolicy, QWidget, QVBoxLayout, QHBoxLayout, QLabel
 
 from pyqt_openai.widgets.svgButton import SvgButton
 
@@ -43,9 +43,9 @@ class UserChatUnit(QWidget):
         self.__lbl = QLabel()
         self.__lbl.setStyleSheet('QLabel { padding: 6px }')
 
-        self.__lbl.setAlignment(Qt.AlignLeft)
+        self.__lbl.setAlignment(Qt.AlignmentFlag.AlignLeft)
         self.__lbl.setWordWrap(True)
-        self.__lbl.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        self.__lbl.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
         self.__lbl.setOpenExternalLinks(True)
 
         lay = QVBoxLayout()

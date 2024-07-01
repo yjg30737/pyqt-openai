@@ -1,9 +1,9 @@
 import os, posixpath
 
 from qtpy import QtGui
-from PyQt6.QtCore import Qt, QPoint, Signal, QTimer, QPropertyAnimation
-from PyQt6.QtGui import QFont, QIcon
-from PyQt6.QtWidgets import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QSizePolicy, QPushButton, \
+from qtpy.QtCore import Qt, QPoint, Signal, QTimer, QPropertyAnimation
+from qtpy.QtGui import QFont, QIcon
+from qtpy.QtWidgets import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QSizePolicy, QPushButton, \
     QApplication
 
 from pyqt_openai.pyqt_openai_data import ROOT_DIR

@@ -1,8 +1,8 @@
 import os
 
-from PyQt6.QtCore import Qt, QPointF, Signal
-from PyQt6.QtGui import QPixmap, QColor, QBrush, QLinearGradient
-from PyQt6.QtWidgets import QGraphicsScene, QGraphicsPixmapItem, QGraphicsView, QApplication, QWidget, QHBoxLayout, \
+from qtpy.QtCore import Qt, QPointF, Signal
+from qtpy.QtGui import QPixmap, QColor, QBrush, QLinearGradient
+from qtpy.QtWidgets import QGraphicsScene, QGraphicsPixmapItem, QGraphicsView, QApplication, QWidget, QHBoxLayout, \
     QFileDialog
 
 from pyqt_openai.res.language_dict import LangClass
