@@ -1,8 +1,8 @@
 import datetime
 
-from qtpy.QtCore import Qt, QUrl
-from qtpy.QtGui import QPixmap, QDesktopServices
-from qtpy.QtWidgets import QDialog, QPushButton, QHBoxLayout, QWidget, QVBoxLayout, QLabel
+from PyQt6.QtCore import Qt, QUrl
+from PyQt6.QtGui import QPixmap, QDesktopServices
+from PyQt6.QtWidgets import QDialog, QPushButton, QHBoxLayout, QWidget, QVBoxLayout, QLabel
 
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.widgets.svgLabel import SvgLabel

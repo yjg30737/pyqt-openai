@@ -1,5 +1,5 @@
-from qtpy.QtCore import Qt, Signal, QSettings
-from qtpy.QtWidgets import QWidget, QDoubleSpinBox, QSpinBox, QFormLayout, QFrame, QSizePolicy, QComboBox, QTextEdit, QLabel, QVBoxLayout, QCheckBox, QPushButton
+from PyQt6.QtCore import Qt, Signal, QSettings
+from PyQt6.QtWidgets import QWidget, QDoubleSpinBox, QSpinBox, QFormLayout, QFrame, QSizePolicy, QComboBox, QTextEdit, QLabel, QVBoxLayout, QCheckBox, QPushButton
 
 from pyqt_openai.pyqt_openai_data import get_chat_model
 from pyqt_openai.res.language_dict import LangClass
@@ -58,7 +58,7 @@ class ChatPage(QWidget):
 
         self.__systemTextEdit = QTextEdit()
         self.__systemTextEdit.setText(self.__system)
-        self.__systemTextEdit.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Preferred)
+        self.__systemTextEdit.setSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Preferred)
         saveSystemBtn = QPushButton(LangClass.TRANSLATIONS['Save System'])
         saveSystemBtn.clicked.connect(self.__saveSystem)
 
@@ -112,8 +112,8 @@ class ChatPage(QWidget):
         llamaChkBox.setText(LangClass.TRANSLATIONS['Use LlamaIndex'])
 
         sep = QFrame()
-        sep.setFrameShape(QFrame.HLine)
-        sep.setFrameShadow(QFrame.Sunken)
+        sep.setFrameShape(QFrame.Shape.HLine)
+        sep.setFrameShadow(QFrame.Shadow.Sunken)
 
         useMaxTokenChkBox = QCheckBox()
         useMaxTokenChkBox.toggled.connect(self.__useMaxChecked)
@@ -143,7 +143,7 @@ class ChatPage(QWidget):
         lay.addWidget(llamaChkBox)
         lay.addWidget(sep)
         lay.addWidget(paramWidget)
-        lay.setAlignment(Qt.AlignTop)
+        lay.setAlignment(Qt.AlignmentFlag.AlignTop)
 
         self.setLayout(lay)
 

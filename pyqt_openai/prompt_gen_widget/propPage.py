@@ -1,5 +1,5 @@
-from qtpy.QtCore import Signal, Qt
-from qtpy.QtWidgets import QTableWidget, QSizePolicy, QSpacerItem, QStackedWidget, QLabel, \
+from PyQt6.QtCore import Signal, Qt
+from PyQt6.QtWidgets import QTableWidget, QSizePolicy, QSpacerItem, QStackedWidget, QLabel, \
     QAbstractItemView, QTableWidgetItem, QHeaderView, QHBoxLayout, \
     QVBoxLayout, QWidget, QDialog, QListWidget, QListWidgetItem, QSplitter
 
@@ -31,10 +31,10 @@ class PropGroupList(QWidget):
 
         lay = QHBoxLayout()
         lay.addWidget(QLabel(LangClass.TRANSLATIONS['Property Group']))
-        lay.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.MinimumExpanding))
+        lay.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.Policy.MinimumExpanding))
         lay.addWidget(self.__addBtn)
         lay.addWidget(self.__delBtn)
-        lay.setAlignment(Qt.AlignRight)
+        lay.setAlignment(Qt.AlignmentFlag.AlignRight)
         lay.setContentsMargins(0, 0, 0, 0)
 
         topWidget = QWidget()
@@ -64,8 +64,8 @@ class PropGroupList(QWidget):
 
     def __addGroupItem(self, id, name):
         item = QListWidgetItem()
-        item.setFlags(item.flags() | Qt.ItemIsEditable)
-        item.setData(Qt.UserRole, id)
+        item.setFlags(item.flags() | Qt.ItemFlag.ItemIsEditable)
+        item.setData(Qt.ItemDataRole.UserRole, id)
         item.setText(name)
         self.__propList.addItem(item)
         self.__propList.setCurrentItem(item)
@@ -74,7 +74,7 @@ class PropGroupList(QWidget):
     def __addGroup(self):
         dialog = PromptGroupInputDialog(self)
         reply = dialog.exec()
-        if reply == QDialog.Accepted:
+        if reply == QDialog.DialogCode.Accepted:
             name = dialog.getPromptGroupName()
             id = DB.insertPropPromptGroup(name)
             self.__addGroupItem(id, name)
@@ -82,12 +82,12 @@ class PropGroupList(QWidget):
     def __deleteGroup(self):
         i = self.__propList.currentRow()
         item = self.__propList.takeItem(i)
-        id = item.data(Qt.UserRole)
+        id = item.data(Qt.ItemDataRole.UserRole)
         DB.deletePropPromptGroup(id)
         self.deleted.emit(i)
 
     def __itemChanged(self, item):
-        id = item.data(Qt.UserRole)
+        id = item.data(Qt.ItemDataRole.UserRole)
         DB.updatePropPromptGroup(id, item.text())
 
 
@@ -120,10 +120,10 @@ class PropTable(QWidget):
 
         lay = QHBoxLayout()
         lay.addWidget(QLabel(self.__title))
-        lay.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.MinimumExpanding))
+        lay.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.Policy.MinimumExpanding))
         lay.addWidget(self.__addBtn)
         lay.addWidget(self.__delBtn)
-        lay.setAlignment(Qt.AlignRight)
+        lay.setAlignment(Qt.AlignmentFlag.AlignRight)
         lay.setContentsMargins(0, 0, 0, 0)
 
         topWidget = QWidget()
@@ -132,8 +132,8 @@ class PropTable(QWidget):
         self.__table = QTableWidget()
         self.__table.setColumnCount(2)
         self.__table.setRowCount(len(self.__previousPromptPropArr))
-        self.__table.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
-        self.__table.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.__table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
+        self.__table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.__table.setHorizontalHeaderLabels([LangClass.TRANSLATIONS['Name'], LangClass.TRANSLATIONS['Value']])
 
         for i in range(len(self.__previousPromptPropArr)):
@@ -141,11 +141,11 @@ class PropTable(QWidget):
             value = self.__previousPromptPropArr[i][3]
 
             item1 = QTableWidgetItem(name)
-            item1.setData(Qt.UserRole, self.__previousPromptPropArr[i][0])
-            item1.setTextAlignment(Qt.AlignCenter)
+            item1.setData(Qt.ItemDataRole.UserRole, self.__previousPromptPropArr[i][0])
+            item1.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
 
             item2 = QTableWidgetItem(value)
-            item2.setTextAlignment(Qt.AlignCenter)
+            item2.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
 
             self.__table.setItem(i, 0, item1)
             self.__table.setItem(i, 1, item2)
@@ -175,7 +175,7 @@ class PropTable(QWidget):
 
     def __saveChangedPropPrompt(self, item: QTableWidgetItem):
         name = self.__table.item(item.row(), 0)
-        id = name.data(Qt.UserRole)
+        id = name.data(Qt.ItemDataRole.UserRole)
         name = name.text()
         value = self.__table.item(item.row(), 1).text()
         DB.updatePropPromptAttribute(self.__id, id, name, value)
@@ -183,28 +183,28 @@ class PropTable(QWidget):
     def __add(self):
         dialog = PropPromptUnitInputDialog(self.__id, self)
         reply = dialog.exec()
-        if reply == QDialog.Accepted:
+        if reply == QDialog.DialogCode.Accepted:
             self.__table.itemChanged.disconnect(self.__saveChangedPropPrompt)
 
             name = dialog.getPromptName()
             self.__table.setRowCount(self.__table.rowCount()+1)
 
             item1 = QTableWidgetItem(name)
-            item1.setTextAlignment(Qt.AlignCenter)
+            item1.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
             self.__table.setItem(self.__table.rowCount()-1, 0, item1)
 
             item2 = QTableWidgetItem('')
-            item2.setTextAlignment(Qt.AlignCenter)
+            item2.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
             self.__table.setItem(self.__table.rowCount()-1, 1, item2)
 
             id = DB.insertPropPromptAttribute(self.__id, name)
-            item1.setData(Qt.UserRole, id)
+            item1.setData(Qt.ItemDataRole.UserRole, id)
 
             self.__table.itemChanged.connect(self.__saveChangedPropPrompt)
 
     def __delete(self):
         for i in sorted(set([i.row() for i in self.__table.selectedIndexes()]), reverse=True):
-            id = self.__table.item(i, 0).data(Qt.UserRole)
+            id = self.__table.item(i, 0).data(Qt.ItemDataRole.UserRole)
             self.__table.removeRow(i)
             DB.deletePropPromptAttribute(self.__id, id)
 

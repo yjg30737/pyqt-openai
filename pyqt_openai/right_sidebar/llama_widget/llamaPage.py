@@ -1,7 +1,7 @@
-from qtpy.QtCore import Qt, Signal, QSettings
-from qtpy.QtGui import QFont
-from qtpy.QtWidgets import QFrame, QTextBrowser
-from qtpy.QtWidgets import QWidget, QLabel, QVBoxLayout
+from PyQt6.QtCore import Qt, Signal, QSettings
+from PyQt6.QtGui import QFont
+from PyQt6.QtWidgets import QFrame, QTextBrowser
+from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout
 
 from pyqt_openai.pyqt_openai_data import LLAMAINDEX_WRAPPER
 from pyqt_openai.res.language_dict import LangClass

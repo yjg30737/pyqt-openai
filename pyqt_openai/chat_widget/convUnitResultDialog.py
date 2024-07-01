@@ -1,5 +1,5 @@
-from qtpy.QtWidgets import QDialog, QFormLayout, QApplication, QLabel, QFrame, QPushButton
-from qtpy.QtCore import Qt
+from PyQt6.QtWidgets import QDialog, QFormLayout, QApplication, QLabel, QFrame, QPushButton
+from PyQt6.QtCore import Qt
 
 
 class ConvUnitResultDialog(QDialog):

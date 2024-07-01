@@ -1,4 +1,4 @@
-from qtpy.QtWidgets import QWidget, QHBoxLayout
+from PyQt6.QtWidgets import QWidget, QHBoxLayout
 
 from pyqt_openai.chat_widget.findTextWidget import FindTextWidget
 from pyqt_openai.chat_widget.chatBrowser import ChatBrowser

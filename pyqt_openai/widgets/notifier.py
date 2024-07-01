@@ -1,9 +1,9 @@
 import os, posixpath
 
 from qtpy import QtGui
-from qtpy.QtCore import Qt, QPoint, Signal, QTimer, QPropertyAnimation
-from qtpy.QtGui import QFont, QIcon
-from qtpy.QtWidgets import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QSizePolicy, QPushButton, \
+from PyQt6.QtCore import Qt, QPoint, Signal, QTimer, QPropertyAnimation
+from PyQt6.QtGui import QFont, QIcon
+from PyQt6.QtWidgets import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QSizePolicy, QPushButton, \
     QApplication
 
 from pyqt_openai.pyqt_openai_data import ROOT_DIR
@@ -18,10 +18,10 @@ class NotifierWidget(QWidget):
 
     def __initUi(self, informative_text='', detailed_text=''):
         self.setFixedSize(250, 150)
-        self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.SubWindow)
+        self.setWindowFlags(Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowStaysOnTopHint | Qt.WindowType.SubWindow)
 
         self.__informativeTextLabel = QLabel(informative_text) if informative_text else QLabel('Informative')
-        self.__informativeTextLabel.setFont(QFont('Arial', 15, QFont.Bold))
+        self.__informativeTextLabel.setFont(QFont('Arial', 15, QFont.Weight.Bold))
         self.__detailedTextLabel = QLabel(detailed_text) if detailed_text else QLabel('Detailed')
 
         closeBtn = QPushButton()
@@ -36,7 +36,7 @@ class NotifierWidget(QWidget):
         self.__btnWidget.setLayout(lay)
 
         lay = QHBoxLayout()
-        lay.setAlignment(Qt.AlignTop | Qt.AlignRight)
+        lay.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignRight)
         lay.addWidget(closeBtn)
         lay.setContentsMargins(0, 0, 0, 0)
 
@@ -60,14 +60,14 @@ class NotifierWidget(QWidget):
         self.setLayout(lay)
 
     def keyPressEvent(self, e):
-        if e.key() == Qt.Key_Escape:
+        if e.key() == Qt.Key.Key_Escape:
             self.close()
 
         return super().keyPressEvent(e)
 
     def addWidgets(self, widgets: list):
         for widget in widgets:
-            widget.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
+            widget.setSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.MinimumExpanding)
             self.__btnWidget.layout().addWidget(widget)
 
     def show(self) -> None:

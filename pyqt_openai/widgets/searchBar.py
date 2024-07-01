@@ -1,6 +1,6 @@
-from qtpy.QtWidgets import QWidget, QLineEdit, QGridLayout, QLabel, \
+from PyQt6.QtWidgets import QWidget, QLineEdit, QGridLayout, QLabel, \
     QHBoxLayout, QApplication, QSizePolicy
-from qtpy.QtCore import Signal
+from PyQt6.QtCore import Signal
 from pyqt_openai.widgets.svgLabel import SvgLabel
 
 
@@ -54,7 +54,7 @@ class SearchBar(QWidget):
         lay.addWidget(searchWidget)
         lay.setContentsMargins(0, 0, 0, 0)
 
-        self.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Preferred)
+        self.setSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Preferred)
 
         self.__setStyle()
 

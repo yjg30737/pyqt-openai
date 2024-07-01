@@ -1,4 +1,4 @@
-from qtpy.QtWidgets import QListWidget, QWidget, QVBoxLayout, QLabel
+from PyQt6.QtWidgets import QListWidget, QWidget, QVBoxLayout, QLabel
 
 from pyqt_openai.res.language_dict import LangClass
 

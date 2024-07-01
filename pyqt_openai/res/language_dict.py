@@ -1,7 +1,7 @@
 import json
 import os.path
 
-from qtpy.QtCore import QLocale
+from PyQt6.QtCore import QLocale
 
 
 class LangClass:

@@ -1,7 +1,7 @@
 from functools import partial
 
-from qtpy.QtCore import QSettings, Signal
-from qtpy.QtWidgets import QScrollArea, QWidget, QTabWidget, QGridLayout
+from PyQt6.QtCore import QSettings, Signal
+from PyQt6.QtWidgets import QScrollArea, QWidget, QTabWidget, QGridLayout
 
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.right_sidebar.chatPage import ChatPage

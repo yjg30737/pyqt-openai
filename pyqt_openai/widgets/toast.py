@@ -1,6 +1,6 @@
-from qtpy.QtWidgets import QLabel, QWidget, QHBoxLayout, QGraphicsOpacityEffect
-from qtpy.QtCore import Qt, QTimer, QPropertyAnimation, QAbstractAnimation, QPoint
-from qtpy.QtGui import QFont, QColor
+from PyQt6.QtWidgets import QLabel, QWidget, QHBoxLayout, QGraphicsOpacityEffect
+from PyQt6.QtCore import Qt, QTimer, QPropertyAnimation, QAbstractAnimation, QPoint
+from PyQt6.QtGui import QFont, QColor
 
 
 class Toast(QWidget):
@@ -20,8 +20,8 @@ class Toast(QWidget):
         self.__backgroundColor = '#444444'
 
     def __initUi(self, text):
-        self.setWindowFlags(Qt.FramelessWindowHint | Qt.SubWindow)
-        self.setAttribute(Qt.WA_TransparentForMouseEvents, True)
+        self.setWindowFlags(Qt.WindowType.FramelessWindowHint | Qt.WindowType.SubWindow)
+        self.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, True)
 
         # text in toast (toast foreground)
         self.__lbl = QLabel(text)
@@ -38,7 +38,7 @@ class Toast(QWidget):
         # toast background
         lay = QHBoxLayout()
         lay.addWidget(self.__lbl)
-        lay.setAlignment(Qt.AlignCenter | Qt.AlignVCenter)
+        lay.setAlignment(Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignVCenter)
 
         self.setStyleSheet('QWidget { background: #444444; border-radius: 5px; }')
         self.__setToastSizeBasedOnTextSize()

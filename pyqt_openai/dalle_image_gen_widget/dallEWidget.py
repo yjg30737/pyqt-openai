@@ -1,7 +1,7 @@
 import os
 
-from qtpy.QtCore import Qt
-from qtpy.QtWidgets import QHBoxLayout, QVBoxLayout, QFrame, QWidget, QSplitter
+from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import QHBoxLayout, QVBoxLayout, QFrame, QWidget, QSplitter
 
 from pyqt_openai.dalle_image_gen_widget.dallEControlWidget import DallEControlWidget
 from pyqt_openai.models import ImagePromptContainer

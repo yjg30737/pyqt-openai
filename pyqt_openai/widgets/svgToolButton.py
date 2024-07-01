@@ -1,7 +1,7 @@
 import os.path, posixpath
 
-from qtpy.QtGui import QColor, QPalette, qGray
-from qtpy.QtWidgets import QGraphicsColorizeEffect, QWidget, QApplication, QToolButton
+from PyQt6.QtGui import QColor, QPalette, qGray
+from PyQt6.QtWidgets import QGraphicsColorizeEffect, QWidget, QApplication, QToolButton
 
 from pyqt_openai.pyqt_openai_data import ROOT_DIR
 
@@ -32,7 +32,7 @@ class SvgToolButton(QToolButton):
             self.__text_color = '#AAAAAA'
 
     def __initColorByBaseWidget(self):
-        self.__base_color = self.__baseWidget.palette().color(QPalette.Base)
+        self.__base_color = self.__baseWidget.palette().color(QPalette.ColorRole.Base)
         self.__hover_color = self.__getHoverColor(self.__base_color)
         self.__pressed_color = self.__getPressedColor(self.__base_color)
         self.__checked_color = self.__getPressedColor(self.__base_color)
@@ -124,10 +124,10 @@ class SvgToolButton(QToolButton):
             # catch the StyleChange event of base widget
             if e.type() == 100:
                 # if base widget's background is transparent (#ffffff)
-                if self.__baseWidget.palette().color(QPalette.Base).name() == '#ffffff':
+                if self.__baseWidget.palette().color(QPalette.ColorRole.Base).name() == '#ffffff':
                     # then check the parent widget's background
                     if self.__baseWidget.parent():
-                        if self.__baseWidget.parent().palette().color(QPalette.Base).name() == '#ffffff':
+                        if self.__baseWidget.parent().palette().color(QPalette.ColorRole.Base).name() == '#ffffff':
                             pass
                         else:
                             self.__baseWidget = self.__baseWidget.parent()

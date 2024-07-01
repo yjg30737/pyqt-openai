@@ -1,5 +1,5 @@
-from qtpy.QtCore import Qt, Signal
-from qtpy.QtWidgets import QTextEdit
+from PyQt6.QtCore import Qt, Signal
+from PyQt6.QtWidgets import QTextEdit
 
 
 class TextEditPrompt(QTextEdit):

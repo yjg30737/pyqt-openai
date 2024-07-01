@@ -1,7 +1,7 @@
 import pyperclip
 
-from qtpy.QtWidgets import QTextBrowser, QSplitter, QWidget, QLabel, QVBoxLayout, QPushButton, QTabWidget, QScrollArea
-from qtpy.QtCore import Qt
+from PyQt6.QtWidgets import QTextBrowser, QSplitter, QWidget, QLabel, QVBoxLayout, QPushButton, QTabWidget, QScrollArea
+from PyQt6.QtCore import Qt
 
 from pyqt_openai.prompt_gen_widget.propPage import PropPage
 from pyqt_openai.prompt_gen_widget.templatePage import TemplatePage
@@ -52,7 +52,7 @@ class PromptGeneratorWidget(QScrollArea):
         mainSplitter = QSplitter()
         mainSplitter.addWidget(topWidget)
         mainSplitter.addWidget(bottomWidget)
-        mainSplitter.setOrientation(Qt.Vertical)
+        mainSplitter.setOrientation(Qt.Orientation.Vertical)
         mainSplitter.setChildrenCollapsible(False)
         mainSplitter.setHandleWidth(2)
         mainSplitter.setStyleSheet(

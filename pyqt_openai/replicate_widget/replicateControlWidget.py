@@ -1,7 +1,7 @@
 import os
 
-from qtpy.QtCore import QThread, Signal, QSettings, Qt
-from qtpy.QtWidgets import QLineEdit, QScrollArea, QMessageBox, QWidget, QCheckBox, QSpinBox, QGroupBox, QVBoxLayout, QPushButton, \
+from PyQt6.QtCore import QThread, Signal, QSettings, Qt
+from PyQt6.QtWidgets import QLineEdit, QScrollArea, QMessageBox, QWidget, QCheckBox, QSpinBox, QGroupBox, QVBoxLayout, QPushButton, \
     QComboBox, \
     QPlainTextEdit, \
     QFormLayout, QLabel, QFrame, QSplitter
@@ -215,8 +215,8 @@ class ReplicateControlWidget(QScrollArea):
         paramGrpBox.setLayout(lay)
 
         sep = QFrame()
-        sep.setFrameShape(QFrame.HLine)
-        sep.setFrameShadow(QFrame.Sunken)
+        sep.setFrameShape(QFrame.Shape.HLine)
+        sep.setFrameShadow(QFrame.Shadow.Sunken)
 
         lay = QVBoxLayout()
         lay.addWidget(self.__generalGrpBox)
@@ -248,15 +248,16 @@ class ReplicateControlWidget(QScrollArea):
     def __replicateTextChanged(self):
         sender = self.sender()
         self.__settings_ini.beginGroup('REPLICATE')
-        if sender == self.__modelTextEdit:
-            self.__model = sender.toPlainText()
-            self.__settings_ini.setValue('model', self.__model)
-        elif sender == self.__promptWidget:
-            self.__prompt = sender.toPlainText()
-            self.__settings_ini.setValue('prompt', self.__prompt)
-        elif sender == self.__negativePromptWidget:
-            self.__negative_prompt = sender.toPlainText()
-            self.__settings_ini.setValue('negative_prompt', self.__negative_prompt)
+        if isinstance(sender, QPlainTextEdit):
+            if sender == self.__modelTextEdit:
+                self.__model = sender.toPlainText()
+                self.__settings_ini.setValue('model', self.__model)
+            elif sender == self.__promptWidget:
+                self.__prompt = sender.toPlainText()
+                self.__settings_ini.setValue('prompt', self.__prompt)
+            elif sender == self.__negativePromptWidget:
+                self.__negative_prompt = sender.toPlainText()
+                self.__settings_ini.setValue('negative_prompt', self.__negative_prompt)
         self.__settings_ini.endGroup()
 
     def __setSaveDirectory(self, directory):

@@ -1,4 +1,4 @@
-from qtpy.QtWidgets import QWidget, QLabel, QVBoxLayout, QListWidget, QPushButton, QHBoxLayout, QSpacerItem, QSizePolicy, QAbstractItemView
+from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QListWidget, QPushButton, QHBoxLayout, QSpacerItem, QSizePolicy, QAbstractItemView
 
 from pyqt_openai.res.language_dict import LangClass
 
@@ -15,7 +15,7 @@ class UploadedImageFileWidget(QWidget):
 
         lay = QHBoxLayout()
         lay.addWidget(lbl)
-        lay.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.MinimumExpanding))
+        lay.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.Policy.MinimumExpanding))
         lay.addWidget(self.__deleteBtn)
         lay.setContentsMargins(0, 0, 0, 0)
 

@@ -1,6 +1,6 @@
-from qtpy.QtCore import Signal, QSortFilterProxyModel, Qt, QByteArray
-from qtpy.QtSql import QSqlTableModel, QSqlDatabase, QSqlQuery
-from qtpy.QtWidgets import QWidget, QVBoxLayout, QStyledItemDelegate, QTableView, QAbstractItemView, QHBoxLayout, QMessageBox, QLabel
+from PyQt6.QtCore import Signal, QSortFilterProxyModel, Qt, QByteArray
+from PyQt6.QtSql import QSqlTableModel, QSqlDatabase, QSqlQuery
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QStyledItemDelegate, QTableView, QAbstractItemView, QHBoxLayout, QMessageBox, QLabel
 
 # for search feature
 from pyqt_openai.models import ImagePromptContainer
@@ -28,7 +28,7 @@ class FilterProxyModel(QSortFilterProxyModel):
 class AlignDelegate(QStyledItemDelegate):
     def initStyleOption(self, option, index):
         super().initStyleOption(option, index)
-        option.displayAlignment = Qt.AlignCenter
+        option.displayAlignment = Qt.AlignmentFlag.AlignCenter
 
 
 class SqlTableModel(QSqlTableModel):
@@ -38,9 +38,9 @@ class SqlTableModel(QSqlTableModel):
     addedCol = Signal()
     deletedCol = Signal()
 
-    def flags(self, index) -> Qt.ItemFlags:
+    def flags(self, index):
         if index.column() == 0:
-            return Qt.ItemIsEnabled | Qt.ItemIsSelectable
+            return Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable
         return super().flags(index)
 
 
@@ -110,7 +110,7 @@ class ImageNavWidget(QWidget):
         # set up the view
         self.__tableView = QTableView()
         self.__tableView.setModel(self.__proxyModel)
-        self.__tableView.setEditTriggers(QTableView.NoEditTriggers)
+        self.__tableView.setEditTriggers(QTableView.EditTrigger.NoEditTriggers)
         self.__tableView.setSortingEnabled(True)
 
         # align to center
@@ -119,9 +119,9 @@ class ImageNavWidget(QWidget):
             self.__tableView.setItemDelegateForColumn(i, delegate)
 
         # set selection/resize policy
-        self.__tableView.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.__tableView.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.__tableView.resizeColumnsToContents()
-        self.__tableView.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        self.__tableView.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
 
         self.__tableView.clicked.connect(self.__clicked)
 
@@ -171,7 +171,7 @@ class ImageNavWidget(QWidget):
         idx_s = self.__tableView.selectedIndexes()
         for idx in idx_s:
             idx = idx.siblingAtColumn(0)
-            id = self.__model.data(idx, role=Qt.DisplayRole)
+            id = self.__model.data(idx, role=Qt.ItemDataRole.DisplayRole)
             DB.removeImage(id)
         self.__model.select()
 

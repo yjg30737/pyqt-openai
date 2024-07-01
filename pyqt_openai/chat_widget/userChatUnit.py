@@ -1,6 +1,6 @@
 import pyperclip
-from qtpy.QtCore import Qt
-from qtpy.QtWidgets import QSpacerItem, QSizePolicy, QWidget, QVBoxLayout, QHBoxLayout, QLabel
+from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import QSpacerItem, QSizePolicy, QWidget, QVBoxLayout, QHBoxLayout, QLabel
 
 from pyqt_openai.widgets.svgButton import SvgButton
 
@@ -31,7 +31,7 @@ class UserChatUnit(QWidget):
         copyBtn.clicked.connect(self.__copy)
 
         lay.addWidget(self.__icon)
-        lay.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.MinimumExpanding))
+        lay.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.Policy.MinimumExpanding))
         lay.addWidget(copyBtn)
         lay.setContentsMargins(2, 2, 2, 2)
         lay.setSpacing(1)

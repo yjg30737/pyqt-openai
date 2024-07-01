@@ -1,7 +1,7 @@
 import re
 
-from qtpy.QtCore import Qt, Signal
-from qtpy.QtWidgets import QScrollArea, QVBoxLayout, QWidget, QLabel
+from PyQt6.QtCore import Qt, Signal
+from PyQt6.QtWidgets import QScrollArea, QVBoxLayout, QWidget, QLabel
 
 from pyqt_openai.chat_widget.aiChatUnit import AIChatUnit
 from pyqt_openai.chat_widget.userChatUnit import UserChatUnit

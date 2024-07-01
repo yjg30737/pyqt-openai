@@ -1,6 +1,6 @@
-from qtpy.QtGui import QFont, QPixmap
-from qtpy.QtWidgets import QWidget, QScrollArea, QLabel, QVBoxLayout, QStackedWidget
-from qtpy.QtCore import Qt, QSettings
+from PyQt6.QtGui import QFont, QPixmap
+from PyQt6.QtWidgets import QWidget, QScrollArea, QLabel, QVBoxLayout, QStackedWidget
+from PyQt6.QtCore import Qt, QSettings
 
 from pyqt_openai.chat_widget.chatBrowser import ChatBrowser
 from pyqt_openai.chat_widget.menuWidget import MenuWidget

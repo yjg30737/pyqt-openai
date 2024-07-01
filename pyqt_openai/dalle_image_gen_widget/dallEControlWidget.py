@@ -1,8 +1,8 @@
 import base64
 import os
 
-from qtpy.QtCore import QThread, Signal, QSettings
-from qtpy.QtWidgets import QMessageBox, QScrollArea, QWidget, QCheckBox, QSpinBox, QGroupBox, QVBoxLayout, QPushButton, \
+from PyQt6.QtCore import QThread, Signal, QSettings
+from PyQt6.QtWidgets import QMessageBox, QScrollArea, QWidget, QCheckBox, QSpinBox, QGroupBox, QVBoxLayout, QPushButton, \
     QComboBox, \
     QPlainTextEdit, \
     QFormLayout, QLabel, QFrame, QRadioButton
@@ -236,8 +236,8 @@ class DallEControlWidget(QScrollArea):
         paramGrpBox.setLayout(lay)
 
         sep = QFrame()
-        sep.setFrameShape(QFrame.HLine)
-        sep.setFrameShadow(QFrame.Sunken)
+        sep.setFrameShape(QFrame.Shape.HLine)
+        sep.setFrameShadow(QFrame.Shadow.Sunken)
 
         lay = QVBoxLayout()
         lay.addWidget(self.__generalGrpBox)
@@ -279,9 +279,10 @@ class DallEControlWidget(QScrollArea):
     def __dalleTextChanged(self):
         sender = self.sender()
         self.__settings_ini.beginGroup('DALLE')
-        if sender == self.__promptWidget:
-            self.__prompt = sender.toPlainText()
-            self.__settings_ini.setValue('prompt', self.__prompt)
+        if isinstance(sender, QPlainTextEdit):
+            if sender == self.__promptWidget:
+                self.__prompt = sender.toPlainText()
+                self.__settings_ini.setValue('prompt', self.__prompt)
         self.__settings_ini.endGroup()
 
     def __setSaveDirectory(self, directory):

@@ -1,7 +1,7 @@
 import pyperclip
-from qtpy.QtCore import Qt
-from qtpy.QtGui import QPalette, QColor
-from qtpy.QtWidgets import QLabel, QWidget, QVBoxLayout, QApplication, QHBoxLayout, QSpacerItem, QSizePolicy, \
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QPalette, QColor
+from PyQt6.QtWidgets import QLabel, QWidget, QVBoxLayout, QApplication, QHBoxLayout, QSpacerItem, QSizePolicy, \
     QTextBrowser, QAbstractScrollArea
 
 from pyqt_openai.chat_widget.convUnitResultDialog import ConvUnitResultDialog
@@ -29,9 +29,9 @@ class SourceBrowser(QWidget):
         copyBtn.clicked.connect(self.__copy)
 
         lay.addWidget(self.__langLbl)
-        lay.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.MinimumExpanding))
+        lay.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.Policy.MinimumExpanding))
         lay.addWidget(copyBtn)
-        lay.setAlignment(Qt.AlignRight)
+        lay.setAlignment(Qt.AlignmentFlag.AlignRight)
         lay.setContentsMargins(2, 2, 2, 2)
         lay.setSpacing(1)
 
@@ -50,7 +50,7 @@ class SourceBrowser(QWidget):
     def setText(self, lexer, text):
         self.__langLbl.setText(lexer.name)
         self.__browser.setText(text)
-        self.__browser.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
+        self.__browser.setSizeAdjustPolicy(QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
 
     def getText(self):
         return self.__browser.toPlainText()
@@ -92,7 +92,7 @@ class AIChatUnit(QWidget):
         self.__copyBtn.clicked.connect(self.__copy)
 
         lay.addWidget(self.__icon)
-        lay.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.MinimumExpanding))
+        lay.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.Policy.MinimumExpanding))
         lay.addWidget(self.__infoBtn)
         lay.addWidget(self.__copyBtn)
         lay.setContentsMargins(2, 2, 2, 2)
@@ -115,7 +115,7 @@ class AIChatUnit(QWidget):
         self.setLayout(lay)
 
         palette = QPalette()
-        palette.setColor(QPalette.Window, QColor(220, 220, 220))
+        palette.setColor(QPalette.ColorRole.Window, QColor(220, 220, 220))
         self.setPalette(palette)
         self.setAutoFillBackground(True)
 
@@ -140,7 +140,7 @@ class AIChatUnit(QWidget):
         return text
 
     def alignment(self):
-        return Qt.AlignLeft
+        return Qt.AlignmentFlag.AlignLeft
 
     def setAlignment(self, a0):
         lay = self.__mainWidget.layout()
@@ -162,9 +162,9 @@ class AIChatUnit(QWidget):
     def setText(self, text: str):
         self.__lbl = QLabel(text)
 
-        self.__lbl.setAlignment(Qt.AlignLeft)
+        self.__lbl.setAlignment(Qt.AlignmentFlag.AlignLeft)
         self.__lbl.setWordWrap(True)
-        self.__lbl.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        self.__lbl.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
         self.__lbl.setOpenExternalLinks(True)
 
         self.__mainWidget.layout().addWidget(self.__lbl)

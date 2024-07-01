@@ -1,8 +1,8 @@
 import os, sys
 import webbrowser
 
-from qtpy.QtCore import Qt, QSettings
-from qtpy.QtWidgets import QHBoxLayout, QWidget, QSizePolicy, QVBoxLayout, QFrame, QSplitter, \
+from PyQt6.QtCore import Qt, QSettings
+from PyQt6.QtWidgets import QHBoxLayout, QWidget, QSizePolicy, QVBoxLayout, QFrame, QSplitter, \
     QListWidgetItem, QFileDialog, QMessageBox, QPushButton
 
 from pyqt_openai.chat_widget.chatWidget import ChatWidget
@@ -115,7 +115,7 @@ class OpenAIChatBotWidget(QWidget):
 
         self.__queryWidget = QWidget()
         self.__queryWidget.setLayout(lay)
-        self.__queryWidget.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
+        self.__queryWidget.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Maximum)
 
         lay = QVBoxLayout()
         lay.addWidget(self.__chatWidget)
@@ -325,9 +325,9 @@ class OpenAIChatBotWidget(QWidget):
             messageBox = QMessageBox(self)
             messageBox.setWindowTitle('Information')
             messageBox.setText(message)
-            messageBox.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+            messageBox.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
             reply = messageBox.exec()
-            if reply == QMessageBox.Yes:
+            if reply == QMessageBox.StandardButton.Yes:
                 # Export previous conversation
                 self.__exportConv([_['id'] for _ in old_conv])
             else:

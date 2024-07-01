@@ -1,8 +1,8 @@
 from datetime import datetime
 
-from qtpy.QtGui import QFont
-from qtpy.QtCore import Qt, Signal
-from qtpy.QtWidgets import QListWidget, QDialog, QListWidgetItem, QLabel, QHBoxLayout, QWidget, QApplication, QVBoxLayout
+from PyQt6.QtGui import QFont
+from PyQt6.QtCore import Qt, Signal
+from PyQt6.QtWidgets import QListWidget, QDialog, QListWidgetItem, QLabel, QHBoxLayout, QWidget, QApplication, QVBoxLayout
 
 from pyqt_openai.widgets.inputDialog import InputDialog
 from pyqt_openai.widgets.svgButton import SvgButton
@@ -42,7 +42,7 @@ class ConvItemWidget(QWidget):
 
         lay = QVBoxLayout()
         lay.addWidget(self.__btnWidget)
-        lay.setAlignment(Qt.AlignCenter | Qt.AlignRight)
+        lay.setAlignment(Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignRight)
         lay.setContentsMargins(0, 0, 0, 0)
 
         rightWidget = QWidget()
@@ -75,7 +75,7 @@ class ConvItemWidget(QWidget):
     def __btnClicked(self):
         dialog = InputDialog('Rename', self.__topicLbl.text(), self)
         reply = dialog.exec()
-        if reply == QDialog.Accepted:
+        if reply == QDialog.DialogCode.Accepted:
             text = dialog.getText()
             self.__topicLbl.setText(text)
             self.convUpdated.emit(self.__id, text)
@@ -95,12 +95,12 @@ class ConvListWidget(QListWidget):
 
     def addConv(self, text: str, id: int):
         item = QListWidgetItem()
-        item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
-        item.setCheckState(Qt.Unchecked)
+        item.setFlags(item.flags() | Qt.ItemFlag.ItemIsUserCheckable)
+        item.setCheckState(Qt.CheckState.Unchecked)
         widget = ConvItemWidget(text, item, id)
         widget.convUpdated.connect(self.convUpdated)
         item.setSizeHint(widget.sizeHint())
-        item.setData(Qt.UserRole, id)
+        item.setData(Qt.ItemDataRole.UserRole, id)
         self.insertItem(0, item)
         self.setItemWidget(item, widget)
 
@@ -109,10 +109,10 @@ class ConvListWidget(QListWidget):
         if isinstance(potentialChkBoxWidgetInItem, QWidget) and potentialChkBoxWidgetInItem.children():
             if isinstance(potentialChkBoxWidgetInItem.children()[0], ConvItemWidget):
                 if item.listWidget().itemWidget(item) != None:
-                    if item.checkState() == Qt.Checked:
-                        item.setCheckState(Qt.Unchecked)
+                    if item.checkState() == Qt.CheckState.Checked:
+                        item.setCheckState(Qt.CheckState.Unchecked)
                     else:
-                        item.setCheckState(Qt.Checked)
+                        item.setCheckState(Qt.CheckState.Checked)
                     self.checked.emit(self.getCheckedRowsIds())
 
     def toggleState(self, state):
@@ -123,26 +123,26 @@ class ConvListWidget(QListWidget):
                 item.setCheckState(state)
 
     def getCheckedRowsIds(self):
-        return self.__getFlagRows(Qt.Checked, is_id=True)
+        return self.__getFlagRows(Qt.CheckState.Checked, is_id=True)
 
     def getUncheckedRowsIds(self):
-        return self.__getFlagRows(Qt.Unchecked, is_id=True)
+        return self.__getFlagRows(Qt.CheckState.Unchecked, is_id=True)
 
     def __getFlagRows(self, flag: Qt.CheckState, is_id: bool = False):
         flag_lst = []
         for i in range(self.count()):
             item = self.item(i)
             if item.checkState() == flag:
-                token = item.data(Qt.UserRole) if is_id else i
+                token = item.data(Qt.ItemDataRole.UserRole) if is_id else i
                 flag_lst.append(token)
 
         return flag_lst
 
     def removeCheckedRows(self):
-        self.__removeFlagRows(Qt.Checked)
+        self.__removeFlagRows(Qt.CheckState.Checked)
 
     def removeUncheckedRows(self):
-        self.__removeFlagRows(Qt.Unchecked)
+        self.__removeFlagRows(Qt.CheckState.Unchecked)
 
     def __removeFlagRows(self, flag):
         flag_lst = self.__getFlagRows(flag)

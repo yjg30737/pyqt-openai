@@ -1,6 +1,6 @@
-from qtpy.QtCore import Signal
-from qtpy.QtGui import QTextCursor
-from qtpy.QtWidgets import QVBoxLayout, QWidget
+from PyQt6.QtCore import Signal
+from PyQt6.QtGui import QTextCursor
+from PyQt6.QtWidgets import QVBoxLayout, QWidget
 
 from pyqt_openai.chat_widget.textEditPrompt import TextEditPrompt
 from pyqt_openai.res.language_dict import LangClass

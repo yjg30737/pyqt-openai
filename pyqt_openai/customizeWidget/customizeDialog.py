@@ -1,7 +1,7 @@
-from qtpy.QtCore import Qt, QSettings
-from qtpy.QtGui import QPixmap
-from qtpy.QtWidgets import QDialog, QFrame, QPushButton, QHBoxLayout, QVBoxLayout, QWidget, QFormLayout
-from qtpy.QtWidgets import QGraphicsScene, QGraphicsView
+from PyQt6.QtCore import Qt, QSettings
+from PyQt6.QtGui import QPixmap
+from PyQt6.QtWidgets import QDialog, QFrame, QPushButton, QHBoxLayout, QVBoxLayout, QWidget, QFormLayout
+from PyQt6.QtWidgets import QGraphicsScene, QGraphicsView
 
 from pyqt_openai.widgets.circleProfileImage import RoundedImage
 from pyqt_openai.widgets.findPathWidget import FindPathWidget
@@ -11,7 +11,7 @@ from pyqt_openai.res.language_dict import LangClass
 class SingleImageGraphicsView(QGraphicsView):
     def __init__(self):
         super().__init__()
-        self.__aspectRatioMode = Qt.KeepAspectRatio
+        self.__aspectRatioMode = Qt.AspectRatioMode.KeepAspectRatio
         self.__initVal()
 
     def __initVal(self):
@@ -68,7 +68,7 @@ class CustomizeDialog(QDialog):
 
     def __initUi(self):
         self.setWindowTitle(LangClass.TRANSLATIONS['Customize (working)'])
-        self.setWindowFlags(Qt.Window | Qt.WindowCloseButtonHint)
+        self.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.WindowCloseButtonHint)
 
         self.__homePageGraphicsView = SingleImageGraphicsView()
         self.__homePageGraphicsView.setFilename(self.__background_image)
@@ -120,8 +120,8 @@ class CustomizeDialog(QDialog):
         self.__topWidget.setLayout(lay)
 
         sep = QFrame()
-        sep.setFrameShape(QFrame.HLine)
-        sep.setFrameShadow(QFrame.Sunken)
+        sep.setFrameShape(QFrame.Shape.HLine)
+        sep.setFrameShadow(QFrame.Shadow.Sunken)
 
         self.__okBtn = QPushButton(LangClass.TRANSLATIONS['OK'])
         self.__okBtn.clicked.connect(self.__accept)
@@ -132,7 +132,7 @@ class CustomizeDialog(QDialog):
         lay = QHBoxLayout()
         lay.addWidget(self.__okBtn)
         lay.addWidget(cancelBtn)
-        lay.setAlignment(Qt.AlignRight)
+        lay.setAlignment(Qt.AlignmentFlag.AlignRight)
         lay.setContentsMargins(0, 0, 0, 0)
 
         okCancelWidget = QWidget()

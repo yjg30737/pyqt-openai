@@ -1,7 +1,7 @@
 import re
 
-from qtpy.QtCore import Signal
-from qtpy.QtWidgets import QWidget, QLabel, \
+from PyQt6.QtCore import Signal
+from PyQt6.QtWidgets import QWidget, QLabel, \
     QHBoxLayout, QGridLayout, QLineEdit
 
 from pyqt_openai.chat_widget.chatBrowser import ChatBrowser
