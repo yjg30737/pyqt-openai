@@ -15,16 +15,16 @@ sys.path.insert(0, project_root)
 sys.path.insert(0, os.getcwd())  # Add the current directory as well
 
 # for testing pyside6
-os.environ['QT_API'] = 'pyside6'
+# os.environ['QT_API'] = 'pyside6'
 
 # for testing pyqt6
 # os.environ['QT_API'] = 'pyqt6'
 
-from qtpy.QtGui import QFont, QIcon, QColor
+from qtpy.QtGui import QGuiApplication, QFont, QIcon, QColor
 from qtpy.QtWidgets import QMainWindow, QToolBar, QHBoxLayout, QDialog, QLineEdit, QPushButton, QWidgetAction, QSpinBox, QLabel, QWidget, QApplication, \
     QComboBox, QSizePolicy, QStackedWidget, QMenu, QSystemTrayIcon, \
     QMessageBox, QCheckBox, QAction
-from qtpy.QtCore import Qt, QSettings
+from qtpy.QtCore import Qt, QCoreApplication, QSettings
 
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.aboutDialog import AboutDialog
@@ -37,6 +37,13 @@ from pyqt_openai.replicate_widget.replicateWidget import ReplicateWidget
 os.environ['OPENAI_API_KEY'] = ''
 
 from pyqt_openai.pyqt_openai_data import OPENAI_STRUCT, LLAMAINDEX_WRAPPER
+
+# HighDPI support
+# qt version should be above 5.14
+if os.environ['QT_API'] == 'pyqt5':
+    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
+    QCoreApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
+    QGuiApplication.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
 
 QApplication.setFont(QFont('Arial', 12))
 QApplication.setWindowIcon(QIcon('ico/openai.svg'))
@@ -235,7 +242,7 @@ class MainWindow(QMainWindow):
         tray_icon.show()
 
     def __activated(self, reason):
-        if reason == QSystemTrayIcon.DoubleClick:
+        if reason == QSystemTrayIcon.ActivationReason.DoubleClick:
             self.show()
 
     def __setToolBar(self):
