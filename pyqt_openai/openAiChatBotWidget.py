@@ -318,9 +318,8 @@ class OpenAIChatBotWidget(QWidget):
 
     def __importConv(self, filename):
         old_conv = DB.selectAllConv()
-        if old_conv and len(old_conv) > 0:
-            message = '''
-            There are already conversations. Would you export them before importing? 
+        if filename and old_conv and len(old_conv) > 0:
+            message = '''There are already conversations. Would you export them before importing? 
             Warning: If you do not export, you will lose the current conversations.
             '''
             messageBox = QMessageBox(self)

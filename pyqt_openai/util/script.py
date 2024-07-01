@@ -109,7 +109,7 @@ def generate_random_string(length):
 
 def get_image_filename_for_saving(arg: ImagePromptContainer):
     ext = '.png'
-    filename_prompt_prefix = '_'.join(''.join(re.findall('[a-zA-Z0-9\s]', arg.prompt[:20])).split(' '))
+    filename_prompt_prefix = '_'.join(''.join(re.findall('[a-zA-Z0-9\\s]', arg.prompt[:20])).split(' '))
     size = f"{arg.width}x{arg.height}"
     filename = '_'.join(map(str, [filename_prompt_prefix, size])) + '_' + generate_random_string(8) + ext
 

@@ -1,6 +1,5 @@
-from PyQt5.QtSql import QSqlQuery
 from qtpy.QtCore import Signal, QSortFilterProxyModel, Qt, QByteArray
-from qtpy.QtSql import QSqlTableModel, QSqlDatabase
+from qtpy.QtSql import QSqlTableModel, QSqlDatabase, QSqlQuery
 from qtpy.QtWidgets import QWidget, QVBoxLayout, QStyledItemDelegate, QTableView, QAbstractItemView, QHBoxLayout, QMessageBox, QLabel
 
 # for search feature

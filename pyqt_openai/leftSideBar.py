@@ -41,7 +41,7 @@ class LeftSideBar(QWidget):
 
         self.__addBtn.setToolTip(LangClass.TRANSLATIONS['Add'])
         self.__delBtn.setToolTip(LangClass.TRANSLATIONS['Delete'])
-        self.__importBtn.setToolTip('SQLite DB Import')
+        self.__importBtn.setToolTip('SQLite DB Import (Working)')
         self.__saveBtn.setToolTip(LangClass.TRANSLATIONS['Save'])
 
         self.__addBtn.clicked.connect(self.__addClicked)

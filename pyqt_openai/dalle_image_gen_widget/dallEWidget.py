@@ -1,4 +1,3 @@
-import base64
 import os
 
 from qtpy.QtCore import Qt
