@@ -231,7 +231,8 @@ class Prompt(QWidget):
 
     def updateHeight(self):
         overallHeight = self.__textEditGroup.adjustHeight()
-        self.setMaximumHeight(overallHeight + self.__suggestionWidget.maximumHeight())
+        # Set the maximum height of the widget - should fit the device screen
+        self.setMaximumHeight(overallHeight + self.__suggestionWidget.height() + self.__uploadedImageFileWidget.height() + 100)
 
     def getTextEdit(self):
         return self.__textEditGroup.getGroup()[1]
