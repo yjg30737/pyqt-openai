@@ -3,7 +3,7 @@ import os
 from qtpy.QtCore import Qt
 from qtpy.QtWidgets import QHBoxLayout, QVBoxLayout, QFrame, QWidget, QSplitter
 
-from pyqt_openai.models import ImagePromptContainer
+from pyqt_openai.models import ImageChatContainer
 from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.replicate_widget.replicateControlWidget import ReplicateControlWidget
 from pyqt_openai.res.language_dict import LangClass
@@ -22,7 +22,7 @@ class ReplicateWidget(QWidget):
         self.__initUi()
 
     def __initUi(self):
-        self.__imageNavWidget = ImageNavWidget(ImagePromptContainer.get_keys())
+        self.__imageNavWidget = ImageNavWidget(ImageChatContainer.get_keys())
         self.__viewWidget = ThumbnailView()
         self.__rightSideBarWidget = ReplicateControlWidget()
 

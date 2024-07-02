@@ -4,7 +4,7 @@ from qtpy.QtCore import Qt
 from qtpy.QtWidgets import QHBoxLayout, QVBoxLayout, QFrame, QWidget, QSplitter
 
 from pyqt_openai.dalle_image_gen_widget.dallEControlWidget import DallEControlWidget
-from pyqt_openai.models import ImagePromptContainer
+from pyqt_openai.models import ImageChatContainer
 from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.util.script import get_image_filename_for_saving, open_directory, get_image_prompt_filename_for_saving
@@ -21,7 +21,7 @@ class DallEWidget(QWidget):
         self.__initUi()
 
     def __initUi(self):
-        self.__imageNavWidget = ImageNavWidget(ImagePromptContainer.get_keys())
+        self.__imageNavWidget = ImageNavWidget(ImageChatContainer.get_keys())
         self.__viewWidget = ThumbnailView()
         self.__rightSideBarWidget = DallEControlWidget()
 

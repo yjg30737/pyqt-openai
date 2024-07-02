@@ -6,7 +6,7 @@ from qtpy.QtWidgets import QLineEdit, QScrollArea, QMessageBox, QWidget, QCheckB
     QPlainTextEdit, \
     QFormLayout, QLabel, QFrame, QSplitter
 
-from pyqt_openai.models import ImagePromptContainer
+from pyqt_openai.models import ImageChatContainer
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.util.replicate_script import ReplicateWrapper
 from pyqt_openai.widgets.findPathWidget import FindPathWidget
@@ -15,7 +15,7 @@ from pyqt_openai.widgets.toast import Toast
 
 
 class Thread(QThread):
-    replyGenerated = Signal(ImagePromptContainer)
+    replyGenerated = Signal(ImageChatContainer)
     errorGenerated = Signal(str)
     allReplyGenerated = Signal()
 
@@ -43,7 +43,7 @@ class Thread(QThread):
 
 
 class ReplicateControlWidget(QScrollArea):
-    submitReplicate = Signal(ImagePromptContainer)
+    submitReplicate = Signal(ImageChatContainer)
     submitReplicateAllComplete = Signal()
 
     def __init__(self):

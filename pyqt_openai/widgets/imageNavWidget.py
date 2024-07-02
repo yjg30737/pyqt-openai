@@ -3,7 +3,7 @@ from qtpy.QtSql import QSqlTableModel, QSqlDatabase, QSqlQuery
 from qtpy.QtWidgets import QWidget, QVBoxLayout, QStyledItemDelegate, QTableView, QAbstractItemView, QHBoxLayout, QMessageBox, QLabel
 
 # for search feature
-from pyqt_openai.models import ImagePromptContainer
+from pyqt_openai.models import ImageChatContainer
 from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.widgets.searchBar import SearchBar
 from pyqt_openai.widgets.svgButton import SvgButton
@@ -144,7 +144,7 @@ class ImageNavWidget(QWidget):
         self.__model.select()
 
     def __clicked(self, idx):
-        cur_id = self.__proxyModel.data(self.__proxyModel.index(idx.row(), self.__columns.index('ID')))
+        cur_id = self.__proxyModel.data(self.__proxyModel.index(idx.row(), self.__columns.index('id')))
         # Get data from DB id
         data = DB.selectCertainImage(cur_id)['data']
         if isinstance(data, str):

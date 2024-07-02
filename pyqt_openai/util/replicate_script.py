@@ -2,7 +2,7 @@ import os
 
 import replicate
 
-from pyqt_openai.models import ImagePromptContainer
+from pyqt_openai.models import ImageChatContainer
 from pyqt_openai.util.script import download_image_as_base64
 
 
@@ -61,7 +61,7 @@ class ReplicateWrapper:
                     "height": input_args["height"],
                     "negative_prompt": input_args["negative_prompt"],
                 }
-                arg = ImagePromptContainer(**arg)
+                arg = ImageChatContainer(**arg)
                 return arg
             else:
                 raise Exception("No output")

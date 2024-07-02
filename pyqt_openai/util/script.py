@@ -10,7 +10,7 @@ from pathlib import Path
 
 from jinja2 import Template
 
-from pyqt_openai.models import ImagePromptContainer
+from pyqt_openai.models import ImageChatContainer
 
 
 def get_generic_ext_out_of_qt_ext(text):
@@ -107,7 +107,7 @@ def generate_random_string(length):
     letters = string.ascii_letters + string.digits
     return ''.join(random.choice(letters) for _ in range(length))
 
-def get_image_filename_for_saving(arg: ImagePromptContainer):
+def get_image_filename_for_saving(arg: ImageChatContainer):
     ext = '.png'
     filename_prompt_prefix = '_'.join(''.join(re.findall('[a-zA-Z0-9\\s]', arg.prompt[:20])).split(' '))
     size = f"{arg.width}x{arg.height}"

@@ -7,7 +7,7 @@ from qtpy.QtWidgets import QMessageBox, QScrollArea, QWidget, QCheckBox, QSpinBo
     QPlainTextEdit, \
     QFormLayout, QLabel, QFrame, QRadioButton
 
-from pyqt_openai.models import ImagePromptContainer
+from pyqt_openai.models import ImageChatContainer
 from pyqt_openai.pyqt_openai_data import OPENAI_STRUCT
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.widgets.findPathWidget import FindPathWidget
@@ -16,7 +16,7 @@ from pyqt_openai.widgets.toast import Toast
 
 
 class Thread(QThread):
-    replyGenerated = Signal(ImagePromptContainer)
+    replyGenerated = Signal(ImageChatContainer)
     errorGenerated = Signal(str)
     allReplyGenerated = Signal()
 
@@ -38,7 +38,7 @@ class Thread(QThread):
                 response = OPENAI_STRUCT.images.generate(
                     **self.__openai_arg
                 )
-                container = ImagePromptContainer(**self.__openai_arg)
+                container = ImageChatContainer(**self.__openai_arg)
                 for _ in response.data:
                     image_data = base64.b64decode(_.b64_json)
                     container.data = image_data
@@ -52,7 +52,7 @@ class Thread(QThread):
 
 
 class DallEControlWidget(QScrollArea):
-    submitDallE = Signal(ImagePromptContainer)
+    submitDallE = Signal(ImageChatContainer)
     submitDallEAllComplete = Signal()
 
     def __init__(self):
