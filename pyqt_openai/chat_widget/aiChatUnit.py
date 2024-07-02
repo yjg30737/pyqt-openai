@@ -37,7 +37,7 @@ class SourceBrowser(QWidget):
 
         menuWidget.setLayout(lay)
         menuWidget.setMaximumHeight(menuWidget.sizeHint().height())
-        menuWidget.setStyleSheet('QWidget { background-color: #BBB }')
+        menuWidget.setBackgroundRole(QPalette.ColorRole.Midlight)
 
         self.__browser = QTextBrowser()
         lay = QVBoxLayout()
@@ -100,7 +100,6 @@ class AIChatUnit(QWidget):
 
         menuWidget.setLayout(lay)
         menuWidget.setMaximumHeight(menuWidget.sizeHint().height())
-        menuWidget.setStyleSheet('QWidget { background-color: #BBB }')
 
         lay = QVBoxLayout()
         self.__mainWidget = QWidget()
@@ -114,9 +113,7 @@ class AIChatUnit(QWidget):
 
         self.setLayout(lay)
 
-        palette = QPalette()
-        palette.setColor(QPalette.ColorRole.Window, QColor(220, 220, 220))
-        self.setPalette(palette)
+        self.setBackgroundRole(QPalette.ColorRole.Midlight)
         self.setAutoFillBackground(True)
 
     def __copy(self):
@@ -166,6 +163,7 @@ class AIChatUnit(QWidget):
         self.__lbl.setWordWrap(True)
         self.__lbl.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
         self.__lbl.setOpenExternalLinks(True)
+        self.__lbl.setBackgroundRole(QPalette.ColorRole.AlternateBase)
 
         self.__mainWidget.layout().addWidget(self.__lbl)
 
