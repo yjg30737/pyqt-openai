@@ -6,7 +6,7 @@ from qtpy.QtWidgets import QWidget, QVBoxLayout, QStyledItemDelegate, QTableView
 from pyqt_openai.models import ImagePromptContainer
 from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.widgets.searchBar import SearchBar
-from pyqt_openai.widgets.svgButton import SvgButton
+from pyqt_openai.widgets.button import Button
 
 
 class FilterProxyModel(QSortFilterProxyModel):
@@ -68,12 +68,12 @@ class ImageNavWidget(QWidget):
         self.__searchBar.setPlaceHolder('Search...')
         self.__searchBar.searched.connect(self.__showResult)
 
-        self.__deleteBtn = SvgButton()
+        self.__deleteBtn = Button()
         self.__deleteBtn.setStyleAndIcon('ico/delete.svg')
         self.__deleteBtn.clicked.connect(self.__delete)
         self.__deleteBtn.setToolTip('Delete Certain Row')
 
-        self.__clearBtn = SvgButton()
+        self.__clearBtn = Button()
         self.__clearBtn.setStyleAndIcon('ico/close.svg')
         self.__clearBtn.clicked.connect(self.__clear)
         self.__deleteBtn.setToolTip('Remove All')

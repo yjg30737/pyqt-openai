@@ -11,7 +11,7 @@ from pyqt_openai.util.script import get_image_filename_for_saving, open_director
 from pyqt_openai.widgets.imageNavWidget import ImageNavWidget
 from pyqt_openai.widgets.linkLabel import LinkLabel
 from pyqt_openai.widgets.notifier import NotifierWidget
-from pyqt_openai.widgets.svgButton import SvgButton
+from pyqt_openai.widgets.button import Button
 from pyqt_openai.widgets.thumbnailView import ThumbnailView
 
 
@@ -31,14 +31,14 @@ class ReplicateWidget(QWidget):
         self.__rightSideBarWidget.submitReplicate.connect(self.__setResult)
         self.__rightSideBarWidget.submitReplicateAllComplete.connect(self.__imageGenerationAllComplete)
 
-        self.__historyBtn = SvgButton()
+        self.__historyBtn = Button()
         self.__historyBtn.setStyleAndIcon('ico/history.svg')
         self.__historyBtn.setCheckable(True)
         self.__historyBtn.setToolTip('History')
         self.__historyBtn.setChecked(True)
         self.__historyBtn.toggled.connect(self.__imageNavWidget.setVisible)
 
-        self.__settingBtn = SvgButton()
+        self.__settingBtn = Button()
         self.__settingBtn.setStyleAndIcon('ico/setting.svg')
         self.__settingBtn.setCheckable(True)
         self.__settingBtn.setToolTip('Settings')

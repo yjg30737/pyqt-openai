@@ -2,7 +2,7 @@ from pyqt_openai.convListWidget import ConvListWidget
 from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.widgets.searchBar import SearchBar
-from pyqt_openai.widgets.svgButton import SvgButton
+from pyqt_openai.widgets.button import Button
 from qtpy.QtCore import Signal, Qt
 from qtpy.QtWidgets import QWidget, QComboBox, QCheckBox, QVBoxLayout, QHBoxLayout, QSpacerItem, QSizePolicy, \
     QListWidgetItem, QFileDialog
@@ -29,10 +29,10 @@ class LeftSideBar(QWidget):
         self.__searchOptionCmbBox.addItems([LangClass.TRANSLATIONS['Title'], LangClass.TRANSLATIONS['Content']])
         self.__searchOptionCmbBox.setMinimumHeight(searchBar.sizeHint().height())
 
-        self.__addBtn = SvgButton()
-        self.__delBtn = SvgButton()
-        self.__importBtn = SvgButton()
-        self.__saveBtn = SvgButton()
+        self.__addBtn = Button()
+        self.__delBtn = Button()
+        self.__importBtn = Button()
+        self.__saveBtn = Button()
 
         self.__addBtn.setStyleAndIcon('ico/add.svg')
         self.__delBtn.setStyleAndIcon('ico/delete.svg')
@@ -92,6 +92,8 @@ class LeftSideBar(QWidget):
         lay.addWidget(self.__convListWidget)
 
         self.setLayout(lay)
+
+        self.__importBtn.setEnabled(False)
 
     def __addClicked(self):
         self.added.emit()

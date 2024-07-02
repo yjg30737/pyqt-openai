@@ -5,7 +5,7 @@ from qtpy.QtCore import Qt, Signal
 from qtpy.QtWidgets import QListWidget, QDialog, QListWidgetItem, QLabel, QHBoxLayout, QWidget, QApplication, QVBoxLayout
 
 from pyqt_openai.widgets.inputDialog import InputDialog
-from pyqt_openai.widgets.svgButton import SvgButton
+from pyqt_openai.widgets.button import Button
 
 
 class ConvItemWidget(QWidget):
@@ -28,7 +28,7 @@ class ConvItemWidget(QWidget):
         leftWidget = QWidget()
         leftWidget.setLayout(lay)
 
-        editButton = SvgButton()
+        editButton = Button()
         editButton.setStyleAndIcon('ico/edit.svg')
         editButton.setToolTip('Rename')
         editButton.clicked.connect(self.__btnClicked)

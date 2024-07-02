@@ -3,7 +3,7 @@ from qtpy.QtGui import QPalette
 from qtpy.QtCore import Qt
 from qtpy.QtWidgets import QSpacerItem, QSizePolicy, QWidget, QVBoxLayout, QHBoxLayout, QLabel
 
-from pyqt_openai.widgets.svgButton import SvgButton
+from pyqt_openai.widgets.button import Button
 
 from pyqt_openai.widgets.circleProfileImage import RoundedImage
 
@@ -26,8 +26,7 @@ class UserChatUnit(QWidget):
         self.__icon = RoundedImage()
         self.__icon.setMaximumSize(24, 24)
 
-        # SvgButton is supposed to be used like "copyBtn = SvgButton(self)" but it makes GUI broken so i won't give "self" argument to SvgButton
-        copyBtn = SvgButton(self)
+        copyBtn = Button()
         copyBtn.setStyleAndIcon('ico/copy.svg')
         copyBtn.clicked.connect(self.__copy)
 
