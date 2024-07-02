@@ -142,7 +142,7 @@ class ChatBrowser(QScrollArea):
             for i in range(lay.count()-1, -1, -1):
                 item = lay.itemAt(i)
                 if item and item.widget():
-                    lay.removeWidget(item.widget())
+                    item.widget().deleteLater()
         self.onReplacedCurrentPage.emit(0)
 
     def setCurId(self, id):
