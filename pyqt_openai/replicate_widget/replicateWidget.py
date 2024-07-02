@@ -32,14 +32,14 @@ class ReplicateWidget(QWidget):
         self.__rightSideBarWidget.submitReplicateAllComplete.connect(self.__imageGenerationAllComplete)
 
         self.__historyBtn = SvgButton()
-        self.__historyBtn.setIcon('ico/history.svg')
+        self.__historyBtn.setStyleAndIcon('ico/history.svg')
         self.__historyBtn.setCheckable(True)
         self.__historyBtn.setToolTip('History')
         self.__historyBtn.setChecked(True)
         self.__historyBtn.toggled.connect(self.__imageNavWidget.setVisible)
 
         self.__settingBtn = SvgButton()
-        self.__settingBtn.setIcon('ico/setting.svg')
+        self.__settingBtn.setStyleAndIcon('ico/setting.svg')
         self.__settingBtn.setCheckable(True)
         self.__settingBtn.setToolTip('Settings')
         self.__settingBtn.setChecked(True)

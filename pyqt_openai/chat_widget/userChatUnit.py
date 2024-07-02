@@ -27,7 +27,7 @@ class UserChatUnit(QWidget):
 
         # SvgButton is supposed to be used like "copyBtn = SvgButton(self)" but it makes GUI broken so i won't give "self" argument to SvgButton
         copyBtn = SvgButton(self)
-        copyBtn.setIcon('ico/copy.svg')
+        copyBtn.setStyleAndIcon('ico/copy.svg')
         copyBtn.clicked.connect(self.__copy)
 
         lay.addWidget(self.__icon)

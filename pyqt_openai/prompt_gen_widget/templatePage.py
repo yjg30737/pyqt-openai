@@ -24,8 +24,8 @@ class TemplateGroupList(QWidget):
         self.__addBtn = SvgButton()
         self.__delBtn = SvgButton()
 
-        self.__addBtn.setIcon('ico/add.svg')
-        self.__delBtn.setIcon('ico/delete.svg')
+        self.__addBtn.setStyleAndIcon('ico/add.svg')
+        self.__delBtn.setStyleAndIcon('ico/delete.svg')
 
         self.__addBtn.clicked.connect(self.__addGroup)
         self.__delBtn.clicked.connect(self.__deleteGroup)
@@ -122,8 +122,8 @@ class TemplateTable(QWidget):
         self.__addBtn = SvgButton()
         self.__delBtn = SvgButton()
 
-        self.__addBtn.setIcon('ico/add.svg')
-        self.__delBtn.setIcon('ico/delete.svg')
+        self.__addBtn.setStyleAndIcon('ico/add.svg')
+        self.__delBtn.setStyleAndIcon('ico/delete.svg')
 
         self.__addBtn.clicked.connect(self.__add)
         self.__delBtn.clicked.connect(self.__delete)

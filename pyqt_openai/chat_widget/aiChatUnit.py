@@ -25,7 +25,7 @@ class SourceBrowser(QWidget):
 
         # SvgButton is supposed to be used like "copyBtn = SvgButton(self)" but it makes GUI broken so i won't give "self" argument to SvgButton
         copyBtn = SvgButton()
-        copyBtn.setIcon('ico/copy.svg')
+        copyBtn.setStyleAndIcon('ico/copy.svg')
         copyBtn.clicked.connect(self.__copy)
 
         lay.addWidget(self.__langLbl)
@@ -83,12 +83,12 @@ class AIChatUnit(QWidget):
         self.__icon.setMaximumSize(24, 24)
 
         self.__infoBtn = SvgButton()
-        self.__infoBtn.setIcon('ico/info.svg')
+        self.__infoBtn.setStyleAndIcon('ico/info.svg')
         self.__infoBtn.clicked.connect(self.__showInfo)
 
         # SvgButton is supposed to be used like "copyBtn = SvgButton(self)" but it makes GUI broken so i won't give "self" argument to SvgButton
         self.__copyBtn = SvgButton()
-        self.__copyBtn.setIcon('ico/copy.svg')
+        self.__copyBtn.setStyleAndIcon('ico/copy.svg')
         self.__copyBtn.clicked.connect(self.__copy)
 
         lay.addWidget(self.__icon)

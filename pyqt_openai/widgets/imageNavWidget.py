@@ -69,12 +69,12 @@ class ImageNavWidget(QWidget):
         self.__searchBar.searched.connect(self.__showResult)
 
         self.__deleteBtn = SvgButton()
-        self.__deleteBtn.setIcon('ico/delete.svg')
+        self.__deleteBtn.setStyleAndIcon('ico/delete.svg')
         self.__deleteBtn.clicked.connect(self.__delete)
         self.__deleteBtn.setToolTip('Delete Certain Row')
 
         self.__clearBtn = SvgButton()
-        self.__clearBtn.setIcon('ico/close.svg')
+        self.__clearBtn.setStyleAndIcon('ico/close.svg')
         self.__clearBtn.clicked.connect(self.__clear)
         self.__deleteBtn.setToolTip('Remove All')
 

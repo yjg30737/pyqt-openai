@@ -116,7 +116,7 @@ class MainWindow(QMainWindow):
 
         self.__stackAction = QWidgetAction(self)
         self.__stackBtn = SvgButton()
-        self.__stackBtn.setIcon('ico/stackontop.svg')
+        self.__stackBtn.setStyleAndIcon('ico/stackontop.svg')
         self.__stackBtn.setCheckable(True)
         self.__stackBtn.toggled.connect(self.__stackToggle)
         self.__stackAction.setDefaultWidget(self.__stackBtn)
@@ -124,7 +124,7 @@ class MainWindow(QMainWindow):
 
         self.__customizeAction = QWidgetAction(self)
         self.__customizeBtn = SvgButton()
-        self.__customizeBtn.setIcon('ico/customize.svg')
+        self.__customizeBtn.setStyleAndIcon('ico/customize.svg')
         self.__customizeBtn.clicked.connect(self.__executeCustomizeDialog)
         self.__customizeAction.setDefaultWidget(self.__customizeBtn)
         self.__customizeBtn.setToolTip(LangClass.TRANSLATIONS['Customize (working)'])

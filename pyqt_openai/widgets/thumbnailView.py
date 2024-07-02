@@ -43,22 +43,22 @@ class ThumbnailView(QGraphicsView):
     def __setControlWidget(self):
         # copy the image
         copyBtn = SvgButton()
-        copyBtn.setIcon('ico/copy.svg')
+        copyBtn.setStyleAndIcon('ico/copy.svg')
         copyBtn.clicked.connect(self.__copy)
 
         # download the image
         saveBtn = SvgButton()
-        saveBtn.setIcon('ico/save.svg')
+        saveBtn.setStyleAndIcon('ico/save.svg')
         saveBtn.clicked.connect(self.__save)
 
         # zoom in
         zoomInBtn = SvgButton()
-        zoomInBtn.setIcon('ico/add.svg')
+        zoomInBtn.setStyleAndIcon('ico/add.svg')
         zoomInBtn.clicked.connect(self.__zoomIn)
 
         # zoom out
         zoomOutBtn = SvgButton()
-        zoomOutBtn.setIcon('ico/delete.svg')
+        zoomOutBtn.setStyleAndIcon('ico/delete.svg')
         zoomOutBtn.clicked.connect(self.__zoomOut)
 
         lay = QHBoxLayout()

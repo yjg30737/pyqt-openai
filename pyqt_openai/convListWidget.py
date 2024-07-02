@@ -29,7 +29,7 @@ class ConvItemWidget(QWidget):
         leftWidget.setLayout(lay)
 
         editButton = SvgButton()
-        editButton.setIcon('ico/edit.svg')
+        editButton.setStyleAndIcon('ico/edit.svg')
         editButton.setToolTip('Rename')
         editButton.clicked.connect(self.__btnClicked)
 

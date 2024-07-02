@@ -1,9 +1,10 @@
 import os.path, posixpath
 
-from qtpy.QtGui import QColor, QPalette, qGray
+from qtpy.QtGui import QColor, QPalette, qGray, QIcon
 from qtpy.QtWidgets import QGraphicsColorizeEffect, QWidget, QApplication, QPushButton
 
 from pyqt_openai.pyqt_openai_data import ROOT_DIR
+
 
 class SvgButton(QPushButton):
     def __init__(self, base_widget: QWidget = None, parent=None):
@@ -78,7 +79,6 @@ class SvgButton(QPushButton):
         border: 0;
         width: {self.__size};
         height: {self.__size};
-        image: url({self.__icon});
         background-color: {self.__background_color};
         border-radius: {self.__border_radius};
         padding: {self.__padding};
@@ -101,9 +101,10 @@ class SvgButton(QPushButton):
 
         self.setStyleSheet(self.__btn_style)
 
-    def setIcon(self, icon: str):
+    def setStyleAndIcon(self, icon: str):
         self.__icon = os.path.join(ROOT_DIR, icon).replace(os.sep, posixpath.sep)
         self.__styleInit()
+        self.setIcon(QIcon(self.__icon))
 
     def eventFilter(self, obj, e):
         if obj == self:
