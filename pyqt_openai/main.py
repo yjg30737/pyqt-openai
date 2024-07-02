@@ -28,9 +28,9 @@ from qtpy.QtCore import Qt, QCoreApplication, QSettings
 
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.aboutDialog import AboutDialog
-from pyqt_openai.customizeWidget.customizeDialog import CustomizeDialog
+from pyqt_openai.customizeDialog import CustomizeDialog
 from pyqt_openai.widgets.svgButton import SvgButton
-from pyqt_openai.dalle_image_gen_widget.dallEWidget import DallEWidget
+from pyqt_openai.dalle_widget.dallEWidget import DallEWidget
 from pyqt_openai.openAiChatBotWidget import OpenAIChatBotWidget
 from pyqt_openai.replicate_widget.replicateWidget import ReplicateWidget
 
@@ -116,7 +116,7 @@ class MainWindow(QMainWindow):
 
         self.__stackAction = QWidgetAction(self)
         self.__stackBtn = SvgButton()
-        self.__stackBtn.setIcon('ico/stackontop.svg')
+        self.__stackBtn.setStyleAndIcon('ico/stackontop.svg')
         self.__stackBtn.setCheckable(True)
         self.__stackBtn.toggled.connect(self.__stackToggle)
         self.__stackAction.setDefaultWidget(self.__stackBtn)
@@ -124,7 +124,7 @@ class MainWindow(QMainWindow):
 
         self.__customizeAction = QWidgetAction(self)
         self.__customizeBtn = SvgButton()
-        self.__customizeBtn.setIcon('ico/customize.svg')
+        self.__customizeBtn.setStyleAndIcon('ico/customize.svg')
         self.__customizeBtn.clicked.connect(self.__executeCustomizeDialog)
         self.__customizeAction.setDefaultWidget(self.__customizeBtn)
         self.__customizeBtn.setToolTip(LangClass.TRANSLATIONS['Customize (working)'])

@@ -37,12 +37,12 @@ class FindTextWidget(QWidget):
         self.__cnt_lbl = QLabel(self.__cnt_init_text.format(0))
 
         self.__prevBtn = SvgButton()
-        self.__prevBtn.setIcon('ico/prev.svg')
+        self.__prevBtn.setStyleAndIcon('ico/prev.svg')
         self.__prevBtn.setShortcut('Ctrl+Shift+D')
 
         self.__nextBtn = SvgButton()
         self.__nextBtn.setShortcut('Enter')
-        self.__nextBtn.setIcon('ico/next.svg')
+        self.__nextBtn.setStyleAndIcon('ico/next.svg')
         self.__nextBtn.setShortcut('Ctrl+D')
 
         self.__prevBtn.clicked.connect(self.prev)
@@ -53,23 +53,23 @@ class FindTextWidget(QWidget):
         self.__caseBtn = SvgButton()
         self.__caseBtn.setCheckable(True)
         self.__caseBtn.toggled.connect(self.__caseToggled)
-        self.__caseBtn.setIcon('ico/case.svg')
+        self.__caseBtn.setStyleAndIcon('ico/case.svg')
 
         self.__wordBtn = SvgButton()
         self.__wordBtn.setCheckable(True)
         self.__wordBtn.toggled.connect(self.__wordToggled)
-        self.__wordBtn.setIcon('ico/word.svg')
+        self.__wordBtn.setStyleAndIcon('ico/word.svg')
 
         self.__regexBtn = SvgButton()
         self.__regexBtn.setCheckable(True)
         self.__regexBtn.toggled.connect(self.__regexToggled)
-        self.__regexBtn.setIcon('ico/regex.svg')
+        self.__regexBtn.setStyleAndIcon('ico/regex.svg')
 
         self.__closeBtn = SvgButton()
         self.__closeBtn.setVisible(False)
         self.__closeBtn.clicked.connect(self.close)
         self.__closeBtn.setShortcut('Escape')
-        self.__closeBtn.setIcon('ico/close.svg')
+        self.__closeBtn.setStyleAndIcon('ico/close.svg')
 
         self.__prevBtn.setToolTip('Previous Occurrence')
         self.__nextBtn.setToolTip('Next Occurrence')

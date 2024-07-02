@@ -85,7 +85,7 @@ class Prompt(QWidget):
         leftWidget.setLayout(lay)
 
         settingsBtn = SvgToolButton()
-        settingsBtn.setIcon('ico/vertical_three_dots.svg')
+        settingsBtn.setStyleAndIcon('ico/vertical_three_dots.svg')
         settingsBtn.setToolTip(LangClass.TRANSLATIONS['Prompt Settings'])
 
         # Create the menu

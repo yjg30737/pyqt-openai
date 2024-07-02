@@ -1,4 +1,5 @@
 import pyperclip
+from qtpy.QtGui import QPalette
 from qtpy.QtCore import Qt
 from qtpy.QtWidgets import QSpacerItem, QSizePolicy, QWidget, QVBoxLayout, QHBoxLayout, QLabel
 
@@ -26,8 +27,8 @@ class UserChatUnit(QWidget):
         self.__icon.setMaximumSize(24, 24)
 
         # SvgButton is supposed to be used like "copyBtn = SvgButton(self)" but it makes GUI broken so i won't give "self" argument to SvgButton
-        copyBtn = SvgButton()
-        copyBtn.setIcon('ico/copy.svg')
+        copyBtn = SvgButton(self)
+        copyBtn.setStyleAndIcon('ico/copy.svg')
         copyBtn.clicked.connect(self.__copy)
 
         lay.addWidget(self.__icon)
@@ -38,7 +39,6 @@ class UserChatUnit(QWidget):
 
         menuWidget.setLayout(lay)
         menuWidget.setMaximumHeight(menuWidget.sizeHint().height())
-        menuWidget.setStyleSheet('QWidget { background-color: #BBB }')
 
         self.__lbl = QLabel()
         self.__lbl.setStyleSheet('QLabel { padding: 6px }')
@@ -55,6 +55,9 @@ class UserChatUnit(QWidget):
         lay.setSpacing(0)
 
         self.setLayout(lay)
+
+        self.setBackgroundRole(QPalette.ColorRole.Light)
+        self.setAutoFillBackground(True)
 
     def __copy(self):
         pyperclip.copy(self.text())

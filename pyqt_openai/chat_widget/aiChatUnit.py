@@ -25,7 +25,7 @@ class SourceBrowser(QWidget):
 
         # SvgButton is supposed to be used like "copyBtn = SvgButton(self)" but it makes GUI broken so i won't give "self" argument to SvgButton
         copyBtn = SvgButton()
-        copyBtn.setIcon('ico/copy.svg')
+        copyBtn.setStyleAndIcon('ico/copy.svg')
         copyBtn.clicked.connect(self.__copy)
 
         lay.addWidget(self.__langLbl)
@@ -37,7 +37,7 @@ class SourceBrowser(QWidget):
 
         menuWidget.setLayout(lay)
         menuWidget.setMaximumHeight(menuWidget.sizeHint().height())
-        menuWidget.setStyleSheet('QWidget { background-color: #BBB }')
+        menuWidget.setBackgroundRole(QPalette.ColorRole.Midlight)
 
         self.__browser = QTextBrowser()
         lay = QVBoxLayout()
@@ -83,12 +83,12 @@ class AIChatUnit(QWidget):
         self.__icon.setMaximumSize(24, 24)
 
         self.__infoBtn = SvgButton()
-        self.__infoBtn.setIcon('ico/info.svg')
+        self.__infoBtn.setStyleAndIcon('ico/info.svg')
         self.__infoBtn.clicked.connect(self.__showInfo)
 
         # SvgButton is supposed to be used like "copyBtn = SvgButton(self)" but it makes GUI broken so i won't give "self" argument to SvgButton
         self.__copyBtn = SvgButton()
-        self.__copyBtn.setIcon('ico/copy.svg')
+        self.__copyBtn.setStyleAndIcon('ico/copy.svg')
         self.__copyBtn.clicked.connect(self.__copy)
 
         lay.addWidget(self.__icon)
@@ -100,7 +100,6 @@ class AIChatUnit(QWidget):
 
         menuWidget.setLayout(lay)
         menuWidget.setMaximumHeight(menuWidget.sizeHint().height())
-        menuWidget.setStyleSheet('QWidget { background-color: #BBB }')
 
         lay = QVBoxLayout()
         self.__mainWidget = QWidget()
@@ -114,9 +113,7 @@ class AIChatUnit(QWidget):
 
         self.setLayout(lay)
 
-        palette = QPalette()
-        palette.setColor(QPalette.ColorRole.Window, QColor(220, 220, 220))
-        self.setPalette(palette)
+        self.setBackgroundRole(QPalette.ColorRole.Midlight)
         self.setAutoFillBackground(True)
 
     def __copy(self):
@@ -166,6 +163,7 @@ class AIChatUnit(QWidget):
         self.__lbl.setWordWrap(True)
         self.__lbl.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
         self.__lbl.setOpenExternalLinks(True)
+        self.__lbl.setBackgroundRole(QPalette.ColorRole.AlternateBase)
 
         self.__mainWidget.layout().addWidget(self.__lbl)
 
