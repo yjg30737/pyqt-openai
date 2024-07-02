@@ -14,7 +14,7 @@ from pyqt_openai.prompt_gen_widget.promptGeneratorWidget import PromptGeneratorW
 from pyqt_openai.pyqt_openai_data import DB, get_argument, LLAMAINDEX_WRAPPER
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.right_sidebar.aiPlaygroundWidget import AIPlaygroundWidget
-from pyqt_openai.widgets.svgButton import SvgButton
+from pyqt_openai.widgets.button import Button
 from pyqt_openai.util.script import open_directory, get_generic_ext_out_of_qt_ext, conv_unit_to_txt, conv_unit_to_html, \
     add_file_to_zip
 
@@ -49,21 +49,21 @@ class OpenAIChatBotWidget(QWidget):
 
         self.__promptGeneratorWidget = PromptGeneratorWidget()
 
-        self.__sideBarBtn = SvgButton()
+        self.__sideBarBtn = Button()
         self.__sideBarBtn.setStyleAndIcon('ico/sidebar.svg')
         self.__sideBarBtn.setCheckable(True)
         self.__sideBarBtn.setToolTip('Chat List')
         self.__sideBarBtn.setChecked(True)
         self.__sideBarBtn.toggled.connect(self.__leftSideBarWidget.setVisible)
 
-        self.__settingBtn = SvgButton()
+        self.__settingBtn = Button()
         self.__settingBtn.setStyleAndIcon('ico/setting.svg')
         self.__settingBtn.setToolTip('Settings')
         self.__settingBtn.setCheckable(True)
         self.__settingBtn.setChecked(True)
         self.__settingBtn.toggled.connect(self.__aiPlaygroundWidget.setVisible)
 
-        self.__promptBtn = SvgButton()
+        self.__promptBtn = Button()
         self.__promptBtn.setStyleAndIcon('ico/prompt.svg')
         self.__promptBtn.setToolTip('Prompt Generator')
         self.__promptBtn.setCheckable(True)

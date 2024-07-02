@@ -6,7 +6,7 @@ from qtpy.QtWidgets import QGraphicsColorizeEffect, QWidget, QApplication, QTool
 from pyqt_openai.pyqt_openai_data import ROOT_DIR
 
 
-class SvgToolButton(QToolButton):
+class ToolButton(QToolButton):
     def __init__(self, base_widget: QWidget = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.__baseWidget = base_widget

@@ -18,7 +18,7 @@ sys.path.insert(0, os.getcwd())  # Add the current directory as well
 # os.environ['QT_API'] = 'pyside6'
 
 # for testing pyqt6
-# os.environ['QT_API'] = 'pyqt6'
+os.environ['QT_API'] = 'pyqt6'
 
 from qtpy.QtGui import QGuiApplication, QFont, QIcon, QColor
 from qtpy.QtWidgets import QMainWindow, QToolBar, QHBoxLayout, QDialog, QLineEdit, QPushButton, QWidgetAction, QSpinBox, QLabel, QWidget, QApplication, \
@@ -29,7 +29,7 @@ from qtpy.QtCore import Qt, QCoreApplication, QSettings
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.aboutDialog import AboutDialog
 from pyqt_openai.customizeDialog import CustomizeDialog
-from pyqt_openai.widgets.svgButton import SvgButton
+from pyqt_openai.widgets.button import Button
 from pyqt_openai.dalle_widget.dallEWidget import DallEWidget
 from pyqt_openai.openAiChatBotWidget import OpenAIChatBotWidget
 from pyqt_openai.replicate_widget.replicateWidget import ReplicateWidget
@@ -115,7 +115,7 @@ class MainWindow(QMainWindow):
         self.__chooseAiAction.setDefaultWidget(self.__chooseAiCmbBox)
 
         self.__stackAction = QWidgetAction(self)
-        self.__stackBtn = SvgButton()
+        self.__stackBtn = Button()
         self.__stackBtn.setStyleAndIcon('ico/stackontop.svg')
         self.__stackBtn.setCheckable(True)
         self.__stackBtn.toggled.connect(self.__stackToggle)
@@ -123,7 +123,7 @@ class MainWindow(QMainWindow):
         self.__stackBtn.setToolTip(LangClass.TRANSLATIONS['Stack on Top'])
 
         self.__customizeAction = QWidgetAction(self)
-        self.__customizeBtn = SvgButton()
+        self.__customizeBtn = Button()
         self.__customizeBtn.setStyleAndIcon('ico/customize.svg')
         self.__customizeBtn.clicked.connect(self.__executeCustomizeDialog)
         self.__customizeAction.setDefaultWidget(self.__customizeBtn)

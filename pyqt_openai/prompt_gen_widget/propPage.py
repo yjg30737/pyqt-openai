@@ -7,7 +7,7 @@ from pyqt_openai.prompt_gen_widget.promptGroupInputDialog import PromptGroupInpu
 from pyqt_openai.prompt_gen_widget.propPromptUnitInputDialog import PropPromptUnitInputDialog
 from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.res.language_dict import LangClass
-from pyqt_openai.widgets.svgButton import SvgButton
+from pyqt_openai.widgets.button import Button
 
 
 class PropGroupList(QWidget):
@@ -20,8 +20,8 @@ class PropGroupList(QWidget):
         self.__initUi()
 
     def __initUi(self):
-        self.__addBtn = SvgButton()
-        self.__delBtn = SvgButton()
+        self.__addBtn = Button()
+        self.__delBtn = Button()
 
         self.__addBtn.setStyleAndIcon('ico/add.svg')
         self.__delBtn.setStyleAndIcon('ico/delete.svg')
@@ -109,8 +109,8 @@ class PropTable(QWidget):
         self.__previousPromptPropArr = DB.selectPropPromptAttribute(self.__id)
 
     def __initUi(self):
-        self.__addBtn = SvgButton()
-        self.__delBtn = SvgButton()
+        self.__addBtn = Button()
+        self.__delBtn = Button()
 
         self.__addBtn.setStyleAndIcon('ico/add.svg')
         self.__delBtn.setStyleAndIcon('ico/delete.svg')
