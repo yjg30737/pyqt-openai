@@ -3,7 +3,7 @@ import os
 from qtpy.QtCore import Qt
 from qtpy.QtWidgets import QHBoxLayout, QVBoxLayout, QFrame, QWidget, QSplitter
 
-from pyqt_openai.dalle_image_gen_widget.dallEControlWidget import DallEControlWidget
+from pyqt_openai.dalle_widget.dallEControlWidget import DallEControlWidget
 from pyqt_openai.models import ImagePromptContainer
 from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.res.language_dict import LangClass

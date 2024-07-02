@@ -15,7 +15,7 @@ sys.path.insert(0, project_root)
 sys.path.insert(0, os.getcwd())  # Add the current directory as well
 
 # for testing pyside6
-os.environ['QT_API'] = 'pyside6'
+# os.environ['QT_API'] = 'pyside6'
 
 # for testing pyqt6
 # os.environ['QT_API'] = 'pyqt6'
@@ -28,9 +28,9 @@ from qtpy.QtCore import Qt, QCoreApplication, QSettings
 
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.aboutDialog import AboutDialog
-from pyqt_openai.customizeWidget.customizeDialog import CustomizeDialog
+from pyqt_openai.customizeDialog import CustomizeDialog
 from pyqt_openai.widgets.svgButton import SvgButton
-from pyqt_openai.dalle_image_gen_widget.dallEWidget import DallEWidget
+from pyqt_openai.dalle_widget.dallEWidget import DallEWidget
 from pyqt_openai.openAiChatBotWidget import OpenAIChatBotWidget
 from pyqt_openai.replicate_widget.replicateWidget import ReplicateWidget
 
