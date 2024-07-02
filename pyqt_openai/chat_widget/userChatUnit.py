@@ -26,7 +26,7 @@ class UserChatUnit(QWidget):
         self.__icon.setMaximumSize(24, 24)
 
         # SvgButton is supposed to be used like "copyBtn = SvgButton(self)" but it makes GUI broken so i won't give "self" argument to SvgButton
-        copyBtn = SvgButton()
+        copyBtn = SvgButton(self)
         copyBtn.setIcon('ico/copy.svg')
         copyBtn.clicked.connect(self.__copy)
 

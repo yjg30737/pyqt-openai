@@ -20,9 +20,9 @@ class ChatWidget(QWidget):
         if not self.__settings_ini.contains('background_image'):
             self.__settings_ini.setValue('background_image', '')
         if not self.__settings_ini.contains('user_image'):
-            self.__settings_ini.setValue('user_image', 'ico/user.svg')
+            self.__settings_ini.setValue('user_image', 'ico/user.png')
         if not self.__settings_ini.contains('ai_image'):
-            self.__settings_ini.setValue('ai_image', 'ico/openai.svg')
+            self.__settings_ini.setValue('ai_image', 'ico/openai.png')
 
         self.__background_image = self.__settings_ini.value('background_image', type=str)
         self.__user_image = self.__settings_ini.value('user_image', type=str)
