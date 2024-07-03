@@ -9,7 +9,7 @@ with codecs.open(os.path.join(here, "README.md"), encoding="utf-8") as fh:
 
 setup(
     name='pyqt-openai',
-    version='0.4.5',
+    version='0.5.5',
     author='Jung Gyu Yoon',
     author_email='yjg30737@gmail.com',
     license='MIT',
