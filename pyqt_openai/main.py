@@ -204,7 +204,6 @@ class MainWindow(QMainWindow):
         msg_box.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
         msg_box.setDefaultButton(QMessageBox.StandardButton.Yes)
 
-        # 메시지 상자 표시 및 사용자 입력 처리
         result = msg_box.exec()
 
         if result == QMessageBox.StandardButton.Yes:
