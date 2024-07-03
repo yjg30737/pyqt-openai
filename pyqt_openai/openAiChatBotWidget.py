@@ -59,7 +59,7 @@ class OpenAIChatBotWidget(QWidget):
 
         self.__settingBtn = Button()
         self.__settingBtn.setStyleAndIcon('ico/setting.svg')
-        self.__settingBtn.setToolTip('Settings')
+        self.__settingBtn.setToolTip('Chat Settings')
         self.__settingBtn.setCheckable(True)
         self.__settingBtn.setChecked(True)
         self.__settingBtn.toggled.connect(self.__aiPlaygroundWidget.setVisible)

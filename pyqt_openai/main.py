@@ -25,6 +25,7 @@ from qtpy.QtWidgets import QMainWindow, QToolBar, QHBoxLayout, QDialog, QLineEdi
     QComboBox, QSizePolicy, QStackedWidget, QMenu, QSystemTrayIcon, \
     QMessageBox, QCheckBox, QAction
 from qtpy.QtCore import Qt, QCoreApplication, QSettings
+from qtpy.QtSql import QSqlDatabase
 
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.aboutDialog import AboutDialog
@@ -53,6 +54,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.__initVal()
+        self.__initQSqlDb()
         self.__initUi()
 
     def __initVal(self):
@@ -63,6 +65,12 @@ class MainWindow(QMainWindow):
         else:
             self.__lang = self.__settings_struct.value('lang', type=str)
         self.__lang = LangClass.lang_changed(self.__lang)
+
+    def __initQSqlDb(self):
+        # Set up the database and table model (you'll need to configure this part based on your database)
+        self.__imageDb = QSqlDatabase.addDatabase('QSQLITE')  # Replace with your database type
+        self.__imageDb.setDatabaseName('conv.db')  # Replace with your database name
+        self.__imageDb.open()
 
     def __initUi(self):
         self.setWindowTitle(LangClass.TRANSLATIONS['PyQt OpenAI Chatbot'])
@@ -96,6 +104,8 @@ class MainWindow(QMainWindow):
         self.resize(1024, 768)
 
     def __setActions(self):
+        self.__langAction = QAction()
+
         # menu action
         self.__exitAction = QAction(LangClass.TRANSLATIONS['Exit'], self)
         self.__exitAction.triggered.connect(self.__beforeClose)
@@ -184,6 +194,9 @@ class MainWindow(QMainWindow):
         self.__langCmbBox.currentTextChanged.connect(self.__lang_changed)
         self.__langAction.setDefaultWidget(self.__langCmbBox)
 
+        self.__settingsAction = QAction('Settings', self)
+        self.__settingsAction.triggered.connect(self.__showSettingsDialog)
+
     def __lang_changed(self, lang):
         msg_box = QMessageBox()
         msg_box.setWindowTitle(LangClass.TRANSLATIONS['Language Change'])
@@ -212,6 +225,7 @@ class MainWindow(QMainWindow):
 
         # create the "File" menu
         fileMenu = QMenu(LangClass.TRANSLATIONS['File'], self)
+        fileMenu.addAction(self.__settingsAction)
         fileMenu.addAction(self.__exitAction)
         menubar.addMenu(fileMenu)
 
@@ -344,6 +358,12 @@ class MainWindow(QMainWindow):
 
     def __aiTypeChanged(self, i):
         self.__mainWidget.setCurrentIndex(i)
+
+    def __showSettingsDialog(self):
+        dialog = QDialog(self)
+        dialog.setWindowTitle('Settings')
+        dialog.resize(300, 200)
+        dialog.exec()
 
     def __beforeClose(self):
         message = LangClass.TRANSLATIONS['The window will be closed. Would you like to continue running this app in the background?']
