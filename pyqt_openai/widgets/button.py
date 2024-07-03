@@ -6,7 +6,7 @@ from qtpy.QtWidgets import QGraphicsColorizeEffect, QWidget, QApplication, QPush
 from pyqt_openai.pyqt_openai_data import ROOT_DIR
 
 
-class SvgButton(QPushButton):
+class Button(QPushButton):
     def __init__(self, base_widget: QWidget = None, parent=None):
         super().__init__(parent)
         self.__baseWidget = base_widget

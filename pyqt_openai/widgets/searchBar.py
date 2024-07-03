@@ -73,7 +73,6 @@ class SearchBar(QWidget):
             QLineEdit
             {{
                 background: transparent;
-                color:  #333333;
                 border: none;
             }}
             QWidget#searchBar

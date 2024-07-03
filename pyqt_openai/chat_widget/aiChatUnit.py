@@ -6,7 +6,7 @@ from qtpy.QtWidgets import QLabel, QWidget, QVBoxLayout, QApplication, QHBoxLayo
 
 from pyqt_openai.chat_widget.convUnitResultDialog import ConvUnitResultDialog
 from pyqt_openai.widgets.circleProfileImage import RoundedImage
-from pyqt_openai.widgets.svgButton import SvgButton
+from pyqt_openai.widgets.button import Button
 
 
 class SourceBrowser(QWidget):
@@ -23,8 +23,7 @@ class SourceBrowser(QWidget):
         fnt.setBold(True)
         self.__langLbl.setFont(fnt)
 
-        # SvgButton is supposed to be used like "copyBtn = SvgButton(self)" but it makes GUI broken so i won't give "self" argument to SvgButton
-        copyBtn = SvgButton()
+        copyBtn = Button()
         copyBtn.setStyleAndIcon('ico/copy.svg')
         copyBtn.clicked.connect(self.__copy)
 
@@ -82,12 +81,12 @@ class AIChatUnit(QWidget):
         self.__icon = RoundedImage()
         self.__icon.setMaximumSize(24, 24)
 
-        self.__infoBtn = SvgButton()
+        self.__infoBtn = Button()
         self.__infoBtn.setStyleAndIcon('ico/info.svg')
         self.__infoBtn.clicked.connect(self.__showInfo)
 
         # SvgButton is supposed to be used like "copyBtn = SvgButton(self)" but it makes GUI broken so i won't give "self" argument to SvgButton
-        self.__copyBtn = SvgButton()
+        self.__copyBtn = Button()
         self.__copyBtn.setStyleAndIcon('ico/copy.svg')
         self.__copyBtn.clicked.connect(self.__copy)
 

@@ -7,7 +7,7 @@ from pyqt_openai.prompt_gen_widget.promptGroupInputDialog import PromptGroupInpu
 from pyqt_openai.prompt_gen_widget.templatePromptUnitInputDialog import TemplatePromptUnitInputDialog
 from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.res.language_dict import LangClass
-from pyqt_openai.widgets.svgButton import SvgButton
+from pyqt_openai.widgets.button import Button
 
 
 class TemplateGroupList(QWidget):
@@ -21,8 +21,8 @@ class TemplateGroupList(QWidget):
         self.__initUi()
 
     def __initUi(self):
-        self.__addBtn = SvgButton()
-        self.__delBtn = SvgButton()
+        self.__addBtn = Button()
+        self.__delBtn = Button()
 
         self.__addBtn.setStyleAndIcon('ico/add.svg')
         self.__delBtn.setStyleAndIcon('ico/delete.svg')
@@ -119,8 +119,8 @@ class TemplateTable(QWidget):
         self.__previousPromptTemplateArr = []
 
     def __initUi(self):
-        self.__addBtn = SvgButton()
-        self.__delBtn = SvgButton()
+        self.__addBtn = Button()
+        self.__delBtn = Button()
 
         self.__addBtn.setStyleAndIcon('ico/add.svg')
         self.__delBtn.setStyleAndIcon('ico/delete.svg')
