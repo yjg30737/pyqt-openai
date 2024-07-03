@@ -3,7 +3,7 @@ from dataclasses import dataclass, fields
 
 @dataclass
 class ImagePromptContainer:
-    ID: str = ""
+    id: str = ""
     model: str = ""
     prompt: str = ""
     n: str = ""
@@ -33,10 +33,10 @@ class ImagePromptContainer:
     def get_keys_for_insert():
         """
         Function that returns the keys of the target data type as a list.
-        Delete ID, update_dt and insert_dt from the list.
+        Delete id, update_dt and insert_dt from the list.
         """
         arr = ImagePromptContainer.get_keys()
-        arr.remove('ID')
+        arr.remove('id')
         arr.remove('update_dt')
         arr.remove('insert_dt')
         return arr
@@ -44,7 +44,7 @@ class ImagePromptContainer:
     def get_values_for_insert(self):
         """
         Function that returns the values of the target data type as a list.
-        Delete ID, update_dt and insert_dt from the list.
+        Delete id, update_dt and insert_dt from the list.
         """
         arr = [getattr(self, key) for key in self.get_keys_for_insert()]
         return arr

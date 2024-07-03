@@ -1,22 +1,23 @@
-import os, sys
+import os
+import sys
 import webbrowser
 
 from qtpy.QtCore import Qt, QSettings
 from qtpy.QtWidgets import QHBoxLayout, QWidget, QSizePolicy, QVBoxLayout, QFrame, QSplitter, \
-    QListWidgetItem, QFileDialog, QMessageBox, QPushButton
+    QFileDialog, QMessageBox, QPushButton
 
+from pyqt_openai.chatNavWidget import ChatNavWidget
 from pyqt_openai.chat_widget.chatWidget import ChatWidget
 from pyqt_openai.chat_widget.prompt import Prompt
-from pyqt_openai.leftSideBar import LeftSideBar
-from pyqt_openai.widgets.notifier import NotifierWidget
 from pyqt_openai.openAiThread import OpenAIThread, LlamaOpenAIThread
 from pyqt_openai.prompt_gen_widget.promptGeneratorWidget import PromptGeneratorWidget
 from pyqt_openai.pyqt_openai_data import DB, get_argument, LLAMAINDEX_WRAPPER
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.right_sidebar.aiPlaygroundWidget import AIPlaygroundWidget
-from pyqt_openai.widgets.button import Button
 from pyqt_openai.util.script import open_directory, get_generic_ext_out_of_qt_ext, conv_unit_to_txt, conv_unit_to_html, \
     add_file_to_zip
+from pyqt_openai.widgets.button import Button
+from pyqt_openai.widgets.notifier import NotifierWidget
 
 
 class OpenAIChatBotWidget(QWidget):
@@ -30,7 +31,7 @@ class OpenAIChatBotWidget(QWidget):
         self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.Format.IniFormat)
 
     def __initUi(self):
-        self.__leftSideBarWidget = LeftSideBar()
+        self.__chatNavWidget = ChatNavWidget(['id', 'name', 'update_dt', 'insert_dt'], 'conv_tb')
         self.__chatWidget = ChatWidget()
         self.__browser = self.__chatWidget.getChatBrowser()
 
@@ -54,7 +55,7 @@ class OpenAIChatBotWidget(QWidget):
         self.__sideBarBtn.setCheckable(True)
         self.__sideBarBtn.setToolTip('Chat List')
         self.__sideBarBtn.setChecked(True)
-        self.__sideBarBtn.toggled.connect(self.__leftSideBarWidget.setVisible)
+        self.__sideBarBtn.toggled.connect(self.__chatNavWidget.setVisible)
 
         self.__settingBtn = Button()
         self.__settingBtn.setStyleAndIcon('ico/setting.svg')
@@ -96,13 +97,11 @@ class OpenAIChatBotWidget(QWidget):
         sep.setFrameShape(QFrame.Shape.HLine)
         sep.setFrameShadow(QFrame.Shadow.Sunken)
 
-        self.__leftSideBarWidget.initHistory()
-        self.__leftSideBarWidget.added.connect(self.__addConv)
-        self.__leftSideBarWidget.changed.connect(self.__changeConv)
-        self.__leftSideBarWidget.deleted.connect(self.__deleteConv)
-        self.__leftSideBarWidget.convUpdated.connect(self.__updateConv)
-        self.__leftSideBarWidget.onImport.connect(self.__importConv)
-        self.__leftSideBarWidget.onExport.connect(self.__exportConv)
+        self.__chatNavWidget.added.connect(self.__addConv)
+        self.__chatNavWidget.clicked.connect(self.__showChat)
+        self.__chatNavWidget.cleared.connect(self.__clearChat)
+        self.__chatNavWidget.onImport.connect(self.__importConv)
+        self.__chatNavWidget.onExport.connect(self.__exportConv)
 
         self.__lineEdit.returnPressed.connect(self.__chat)
 
@@ -144,7 +143,7 @@ class OpenAIChatBotWidget(QWidget):
 
 
         mainWidget = QSplitter()
-        mainWidget.addWidget(self.__leftSideBarWidget)
+        mainWidget.addWidget(self.__chatNavWidget)
         mainWidget.addWidget(chatWidget)
         mainWidget.addWidget(self.__rightSideBar)
         mainWidget.setSizes([100, 500, 400])
@@ -211,9 +210,7 @@ class OpenAIChatBotWidget(QWidget):
                                       is_llama_available)
 
             # If there is no current conversation selected on the list to the left, make a new one.
-            if self.__leftSideBarWidget.isCurrentConvExists():
-                pass
-            else:
+            if self.__chatWidget.isNew():
                 self.__addConv()
 
             # Conversation result information after response
@@ -274,7 +271,7 @@ class OpenAIChatBotWidget(QWidget):
 
     def __toggleWidgetWhileChatting(self, f, continue_f=False):
         self.__lineEdit.setExecuteEnabled(f)
-        self.__leftSideBarWidget.setEnabled(f)
+        self.__chatNavWidget.setEnabled(f)
         self.__prompt.activateDuringGeneratingWidget(not f)
         # TODO
         # self.__prompt.activateAfterResponseWidget(f, continue_f)
@@ -292,29 +289,27 @@ class OpenAIChatBotWidget(QWidget):
             self.__notifierWidget.show()
             self.__notifierWidget.doubleClicked.connect(self.window().show)
 
-    def __changeConv(self, item: QListWidgetItem):
-        if item:
-            id = item.data(Qt.ItemDataRole.UserRole)
-            conv_data = DB.selectCertainConv(id)
-            self.__browser.replaceConv(id, conv_data)
-        else:
-            self.__browser.resetChatWidget(0)
+    def __showChat(self, id, title):
+        conv_data = DB.selectCertainConv(id)
+        self.__chatWidget.showTitle(title)
+        self.__browser.replaceConv(id, conv_data)
+        self.__prompt.activateDuringGeneratingWidget(False)
+        self.__prompt.activateAfterResponseWidget(False)
+
+    def __clearChat(self):
+        self.__chatWidget.showTitle('')
+        self.__browser.resetChatWidget(0)
         self.__prompt.activateDuringGeneratingWidget(False)
         self.__prompt.activateAfterResponseWidget(False)
 
     def __addConv(self):
-        cur_id = DB.insertConv(LangClass.TRANSLATIONS['New Chat'])
+        title = LangClass.TRANSLATIONS['New Chat']
+        cur_id = DB.insertConv(title)
         self.__browser.resetChatWidget(cur_id)
-        self.__leftSideBarWidget.addToList(cur_id)
+        self.__chatWidget.showTitle(title)
+        self.__browser.replaceConv(cur_id, DB.selectCertainConv(cur_id))
         self.__lineEdit.setFocus()
-
-    def __updateConv(self, id, title=None):
-        if title:
-            DB.updateConv(id, title)
-
-    def __deleteConv(self, id_lst):
-        for id in id_lst:
-            DB.deleteConv(id)
+        self.__chatNavWidget.add(called_from_parent=True)
 
     def __importConv(self, filename):
         old_conv = DB.selectAllConv()

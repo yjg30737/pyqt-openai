@@ -15,7 +15,7 @@ sys.path.insert(0, project_root)
 sys.path.insert(0, os.getcwd())  # Add the current directory as well
 
 # for testing pyside6
-# os.environ['QT_API'] = 'pyside6'
+os.environ['QT_API'] = 'pyside6'
 
 # for testing pyqt6
 # os.environ['QT_API'] = 'pyqt6'
@@ -127,17 +127,17 @@ class MainWindow(QMainWindow):
         self.__customizeBtn.setStyleAndIcon('ico/customize.svg')
         self.__customizeBtn.clicked.connect(self.__executeCustomizeDialog)
         self.__customizeAction.setDefaultWidget(self.__customizeBtn)
-        self.__customizeBtn.setToolTip(LangClass.TRANSLATIONS['Customize (working)'])
+        self.__customizeBtn.setToolTip('Customize')
 
         self.__transparentAction = QWidgetAction(self)
         self.__transparentSpinBox = QSpinBox()
-        self.__transparentSpinBox.setRange(0, 100)
+        self.__transparentSpinBox.setRange(20, 100)
         self.__transparentSpinBox.setValue(100)
         self.__transparentSpinBox.valueChanged.connect(self.__setTransparency)
         self.__transparentSpinBox.setToolTip(LangClass.TRANSLATIONS['Set Transparency of Window'])
+        self.__transparentSpinBox.setMinimumWidth(100)
 
         lay = QHBoxLayout()
-        lay.addWidget(QLabel(LangClass.TRANSLATIONS['Window Transparency']))
         lay.addWidget(self.__transparentSpinBox)
 
         transparencyActionWidget = QWidget()

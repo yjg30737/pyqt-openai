@@ -14,7 +14,6 @@ class ChatWidget(QWidget):
         self.__initUi()
 
     def __initVal(self):
-        self.__cur_id = 0
         self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.Format.IniFormat)
 
         if not self.__settings_ini.contains('background_image'):
@@ -64,8 +63,8 @@ class ChatWidget(QWidget):
         self.__homeWidget.setWidget(self.__homeLbl)
         self.__homeWidget.setWidgetResizable(True)
 
-    def __resetWidget(self):
-        self.__mainWidget.setCurrentIndex(0)
+    def showTitle(self, title):
+        self.__menuWidget.setTitle(title)
 
     def isNew(self):
         return self.__mainWidget.currentIndex() == 0
