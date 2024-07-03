@@ -21,7 +21,7 @@ class DallEWidget(QWidget):
         self.__initUi()
 
     def __initUi(self):
-        self.__imageNavWidget = ImageNavWidget(ImagePromptContainer.get_keys())
+        self.__imageNavWidget = ImageNavWidget(ImagePromptContainer.get_keys(), 'image_tb')
         self.__viewWidget = ThumbnailView()
         self.__rightSideBarWidget = DallEControlWidget()
 

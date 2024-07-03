@@ -399,12 +399,15 @@ class SqliteDatabase:
             print(f"An error occurred while creating the table: {e}")
             raise
 
-    def selectAllConv(self):
+    def selectAllConv(self, id_arr=None):
         """
         select all conv
         """
         try:
-            self.__c.execute(f'SELECT * FROM {self.__conv_tb_nm}')
+            query = f'SELECT * FROM {self.__conv_tb_nm}'
+            if id_arr:
+                query += f' WHERE id IN ({",".join(map(str, id_arr))})'
+            self.__c.execute(query)
             return self.__c.fetchall()
         except sqlite3.Error as e:
             print(f"An error occurred: {e}")
@@ -442,9 +445,12 @@ class SqliteDatabase:
             print(f"An error occurred: {e}")
             raise
 
-    def deleteConv(self, id):
+    def deleteConv(self, id=None):
         try:
-            self.__c.execute(f'DELETE FROM {self.__conv_tb_nm} WHERE id={id}')
+            query = f'DELETE FROM {self.__conv_tb_nm}'
+            if id:
+                query += f' WHERE id = {id}'
+            self.__c.execute(query)
             self.__conn.commit()
         except sqlite3.Error as e:
             print(f"An error occurred: {e}")
@@ -533,20 +539,25 @@ class SqliteDatabase:
             print(f"An error occurred: {e}")
             raise
 
-    def selectCertainConvRaw(self, id):
-        self.__c.execute(f'SELECT * FROM {self.getConvUnitTableName()}{id}')
+    def selectCertainConvRaw(self, id, content_to_select=None):
+        query = f'SELECT * FROM {self.__conv_unit_tb_nm}{id}'
+        if content_to_select:
+            query += f' WHERE conv LIKE "%{content_to_select}%"'
+        self.__c.execute(query)
         return self.__c.fetchall()
 
-    def selectCertainConv(self, id):
+    def selectCertainConv(self, id, content_to_select=None):
         result = []
-        for elem in self.selectCertainConvRaw(id):
+        for elem in self.selectCertainConvRaw(id, content_to_select=content_to_select):
             result.append(dict(elem))
         return result
 
-    def selectAllContentOfConv(self):
+    def selectAllContentOfConv(self, content_to_select=None):
         arr = []
-        for i in [conv[0] for conv in self.selectAllConv()]:
-            arr.append((i, self.selectCertainConv(i)))
+        for _id in [conv[0] for conv in self.selectAllConv()]:
+            result = self.selectCertainConv(_id, content_to_select)
+            if result:
+                arr.append((_id, result))
         return arr
 
     def insertConvUnit(self, id, user_f, conv, info):

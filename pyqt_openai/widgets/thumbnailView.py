@@ -138,7 +138,7 @@ class ThumbnailView(QGraphicsView):
         return super().mousePressEvent(e)
 
     def wheelEvent(self, event):
-        if event.modifiers() == Qt.Modifier.ControlModifier:
+        if event.modifiers() == Qt.KeyboardModifier.ControlModifier:
             # Check if Ctrl key is pressed
             if event.angleDelta().y() > 0:
                 # Ctrl + wheel up, zoom in
