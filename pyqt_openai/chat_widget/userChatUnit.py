@@ -1,8 +1,9 @@
 import pyperclip
+from qtpy.QtGui import QPalette
 from qtpy.QtCore import Qt
 from qtpy.QtWidgets import QSpacerItem, QSizePolicy, QWidget, QVBoxLayout, QHBoxLayout, QLabel
 
-from pyqt_openai.widgets.svgButton import SvgButton
+from pyqt_openai.widgets.button import Button
 
 from pyqt_openai.widgets.circleProfileImage import RoundedImage
 
@@ -25,27 +26,25 @@ class UserChatUnit(QWidget):
         self.__icon = RoundedImage()
         self.__icon.setMaximumSize(24, 24)
 
-        # SvgButton is supposed to be used like "copyBtn = SvgButton(self)" but it makes GUI broken so i won't give "self" argument to SvgButton
-        copyBtn = SvgButton()
-        copyBtn.setIcon('ico/copy.svg')
+        copyBtn = Button()
+        copyBtn.setStyleAndIcon('ico/copy.svg')
         copyBtn.clicked.connect(self.__copy)
 
         lay.addWidget(self.__icon)
-        lay.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.MinimumExpanding))
+        lay.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.Policy.MinimumExpanding))
         lay.addWidget(copyBtn)
         lay.setContentsMargins(2, 2, 2, 2)
         lay.setSpacing(1)
 
         menuWidget.setLayout(lay)
         menuWidget.setMaximumHeight(menuWidget.sizeHint().height())
-        menuWidget.setStyleSheet('QWidget { background-color: #BBB }')
 
         self.__lbl = QLabel()
         self.__lbl.setStyleSheet('QLabel { padding: 6px }')
 
-        self.__lbl.setAlignment(Qt.AlignLeft)
+        self.__lbl.setAlignment(Qt.AlignmentFlag.AlignLeft)
         self.__lbl.setWordWrap(True)
-        self.__lbl.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        self.__lbl.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
         self.__lbl.setOpenExternalLinks(True)
 
         lay = QVBoxLayout()
@@ -55,6 +54,9 @@ class UserChatUnit(QWidget):
         lay.setSpacing(0)
 
         self.setLayout(lay)
+
+        self.setBackgroundRole(QPalette.ColorRole.Light)
+        self.setAutoFillBackground(True)
 
     def __copy(self):
         pyperclip.copy(self.text())

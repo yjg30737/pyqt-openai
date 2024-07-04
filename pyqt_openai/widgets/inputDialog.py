@@ -12,14 +12,14 @@ class InputDialog(QDialog):
 
     def __initUi(self, title, text):
         self.setWindowTitle(title)
-        self.setWindowFlags(Qt.Window | Qt.WindowCloseButtonHint)
+        self.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.WindowCloseButtonHint)
 
         self.__newName = QLineEdit(text)
         self.__newName.textChanged.connect(self.__setAccept)
 
         sep = QFrame()
-        sep.setFrameShape(QFrame.HLine)
-        sep.setFrameShadow(QFrame.Sunken)
+        sep.setFrameShape(QFrame.Shape.HLine)
+        sep.setFrameShadow(QFrame.Shadow.Sunken)
 
         self.__okBtn = QPushButton(LangClass.TRANSLATIONS['OK'])
         self.__okBtn.clicked.connect(self.accept)
@@ -30,7 +30,7 @@ class InputDialog(QDialog):
         lay = QHBoxLayout()
         lay.addWidget(self.__okBtn)
         lay.addWidget(cancelBtn)
-        lay.setAlignment(Qt.AlignRight)
+        lay.setAlignment(Qt.AlignmentFlag.AlignRight)
         lay.setContentsMargins(0, 0, 0, 0)
 
         okCancelWidget = QWidget()

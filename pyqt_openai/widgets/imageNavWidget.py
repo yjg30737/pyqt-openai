@@ -1,11 +1,12 @@
 from qtpy.QtCore import Signal, QSortFilterProxyModel, Qt, QByteArray
-from qtpy.QtSql import QSqlTableModel, QSqlDatabase
-from qtpy.QtWidgets import QWidget, QVBoxLayout, QStyledItemDelegate, QTableView, QAbstractItemView, QHBoxLayout, QMessageBox, QLabel
+from qtpy.QtSql import QSqlTableModel, QSqlDatabase, QSqlQuery
+from qtpy.QtWidgets import QWidget, QVBoxLayout, QStyledItemDelegate, QTableView, QAbstractItemView, QHBoxLayout, \
+    QMessageBox, QLabel
 
 # for search feature
 from pyqt_openai.pyqt_openai_data import DB
+from pyqt_openai.widgets.button import Button
 from pyqt_openai.widgets.searchBar import SearchBar
-from pyqt_openai.widgets.svgButton import SvgButton
 
 
 class FilterProxyModel(QSortFilterProxyModel):
@@ -27,7 +28,7 @@ class FilterProxyModel(QSortFilterProxyModel):
 class AlignDelegate(QStyledItemDelegate):
     def initStyleOption(self, option, index):
         super().initStyleOption(option, index)
-        option.displayAlignment = Qt.AlignCenter
+        option.displayAlignment = Qt.AlignmentFlag.AlignCenter
 
 
 class SqlTableModel(QSqlTableModel):
@@ -37,18 +38,23 @@ class SqlTableModel(QSqlTableModel):
     addedCol = Signal()
     deletedCol = Signal()
 
-    def flags(self, index) -> Qt.ItemFlags:
+    def flags(self, index):
         if index.column() == 0:
-            return Qt.ItemIsEnabled | Qt.ItemIsSelectable
+            return Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable
         return super().flags(index)
 
 
 class ImageNavWidget(QWidget):
     getContent = Signal(bytes)
 
-    def __init__(self):
+    def __init__(self, columns, table_nm):
         super().__init__()
+        self.__initVal(columns, table_nm)
         self.__initUi()
+
+    def __initVal(self, columns, table_nm):
+        self.__columns = columns
+        self.__table_nm = table_nm
 
     def __initUi(self):
         # Set up the database and table model (you'll need to configure this part based on your database)
@@ -63,35 +69,41 @@ class ImageNavWidget(QWidget):
         self.__searchBar.setPlaceHolder('Search...')
         self.__searchBar.searched.connect(self.__showResult)
 
-        self.__deleteBtn = SvgButton()
-        self.__deleteBtn.setIcon('ico/delete.svg')
-        self.__deleteBtn.clicked.connect(self.__delete)
-        self.__deleteBtn.setToolTip('Delete Certain Row')
+        self.__delBtn = Button()
+        self.__delBtn.setStyleAndIcon('ico/delete.svg')
+        self.__delBtn.clicked.connect(self.__delete)
+        self.__delBtn.setToolTip('Delete Certain Row')
 
-        self.__clearBtn = SvgButton()
-        self.__clearBtn.setIcon('ico/close.svg')
+        self.__clearBtn = Button()
+        self.__clearBtn.setStyleAndIcon('ico/close.svg')
         self.__clearBtn.clicked.connect(self.__clear)
-        self.__deleteBtn.setToolTip('Remove All')
+        self.__delBtn.setToolTip('Remove All')
 
         lay = QHBoxLayout()
         lay.addWidget(self.__searchBar)
-        lay.addWidget(self.__deleteBtn)
+        lay.addWidget(self.__delBtn)
         lay.addWidget(self.__clearBtn)
         lay.setContentsMargins(0, 0, 0, 0)
 
         menuWidget = QWidget()
         menuWidget.setLayout(lay)
 
-        columnNames = ['ID', 'Prompt', 'n', 'Size', 'Quality', 'Data', 'Revised Prompt']
-
         self.__model = SqlTableModel(self)
-        self.__model.setTable('image_tb')
+        self.__model.setTable(self.__table_nm)
         self.__model.beforeUpdate.connect(self.__updated)
-        for i in range(len(columnNames)):
-            self.__model.setHeaderData(i, Qt.Horizontal, columnNames[i])
+
+        # Set the query to fetch columns in the defined order
+        # Remove DATA for GUI performance
+        if self.__columns.__contains__('data'):
+            self.__columns.remove('data')
+        self.__model.setQuery(QSqlQuery(f"SELECT {','.join(self.__columns)} FROM {self.__table_nm}"))
+
+        for i in range(len(self.__columns)):
+            self.__model.setHeaderData(i, Qt.Orientation.Horizontal, self.__columns[i])
         self.__model.select()
-        # descending order by date
-        self.__model.sort(7, Qt.DescendingOrder)
+        # descending order by insert date
+        idx = self.__columns.index('insert_dt')
+        self.__model.sort(idx, Qt.SortOrder.DescendingOrder)
 
         # init the proxy model
         self.__proxyModel = FilterProxyModel()
@@ -102,7 +114,7 @@ class ImageNavWidget(QWidget):
         # set up the view
         self.__tableView = QTableView()
         self.__tableView.setModel(self.__proxyModel)
-        self.__tableView.setEditTriggers(QTableView.NoEditTriggers)
+        self.__tableView.setEditTriggers(QTableView.EditTrigger.NoEditTriggers)
         self.__tableView.setSortingEnabled(True)
 
         # align to center
@@ -111,9 +123,9 @@ class ImageNavWidget(QWidget):
             self.__tableView.setItemDelegateForColumn(i, delegate)
 
         # set selection/resize policy
-        self.__tableView.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.__tableView.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.__tableView.resizeColumnsToContents()
-        self.__tableView.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        self.__tableView.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
 
         self.__tableView.clicked.connect(self.__clicked)
 
@@ -134,16 +146,17 @@ class ImageNavWidget(QWidget):
         self.__model.select()
 
     def __clicked(self, idx):
-        row = idx.row()
-        col = 5
-
-        idx = self.__model.index(row, col)
-        data = self.__model.data(idx, role=Qt.DisplayRole)
-        if isinstance(data, str):
-            QMessageBox.critical(self, 'Error', f'Image URL can\'t bee seen after v0.2.51, Now it is replaced with b64_json.')
+        cur_id = self.__proxyModel.data(self.__proxyModel.index(idx.row(), self.__columns.index('id')))
+        # Get data from DB id
+        data = DB.selectCertainImage(cur_id)['data']
+        if data:
+            if isinstance(data, str):
+                QMessageBox.critical(self, 'Error', f'Image URL can\'t bee seen after v0.2.51, Now it is replaced with b64_json.')
+            else:
+                data = QByteArray(data).data()
+                self.getContent.emit(data)
         else:
-            data = QByteArray(data).data()
-            self.getContent.emit(data)
+            QMessageBox.critical(self, 'Error', 'No image data is found. Maybe you are using really old version.')
 
     def __showResult(self, text):
         # index -1 will be read from all columns
@@ -156,7 +169,7 @@ class ImageNavWidget(QWidget):
         idx_s = self.__tableView.selectedIndexes()
         for idx in idx_s:
             idx = idx.siblingAtColumn(0)
-            id = self.__model.data(idx, role=Qt.DisplayRole)
+            id = self.__model.data(idx, role=Qt.ItemDataRole.DisplayRole)
             DB.removeImage(id)
         self.__model.select()
 

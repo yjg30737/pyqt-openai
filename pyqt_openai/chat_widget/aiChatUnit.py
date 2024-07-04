@@ -6,7 +6,7 @@ from qtpy.QtWidgets import QLabel, QWidget, QVBoxLayout, QApplication, QHBoxLayo
 
 from pyqt_openai.chat_widget.convUnitResultDialog import ConvUnitResultDialog
 from pyqt_openai.widgets.circleProfileImage import RoundedImage
-from pyqt_openai.widgets.svgButton import SvgButton
+from pyqt_openai.widgets.button import Button
 
 
 class SourceBrowser(QWidget):
@@ -23,21 +23,20 @@ class SourceBrowser(QWidget):
         fnt.setBold(True)
         self.__langLbl.setFont(fnt)
 
-        # SvgButton is supposed to be used like "copyBtn = SvgButton(self)" but it makes GUI broken so i won't give "self" argument to SvgButton
-        copyBtn = SvgButton()
-        copyBtn.setIcon('ico/copy.svg')
+        copyBtn = Button()
+        copyBtn.setStyleAndIcon('ico/copy.svg')
         copyBtn.clicked.connect(self.__copy)
 
         lay.addWidget(self.__langLbl)
-        lay.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.MinimumExpanding))
+        lay.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.Policy.MinimumExpanding))
         lay.addWidget(copyBtn)
-        lay.setAlignment(Qt.AlignRight)
+        lay.setAlignment(Qt.AlignmentFlag.AlignRight)
         lay.setContentsMargins(2, 2, 2, 2)
         lay.setSpacing(1)
 
         menuWidget.setLayout(lay)
         menuWidget.setMaximumHeight(menuWidget.sizeHint().height())
-        menuWidget.setStyleSheet('QWidget { background-color: #BBB }')
+        menuWidget.setBackgroundRole(QPalette.ColorRole.Midlight)
 
         self.__browser = QTextBrowser()
         lay = QVBoxLayout()
@@ -50,7 +49,7 @@ class SourceBrowser(QWidget):
     def setText(self, lexer, text):
         self.__langLbl.setText(lexer.name)
         self.__browser.setText(text)
-        self.__browser.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
+        self.__browser.setSizeAdjustPolicy(QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
 
     def getText(self):
         return self.__browser.toPlainText()
@@ -82,17 +81,17 @@ class AIChatUnit(QWidget):
         self.__icon = RoundedImage()
         self.__icon.setMaximumSize(24, 24)
 
-        self.__infoBtn = SvgButton()
-        self.__infoBtn.setIcon('ico/info.svg')
+        self.__infoBtn = Button()
+        self.__infoBtn.setStyleAndIcon('ico/info.svg')
         self.__infoBtn.clicked.connect(self.__showInfo)
 
         # SvgButton is supposed to be used like "copyBtn = SvgButton(self)" but it makes GUI broken so i won't give "self" argument to SvgButton
-        self.__copyBtn = SvgButton()
-        self.__copyBtn.setIcon('ico/copy.svg')
+        self.__copyBtn = Button()
+        self.__copyBtn.setStyleAndIcon('ico/copy.svg')
         self.__copyBtn.clicked.connect(self.__copy)
 
         lay.addWidget(self.__icon)
-        lay.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.MinimumExpanding))
+        lay.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.Policy.MinimumExpanding))
         lay.addWidget(self.__infoBtn)
         lay.addWidget(self.__copyBtn)
         lay.setContentsMargins(2, 2, 2, 2)
@@ -100,7 +99,6 @@ class AIChatUnit(QWidget):
 
         menuWidget.setLayout(lay)
         menuWidget.setMaximumHeight(menuWidget.sizeHint().height())
-        menuWidget.setStyleSheet('QWidget { background-color: #BBB }')
 
         lay = QVBoxLayout()
         self.__mainWidget = QWidget()
@@ -114,9 +112,7 @@ class AIChatUnit(QWidget):
 
         self.setLayout(lay)
 
-        palette = QPalette()
-        palette.setColor(QPalette.Window, QColor(220, 220, 220))
-        self.setPalette(palette)
+        self.setBackgroundRole(QPalette.ColorRole.Midlight)
         self.setAutoFillBackground(True)
 
     def __copy(self):
@@ -140,7 +136,7 @@ class AIChatUnit(QWidget):
         return text
 
     def alignment(self):
-        return Qt.AlignLeft
+        return Qt.AlignmentFlag.AlignLeft
 
     def setAlignment(self, a0):
         lay = self.__mainWidget.layout()
@@ -162,10 +158,11 @@ class AIChatUnit(QWidget):
     def setText(self, text: str):
         self.__lbl = QLabel(text)
 
-        self.__lbl.setAlignment(Qt.AlignLeft)
+        self.__lbl.setAlignment(Qt.AlignmentFlag.AlignLeft)
         self.__lbl.setWordWrap(True)
-        self.__lbl.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        self.__lbl.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
         self.__lbl.setOpenExternalLinks(True)
+        self.__lbl.setBackgroundRole(QPalette.ColorRole.AlternateBase)
 
         self.__mainWidget.layout().addWidget(self.__lbl)
 

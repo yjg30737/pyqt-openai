@@ -1,11 +1,12 @@
 import os.path, posixpath
 
-from qtpy.QtGui import QColor, QPalette, qGray
+from qtpy.QtGui import QColor, QPalette, qGray, QIcon
 from qtpy.QtWidgets import QGraphicsColorizeEffect, QWidget, QApplication, QToolButton
 
 from pyqt_openai.pyqt_openai_data import ROOT_DIR
 
-class SvgToolButton(QToolButton):
+
+class ToolButton(QToolButton):
     def __init__(self, base_widget: QWidget = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.__baseWidget = base_widget
@@ -32,7 +33,7 @@ class SvgToolButton(QToolButton):
             self.__text_color = '#AAAAAA'
 
     def __initColorByBaseWidget(self):
-        self.__base_color = self.__baseWidget.palette().color(QPalette.Base)
+        self.__base_color = self.__baseWidget.palette().color(QPalette.ColorRole.Base)
         self.__hover_color = self.__getHoverColor(self.__base_color)
         self.__pressed_color = self.__getPressedColor(self.__base_color)
         self.__checked_color = self.__getPressedColor(self.__base_color)
@@ -78,7 +79,6 @@ class SvgToolButton(QToolButton):
         border: 0;
         width: {self.__size};
         height: {self.__size};
-        image: url({self.__icon});
         background-color: {self.__background_color};
         border-radius: {self.__border_radius};
         padding: {self.__padding};
@@ -101,9 +101,10 @@ class SvgToolButton(QToolButton):
 
         self.setStyleSheet(self.__btn_style)
 
-    def setIcon(self, icon: str):
+    def setStyleAndIcon(self, icon: str):
         self.__icon = os.path.join(ROOT_DIR, icon).replace(os.sep, posixpath.sep)
         self.__styleInit()
+        self.setIcon(QIcon(self.__icon))
 
     def eventFilter(self, obj, e):
         if obj == self:
@@ -124,10 +125,10 @@ class SvgToolButton(QToolButton):
             # catch the StyleChange event of base widget
             if e.type() == 100:
                 # if base widget's background is transparent (#ffffff)
-                if self.__baseWidget.palette().color(QPalette.Base).name() == '#ffffff':
+                if self.__baseWidget.palette().color(QPalette.ColorRole.Base).name() == '#ffffff':
                     # then check the parent widget's background
                     if self.__baseWidget.parent():
-                        if self.__baseWidget.parent().palette().color(QPalette.Base).name() == '#ffffff':
+                        if self.__baseWidget.parent().palette().color(QPalette.ColorRole.Base).name() == '#ffffff':
                             pass
                         else:
                             self.__baseWidget = self.__baseWidget.parent()

@@ -6,7 +6,7 @@ from qtpy.QtWidgets import QGraphicsScene, QGraphicsPixmapItem, QGraphicsView, Q
     QFileDialog
 
 from pyqt_openai.res.language_dict import LangClass
-from pyqt_openai.widgets.svgButton import SvgButton
+from pyqt_openai.widgets.button import Button
 
 
 class ThumbnailView(QGraphicsView):
@@ -21,7 +21,7 @@ class ThumbnailView(QGraphicsView):
         self._scene = QGraphicsScene()
         self._p = QPixmap()
         self._item = QGraphicsPixmapItem()
-        self.__aspectRatioMode = Qt.KeepAspectRatio
+        self.__aspectRatioMode = Qt.AspectRatioMode.KeepAspectRatio
 
         self.__factor = 1.1  # Zoom factor
 
@@ -42,23 +42,23 @@ class ThumbnailView(QGraphicsView):
 
     def __setControlWidget(self):
         # copy the image
-        copyBtn = SvgButton()
-        copyBtn.setIcon('ico/copy.svg')
+        copyBtn = Button()
+        copyBtn.setStyleAndIcon('ico/copy.svg')
         copyBtn.clicked.connect(self.__copy)
 
         # download the image
-        saveBtn = SvgButton()
-        saveBtn.setIcon('ico/save.svg')
+        saveBtn = Button()
+        saveBtn.setStyleAndIcon('ico/save.svg')
         saveBtn.clicked.connect(self.__save)
 
         # zoom in
-        zoomInBtn = SvgButton()
-        zoomInBtn.setIcon('ico/add.svg')
+        zoomInBtn = Button()
+        zoomInBtn.setStyleAndIcon('ico/add.svg')
         zoomInBtn.clicked.connect(self.__zoomIn)
 
         # zoom out
-        zoomOutBtn = SvgButton()
-        zoomOutBtn.setIcon('ico/delete.svg')
+        zoomOutBtn = Button()
+        zoomOutBtn.setStyleAndIcon('ico/delete.svg')
         zoomOutBtn.clicked.connect(self.__zoomOut)
 
         lay = QHBoxLayout()
@@ -74,7 +74,7 @@ class ThumbnailView(QGraphicsView):
 
     def __refreshSceneAndView(self):
         self._item = self._scene.addPixmap(self._p)
-        self._item.setTransformationMode(Qt.SmoothTransformation)
+        self._item.setTransformationMode(Qt.TransformationMode.SmoothTransformation)
         rect = self.sceneRect() \
             if (self._item.boundingRect().width() > self.sceneRect().width()) or (self._item.boundingRect().height() > self.sceneRect().height()) \
             else self._item.boundingRect()
@@ -138,7 +138,7 @@ class ThumbnailView(QGraphicsView):
         return super().mousePressEvent(e)
 
     def wheelEvent(self, event):
-        if event.modifiers() == Qt.ControlModifier:
+        if event.modifiers() == Qt.KeyboardModifier.ControlModifier:
             # Check if Ctrl key is pressed
             if event.angleDelta().y() > 0:
                 # Ctrl + wheel up, zoom in

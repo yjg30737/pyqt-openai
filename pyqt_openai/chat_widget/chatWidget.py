@@ -14,15 +14,14 @@ class ChatWidget(QWidget):
         self.__initUi()
 
     def __initVal(self):
-        self.__cur_id = 0
-        self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.IniFormat)
+        self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.Format.IniFormat)
 
         if not self.__settings_ini.contains('background_image'):
             self.__settings_ini.setValue('background_image', '')
         if not self.__settings_ini.contains('user_image'):
-            self.__settings_ini.setValue('user_image', 'ico/user.svg')
+            self.__settings_ini.setValue('user_image', 'ico/user.png')
         if not self.__settings_ini.contains('ai_image'):
-            self.__settings_ini.setValue('ai_image', 'ico/openai.svg')
+            self.__settings_ini.setValue('ai_image', 'ico/openai.png')
 
         self.__background_image = self.__settings_ini.value('background_image', type=str)
         self.__user_image = self.__settings_ini.value('user_image', type=str)
@@ -31,7 +30,7 @@ class ChatWidget(QWidget):
     def __initUi(self):
         self.__homeWidget = QScrollArea()
         self.__homeLbl = QLabel(LangClass.TRANSLATIONS['Home'])
-        self.__homeLbl.setAlignment(Qt.AlignCenter)
+        self.__homeLbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.__homeLbl.setFont(QFont('Arial', 32))
 
         self.__chatBrowser = ChatBrowser()
@@ -54,9 +53,9 @@ class ChatWidget(QWidget):
         self.__chatBrowser.onReplacedCurrentPage.connect(self.__mainWidget.setCurrentIndex)
 
         lay = QVBoxLayout()
-        lay.setAlignment(Qt.AlignTop)
+        lay.setAlignment(Qt.AlignmentFlag.AlignTop)
         lay.addWidget(self.__mainWidget)
-        lay.setAlignment(Qt.AlignTop)
+        lay.setAlignment(Qt.AlignmentFlag.AlignTop)
         lay.setContentsMargins(0, 0, 0, 0)
         self.setLayout(lay)
 
@@ -64,8 +63,8 @@ class ChatWidget(QWidget):
         self.__homeWidget.setWidget(self.__homeLbl)
         self.__homeWidget.setWidgetResizable(True)
 
-    def __resetWidget(self):
-        self.__mainWidget.setCurrentIndex(0)
+    def showTitle(self, title):
+        self.__menuWidget.setTitle(title)
 
     def isNew(self):
         return self.__mainWidget.currentIndex() == 0

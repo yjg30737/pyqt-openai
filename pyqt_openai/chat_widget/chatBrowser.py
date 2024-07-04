@@ -26,7 +26,7 @@ class ChatBrowser(QScrollArea):
 
     def __initUi(self):
         lay = QVBoxLayout()
-        lay.setAlignment(Qt.AlignTop)
+        lay.setAlignment(Qt.AlignmentFlag.AlignTop)
         lay.setSpacing(0)
         lay.setContentsMargins(0, 0, 0, 0)
 
@@ -142,7 +142,7 @@ class ChatBrowser(QScrollArea):
             for i in range(lay.count()-1, -1, -1):
                 item = lay.itemAt(i)
                 if item and item.widget():
-                    lay.removeWidget(item.widget())
+                    item.widget().deleteLater()
         self.onReplacedCurrentPage.emit(0)
 
     def setCurId(self, id):

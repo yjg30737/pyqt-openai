@@ -52,7 +52,7 @@ class PromptGeneratorWidget(QScrollArea):
         mainSplitter = QSplitter()
         mainSplitter.addWidget(topWidget)
         mainSplitter.addWidget(bottomWidget)
-        mainSplitter.setOrientation(Qt.Vertical)
+        mainSplitter.setOrientation(Qt.Orientation.Vertical)
         mainSplitter.setChildrenCollapsible(False)
         mainSplitter.setHandleWidth(2)
         mainSplitter.setStyleSheet(

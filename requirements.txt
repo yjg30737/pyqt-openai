@@ -10,3 +10,5 @@ llama-index
 requests
 langchain
 pillow
+
+replicate

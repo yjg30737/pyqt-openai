@@ -15,7 +15,7 @@ class UploadedImageFileWidget(QWidget):
 
         lay = QHBoxLayout()
         lay.addWidget(lbl)
-        lay.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.MinimumExpanding))
+        lay.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.Policy.MinimumExpanding))
         lay.addWidget(self.__deleteBtn)
         lay.setContentsMargins(0, 0, 0, 0)
 
@@ -23,7 +23,7 @@ class UploadedImageFileWidget(QWidget):
         topWidget.setLayout(lay)
 
         self.__listWidget = QListWidget()
-        self.__listWidget.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        self.__listWidget.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
 
         lay = QVBoxLayout()
         lay.addWidget(topWidget)

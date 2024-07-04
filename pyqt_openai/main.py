@@ -22,16 +22,17 @@ sys.path.insert(0, os.getcwd())  # Add the current directory as well
 
 from qtpy.QtGui import QGuiApplication, QFont, QIcon, QColor
 from qtpy.QtWidgets import QMainWindow, QToolBar, QHBoxLayout, QDialog, QLineEdit, QPushButton, QWidgetAction, QSpinBox, QLabel, QWidget, QApplication, \
-    QComboBox, QSizePolicy, QStackedWidget, QAction, QMenu, QSystemTrayIcon, \
-    QMessageBox, QCheckBox
+    QComboBox, QSizePolicy, QStackedWidget, QMenu, QSystemTrayIcon, \
+    QMessageBox, QCheckBox, QAction
 from qtpy.QtCore import Qt, QCoreApplication, QSettings
 
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.aboutDialog import AboutDialog
-from pyqt_openai.customizeWidget.customizeDialog import CustomizeDialog
-from pyqt_openai.widgets.svgButton import SvgButton
-from pyqt_openai.image_gen_widget.imageGeneratingToolWidget import ImageGeneratingToolWidget
+from pyqt_openai.customizeDialog import CustomizeDialog
+from pyqt_openai.widgets.button import Button
+from pyqt_openai.dalle_widget.dallEWidget import DallEWidget
 from pyqt_openai.openAiChatBotWidget import OpenAIChatBotWidget
+from pyqt_openai.replicate_widget.replicateWidget import ReplicateWidget
 
 os.environ['OPENAI_API_KEY'] = ''
 
@@ -55,7 +56,7 @@ class MainWindow(QMainWindow):
         self.__initUi()
 
     def __initVal(self):
-        self.__settings_struct = QSettings('pyqt_openai.ini', QSettings.IniFormat)
+        self.__settings_struct = QSettings('pyqt_openai.ini', QSettings.Format.IniFormat)
         self.__lang = None
         if not self.__settings_struct.contains('lang'):
             self.__settings_struct.setValue('lang', LangClass.lang_changed())
@@ -67,10 +68,13 @@ class MainWindow(QMainWindow):
         self.setWindowTitle(LangClass.TRANSLATIONS['PyQt OpenAI Chatbot'])
 
         self.__openAiChatBotWidget = OpenAIChatBotWidget()
-        self.__imageGeneratingToolWidget = ImageGeneratingToolWidget()
+        self.__dallEWidget = DallEWidget()
+        self.__replicateWidget = ReplicateWidget()
+
         self.__mainWidget = QStackedWidget()
         self.__mainWidget.addWidget(self.__openAiChatBotWidget)
-        self.__mainWidget.addWidget(self.__imageGeneratingToolWidget)
+        self.__mainWidget.addWidget(self.__dallEWidget)
+        self.__mainWidget.addWidget(self.__replicateWidget)
 
         self.__setActions()
         self.__setMenuBar()
@@ -105,35 +109,35 @@ class MainWindow(QMainWindow):
         # toolbar action
         self.__chooseAiAction = QWidgetAction(self)
         self.__chooseAiCmbBox = QComboBox()
-        self.__chooseAiCmbBox.addItems([LangClass.TRANSLATIONS['Chat'], LangClass.TRANSLATIONS['Image']])
-        self.__chooseAiCmbBox.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
+        self.__chooseAiCmbBox.addItems([LangClass.TRANSLATIONS['Chat'], LangClass.TRANSLATIONS['Image'], 'Replicate'])
+        self.__chooseAiCmbBox.setSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.MinimumExpanding)
         self.__chooseAiCmbBox.currentIndexChanged.connect(self.__aiTypeChanged)
         self.__chooseAiAction.setDefaultWidget(self.__chooseAiCmbBox)
 
         self.__stackAction = QWidgetAction(self)
-        self.__stackBtn = SvgButton()
-        self.__stackBtn.setIcon('ico/stackontop.svg')
+        self.__stackBtn = Button()
+        self.__stackBtn.setStyleAndIcon('ico/stackontop.svg')
         self.__stackBtn.setCheckable(True)
         self.__stackBtn.toggled.connect(self.__stackToggle)
         self.__stackAction.setDefaultWidget(self.__stackBtn)
         self.__stackBtn.setToolTip(LangClass.TRANSLATIONS['Stack on Top'])
 
         self.__customizeAction = QWidgetAction(self)
-        self.__customizeBtn = SvgButton()
-        self.__customizeBtn.setIcon('ico/customize.svg')
+        self.__customizeBtn = Button()
+        self.__customizeBtn.setStyleAndIcon('ico/customize.svg')
         self.__customizeBtn.clicked.connect(self.__executeCustomizeDialog)
         self.__customizeAction.setDefaultWidget(self.__customizeBtn)
-        self.__customizeBtn.setToolTip(LangClass.TRANSLATIONS['Customize (working)'])
+        self.__customizeBtn.setToolTip('Customize')
 
         self.__transparentAction = QWidgetAction(self)
         self.__transparentSpinBox = QSpinBox()
-        self.__transparentSpinBox.setRange(0, 100)
+        self.__transparentSpinBox.setRange(20, 100)
         self.__transparentSpinBox.setValue(100)
         self.__transparentSpinBox.valueChanged.connect(self.__setTransparency)
         self.__transparentSpinBox.setToolTip(LangClass.TRANSLATIONS['Set Transparency of Window'])
+        self.__transparentSpinBox.setMinimumWidth(100)
 
         lay = QHBoxLayout()
-        lay.addWidget(QLabel(LangClass.TRANSLATIONS['Window Transparency']))
         lay.addWidget(self.__transparentSpinBox)
 
         transparencyActionWidget = QWidget()
@@ -154,7 +158,7 @@ class MainWindow(QMainWindow):
         self.__apiLineEdit = QLineEdit()
         self.__apiLineEdit.setPlaceholderText('Write your API Key...')
         self.__apiLineEdit.returnPressed.connect(self.__setApi)
-        self.__apiLineEdit.setEchoMode(QLineEdit.Password)
+        self.__apiLineEdit.setEchoMode(QLineEdit.EchoMode.Password)
 
         apiBtn = QPushButton(LangClass.TRANSLATIONS['Use'])
         apiBtn.clicked.connect(self.__setApi)
@@ -176,7 +180,7 @@ class MainWindow(QMainWindow):
         self.__langCmbBox = QComboBox()
         self.__langCmbBox.addItems(list(LangClass.LANGUAGE_DICT.keys()))
         self.__langCmbBox.setCurrentText(self.__lang)
-        self.__langCmbBox.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
+        self.__langCmbBox.setSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.MinimumExpanding)
         self.__langCmbBox.currentTextChanged.connect(self.__lang_changed)
         self.__langAction.setDefaultWidget(self.__langCmbBox)
 
@@ -184,13 +188,13 @@ class MainWindow(QMainWindow):
         msg_box = QMessageBox()
         msg_box.setWindowTitle(LangClass.TRANSLATIONS['Language Change'])
         msg_box.setText(LangClass.TRANSLATIONS['When changing the language, the program needs to be restarted. Would you like to restart it?'])
-        msg_box.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
-        msg_box.setDefaultButton(QMessageBox.Yes)
+        msg_box.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+        msg_box.setDefaultButton(QMessageBox.StandardButton.Yes)
 
         # 메시지 상자 표시 및 사용자 입력 처리
-        result = msg_box.exec_()
+        result = msg_box.exec()
 
-        if result == QMessageBox.Yes:
+        if result == QMessageBox.StandardButton.Yes:
             self.__settings_struct.setValue('lang', lang)
             # save the changes to the file
             self.__settings_struct.sync()
@@ -238,7 +242,7 @@ class MainWindow(QMainWindow):
         tray_icon.show()
 
     def __activated(self, reason):
-        if reason == QSystemTrayIcon.DoubleClick:
+        if reason == QSystemTrayIcon.ActivationReason.DoubleClick:
             self.show()
 
     def __setToolBar(self):
@@ -288,7 +292,7 @@ class MainWindow(QMainWindow):
 
     def __setAIEnabled(self, f):
         self.__openAiChatBotWidget.setAIEnabled(f)
-        self.__imageGeneratingToolWidget.setAIEnabled(f)
+        self.__dallEWidget.setAIEnabled(f)
 
     def __setApi(self):
         try:
@@ -321,9 +325,9 @@ class MainWindow(QMainWindow):
 
     def __stackToggle(self, f):
         if f:
-            self.setWindowFlags(self.windowFlags() | Qt.WindowStaysOnTopHint)
+            self.setWindowFlags(self.windowFlags() | Qt.WindowType.WindowStaysOnTopHint)
         else:
-            self.setWindowFlags(self.windowFlags() & ~Qt.WindowStaysOnTopHint)
+            self.setWindowFlags(self.windowFlags() & ~Qt.WindowType.WindowStaysOnTopHint)
         self.show()
 
     def __setTransparency(self, v):
@@ -335,7 +339,7 @@ class MainWindow(QMainWindow):
     def __executeCustomizeDialog(self):
         dialog = CustomizeDialog(self)
         reply = dialog.exec()
-        if reply == QDialog.Accepted:
+        if reply == QDialog.DialogCode.Accepted:
             self.__openAiChatBotWidget.refreshCustomizedInformation()
 
     def __aiTypeChanged(self, i):
@@ -346,17 +350,17 @@ class MainWindow(QMainWindow):
         closeMessageBox = QMessageBox(self)
         closeMessageBox.setWindowTitle(LangClass.TRANSLATIONS['Wait!'])
         closeMessageBox.setText(message)
-        closeMessageBox.setStandardButtons(QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
+        closeMessageBox.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No | QMessageBox.StandardButton.Cancel)
         reply = closeMessageBox.exec()
         # Cancel
-        if reply == QMessageBox.Cancel:
+        if reply == QMessageBox.StandardButton.Cancel:
             return True
         else:
             # Yes
-            if reply == QMessageBox.Yes:
+            if reply == QMessageBox.StandardButton.Yes:
                 self.close()
             # No
-            elif reply == QMessageBox.No:
+            elif reply == QMessageBox.StandardButton.No:
                 app.quit()
 
     def closeEvent(self, e):

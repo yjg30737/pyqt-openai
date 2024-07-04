@@ -11,7 +11,7 @@ from pyqt_openai.res.language_dict import LangClass
 class SingleImageGraphicsView(QGraphicsView):
     def __init__(self):
         super().__init__()
-        self.__aspectRatioMode = Qt.KeepAspectRatio
+        self.__aspectRatioMode = Qt.AspectRatioMode.KeepAspectRatio
         self.__initVal()
 
     def __initVal(self):
@@ -53,14 +53,14 @@ class CustomizeDialog(QDialog):
         self.__initUi()
 
     def __initVal(self):
-        self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.IniFormat)
+        self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.Format.IniFormat)
 
         if not self.__settings_ini.contains('background_image'):
             self.__settings_ini.setValue('background_image', '')
         if not self.__settings_ini.contains('user_image'):
-            self.__settings_ini.setValue('user_image', 'ico/user.svg')
+            self.__settings_ini.setValue('user_image', 'ico/user.png')
         if not self.__settings_ini.contains('ai_image'):
-            self.__settings_ini.setValue('ai_image', 'ico/openai.svg')
+            self.__settings_ini.setValue('ai_image', 'ico/openai.png')
 
         self.__background_image = self.__settings_ini.value('background_image', type=str)
         self.__user_image = self.__settings_ini.value('user_image', type=str)
@@ -68,7 +68,7 @@ class CustomizeDialog(QDialog):
 
     def __initUi(self):
         self.setWindowTitle(LangClass.TRANSLATIONS['Customize (working)'])
-        self.setWindowFlags(Qt.Window | Qt.WindowCloseButtonHint)
+        self.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.WindowCloseButtonHint)
 
         self.__homePageGraphicsView = SingleImageGraphicsView()
         self.__homePageGraphicsView.setFilename(self.__background_image)
@@ -83,12 +83,17 @@ class CustomizeDialog(QDialog):
         self.__findPathWidget1 = FindPathWidget()
         self.__findPathWidget1.getLineEdit().setText(self.__background_image)
         self.__findPathWidget1.added.connect(self.__homePageGraphicsView.setFilename)
+        self.__findPathWidget1.setExtOfFiles('Image file (*.jpg *.png)')
+
         self.__findPathWidget2 = FindPathWidget()
         self.__findPathWidget2.getLineEdit().setText(self.__user_image)
         self.__findPathWidget2.added.connect(self.__userImage.setImage)
+        self.__findPathWidget2.setExtOfFiles('Image file (*.jpg *.png)')
+
         self.__findPathWidget3 = FindPathWidget()
         self.__findPathWidget3.getLineEdit().setText(self.__ai_image)
         self.__findPathWidget3.added.connect(self.__AIImage.setImage)
+        self.__findPathWidget3.setExtOfFiles('Image file (*.jpg *.png)')
 
         lay1 = QVBoxLayout()
         lay1.setContentsMargins(0, 0, 0, 0)
@@ -120,8 +125,8 @@ class CustomizeDialog(QDialog):
         self.__topWidget.setLayout(lay)
 
         sep = QFrame()
-        sep.setFrameShape(QFrame.HLine)
-        sep.setFrameShadow(QFrame.Sunken)
+        sep.setFrameShape(QFrame.Shape.HLine)
+        sep.setFrameShadow(QFrame.Shadow.Sunken)
 
         self.__okBtn = QPushButton(LangClass.TRANSLATIONS['OK'])
         self.__okBtn.clicked.connect(self.__accept)
@@ -132,7 +137,7 @@ class CustomizeDialog(QDialog):
         lay = QHBoxLayout()
         lay.addWidget(self.__okBtn)
         lay.addWidget(cancelBtn)
-        lay.setAlignment(Qt.AlignRight)
+        lay.setAlignment(Qt.AlignmentFlag.AlignRight)
         lay.setContentsMargins(0, 0, 0, 0)
 
         okCancelWidget = QWidget()

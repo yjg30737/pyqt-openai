@@ -1,22 +1,23 @@
-import os, sys
+import os
+import sys
 import webbrowser
 
 from qtpy.QtCore import Qt, QSettings
 from qtpy.QtWidgets import QHBoxLayout, QWidget, QSizePolicy, QVBoxLayout, QFrame, QSplitter, \
-    QListWidgetItem, QFileDialog, QMessageBox, QPushButton
+    QFileDialog, QMessageBox, QPushButton
 
+from pyqt_openai.chatNavWidget import ChatNavWidget
 from pyqt_openai.chat_widget.chatWidget import ChatWidget
 from pyqt_openai.chat_widget.prompt import Prompt
-from pyqt_openai.leftSideBar import LeftSideBar
-from pyqt_openai.widgets.notifier import NotifierWidget
 from pyqt_openai.openAiThread import OpenAIThread, LlamaOpenAIThread
 from pyqt_openai.prompt_gen_widget.promptGeneratorWidget import PromptGeneratorWidget
 from pyqt_openai.pyqt_openai_data import DB, get_argument, LLAMAINDEX_WRAPPER
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.right_sidebar.aiPlaygroundWidget import AIPlaygroundWidget
-from pyqt_openai.widgets.svgButton import SvgButton
 from pyqt_openai.util.script import open_directory, get_generic_ext_out_of_qt_ext, conv_unit_to_txt, conv_unit_to_html, \
     add_file_to_zip
+from pyqt_openai.widgets.button import Button
+from pyqt_openai.widgets.notifier import NotifierWidget
 
 
 class OpenAIChatBotWidget(QWidget):
@@ -27,10 +28,10 @@ class OpenAIChatBotWidget(QWidget):
 
     def __initVal(self):
         # ini
-        self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.IniFormat)
+        self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.Format.IniFormat)
 
     def __initUi(self):
-        self.__leftSideBarWidget = LeftSideBar()
+        self.__chatNavWidget = ChatNavWidget(['id', 'name', 'update_dt', 'insert_dt'], 'conv_tb')
         self.__chatWidget = ChatWidget()
         self.__browser = self.__chatWidget.getChatBrowser()
 
@@ -49,30 +50,30 @@ class OpenAIChatBotWidget(QWidget):
 
         self.__promptGeneratorWidget = PromptGeneratorWidget()
 
-        self.__sideBarBtn = SvgButton()
-        self.__sideBarBtn.setIcon('ico/sidebar.svg')
+        self.__sideBarBtn = Button()
+        self.__sideBarBtn.setStyleAndIcon('ico/sidebar.svg')
         self.__sideBarBtn.setCheckable(True)
         self.__sideBarBtn.setToolTip('Chat List')
         self.__sideBarBtn.setChecked(True)
-        self.__sideBarBtn.toggled.connect(self.__leftSideBarWidget.setVisible)
+        self.__sideBarBtn.toggled.connect(self.__chatNavWidget.setVisible)
 
-        self.__settingBtn = SvgButton()
-        self.__settingBtn.setIcon('ico/setting.svg')
+        self.__settingBtn = Button()
+        self.__settingBtn.setStyleAndIcon('ico/setting.svg')
         self.__settingBtn.setToolTip('Settings')
         self.__settingBtn.setCheckable(True)
         self.__settingBtn.setChecked(True)
         self.__settingBtn.toggled.connect(self.__aiPlaygroundWidget.setVisible)
 
-        self.__promptBtn = SvgButton()
-        self.__promptBtn.setIcon('ico/prompt.svg')
+        self.__promptBtn = Button()
+        self.__promptBtn.setStyleAndIcon('ico/prompt.svg')
         self.__promptBtn.setToolTip('Prompt Generator')
         self.__promptBtn.setCheckable(True)
         self.__promptBtn.setChecked(True)
         self.__promptBtn.toggled.connect(self.__promptGeneratorWidget.setVisible)
 
         sep = QFrame()
-        sep.setFrameShape(QFrame.VLine)
-        sep.setFrameShadow(QFrame.Sunken)
+        sep.setFrameShape(QFrame.Shape.VLine)
+        sep.setFrameShadow(QFrame.Shadow.Sunken)
 
         toggleMenuWidgetBtn = QPushButton('Show Menu Widget')
         toggleMenuWidgetBtn.setCheckable(True)
@@ -86,22 +87,21 @@ class OpenAIChatBotWidget(QWidget):
         lay.addWidget(sep)
         lay.addWidget(toggleMenuWidgetBtn)
         lay.setContentsMargins(2, 2, 2, 2)
-        lay.setAlignment(Qt.AlignLeft)
+        lay.setAlignment(Qt.AlignmentFlag.AlignLeft)
 
         self.__menuWidget = QWidget()
         self.__menuWidget.setLayout(lay)
         self.__menuWidget.setMaximumHeight(self.__menuWidget.sizeHint().height())
 
         sep = QFrame()
-        sep.setFrameShape(QFrame.HLine)
-        sep.setFrameShadow(QFrame.Sunken)
+        sep.setFrameShape(QFrame.Shape.HLine)
+        sep.setFrameShadow(QFrame.Shadow.Sunken)
 
-        self.__leftSideBarWidget.initHistory()
-        self.__leftSideBarWidget.added.connect(self.__addConv)
-        self.__leftSideBarWidget.changed.connect(self.__changeConv)
-        self.__leftSideBarWidget.deleted.connect(self.__deleteConv)
-        self.__leftSideBarWidget.convUpdated.connect(self.__updateConv)
-        self.__leftSideBarWidget.export.connect(self.__export)
+        self.__chatNavWidget.added.connect(self.__addConv)
+        self.__chatNavWidget.clicked.connect(self.__showChat)
+        self.__chatNavWidget.cleared.connect(self.__clearChat)
+        self.__chatNavWidget.onImport.connect(self.__importConv)
+        self.__chatNavWidget.onExport.connect(self.__exportConv)
 
         self.__lineEdit.returnPressed.connect(self.__chat)
 
@@ -114,7 +114,7 @@ class OpenAIChatBotWidget(QWidget):
 
         self.__queryWidget = QWidget()
         self.__queryWidget.setLayout(lay)
-        self.__queryWidget.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
+        self.__queryWidget.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Maximum)
 
         lay = QVBoxLayout()
         lay.addWidget(self.__chatWidget)
@@ -126,7 +126,7 @@ class OpenAIChatBotWidget(QWidget):
         chatWidget.setLayout(lay)
 
         self.__rightSideBar = QSplitter()
-        self.__rightSideBar.setOrientation(Qt.Vertical)
+        self.__rightSideBar.setOrientation(Qt.Orientation.Vertical)
         self.__rightSideBar.addWidget(self.__aiPlaygroundWidget)
         self.__rightSideBar.addWidget(self.__promptGeneratorWidget)
         self.__rightSideBar.setSizes([600, 400])
@@ -143,7 +143,7 @@ class OpenAIChatBotWidget(QWidget):
 
 
         mainWidget = QSplitter()
-        mainWidget.addWidget(self.__leftSideBarWidget)
+        mainWidget.addWidget(self.__chatNavWidget)
         mainWidget.addWidget(chatWidget)
         mainWidget.addWidget(self.__rightSideBar)
         mainWidget.setSizes([100, 500, 400])
@@ -210,9 +210,7 @@ class OpenAIChatBotWidget(QWidget):
                                       is_llama_available)
 
             # If there is no current conversation selected on the list to the left, make a new one.
-            if self.__leftSideBarWidget.isCurrentConvExists():
-                pass
-            else:
+            if self.__chatWidget.isNew():
                 self.__addConv()
 
             # Conversation result information after response
@@ -246,8 +244,6 @@ class OpenAIChatBotWidget(QWidget):
 
             # Remove image files widget from the window
             self.__prompt.resetUploadImageFileWidget()
-
-
         except Exception as e:
             # get the line of error and filename
             exc_type, exc_obj, tb = sys.exc_info()
@@ -275,7 +271,7 @@ class OpenAIChatBotWidget(QWidget):
 
     def __toggleWidgetWhileChatting(self, f, continue_f=False):
         self.__lineEdit.setExecuteEnabled(f)
-        self.__leftSideBarWidget.setEnabled(f)
+        self.__chatNavWidget.setEnabled(f)
         self.__prompt.activateDuringGeneratingWidget(not f)
         # TODO
         # self.__prompt.activateAfterResponseWidget(f, continue_f)
@@ -293,31 +289,48 @@ class OpenAIChatBotWidget(QWidget):
             self.__notifierWidget.show()
             self.__notifierWidget.doubleClicked.connect(self.window().show)
 
-    def __changeConv(self, item: QListWidgetItem):
-        if item:
-            id = item.data(Qt.UserRole)
-            conv_data = DB.selectCertainConv(id)
-            self.__browser.replaceConv(id, conv_data)
-        else:
-            self.__browser.resetChatWidget(0)
+    def __showChat(self, id, title):
+        conv_data = DB.selectCertainConv(id)
+        self.__chatWidget.showTitle(title)
+        self.__browser.replaceConv(id, conv_data)
+        self.__prompt.activateDuringGeneratingWidget(False)
+        self.__prompt.activateAfterResponseWidget(False)
+
+    def __clearChat(self):
+        self.__chatWidget.showTitle('')
+        self.__browser.resetChatWidget(0)
         self.__prompt.activateDuringGeneratingWidget(False)
         self.__prompt.activateAfterResponseWidget(False)
 
     def __addConv(self):
-        cur_id = DB.insertConv(LangClass.TRANSLATIONS['New Chat'])
+        title = LangClass.TRANSLATIONS['New Chat']
+        cur_id = DB.insertConv(title)
         self.__browser.resetChatWidget(cur_id)
-        self.__leftSideBarWidget.addToList(cur_id)
+        self.__chatWidget.showTitle(title)
+        self.__browser.replaceConv(cur_id, DB.selectCertainConv(cur_id))
         self.__lineEdit.setFocus()
+        self.__chatNavWidget.add(called_from_parent=True)
 
-    def __updateConv(self, id, title=None):
-        if title:
-            DB.updateConv(id, title)
+    def __importConv(self, filename):
+        old_conv = DB.selectAllConv()
+        if filename and old_conv and len(old_conv) > 0:
+            message = '''There are already conversations. Would you export them before importing? 
+            Warning: If you do not export, you will lose the current conversations.
+            '''
+            messageBox = QMessageBox(self)
+            messageBox.setWindowTitle('Information')
+            messageBox.setText(message)
+            messageBox.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+            reply = messageBox.exec()
+            if reply == QMessageBox.StandardButton.Yes:
+                # Export previous conversation
+                self.__exportConv([_['id'] for _ in old_conv])
+            else:
+                pass
+        else:
+            print(f'Import {filename}')
 
-    def __deleteConv(self, id_lst):
-        for id in id_lst:
-            DB.deleteConv(id)
-
-    def __export(self, ids):
+    def __exportConv(self, ids):
         file_data = QFileDialog.getSaveFileName(self, LangClass.TRANSLATIONS['Save'], os.path.expanduser('~'), 'SQLite DB file (*.db);;txt files Compressed File (*.zip);;html files Compressed File (*.zip)')
         if file_data[0]:
             filename = file_data[0]
