@@ -34,6 +34,7 @@ from pyqt_openai.widgets.button import Button
 from pyqt_openai.dalle_widget.dallEWidget import DallEWidget
 from pyqt_openai.openAiChatBotWidget import OpenAIChatBotWidget
 from pyqt_openai.replicate_widget.replicateWidget import ReplicateWidget
+from pyqt_openai.settingsDialog import SettingsDialog
 
 os.environ['OPENAI_API_KEY'] = ''
 
@@ -54,7 +55,6 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.__initVal()
-        self.__initQSqlDb()
         self.__initUi()
 
     def __initVal(self):
@@ -65,12 +65,6 @@ class MainWindow(QMainWindow):
         else:
             self.__lang = self.__settings_struct.value('lang', type=str)
         self.__lang = LangClass.lang_changed(self.__lang)
-
-    def __initQSqlDb(self):
-        # Set up the database and table model (you'll need to configure this part based on your database)
-        self.__imageDb = QSqlDatabase.addDatabase('QSQLITE')  # Replace with your database type
-        self.__imageDb.setDatabaseName('conv.db')  # Replace with your database name
-        self.__imageDb.open()
 
     def __initUi(self):
         self.setWindowTitle(LangClass.TRANSLATIONS['PyQt OpenAI Chatbot'])
@@ -359,10 +353,10 @@ class MainWindow(QMainWindow):
         self.__mainWidget.setCurrentIndex(i)
 
     def __showSettingsDialog(self):
-        dialog = QDialog(self)
-        dialog.setWindowTitle('Settings')
-        dialog.resize(300, 200)
-        dialog.exec()
+        dialog = SettingsDialog()
+        reply = dialog.exec()
+        if reply == QDialog.DialogCode.Accepted:
+            pass
 
     def __beforeClose(self):
         message = LangClass.TRANSLATIONS['The window will be closed. Would you like to continue running this app in the background?']
@@ -390,12 +384,24 @@ class MainWindow(QMainWindow):
             return super().closeEvent(e)
 
 
+# Application
+class App(QApplication):
+    def __init__(self, *args):
+        super().__init__(*args)
+        self.setQuitOnLastWindowClosed(False)
+        self.__initQSqlDb()
+
+    def __initQSqlDb(self):
+        # Set up the database and table model (you'll need to configure this part based on your database)
+        self.__imageDb = QSqlDatabase.addDatabase('QSQLITE')  # Replace with your database type
+        self.__imageDb.setDatabaseName('conv.db')  # Replace with your database name
+        self.__imageDb.open()
+
 
 if __name__ == "__main__":
     import sys
 
-    app = QApplication(sys.argv)
-    app.setQuitOnLastWindowClosed(False)
+    app = App(sys.argv)
     w = MainWindow()
     w.show()
     sys.exit(app.exec())
