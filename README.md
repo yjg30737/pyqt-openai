@@ -12,7 +12,7 @@ PyQt/PySide(Python cross-platform GUI toolkit) OpenAI Chatbot which supports mor
 
 <b>This supports Windows, MacOS, Linux.</b>
 
-You can use OpenAI models(GPT4o, GPT4-turbo, DALL-E, etc.) with PyQt as a chatbot.
+You can use OpenAI models(GPT4o, GPT4-turbo, DALL-E, etc.), Replicate image generation models with PyQt.
 
 The major advantage of this package is that you don't need to know other language aside from Python.
 
@@ -22,7 +22,7 @@ This is using <b>sqlite</b> as a database.
 
 You can select the model and change each parameters of openai from the right side bar.
 
-Also you can combine openai with llama-index feature to make gpt model answer your question based on information you had provided!
+Also you can combine openai with llama-index feature to make GPT model answer your question based on information you had provided!
 
 An internet connection is required.
 
@@ -34,8 +34,6 @@ And if you would like to support this project, you can click the button below to
 <a href="https://paypal.me/yjg30737">
   <img src="https://github.com/yjg30737/yjg30737/assets/55078043/3366b496-3e1e-491c-841e-19871da55c40" alt="Donate with PayPal" style="height: 60px; width: 170px" />
 </a>
-
-<b>This officially supports openai>=1.0.0 and llama-index>=0.9.2.</b> 
 
 ## Table of Contents
 * [Feature](#feature)
@@ -74,7 +72,7 @@ And if you would like to support this project, you can click the button below to
 * You can <b>run this in background</b> application
   * notification will pop up when response is generated
 * You can make window stack on top or control its transparency
-* Image generation (DALL-E3)
+* Image generation (DALL-E3 from openai, a bunch of image models in Replicate)
   * Support saving generated image to local
   * Support continue generation
   * Notification when task completes
@@ -101,8 +99,8 @@ And if you would like to support this project, you can click the button below to
 If you have any additional languages you would like to add, please feel free to make a request by mail, issue, discord, etc at any time.
 
 ## Requirements
-* qtpy - the package allowing you to write code that works with both PyQt5 and PyQt6
-* PyQt5 >= 5.14 or PyQt6
+* qtpy - the package allowing you to write code that works with both PyQt5, PyQt6, PySide6
+* PyQt5 >= 5.14 or PyQt6 (or PySide6 if you want)
 * openai
 * aiohttp - for openai dependency 
 * pyperclip - to copy prompt text from prompt generator
@@ -111,6 +109,7 @@ If you have any additional languages you would like to add, please feel free to 
 * requests - for getting response from web
 * langchain - for connecting llama-index with gpt
 * pillow - for preventing ModuleNotFoundError from llama-index
+* replicate - for supporting Replicate
 
 You can install these requirements with only one line command "pip install -r requirements.txt". Just see "How to Install" section below.
 
@@ -231,6 +230,10 @@ sudo apt-get install libxcb-xinerama0
 ```
 
 ## Troubleshooting
+### How to fix qt.qpa.plugin: Could not find the Qt platform plugin "windows" in "" error
+
+Please check that the path does not contain any other invalid languages.
+
 ### subprocess-exited-with-error
 If you see this error while installing the openai package
 ```
@@ -268,7 +271,7 @@ I recommend to install sqlite management software. It's not necessary to run thi
 ```
 MIT License
 
-Copyright (c) 2023 Jung Gyu Yoon
+Copyright (c) 2023-2024 Jung Gyu Yoon
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
