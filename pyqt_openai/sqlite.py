@@ -1,6 +1,7 @@
 import sqlite3, json, shutil
 
 from pyqt_openai.models import ImagePromptContainer
+from pyqt_openai.util.script import get_db_filename
 
 
 class SqliteDatabase:
@@ -9,14 +10,14 @@ class SqliteDatabase:
 
     if there is no functions you want to use, use ``getCursor`` instead
     """
-    def __init__(self, db_filename='conv.db'):
+    def __init__(self, db_filename=get_db_filename()):
         super().__init__()
         self.__initVal(db_filename)
         self.__initDb()
 
     def __initVal(self, db_filename):
         # db names
-        self.__db_filename = db_filename or 'conv.db'
+        self.__db_filename = db_filename or get_db_filename()
 
         # conv table names
         self.__conv_tb_nm = 'conv_tb'

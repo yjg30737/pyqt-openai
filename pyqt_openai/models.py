@@ -1,9 +1,14 @@
 from dataclasses import dataclass, fields
 
+from pyqt_openai.res.language_dict import LangClass
+
 
 @dataclass
 class Container:
     def __init__(self, **kwargs):
+        """
+        You don't have to call this if you want to use default class variables
+        """
         for k in self.__annotations__:
             setattr(self, k, kwargs.get(k, ""))
         for key, value in kwargs.items():
@@ -37,6 +42,14 @@ class Container:
         arr = [getattr(self, key) for key in self.get_keys_for_insert(excludes)]
         return arr
 
+    def get_items(self, excludes: list = None):
+        """
+        Function that returns the items of the target data type as a list.
+        """
+        if excludes is None:
+            excludes = []
+        return {key: getattr(self, key) for key in self.get_keys_for_insert(excludes)}.items()
+
     def create_insert_query(self, table_name: str, excludes: list = None):
         if excludes is None:
             excludes = []
@@ -49,6 +62,14 @@ class Container:
         placeholders = ', '.join(['?' for _ in field_names])
         query = f'INSERT INTO {table_name} ({columns}) VALUES ({placeholders})'
         return query
+
+@dataclass
+class SettingsParamsContainer(Container):
+    lang: str = LangClass.lang_changed()
+    db: str = 'conv'
+    do_not_ask_again: bool = False
+    notify_finish: bool = False
+    show: bool = False
 
 @dataclass
 class ImagePromptContainer(Container):
