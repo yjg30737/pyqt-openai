@@ -22,7 +22,7 @@ class DoNotAskAgainDialog(QDialog):
     def __initUi(self):
         self.setWindowTitle("Exit")
         self.setModal(True)
-        self.setWindowFlag(Qt.WindowType.WindowCloseButtonHint)
+        self.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.WindowCloseButtonHint)
 
         self.label = QLabel(self.__do_not_ask_again_message)
         self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)

@@ -68,8 +68,8 @@ class SettingsParamsContainer(Container):
     lang: str = LangClass.lang_changed()
     db: str = 'conv'
     do_not_ask_again: bool = False
-    notify_finish: bool = False
-    show_toolbar: bool = False
+    notify_finish: bool = True
+    show_toolbar: bool = True
 
 @dataclass
 class ImagePromptContainer(Container):

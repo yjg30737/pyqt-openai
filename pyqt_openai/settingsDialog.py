@@ -59,8 +59,7 @@ class SettingsDialog(QDialog):
         re = QRegularExpression(constants.DB_NAME_REGEX)
         self.__validator.setRegularExpression(re)
         self.__dbLineEdit.setValidator(self.__validator)
-
-        dbLayout.addWidget(QLabel("Database Path:"))
+        dbLayout.addWidget(QLabel("Name of target database (without extension):"))
         dbLayout.addWidget(self.__dbLineEdit)
 
         # Checkboxes

@@ -346,7 +346,7 @@ class MainWindow(QMainWindow):
         self.__settingsParamContainer = container
         # If db name is changed
         if self.__settingsParamContainer.db != self.__settings_struct.value('db'):
-            QMessageBox.information(self, 'Info', 'The database name has been changed. It will be applied to the next run.')
+            QMessageBox.information(self, 'Info', "The name of the reference target database has been changed. The changes will take effect after a restart.")
         # If show_ai_toolbar is changed
         if self.__settingsParamContainer.show_toolbar != self.__settings_struct.value('show_toolbar'):
             self.__toolbar.setVisible(self.__settingsParamContainer.show_toolbar)

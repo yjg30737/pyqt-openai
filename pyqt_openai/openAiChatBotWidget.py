@@ -341,8 +341,10 @@ class OpenAIChatBotWidget(QWidget):
                 compressed_file_type = file_data[1].split(' ')[0].lower()
                 ext_dict = {'txt': {'ext':'.txt', 'func':conv_unit_to_txt}, 'html': {'ext':'.html', 'func':conv_unit_to_html}}
                 for id in ids:
-                    title = DB.selectConv(id)[1]
-                    txt_filename = f'{title}{ext_dict[compressed_file_type]["ext"]}'
+                    row_info = DB.selectConv(id)
+                    # Limit the title length to file name length
+                    title = row_info['name'][:32]
+                    txt_filename = f'{title}_{id}{ext_dict[compressed_file_type]["ext"]}'
                     txt_content = ext_dict[compressed_file_type]['func'](DB, id, title)
                     add_file_to_zip(txt_content, txt_filename, os.path.splitext(filename)[0] + '.zip')
             elif ext == '.db':

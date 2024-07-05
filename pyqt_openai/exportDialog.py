@@ -1,26 +1,59 @@
 """
-This dialog is for exporting conversation threads or images selected by the user from the history.
+This dialog is for exporting conversation threads selected by the user from the history.
 """
-from qtpy.QtWidgets import QDialog, QVBoxLayout, QTabWidget, QWidget, QCheckBox, QPushButton, QFileDialog, QLabel, QFrame
-from qtpy.QtGui import QIcon
+
 from qtpy.QtCore import Qt
-from pyqt_openai.widgets.button import Button
+from qtpy.QtGui import QIcon
+from qtpy.QtWidgets import QApplication, QTableWidgetItem, QLabel, QDialogButtonBox, QCheckBox, QFrame, QDialog, QVBoxLayout
+
+from pyqt_openai.widgets.checkBoxTableWidget import CheckBoxTableWidget
+from pyqt_openai.pyqt_openai_data import DB
 
 
 class ExportDialog(QDialog):
-    def __init__(self, columns, table_nm, parent=None):
+    def __init__(self, columns, data, sort_by='update_dt', parent=None):
         super(ExportDialog, self).__init__(parent)
-        self.__initVal(columns, table_nm)
+        self.__initVal(columns, data, sort_by)
         self.__initUi()
 
-    def __initVal(self, columns, table_nm):
+    def __initVal(self, columns, data, sort_by):
         self.__columns = columns
-        self.__table_nm = table_nm
+        self.__data = data
+        self.__sort_by = sort_by
 
     def __initUi(self):
         self.setWindowTitle("Export")
-        self.setWindowIcon(QIcon("ico/export.svg"))
-        self.setWindowFlags(Qt.WindowCloseButtonHint)
+        self.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.WindowCloseButtonHint)
 
-        self.layout = QVBoxLayout()
-        self.setLayout(self.layout)
+        self.__checkBoxTableWidget = CheckBoxTableWidget()
+        self.__checkBoxTableWidget.setHorizontalHeaderLabels(self.__columns)
+        self.__checkBoxTableWidget.setRowCount(len(self.__data))
+
+        for r_idx, r in enumerate(self.__data):
+            for c_idx, c in enumerate(self.__columns):
+                v = r[c]
+                self.__checkBoxTableWidget.setItem(r_idx, c_idx+1, QTableWidgetItem(str(v)))
+
+        self.__checkBoxTableWidget.resizeColumnsToContents()
+        self.__checkBoxTableWidget.setSortingEnabled(True)
+        if self.__sort_by in self.__columns:
+            self.__checkBoxTableWidget.sortByColumn(self.__columns.index(self.__sort_by)+1, Qt.SortOrder.DescendingOrder)
+
+        # Dialog buttons
+        buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        buttonBox.accepted.connect(self.accept)
+        buttonBox.rejected.connect(self.reject)
+
+        allCheckBox = QCheckBox('Select All')
+        allCheckBox.stateChanged.connect(self.__checkBoxTableWidget.toggleState) # if allChkBox is checked, tablewidget checkboxes will also be checked
+
+        lay = QVBoxLayout()
+        lay.addWidget(QLabel('Select the threads you want to export.'))
+        lay.addWidget(allCheckBox)
+        lay.addWidget(self.__checkBoxTableWidget)
+        lay.addWidget(buttonBox)
+        self.setLayout(lay)
+
+    def getSelectedIds(self):
+        ids = [self.__checkBoxTableWidget.item(r, 1).text() for r in self.__checkBoxTableWidget.getCheckedRows()]
+        return ids
