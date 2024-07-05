@@ -29,6 +29,7 @@ class OpenAIChatBotWidget(QWidget):
     def __initVal(self):
         # ini
         self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.Format.IniFormat)
+        self.__notify_finish = self.__settings_ini.value('notify_finish', type=bool)
 
     def __initUi(self):
         self.__chatNavWidget = ChatNavWidget(['id', 'name', 'update_dt', 'insert_dt'], 'conv_tb')
@@ -285,9 +286,10 @@ class OpenAIChatBotWidget(QWidget):
         self.__toggleWidgetWhileChatting(True, continue_f)
         self.__lineEdit.setFocus()
         if not self.isVisible():
-            self.__notifierWidget = NotifierWidget(informative_text=LangClass.TRANSLATIONS['Response 👌'], detailed_text = self.__browser.getLastResponse())
-            self.__notifierWidget.show()
-            self.__notifierWidget.doubleClicked.connect(self.window().show)
+            if self.__notify_finish:
+                self.__notifierWidget = NotifierWidget(informative_text=LangClass.TRANSLATIONS['Response 👌'], detailed_text = self.__browser.getLastResponse())
+                self.__notifierWidget.show()
+                self.__notifierWidget.doubleClicked.connect(self.window().show)
 
     def __showChat(self, id, title):
         conv_data = DB.selectCertainConv(id)

@@ -31,12 +31,12 @@ class SettingsDialog(QDialog):
         self.__db = args.db
         self.__do_not_ask_again = args.do_not_ask_again
         self.__notify_finish = args.notify_finish
-        self.__show_toolbar = args.show
+        self.__show_toolbar = args.show_toolbar
 
     def __initUi(self):
         self.setWindowTitle("Settings")
         self.setWindowIcon(QIcon("ico/setting.svg"))
-        self.setWindowFlags(Qt.WindowCloseButtonHint)
+        self.setWindowFlags(Qt.WindowType.WindowCloseButtonHint)
 
         # Language setting
         self.__langCmbBox = QComboBox()
@@ -64,9 +64,9 @@ class SettingsDialog(QDialog):
         dbLayout.addWidget(self.__dbLineEdit)
 
         # Checkboxes
-        self.__doNotAskAgainCheckBox = QCheckBox("Do not ask again")
+        self.__doNotAskAgainCheckBox = QCheckBox("Do not ask again when closing (Always close the application)")
         self.__doNotAskAgainCheckBox.setChecked(self.__do_not_ask_again)
-        self.__notifyFinishCheckBox = QCheckBox("Notify when finished")
+        self.__notifyFinishCheckBox = QCheckBox("Notify when finish processing any task (Conversion, etc.)")
         self.__notifyFinishCheckBox.setChecked(self.__notify_finish)
         self.__showToolbarCheckBox = QCheckBox("Show toolbar")
         self.__showToolbarCheckBox.setChecked(self.__show_toolbar)
@@ -99,7 +99,7 @@ class SettingsDialog(QDialog):
             db=self.__dbLineEdit.text(),
             do_not_ask_again=self.__doNotAskAgainCheckBox.isChecked(),
             notify_finish=self.__notifyFinishCheckBox.isChecked(),
-            show=self.__showToolbarCheckBox.isChecked()
+            show_toolbar=self.__showToolbarCheckBox.isChecked()
         )
 
 

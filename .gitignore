@@ -133,5 +133,5 @@ dmypy.json
 
 # pyqt_openai
 pyqt_openai/pyqt_openai.ini
-pyqt_openai/conv.db
+pyqt_openai/*.db
 pyqt_openai/test/

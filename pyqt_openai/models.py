@@ -69,7 +69,7 @@ class SettingsParamsContainer(Container):
     db: str = 'conv'
     do_not_ask_again: bool = False
     notify_finish: bool = False
-    show: bool = False
+    show_toolbar: bool = False
 
 @dataclass
 class ImagePromptContainer(Container):
