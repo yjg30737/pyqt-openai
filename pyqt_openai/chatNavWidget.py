@@ -8,6 +8,7 @@ from qtpy.QtWidgets import QApplication, QWidget, QVBoxLayout, QMessageBox, QSty
 
 # for search feature
 from pyqt_openai.exportDialog import ExportDialog
+from pyqt_openai.models import ChatThreadContainer
 from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.widgets.button import Button
 from pyqt_openai.widgets.searchBar import SearchBar
@@ -191,7 +192,7 @@ class ChatNavWidget(QWidget):
             self.onImport.emit(filename)
 
     def __export(self):
-        columns = ['id', 'name', 'insert_dt', 'update_dt']
+        columns = ChatThreadContainer.get_keys()
         data = DB.selectAllConv()
         sort_by = 'update_dt'
         dialog = ExportDialog(columns, data, sort_by=sort_by)

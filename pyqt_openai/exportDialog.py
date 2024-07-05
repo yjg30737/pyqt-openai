@@ -3,11 +3,9 @@ This dialog is for exporting conversation threads selected by the user from the 
 """
 
 from qtpy.QtCore import Qt
-from qtpy.QtGui import QIcon
-from qtpy.QtWidgets import QApplication, QTableWidgetItem, QLabel, QDialogButtonBox, QCheckBox, QFrame, QDialog, QVBoxLayout
+from qtpy.QtWidgets import QTableWidgetItem, QLabel, QDialogButtonBox, QCheckBox, QDialog, QVBoxLayout
 
 from pyqt_openai.widgets.checkBoxTableWidget import CheckBoxTableWidget
-from pyqt_openai.pyqt_openai_data import DB
 
 
 class ExportDialog(QDialog):

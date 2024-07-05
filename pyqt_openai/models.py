@@ -72,6 +72,13 @@ class SettingsParamsContainer(Container):
     show_toolbar: bool = True
 
 @dataclass
+class ChatThreadContainer(Container):
+    id: str = "",
+    name: str = "",
+    insert_dt: str = "",
+    update_dt: str = ""
+
+@dataclass
 class ImagePromptContainer(Container):
     id: str = ""
     model: str = ""

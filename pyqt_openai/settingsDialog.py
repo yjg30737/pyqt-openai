@@ -1,6 +1,10 @@
-import os, sys
+import os
+import sys
+
+from pyqt_openai.widgets.checkBoxListWidget import CheckBoxListWidget
 
 # Get the absolute path of the current script file
+
 script_path = os.path.abspath(__file__)
 
 # Get the root directory by going up one level from the script directory
@@ -11,12 +15,12 @@ sys.path.insert(0, os.getcwd())  # Add the current directory as well
 
 from qtpy.QtCore import Qt, QRegularExpression
 from qtpy.QtGui import QIcon, QRegularExpressionValidator
-from qtpy.QtWidgets import QDialog, QComboBox, QLineEdit, QCheckBox, QSizePolicy, \
-    QVBoxLayout, QHBoxLayout, QLabel, QDialogButtonBox, QWidget, QMessageBox
+from qtpy.QtWidgets import QFrame, QDialog, QComboBox, QLineEdit, QCheckBox, QSizePolicy, \
+    QVBoxLayout, QHBoxLayout, QGroupBox, QSplitter, QLabel, QDialogButtonBox, QWidget, QMessageBox
 
 
 from pyqt_openai import constants
-from pyqt_openai.models import SettingsParamsContainer
+from pyqt_openai.models import SettingsParamsContainer, ImagePromptContainer, ChatThreadContainer
 from pyqt_openai.res.language_dict import LangClass
 
 
@@ -35,7 +39,6 @@ class SettingsDialog(QDialog):
 
     def __initUi(self):
         self.setWindowTitle("Settings")
-        self.setWindowIcon(QIcon("ico/setting.svg"))
         self.setWindowFlags(Qt.WindowType.WindowCloseButtonHint)
 
         # Language setting
@@ -75,12 +78,67 @@ class SettingsDialog(QDialog):
         buttonBox.accepted.connect(self.__accept)
         buttonBox.rejected.connect(self.reject)
 
+        sep = QFrame()
+        sep.setFrameShape(QFrame.Shape.HLine)
+        sep.setFrameShadow(QFrame.Shadow.Sunken)
+
         lay = QVBoxLayout()
         lay.addWidget(langWidget)
         lay.addLayout(dbLayout)
         lay.addWidget(self.__doNotAskAgainCheckBox)
         lay.addWidget(self.__notifyFinishCheckBox)
         lay.addWidget(self.__showToolbarCheckBox)
+
+        generalGrpBox = QGroupBox('General')
+        generalGrpBox.setLayout(lay)
+
+        chatColAllCheckBox = QCheckBox('Check all')
+        chatColCheckBoxListWidget = CheckBoxListWidget()
+        chatColCheckBoxListWidget.addItems(ChatThreadContainer.get_keys())
+
+        chatColAllCheckBox.stateChanged.connect(chatColCheckBoxListWidget.toggleState)
+
+        lay = QVBoxLayout()
+        lay.addWidget(QLabel('Select the columns you want to show in the chat list.'))
+        lay.addWidget(chatColAllCheckBox)
+        lay.addWidget(chatColCheckBoxListWidget)
+
+        chatColWidget = QWidget()
+        chatColWidget.setLayout(lay)
+
+        imageColAllCheckBox = QCheckBox('Check all')
+        imageColCheckBoxListWidget = CheckBoxListWidget()
+        imageColCheckBoxListWidget.addItems(ImagePromptContainer.get_keys())
+
+        imageColAllCheckBox.stateChanged.connect(imageColCheckBoxListWidget.toggleState)
+
+        lay = QVBoxLayout()
+        lay.addWidget(QLabel('Select the columns you want to show in the image list.'))
+        lay.addWidget(imageColAllCheckBox)
+        lay.addWidget(imageColCheckBoxListWidget)
+
+        imageColWidget = QWidget()
+        imageColWidget.setLayout(lay)
+
+        self.__splitter = QSplitter()
+        self.__splitter.addWidget(chatColWidget)
+        self.__splitter.addWidget(imageColWidget)
+        self.__splitter.setHandleWidth(1)
+        self.__splitter.setChildrenCollapsible(False)
+        self.__splitter.setSizes([500, 500])
+        self.__splitter.setStyleSheet(
+            "QSplitterHandle {background-color: lightgray;}")
+        self.__splitter.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
+
+        lay = QVBoxLayout()
+        lay.addWidget(self.__splitter)
+
+        columnGrpBox = QGroupBox('Show/hide columns')
+        columnGrpBox.setLayout(lay)
+
+        lay = QVBoxLayout()
+        lay.addWidget(generalGrpBox)
+        lay.addWidget(columnGrpBox)
         lay.addWidget(buttonBox)
 
         self.setLayout(lay)
@@ -100,15 +158,3 @@ class SettingsDialog(QDialog):
             notify_finish=self.__notifyFinishCheckBox.isChecked(),
             show_toolbar=self.__showToolbarCheckBox.isChecked()
         )
-
-
-
-if __name__ == "__main__":
-    import sys
-    from qtpy.QtWidgets import QApplication
-
-    app = QApplication(sys.argv)
-    param = SettingsParamsContainer()
-    dialog = SettingsDialog(param)
-    dialog.show()
-    sys.exit(app.exec_())
