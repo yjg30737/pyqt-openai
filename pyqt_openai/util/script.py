@@ -10,6 +10,8 @@ from pathlib import Path
 
 from jinja2 import Template
 
+from qtpy.QtCore import QSettings
+
 from pyqt_openai.models import ImagePromptContainer
 
 
@@ -125,3 +127,10 @@ def download_image_as_base64(url: str):
     image_data = response.content
     base64_encoded = base64.b64decode(base64.b64encode(image_data).decode('utf-8'))
     return base64_encoded
+
+def get_db_filename():
+    settings = QSettings("pyqt_openai.ini", QSettings.Format.IniFormat)
+    print(settings)
+    db_path = settings.value("db", "conv") + ".db"
+    print(db_path)
+    return db_path

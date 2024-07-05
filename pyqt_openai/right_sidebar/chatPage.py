@@ -21,7 +21,7 @@ class ChatPage(QWidget):
         if not self.__settings_ini.contains('stream'):
             self.__settings_ini.setValue('stream', True)
         if not self.__settings_ini.contains('model'):
-            self.__settings_ini.setValue('model', 'gpt-3.5-turbo')
+            self.__settings_ini.setValue('model', 'gpt-4o')
         if not self.__settings_ini.contains('system'):
             self.__settings_ini.setValue('system', 'You are a helpful assistant.')
         if not self.__settings_ini.contains('temperature'):

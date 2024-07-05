@@ -116,3 +116,7 @@ class DallEWidget(QWidget):
             self.__notifierWidget.doubleClicked.connect(self.window().show)
 
         open_directory(self.__rightSideBarWidget.getDirectory())
+
+    def showEvent(self, event):
+        self.__imageNavWidget.refresh()
+        super().showEvent(event)

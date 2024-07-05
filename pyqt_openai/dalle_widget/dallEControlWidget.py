@@ -206,7 +206,7 @@ class DallEControlWidget(QScrollArea):
 
         self.__promptWidget = QPlainTextEdit()
         self.__promptWidget.setPlaceholderText('Enter prompt here...')
-        self.__promptWidget.setPlainText(self.__settings_ini.value('prompt', type=str))
+        self.__promptWidget.setPlainText(self.__prompt)
         self.__promptWidget.textChanged.connect(self.__dalleTextChanged)
 
         self.__styleCmbBox = QComboBox()
