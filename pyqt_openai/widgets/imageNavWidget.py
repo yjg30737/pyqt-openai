@@ -122,6 +122,7 @@ class ImageNavWidget(QWidget):
         self.__tableView.resizeColumnsToContents()
         self.__tableView.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
 
+        self.__tableView.activated.connect(self.__clicked)
         self.__tableView.clicked.connect(self.__clicked)
 
         lay = QVBoxLayout()
