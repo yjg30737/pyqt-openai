@@ -1,6 +1,7 @@
 import sqlite3, json, shutil
 
 from pyqt_openai.models import ImagePromptContainer
+from pyqt_openai.util.script import get_db_filename
 
 
 class SqliteDatabase:
@@ -9,14 +10,14 @@ class SqliteDatabase:
 
     if there is no functions you want to use, use ``getCursor`` instead
     """
-    def __init__(self, db_filename='conv.db'):
+    def __init__(self, db_filename=get_db_filename()):
         super().__init__()
         self.__initVal(db_filename)
         self.__initDb()
 
     def __initVal(self, db_filename):
         # db names
-        self.__db_filename = db_filename or 'conv.db'
+        self.__db_filename = db_filename or get_db_filename()
 
         # conv table names
         self.__conv_tb_nm = 'conv_tb'
@@ -587,7 +588,7 @@ class SqliteDatabase:
                 # To not make table every time to change column's name and type
                 self.__c.execute(f'PRAGMA table_info({self.__image_tb_nm})')
                 existing_columns = set([column[1] for column in self.__c.fetchall()])
-                required_columns = set(ImagePromptContainer.get_keys_for_insert())
+                required_columns = set(ImagePromptContainer.get_keys_for_insert(['id', 'update_dt', 'insert_dt']))
 
                 # Find missing columns
                 missing_columns = required_columns - existing_columns
@@ -598,7 +599,7 @@ class SqliteDatabase:
                         column_type = 'INT'
                     elif column == 'data':
                         column_type = 'BLOB'
-                    elif column in ['model', 'size', 'quality', 'style']:
+                    elif column in ['model', 'quality', 'style']:
                         column_type = 'VARCHAR(255)'
                     self.__c.execute(f'ALTER TABLE {self.__image_tb_nm} ADD COLUMN {column} {column_type}')
 
@@ -609,7 +610,6 @@ class SqliteDatabase:
                               model VARCHAR(255),
                               prompt TEXT,
                               n INT,
-                              size VARCHAR(255),
                               quality VARCHAR(255),
                               data BLOB,
                               style VARCHAR(255),
@@ -627,8 +627,9 @@ class SqliteDatabase:
 
     def insertImage(self, arg: ImagePromptContainer):
         try:
-            query = arg.create_insert_query(self.__image_tb_nm)
-            values = arg.get_values_for_insert()
+            excludes = ['id', 'insert_dt', 'update_dt']
+            query = arg.create_insert_query(self.__image_tb_nm, excludes)
+            values = arg.get_values_for_insert(excludes)
             self.__c.execute(query, values)
                 # f'INSERT INTO {self.__image_tb_nm} (prompt, n, size, quality, data, style, revised_prompt) VALUES (?, ?, ?, ?, ?, ?, ?)',
                 # (prompt, n, size, quality, data, style, revised_prompt))

@@ -5,7 +5,6 @@ import webbrowser
 import requests
 
 # Get the absolute path of the current script file
-
 script_path = os.path.abspath(__file__)
 
 # Get the root directory by going up one level from the script directory
@@ -25,7 +24,9 @@ from qtpy.QtWidgets import QMainWindow, QToolBar, QHBoxLayout, QDialog, QLineEdi
     QComboBox, QSizePolicy, QStackedWidget, QMenu, QSystemTrayIcon, \
     QMessageBox, QCheckBox, QAction
 from qtpy.QtCore import Qt, QCoreApplication, QSettings
+from qtpy.QtSql import QSqlDatabase
 
+from pyqt_openai.models import SettingsParamsContainer
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.aboutDialog import AboutDialog
 from pyqt_openai.customizeDialog import CustomizeDialog
@@ -33,10 +34,14 @@ from pyqt_openai.widgets.button import Button
 from pyqt_openai.dalle_widget.dallEWidget import DallEWidget
 from pyqt_openai.openAiChatBotWidget import OpenAIChatBotWidget
 from pyqt_openai.replicate_widget.replicateWidget import ReplicateWidget
+from pyqt_openai.settingsDialog import SettingsDialog
+from pyqt_openai.util.script import get_db_filename
+from pyqt_openai.doNotAskAgainDialog import DoNotAskAgainDialog
 
 os.environ['OPENAI_API_KEY'] = ''
 
 from pyqt_openai.pyqt_openai_data import OPENAI_STRUCT, LLAMAINDEX_WRAPPER
+from pyqt_openai.constants import PAYPAL_URL, BUYMEACOFFEE_URL
 
 # HighDPI support
 # qt version should be above 5.14
@@ -57,12 +62,8 @@ class MainWindow(QMainWindow):
 
     def __initVal(self):
         self.__settings_struct = QSettings('pyqt_openai.ini', QSettings.Format.IniFormat)
-        self.__lang = None
-        if not self.__settings_struct.contains('lang'):
-            self.__settings_struct.setValue('lang', LangClass.lang_changed())
-        else:
-            self.__lang = self.__settings_struct.value('lang', type=str)
-        self.__lang = LangClass.lang_changed(self.__lang)
+        self.__settingsParamContainer = SettingsParamsContainer()
+        self.__initSettings(self.__settingsParamContainer)
 
     def __initUi(self):
         self.setWindowTitle(LangClass.TRANSLATIONS['PyQt OpenAI Chatbot'])
@@ -95,13 +96,20 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.__mainWidget)
         self.resize(1024, 768)
 
+        self.__refreshColumns()
+
     def __setActions(self):
+        self.__langAction = QAction()
+
         # menu action
         self.__exitAction = QAction(LangClass.TRANSLATIONS['Exit'], self)
         self.__exitAction.triggered.connect(self.__beforeClose)
 
         self.__aboutAction = QAction(LangClass.TRANSLATIONS['About...'], self)
         self.__aboutAction.triggered.connect(self.__showAboutDialog)
+
+        self.__paypalAction = QAction('Paypal', self)
+        self.__paypalAction.triggered.connect(self.__paypal)
 
         self.__buyMeCoffeeAction = QAction('Buy me a coffee!', self)
         self.__buyMeCoffeeAction.triggered.connect(self.__buyMeCoffee)
@@ -112,6 +120,7 @@ class MainWindow(QMainWindow):
         self.__chooseAiCmbBox.addItems([LangClass.TRANSLATIONS['Chat'], LangClass.TRANSLATIONS['Image'], 'Replicate'])
         self.__chooseAiCmbBox.setSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.MinimumExpanding)
         self.__chooseAiCmbBox.currentIndexChanged.connect(self.__aiTypeChanged)
+        self.__chooseAiCmbBox.setMaximumWidth(100)
         self.__chooseAiAction.setDefaultWidget(self.__chooseAiCmbBox)
 
         self.__stackAction = QWidgetAction(self)
@@ -176,13 +185,8 @@ class MainWindow(QMainWindow):
         self.__apiAction = QWidgetAction(self)
         self.__apiAction.setDefaultWidget(apiWidget)
 
-        self.__langAction = QWidgetAction(self)
-        self.__langCmbBox = QComboBox()
-        self.__langCmbBox.addItems(list(LangClass.LANGUAGE_DICT.keys()))
-        self.__langCmbBox.setCurrentText(self.__lang)
-        self.__langCmbBox.setSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.MinimumExpanding)
-        self.__langCmbBox.currentTextChanged.connect(self.__lang_changed)
-        self.__langAction.setDefaultWidget(self.__langCmbBox)
+        self.__settingsAction = QAction('Settings', self)
+        self.__settingsAction.triggered.connect(self.__showSettingsDialog)
 
     def __lang_changed(self, lang):
         msg_box = QMessageBox()
@@ -191,7 +195,6 @@ class MainWindow(QMainWindow):
         msg_box.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
         msg_box.setDefaultButton(QMessageBox.StandardButton.Yes)
 
-        # 메시지 상자 표시 및 사용자 입력 처리
         result = msg_box.exec()
 
         if result == QMessageBox.StandardButton.Yes:
@@ -202,16 +205,13 @@ class MainWindow(QMainWindow):
             args = [sys.executable, "main.py"]
             # Call os.execv() to execute the new process
             os.execv(sys.executable, args)
-        else:
-            self.__langCmbBox.currentTextChanged.disconnect(self.__lang_changed)
-            self.__langCmbBox.setCurrentText(self.__lang)
-            self.__langCmbBox.currentTextChanged.connect(self.__lang_changed)
 
     def __setMenuBar(self):
         menubar = self.menuBar()
 
         # create the "File" menu
         fileMenu = QMenu(LangClass.TRANSLATIONS['File'], self)
+        fileMenu.addAction(self.__settingsAction)
         fileMenu.addAction(self.__exitAction)
         menubar.addMenu(fileMenu)
 
@@ -220,7 +220,12 @@ class MainWindow(QMainWindow):
         menubar.addMenu(helpMenu)
 
         helpMenu.addAction(self.__aboutAction)
-        helpMenu.addAction(self.__buyMeCoffeeAction)
+
+        donateMenu = QMenu('Donate', self)
+        donateMenu.addAction(self.__paypalAction)
+        donateMenu.addAction(self.__buyMeCoffeeAction)
+
+        menubar.addMenu(donateMenu)
 
     def __setTrayMenu(self):
         # background app
@@ -246,30 +251,23 @@ class MainWindow(QMainWindow):
             self.show()
 
     def __setToolBar(self):
-        aiTypeToolBar = QToolBar()
-        aiTypeToolBar.setMovable(False)
-        aiTypeToolBar.addAction(self.__chooseAiAction)
+        self.__toolbar = QToolBar()
+        lay = self.__toolbar.layout()
+        self.__toolbar.addAction(self.__chooseAiAction)
+        self.__toolbar.addAction(self.__stackAction)
+        self.__toolbar.addAction(self.__customizeAction)
+        self.__toolbar.addAction(self.__transparentAction)
+        self.__toolbar.addAction(self.__showAiToolBarAction)
+        self.__toolbar.addAction(self.__apiAction)
+        self.__toolbar.setLayout(lay)
+        self.__toolbar.setMovable(False)
 
-        langToolBar = QToolBar()
-        langToolBar.setMovable(False)
-        langToolBar.addAction(self.__langAction)
-
-        windowToolBar = QToolBar()
-        lay = windowToolBar.layout()
-        windowToolBar.addAction(self.__stackAction)
-        windowToolBar.addAction(self.__customizeAction)
-        windowToolBar.addAction(self.__transparentAction)
-        windowToolBar.addAction(self.__showAiToolBarAction)
-        windowToolBar.addAction(self.__apiAction)
-        windowToolBar.setLayout(lay)
-        windowToolBar.setMovable(False)
-
-        self.addToolBar(aiTypeToolBar)
-        self.addToolBar(langToolBar)
-        self.addToolBar(windowToolBar)
+        self.addToolBar(self.__toolbar)
 
         # QToolbar's layout can't be set spacing with lay.setSpacing so i've just did this instead
-        windowToolBar.setStyleSheet('QToolBar { spacing: 2px; }')
+        self.__toolbar.setStyleSheet('QToolBar { spacing: 2px; }')
+
+        self.__toolbar.setVisible(self.__settingsParamContainer.show_toolbar)
 
     def __setApiKeyAndClient(self, api_key):
         # for subprocess (mostly)
@@ -320,8 +318,11 @@ class MainWindow(QMainWindow):
         aboutDialog = AboutDialog()
         aboutDialog.exec()
 
+    def __paypal(self):
+        webbrowser.open(PAYPAL_URL)
+
     def __buyMeCoffee(self):
-        webbrowser.open('https://www.buymeacoffee.com/yjg30737')
+        webbrowser.open(BUYMEACOFFEE_URL)
 
     def __stackToggle(self, f):
         if f:
@@ -345,23 +346,63 @@ class MainWindow(QMainWindow):
     def __aiTypeChanged(self, i):
         self.__mainWidget.setCurrentIndex(i)
 
+    def __initSettings(self, container):
+        self.__settingsParamContainer = container
+        for k, v in container.get_items():
+            if not self.__settings_struct.contains(k):
+                self.__settings_struct.setValue(k, v)
+            else:
+                setattr(container, k, self.__settings_struct.value(k, type=type(v)))
+        self.__lang = LangClass.lang_changed(self.__settingsParamContainer.lang)
+
+    def __refreshSettings(self, container):
+        self.__settingsParamContainer = container
+        # If db name is changed
+        if self.__settingsParamContainer.db != self.__settings_struct.value('db'):
+            QMessageBox.information(self, 'Info', "The name of the reference target database has been changed. The changes will take effect after a restart.")
+        # If show_ai_toolbar is changed
+        if self.__settingsParamContainer.show_toolbar != self.__settings_struct.value('show_toolbar'):
+            self.__toolbar.setVisible(self.__settingsParamContainer.show_toolbar)
+        for k, v in container.get_items():
+            self.__settings_struct.setValue(k, v)
+        # If language is changed
+        if self.__settingsParamContainer.lang != self.__lang:
+            self.__lang = LangClass.lang_changed(self.__settingsParamContainer.lang)
+            self.__lang_changed(self.__settingsParamContainer.lang)
+        self.__refreshColumns()
+
+    def __refreshColumns(self):
+        self.__openAiChatBotWidget.setColumns(self.__settingsParamContainer.chat_column_to_show)
+        self.__dallEWidget.setColumns(self.__settingsParamContainer.image_column_to_show)
+        self.__replicateWidget.setColumns(self.__settingsParamContainer.image_column_to_show)
+
+    def __showSettingsDialog(self):
+        dialog = SettingsDialog(self.__settingsParamContainer)
+        reply = dialog.exec()
+        if reply == QDialog.DialogCode.Accepted:
+            self.__refreshSettings(dialog.getSettingsParam())
+
+    def __doNotAskAgainChanged(self, value):
+        self.__settingsParamContainer.do_not_ask_again = value
+        self.__refreshSettings(self.__settingsParamContainer)
+
     def __beforeClose(self):
-        message = LangClass.TRANSLATIONS['The window will be closed. Would you like to continue running this app in the background?']
-        closeMessageBox = QMessageBox(self)
-        closeMessageBox.setWindowTitle(LangClass.TRANSLATIONS['Wait!'])
-        closeMessageBox.setText(message)
-        closeMessageBox.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No | QMessageBox.StandardButton.Cancel)
-        reply = closeMessageBox.exec()
-        # Cancel
-        if reply == QMessageBox.StandardButton.Cancel:
-            return True
+        if self.__settingsParamContainer.do_not_ask_again:
+            app = QApplication.instance()
+            app.quit()
         else:
-            # Yes
-            if reply == QMessageBox.StandardButton.Yes:
-                self.close()
-            # No
-            elif reply == QMessageBox.StandardButton.No:
-                app.quit()
+            # Show a message box to confirm the exit or cancel or running in the background
+            dialog = DoNotAskAgainDialog(self.__settingsParamContainer.do_not_ask_again)
+            dialog.doNotAskAgainChanged.connect(self.__doNotAskAgainChanged)
+            reply = dialog.exec()
+            if dialog.isCancel():
+                return True
+            else:
+                if reply == QDialog.DialogCode.Accepted:
+                    app = QApplication.instance()
+                    app.quit()
+                elif reply == QDialog.DialogCode.Rejected:
+                    self.close()
 
     def closeEvent(self, e):
         f = self.__beforeClose()
@@ -371,12 +412,24 @@ class MainWindow(QMainWindow):
             return super().closeEvent(e)
 
 
+# Application
+class App(QApplication):
+    def __init__(self, *args):
+        super().__init__(*args)
+        self.setQuitOnLastWindowClosed(False)
+        self.__initQSqlDb()
+
+    def __initQSqlDb(self):
+        # Set up the database and table model (you'll need to configure this part based on your database)
+        self.__imageDb = QSqlDatabase.addDatabase('QSQLITE')  # Replace with your database type
+        self.__imageDb.setDatabaseName(get_db_filename())  # Replace with your database name
+        self.__imageDb.open()
+
 
 if __name__ == "__main__":
     import sys
 
-    app = QApplication(sys.argv)
-    app.setQuitOnLastWindowClosed(False)
+    app = App(sys.argv)
     w = MainWindow()
     w.show()
     sys.exit(app.exec())

@@ -9,6 +9,7 @@ from qtpy.QtWidgets import QHBoxLayout, QWidget, QSizePolicy, QVBoxLayout, QFram
 from pyqt_openai.chatNavWidget import ChatNavWidget
 from pyqt_openai.chat_widget.chatWidget import ChatWidget
 from pyqt_openai.chat_widget.prompt import Prompt
+from pyqt_openai.models import ChatThreadContainer
 from pyqt_openai.openAiThread import OpenAIThread, LlamaOpenAIThread
 from pyqt_openai.prompt_gen_widget.promptGeneratorWidget import PromptGeneratorWidget
 from pyqt_openai.pyqt_openai_data import DB, get_argument, LLAMAINDEX_WRAPPER
@@ -29,9 +30,10 @@ class OpenAIChatBotWidget(QWidget):
     def __initVal(self):
         # ini
         self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.Format.IniFormat)
+        self.__notify_finish = self.__settings_ini.value('notify_finish', type=bool)
 
     def __initUi(self):
-        self.__chatNavWidget = ChatNavWidget(['id', 'name', 'update_dt', 'insert_dt'], 'conv_tb')
+        self.__chatNavWidget = ChatNavWidget(ChatThreadContainer.get_keys(), 'conv_tb')
         self.__chatWidget = ChatWidget()
         self.__browser = self.__chatWidget.getChatBrowser()
 
@@ -59,7 +61,7 @@ class OpenAIChatBotWidget(QWidget):
 
         self.__settingBtn = Button()
         self.__settingBtn.setStyleAndIcon('ico/setting.svg')
-        self.__settingBtn.setToolTip('Settings')
+        self.__settingBtn.setToolTip('Chat Settings')
         self.__settingBtn.setCheckable(True)
         self.__settingBtn.setChecked(True)
         self.__settingBtn.toggled.connect(self.__aiPlaygroundWidget.setVisible)
@@ -285,9 +287,10 @@ class OpenAIChatBotWidget(QWidget):
         self.__toggleWidgetWhileChatting(True, continue_f)
         self.__lineEdit.setFocus()
         if not self.isVisible():
-            self.__notifierWidget = NotifierWidget(informative_text=LangClass.TRANSLATIONS['Response 👌'], detailed_text = self.__browser.getLastResponse())
-            self.__notifierWidget.show()
-            self.__notifierWidget.doubleClicked.connect(self.window().show)
+            if self.__notify_finish:
+                self.__notifierWidget = NotifierWidget(informative_text=LangClass.TRANSLATIONS['Response 👌'], detailed_text = self.__browser.getLastResponse())
+                self.__notifierWidget.show()
+                self.__notifierWidget.doubleClicked.connect(self.window().show)
 
     def __showChat(self, id, title):
         conv_data = DB.selectCertainConv(id)
@@ -339,8 +342,10 @@ class OpenAIChatBotWidget(QWidget):
                 compressed_file_type = file_data[1].split(' ')[0].lower()
                 ext_dict = {'txt': {'ext':'.txt', 'func':conv_unit_to_txt}, 'html': {'ext':'.html', 'func':conv_unit_to_html}}
                 for id in ids:
-                    title = DB.selectConv(id)[1]
-                    txt_filename = f'{title}{ext_dict[compressed_file_type]["ext"]}'
+                    row_info = DB.selectConv(id)
+                    # Limit the title length to file name length
+                    title = row_info['name'][:32]
+                    txt_filename = f'{title}_{id}{ext_dict[compressed_file_type]["ext"]}'
                     txt_content = ext_dict[compressed_file_type]['func'](DB, id, title)
                     add_file_to_zip(txt_content, txt_filename, os.path.splitext(filename)[0] + '.zip')
             elif ext == '.db':
@@ -350,3 +355,6 @@ class OpenAIChatBotWidget(QWidget):
     def __updateConvUnit(self, id, user_f, conv_unit=None, info=None):
         if conv_unit:
             DB.insertConvUnit(id, user_f, conv_unit, info=info)
+
+    def setColumns(self, columns):
+        self.__chatNavWidget.setColumns(columns)

@@ -1,6 +1,6 @@
 import os
 
-from qtpy.QtCore import Qt
+from qtpy.QtCore import Qt, QSettings
 from qtpy.QtWidgets import QHBoxLayout, QVBoxLayout, QFrame, QWidget, QSplitter
 
 from pyqt_openai.dalle_widget.dallEControlWidget import DallEControlWidget
@@ -18,7 +18,13 @@ class DallEWidget(QWidget):
 
     def __init__(self):
         super().__init__()
+        self.__initVal()
         self.__initUi()
+
+    def __initVal(self):
+        # ini
+        self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.Format.IniFormat)
+        self.__notify_finish = self.__settings_ini.value('notify_finish', type=bool)
 
     def __initUi(self):
         self.__imageNavWidget = ImageNavWidget(ImagePromptContainer.get_keys(), 'image_tb')
@@ -111,8 +117,16 @@ class DallEWidget(QWidget):
 
     def __imageGenerationAllComplete(self):
         if not self.isVisible():
-            self.__notifierWidget = NotifierWidget(informative_text=LangClass.TRANSLATIONS['Response 👌'], detailed_text = 'Image Generation complete.')
-            self.__notifierWidget.show()
-            self.__notifierWidget.doubleClicked.connect(self.window().show)
+            if self.__settings_ini.value('notify_finish', type=bool):
+                self.__notifierWidget = NotifierWidget(informative_text=LangClass.TRANSLATIONS['Response 👌'], detailed_text = 'Image Generation complete.')
+                self.__notifierWidget.show()
+                self.__notifierWidget.doubleClicked.connect(self.window().show)
 
-        open_directory(self.__rightSideBarWidget.getDirectory())
+                open_directory(self.__rightSideBarWidget.getDirectory())
+
+    def showEvent(self, event):
+        self.__imageNavWidget.refresh()
+        super().showEvent(event)
+
+    def setColumns(self, columns):
+        self.__imageNavWidget.setColumns(columns)

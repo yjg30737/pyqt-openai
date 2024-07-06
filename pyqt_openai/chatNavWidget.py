@@ -1,10 +1,14 @@
+from PyQt5.QtWidgets import QDialog
 from qtpy.QtCore import Signal, QSortFilterProxyModel, Qt
-from qtpy.QtSql import QSqlTableModel, QSqlDatabase, QSqlQuery
-from qtpy.QtWidgets import QApplication, QWidget, QVBoxLayout, QMessageBox, QStyledItemDelegate, QTableView, QAbstractItemView, \
+from qtpy.QtSql import QSqlTableModel, QSqlQuery
+from qtpy.QtWidgets import QApplication, QWidget, QVBoxLayout, QMessageBox, QStyledItemDelegate, QTableView, \
+    QAbstractItemView, \
     QHBoxLayout, \
     QLabel, QSpacerItem, QSizePolicy, QFileDialog, QComboBox
 
 # for search feature
+from pyqt_openai.exportDialog import ExportDialog
+from pyqt_openai.models import ChatThreadContainer
 from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.widgets.button import Button
 from pyqt_openai.widgets.searchBar import SearchBar
@@ -65,11 +69,6 @@ class ChatNavWidget(QWidget):
         self.__table_nm = table_nm
 
     def __initUi(self):
-        # Set up the database and table model (you'll need to configure this part based on your database)
-        self.__imageDb = QSqlDatabase.addDatabase('QSQLITE')  # Replace with your database type
-        self.__imageDb.setDatabaseName('conv.db')  # Replace with your database name
-        self.__imageDb.open()
-
         imageGenerationHistoryLbl = QLabel()
         imageGenerationHistoryLbl.setText('History')
 
@@ -166,6 +165,7 @@ class ChatNavWidget(QWidget):
 
         # set selection/resize policy
         self.__tableView.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+        self.__tableView.resizeColumnsToContents()
         self.__tableView.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
 
         self.__tableView.clicked.connect(self.__clicked)
@@ -192,7 +192,13 @@ class ChatNavWidget(QWidget):
             self.onImport.emit(filename)
 
     def __export(self):
-        self.onExport.emit(self.__getSelectedIds())
+        columns = ChatThreadContainer.get_keys()
+        data = DB.selectAllConv()
+        sort_by = 'update_dt'
+        dialog = ExportDialog(columns, data, sort_by=sort_by)
+        reply = dialog.exec()
+        if reply == QDialog.Accepted:
+            self.onExport.emit(dialog.getSelectedIds())
 
     def __updated(self, i, r):
         # send updated signal
@@ -254,11 +260,9 @@ class ChatNavWidget(QWidget):
     def isCurrentConvExists(self):
         return self.__model.rowCount() > 0 and self.__tableView.currentIndex()
 
-
-if __name__ == "__main__":
-    import sys
-
-    app = QApplication(sys.argv)
-    w = ChatNavWidget(['id', 'name', 'update_dt', 'insert_dt'], 'conv_tb')
-    w.show()
-    sys.exit(app.exec())
+    def setColumns(self, columns):
+        self.__columns = columns
+        self.__model.clear()
+        self.__model.setTable(self.__table_nm)
+        self.__model.setQuery(QSqlQuery(f"SELECT {','.join(self.__columns)} FROM {self.__table_nm}"))
+        self.__model.select()

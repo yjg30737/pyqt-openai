@@ -1,5 +1,5 @@
 from qtpy.QtCore import Signal, QSortFilterProxyModel, Qt, QByteArray
-from qtpy.QtSql import QSqlTableModel, QSqlDatabase, QSqlQuery
+from qtpy.QtSql import QSqlTableModel, QSqlQuery
 from qtpy.QtWidgets import QWidget, QVBoxLayout, QStyledItemDelegate, QTableView, QAbstractItemView, QHBoxLayout, \
     QMessageBox, QLabel
 
@@ -57,11 +57,6 @@ class ImageNavWidget(QWidget):
         self.__table_nm = table_nm
 
     def __initUi(self):
-        # Set up the database and table model (you'll need to configure this part based on your database)
-        self.__imageDb = QSqlDatabase.addDatabase('QSQLITE')  # Replace with your database type
-        self.__imageDb.setDatabaseName('conv.db')  # Replace with your database name
-        self.__imageDb.open()
-
         imageGenerationHistoryLbl = QLabel()
         imageGenerationHistoryLbl.setText('History')
 
@@ -127,6 +122,7 @@ class ImageNavWidget(QWidget):
         self.__tableView.resizeColumnsToContents()
         self.__tableView.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
 
+        self.__tableView.activated.connect(self.__clicked)
         self.__tableView.clicked.connect(self.__clicked)
 
         lay = QVBoxLayout()
@@ -177,3 +173,9 @@ class ImageNavWidget(QWidget):
         DB.removeImage()
         self.__model.select()
 
+    def setColumns(self, columns):
+        self.__columns = columns
+        self.__model.clear()
+        self.__model.setTable(self.__table_nm)
+        self.__model.setQuery(QSqlQuery(f"SELECT {','.join(self.__columns)} FROM {self.__table_nm}"))
+        self.__model.select()
