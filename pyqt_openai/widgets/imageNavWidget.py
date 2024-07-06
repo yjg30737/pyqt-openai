@@ -172,3 +172,9 @@ class ImageNavWidget(QWidget):
         DB.removeImage()
         self.__model.select()
 
+    def setColumns(self, columns):
+        self.__columns = columns
+        self.__model.clear()
+        self.__model.setTable(self.__table_nm)
+        self.__model.setQuery(QSqlQuery(f"SELECT {','.join(self.__columns)} FROM {self.__table_nm}"))
+        self.__model.select()

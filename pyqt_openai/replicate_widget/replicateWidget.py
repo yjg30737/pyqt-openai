@@ -142,3 +142,6 @@ class ReplicateWidget(QWidget):
     def showEvent(self, event):
         self.__imageNavWidget.refresh()
         super().showEvent(event)
+
+    def setColumns(self, columns):
+        self.__imageNavWidget.setColumns(columns)

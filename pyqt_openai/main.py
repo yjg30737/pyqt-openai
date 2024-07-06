@@ -5,7 +5,6 @@ import webbrowser
 import requests
 
 # Get the absolute path of the current script file
-
 script_path = os.path.abspath(__file__)
 
 # Get the root directory by going up one level from the script directory
@@ -42,6 +41,7 @@ from pyqt_openai.doNotAskAgainDialog import DoNotAskAgainDialog
 os.environ['OPENAI_API_KEY'] = ''
 
 from pyqt_openai.pyqt_openai_data import OPENAI_STRUCT, LLAMAINDEX_WRAPPER
+from pyqt_openai.constants import PAYPAL_URL, BUYMEACOFFEE_URL
 
 # HighDPI support
 # qt version should be above 5.14
@@ -107,6 +107,9 @@ class MainWindow(QMainWindow):
 
         self.__aboutAction = QAction(LangClass.TRANSLATIONS['About...'], self)
         self.__aboutAction.triggered.connect(self.__showAboutDialog)
+
+        self.__paypalAction = QAction('Paypal', self)
+        self.__paypalAction.triggered.connect(self.__paypal)
 
         self.__buyMeCoffeeAction = QAction('Buy me a coffee!', self)
         self.__buyMeCoffeeAction.triggered.connect(self.__buyMeCoffee)
@@ -217,7 +220,12 @@ class MainWindow(QMainWindow):
         menubar.addMenu(helpMenu)
 
         helpMenu.addAction(self.__aboutAction)
-        helpMenu.addAction(self.__buyMeCoffeeAction)
+
+        donateMenu = QMenu('Donate', self)
+        donateMenu.addAction(self.__paypalAction)
+        donateMenu.addAction(self.__buyMeCoffeeAction)
+
+        menubar.addMenu(donateMenu)
 
     def __setTrayMenu(self):
         # background app
@@ -310,8 +318,11 @@ class MainWindow(QMainWindow):
         aboutDialog = AboutDialog()
         aboutDialog.exec()
 
+    def __paypal(self):
+        webbrowser.open(PAYPAL_URL)
+
     def __buyMeCoffee(self):
-        webbrowser.open('https://www.buymeacoffee.com/yjg30737')
+        webbrowser.open(BUYMEACOFFEE_URL)
 
     def __stackToggle(self, f):
         if f:
@@ -362,8 +373,8 @@ class MainWindow(QMainWindow):
 
     def __refreshColumns(self):
         self.__openAiChatBotWidget.setColumns(self.__settingsParamContainer.chat_column_to_show)
-        # self.__dallEWidget.setColumns()
-        # self.__replicateWidget.setColumns()
+        self.__dallEWidget.setColumns(self.__settingsParamContainer.image_column_to_show)
+        self.__replicateWidget.setColumns(self.__settingsParamContainer.image_column_to_show)
 
     def __showSettingsDialog(self):
         dialog = SettingsDialog(self.__settingsParamContainer)
