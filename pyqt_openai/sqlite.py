@@ -599,7 +599,7 @@ class SqliteDatabase:
                         column_type = 'INT'
                     elif column == 'data':
                         column_type = 'BLOB'
-                    elif column in ['model', 'size', 'quality', 'style']:
+                    elif column in ['model', 'quality', 'style']:
                         column_type = 'VARCHAR(255)'
                     self.__c.execute(f'ALTER TABLE {self.__image_tb_nm} ADD COLUMN {column} {column_type}')
 
@@ -610,7 +610,6 @@ class SqliteDatabase:
                               model VARCHAR(255),
                               prompt TEXT,
                               n INT,
-                              size VARCHAR(255),
                               quality VARCHAR(255),
                               data BLOB,
                               style VARCHAR(255),

@@ -1,4 +1,5 @@
-from dataclasses import dataclass, fields
+from typing import List
+from dataclasses import dataclass, fields, field
 
 from pyqt_openai.res.language_dict import LangClass
 
@@ -64,29 +65,37 @@ class Container:
         return query
 
 @dataclass
-class SettingsParamsContainer(Container):
-    lang: str = LangClass.lang_changed()
-    db: str = 'conv'
-    do_not_ask_again: bool = False
-    notify_finish: bool = False
-    show: bool = False
+class ChatThreadContainer(Container):
+    id: str = "",
+    name: str = "",
+    insert_dt: str = "",
+    update_dt: str = ""
 
 @dataclass
 class ImagePromptContainer(Container):
     id: str = ""
     model: str = ""
+    width: str = ""
+    height: str = ""
     prompt: str = ""
+    negative_prompt: str = ""
     n: str = ""
-    size: str = ""
     quality: str = ""
     data: str = ""
     style: str = ""
     revised_prompt: str = ""
-    width: str = ""
-    height: str = ""
-    negative_prompt: str = ""
     update_dt: str = ""
     insert_dt: str = ""
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+
+@dataclass
+class SettingsParamsContainer(Container):
+    lang: str = LangClass.lang_changed()
+    db: str = 'conv'
+    do_not_ask_again: bool = False
+    notify_finish: bool = True
+    show_toolbar: bool = True
+    chat_column_to_show: List[str] = field(default_factory=ChatThreadContainer.get_keys)
+    image_column_to_show: List[str] = field(default_factory=ImagePromptContainer.get_keys)

@@ -5,7 +5,6 @@ import webbrowser
 import requests
 
 # Get the absolute path of the current script file
-
 script_path = os.path.abspath(__file__)
 
 # Get the root directory by going up one level from the script directory
@@ -27,7 +26,6 @@ from qtpy.QtWidgets import QMainWindow, QToolBar, QHBoxLayout, QDialog, QLineEdi
 from qtpy.QtCore import Qt, QCoreApplication, QSettings
 from qtpy.QtSql import QSqlDatabase
 
-
 from pyqt_openai.models import SettingsParamsContainer
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.aboutDialog import AboutDialog
@@ -38,11 +36,12 @@ from pyqt_openai.openAiChatBotWidget import OpenAIChatBotWidget
 from pyqt_openai.replicate_widget.replicateWidget import ReplicateWidget
 from pyqt_openai.settingsDialog import SettingsDialog
 from pyqt_openai.util.script import get_db_filename
-
+from pyqt_openai.doNotAskAgainDialog import DoNotAskAgainDialog
 
 os.environ['OPENAI_API_KEY'] = ''
 
 from pyqt_openai.pyqt_openai_data import OPENAI_STRUCT, LLAMAINDEX_WRAPPER
+from pyqt_openai.constants import PAYPAL_URL, BUYMEACOFFEE_URL
 
 # HighDPI support
 # qt version should be above 5.14
@@ -97,6 +96,8 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.__mainWidget)
         self.resize(1024, 768)
 
+        self.__refreshColumns()
+
     def __setActions(self):
         self.__langAction = QAction()
 
@@ -107,6 +108,9 @@ class MainWindow(QMainWindow):
         self.__aboutAction = QAction(LangClass.TRANSLATIONS['About...'], self)
         self.__aboutAction.triggered.connect(self.__showAboutDialog)
 
+        self.__paypalAction = QAction('Paypal', self)
+        self.__paypalAction.triggered.connect(self.__paypal)
+
         self.__buyMeCoffeeAction = QAction('Buy me a coffee!', self)
         self.__buyMeCoffeeAction.triggered.connect(self.__buyMeCoffee)
 
@@ -116,6 +120,7 @@ class MainWindow(QMainWindow):
         self.__chooseAiCmbBox.addItems([LangClass.TRANSLATIONS['Chat'], LangClass.TRANSLATIONS['Image'], 'Replicate'])
         self.__chooseAiCmbBox.setSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.MinimumExpanding)
         self.__chooseAiCmbBox.currentIndexChanged.connect(self.__aiTypeChanged)
+        self.__chooseAiCmbBox.setMaximumWidth(100)
         self.__chooseAiAction.setDefaultWidget(self.__chooseAiCmbBox)
 
         self.__stackAction = QWidgetAction(self)
@@ -215,7 +220,12 @@ class MainWindow(QMainWindow):
         menubar.addMenu(helpMenu)
 
         helpMenu.addAction(self.__aboutAction)
-        helpMenu.addAction(self.__buyMeCoffeeAction)
+
+        donateMenu = QMenu('Donate', self)
+        donateMenu.addAction(self.__paypalAction)
+        donateMenu.addAction(self.__buyMeCoffeeAction)
+
+        menubar.addMenu(donateMenu)
 
     def __setTrayMenu(self):
         # background app
@@ -241,25 +251,23 @@ class MainWindow(QMainWindow):
             self.show()
 
     def __setToolBar(self):
-        aiTypeToolBar = QToolBar()
-        aiTypeToolBar.setMovable(False)
-        aiTypeToolBar.addAction(self.__chooseAiAction)
+        self.__toolbar = QToolBar()
+        lay = self.__toolbar.layout()
+        self.__toolbar.addAction(self.__chooseAiAction)
+        self.__toolbar.addAction(self.__stackAction)
+        self.__toolbar.addAction(self.__customizeAction)
+        self.__toolbar.addAction(self.__transparentAction)
+        self.__toolbar.addAction(self.__showAiToolBarAction)
+        self.__toolbar.addAction(self.__apiAction)
+        self.__toolbar.setLayout(lay)
+        self.__toolbar.setMovable(False)
 
-        windowToolBar = QToolBar()
-        lay = windowToolBar.layout()
-        windowToolBar.addAction(self.__stackAction)
-        windowToolBar.addAction(self.__customizeAction)
-        windowToolBar.addAction(self.__transparentAction)
-        windowToolBar.addAction(self.__showAiToolBarAction)
-        windowToolBar.addAction(self.__apiAction)
-        windowToolBar.setLayout(lay)
-        windowToolBar.setMovable(False)
-
-        self.addToolBar(aiTypeToolBar)
-        self.addToolBar(windowToolBar)
+        self.addToolBar(self.__toolbar)
 
         # QToolbar's layout can't be set spacing with lay.setSpacing so i've just did this instead
-        windowToolBar.setStyleSheet('QToolBar { spacing: 2px; }')
+        self.__toolbar.setStyleSheet('QToolBar { spacing: 2px; }')
+
+        self.__toolbar.setVisible(self.__settingsParamContainer.show_toolbar)
 
     def __setApiKeyAndClient(self, api_key):
         # for subprocess (mostly)
@@ -310,8 +318,11 @@ class MainWindow(QMainWindow):
         aboutDialog = AboutDialog()
         aboutDialog.exec()
 
+    def __paypal(self):
+        webbrowser.open(PAYPAL_URL)
+
     def __buyMeCoffee(self):
-        webbrowser.open('https://www.buymeacoffee.com/yjg30737')
+        webbrowser.open(BUYMEACOFFEE_URL)
 
     def __stackToggle(self, f):
         if f:
@@ -348,13 +359,22 @@ class MainWindow(QMainWindow):
         self.__settingsParamContainer = container
         # If db name is changed
         if self.__settingsParamContainer.db != self.__settings_struct.value('db'):
-            QMessageBox.information(self, 'Info', 'The database name has been changed. It will be applied to the next run.')
+            QMessageBox.information(self, 'Info', "The name of the reference target database has been changed. The changes will take effect after a restart.")
+        # If show_ai_toolbar is changed
+        if self.__settingsParamContainer.show_toolbar != self.__settings_struct.value('show_toolbar'):
+            self.__toolbar.setVisible(self.__settingsParamContainer.show_toolbar)
         for k, v in container.get_items():
             self.__settings_struct.setValue(k, v)
         # If language is changed
         if self.__settingsParamContainer.lang != self.__lang:
             self.__lang = LangClass.lang_changed(self.__settingsParamContainer.lang)
             self.__lang_changed(self.__settingsParamContainer.lang)
+        self.__refreshColumns()
+
+    def __refreshColumns(self):
+        self.__openAiChatBotWidget.setColumns(self.__settingsParamContainer.chat_column_to_show)
+        self.__dallEWidget.setColumns(self.__settingsParamContainer.image_column_to_show)
+        self.__replicateWidget.setColumns(self.__settingsParamContainer.image_column_to_show)
 
     def __showSettingsDialog(self):
         dialog = SettingsDialog(self.__settingsParamContainer)
@@ -362,23 +382,27 @@ class MainWindow(QMainWindow):
         if reply == QDialog.DialogCode.Accepted:
             self.__refreshSettings(dialog.getSettingsParam())
 
+    def __doNotAskAgainChanged(self, value):
+        self.__settingsParamContainer.do_not_ask_again = value
+        self.__refreshSettings(self.__settingsParamContainer)
+
     def __beforeClose(self):
-        message = LangClass.TRANSLATIONS['The window will be closed. Would you like to continue running this app in the background?']
-        closeMessageBox = QMessageBox(self)
-        closeMessageBox.setWindowTitle(LangClass.TRANSLATIONS['Wait!'])
-        closeMessageBox.setText(message)
-        closeMessageBox.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No | QMessageBox.StandardButton.Cancel)
-        reply = closeMessageBox.exec()
-        # Cancel
-        if reply == QMessageBox.StandardButton.Cancel:
-            return True
+        if self.__settingsParamContainer.do_not_ask_again:
+            app = QApplication.instance()
+            app.quit()
         else:
-            # Yes
-            if reply == QMessageBox.StandardButton.Yes:
-                self.close()
-            # No
-            elif reply == QMessageBox.StandardButton.No:
-                app.quit()
+            # Show a message box to confirm the exit or cancel or running in the background
+            dialog = DoNotAskAgainDialog(self.__settingsParamContainer.do_not_ask_again)
+            dialog.doNotAskAgainChanged.connect(self.__doNotAskAgainChanged)
+            reply = dialog.exec()
+            if dialog.isCancel():
+                return True
+            else:
+                if reply == QDialog.DialogCode.Accepted:
+                    app = QApplication.instance()
+                    app.quit()
+                elif reply == QDialog.DialogCode.Rejected:
+                    self.close()
 
     def closeEvent(self, e):
         f = self.__beforeClose()

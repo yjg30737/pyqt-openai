@@ -130,7 +130,5 @@ def download_image_as_base64(url: str):
 
 def get_db_filename():
     settings = QSettings("pyqt_openai.ini", QSettings.Format.IniFormat)
-    print(settings)
     db_path = settings.value("db", "conv") + ".db"
-    print(db_path)
     return db_path
