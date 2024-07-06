@@ -96,6 +96,8 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.__mainWidget)
         self.resize(1024, 768)
 
+        self.__refreshColumns()
+
     def __setActions(self):
         self.__langAction = QAction()
 
@@ -356,6 +358,12 @@ class MainWindow(QMainWindow):
         if self.__settingsParamContainer.lang != self.__lang:
             self.__lang = LangClass.lang_changed(self.__settingsParamContainer.lang)
             self.__lang_changed(self.__settingsParamContainer.lang)
+        self.__refreshColumns()
+
+    def __refreshColumns(self):
+        self.__openAiChatBotWidget.setColumns(self.__settingsParamContainer.chat_column_to_show)
+        # self.__dallEWidget.setColumns()
+        # self.__replicateWidget.setColumns()
 
     def __showSettingsDialog(self):
         dialog = SettingsDialog(self.__settingsParamContainer)

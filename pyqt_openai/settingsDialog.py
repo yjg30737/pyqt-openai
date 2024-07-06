@@ -36,6 +36,8 @@ class SettingsDialog(QDialog):
         self.__do_not_ask_again = args.do_not_ask_again
         self.__notify_finish = args.notify_finish
         self.__show_toolbar = args.show_toolbar
+        self.__chat_column_to_show = args.chat_column_to_show
+        self.__image_column_to_show = args.image_column_to_show
 
     def __initUi(self):
         self.setWindowTitle("Settings")
@@ -93,29 +95,31 @@ class SettingsDialog(QDialog):
         generalGrpBox.setLayout(lay)
 
         chatColAllCheckBox = QCheckBox('Check all')
-        chatColCheckBoxListWidget = CheckBoxListWidget()
-        chatColCheckBoxListWidget.addItems(ChatThreadContainer.get_keys())
+        self.__chatColCheckBoxListWidget = CheckBoxListWidget()
+        for k in ChatThreadContainer.get_keys():
+            self.__chatColCheckBoxListWidget.addItem(k, checked=k in self.__chat_column_to_show)
 
-        chatColAllCheckBox.stateChanged.connect(chatColCheckBoxListWidget.toggleState)
+        chatColAllCheckBox.stateChanged.connect(self.__chatColCheckBoxListWidget.toggleState)
 
         lay = QVBoxLayout()
         lay.addWidget(QLabel('Select the columns you want to show in the chat list.'))
         lay.addWidget(chatColAllCheckBox)
-        lay.addWidget(chatColCheckBoxListWidget)
+        lay.addWidget(self.__chatColCheckBoxListWidget)
 
         chatColWidget = QWidget()
         chatColWidget.setLayout(lay)
 
         imageColAllCheckBox = QCheckBox('Check all')
-        imageColCheckBoxListWidget = CheckBoxListWidget()
-        imageColCheckBoxListWidget.addItems(ImagePromptContainer.get_keys())
+        self.__imageColCheckBoxListWidget = CheckBoxListWidget()
+        for k in ImagePromptContainer.get_keys():
+            self.__imageColCheckBoxListWidget.addItem(k, checked=k in self.__image_column_to_show)
 
-        imageColAllCheckBox.stateChanged.connect(imageColCheckBoxListWidget.toggleState)
+        imageColAllCheckBox.stateChanged.connect(self.__imageColCheckBoxListWidget.toggleState)
 
         lay = QVBoxLayout()
         lay.addWidget(QLabel('Select the columns you want to show in the image list.'))
         lay.addWidget(imageColAllCheckBox)
-        lay.addWidget(imageColCheckBoxListWidget)
+        lay.addWidget(self.__imageColCheckBoxListWidget)
 
         imageColWidget = QWidget()
         imageColWidget.setLayout(lay)
@@ -156,5 +160,7 @@ class SettingsDialog(QDialog):
             db=self.__dbLineEdit.text(),
             do_not_ask_again=self.__doNotAskAgainCheckBox.isChecked(),
             notify_finish=self.__notifyFinishCheckBox.isChecked(),
-            show_toolbar=self.__showToolbarCheckBox.isChecked()
+            show_toolbar=self.__showToolbarCheckBox.isChecked(),
+            chat_column_to_show=self.__chatColCheckBoxListWidget.getCheckedItemsText(),
+            image_column_to_show=self.__imageColCheckBoxListWidget.getCheckedItemsText()
         )

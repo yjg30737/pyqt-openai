@@ -260,11 +260,9 @@ class ChatNavWidget(QWidget):
     def isCurrentConvExists(self):
         return self.__model.rowCount() > 0 and self.__tableView.currentIndex()
 
-
-if __name__ == "__main__":
-    import sys
-
-    app = QApplication(sys.argv)
-    w = ChatNavWidget(['id', 'name', 'update_dt', 'insert_dt'], 'conv_tb')
-    w.show()
-    sys.exit(app.exec())
+    def setColumns(self, columns):
+        self.__columns = columns
+        self.__model.clear()
+        self.__model.setTable(self.__table_nm)
+        self.__model.setQuery(QSqlQuery(f"SELECT {','.join(self.__columns)} FROM {self.__table_nm}"))
+        self.__model.select()

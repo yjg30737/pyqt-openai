@@ -14,11 +14,15 @@ class CheckBoxListWidget(QListWidget):
         state = item.checkState()
         self.checkedSignal.emit(r_idx, state)
 
-    def addItems(self, items) -> None:
+    def addItems(self, items, checked=False) -> None:
+        """
+        Add items to the list widget.
+        If checked is True, the items will be checked.
+        """
         for item in items:
-            self.addItem(item)
+            self.addItem(item, checked=checked)
 
-    def addItem(self, item, checked = False) -> None:
+    def addItem(self, item, checked=False) -> None:
         if isinstance(item, str):
             item = QListWidgetItem(item)
         item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
@@ -60,3 +64,12 @@ class CheckBoxListWidget(QListWidget):
         flag_lst = reversed(flag_lst)
         for i in flag_lst:
             self.takeItem(i)
+
+    def getCheckedItems(self):
+        return [self.item(i) for i in self.getCheckedRows()]
+
+    def getCheckedItemsText(self, empty_str='', include_empty=True):
+        result = [item.text() if item else empty_str for item in self.getCheckedItems()]
+        if include_empty:
+            return result
+        return [text for text in result if text]

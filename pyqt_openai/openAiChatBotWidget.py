@@ -9,6 +9,7 @@ from qtpy.QtWidgets import QHBoxLayout, QWidget, QSizePolicy, QVBoxLayout, QFram
 from pyqt_openai.chatNavWidget import ChatNavWidget
 from pyqt_openai.chat_widget.chatWidget import ChatWidget
 from pyqt_openai.chat_widget.prompt import Prompt
+from pyqt_openai.models import ChatThreadContainer
 from pyqt_openai.openAiThread import OpenAIThread, LlamaOpenAIThread
 from pyqt_openai.prompt_gen_widget.promptGeneratorWidget import PromptGeneratorWidget
 from pyqt_openai.pyqt_openai_data import DB, get_argument, LLAMAINDEX_WRAPPER
@@ -32,7 +33,7 @@ class OpenAIChatBotWidget(QWidget):
         self.__notify_finish = self.__settings_ini.value('notify_finish', type=bool)
 
     def __initUi(self):
-        self.__chatNavWidget = ChatNavWidget(['id', 'name', 'update_dt', 'insert_dt'], 'conv_tb')
+        self.__chatNavWidget = ChatNavWidget(ChatThreadContainer.get_keys(), 'conv_tb')
         self.__chatWidget = ChatWidget()
         self.__browser = self.__chatWidget.getChatBrowser()
 
@@ -354,3 +355,6 @@ class OpenAIChatBotWidget(QWidget):
     def __updateConvUnit(self, id, user_f, conv_unit=None, info=None):
         if conv_unit:
             DB.insertConvUnit(id, user_f, conv_unit, info=info)
+
+    def setColumns(self, columns):
+        self.__chatNavWidget.setColumns(columns)
