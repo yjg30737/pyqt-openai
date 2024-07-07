@@ -193,7 +193,7 @@ class ChatNavWidget(QWidget):
 
     def __export(self):
         columns = ChatThreadContainer.get_keys()
-        data = DB.selectAllConv()
+        data = DB.selectAllThread()
         sort_by = 'update_dt'
         dialog = ExportDialog(columns, data, sort_by=sort_by)
         reply = dialog.exec()
@@ -228,7 +228,7 @@ class ChatNavWidget(QWidget):
     def __delete(self):
         ids = self.__getSelectedIds()
         for _id in ids:
-            DB.deleteConv(_id)
+            DB.deleteThread(_id)
         self.__model.select()
         self.cleared.emit()
 
@@ -239,7 +239,7 @@ class ChatNavWidget(QWidget):
         # Before clearing, confirm the action
         reply = QMessageBox.question(self, 'Confirm', 'Are you sure to clear all data?', QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
         if reply == QMessageBox.StandardButton.Yes:
-            DB.deleteConv()
+            DB.deleteThread()
             self.__model.select()
             self.cleared.emit()
 
@@ -250,7 +250,7 @@ class ChatNavWidget(QWidget):
         # content
         elif self.__searchOptionCmbBox.currentText() == 'Content':
             if search_text:
-                convs = DB.selectAllContentOfConv(content_to_select=search_text)
+                convs = DB.selectAllContentOfThread(content_to_select=search_text)
                 ids = [_[0] for _ in convs]
                 self.__model.setQuery(QSqlQuery(f"SELECT {','.join(self.__columns)} FROM {self.__table_nm} "
                                                 f"WHERE id IN ({','.join(map(str, ids))})"))

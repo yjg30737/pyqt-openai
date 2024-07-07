@@ -72,6 +72,23 @@ class ChatThreadContainer(Container):
     update_dt: str = ""
 
 @dataclass
+class ChatMessageContainer(Container):
+    id: str = "",
+    thread_id: str = "",
+    role: str = "",
+    content: str = "",
+    insert_dt: str = "",
+    update_dt: str = "",
+    finish_reason: str = "",
+    model_name: str = "",
+    prompt_tokens: str = "",
+    completion_tokens: str = "",
+    total_tokens: str = ""
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+@dataclass
 class ImagePromptContainer(Container):
     id: str = ""
     model: str = ""

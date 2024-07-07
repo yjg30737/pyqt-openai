@@ -293,7 +293,7 @@ class OpenAIChatBotWidget(QWidget):
                 self.__notifierWidget.doubleClicked.connect(self.window().show)
 
     def __showChat(self, id, title):
-        conv_data = DB.selectCertainConv(id)
+        conv_data = DB.selectCertainThread(id)
         self.__chatWidget.showTitle(title)
         self.__browser.replaceConv(id, conv_data)
         self.__prompt.activateDuringGeneratingWidget(False)
@@ -307,15 +307,15 @@ class OpenAIChatBotWidget(QWidget):
 
     def __addConv(self):
         title = LangClass.TRANSLATIONS['New Chat']
-        cur_id = DB.insertConv(title)
+        cur_id = DB.insertThread(title)
         self.__browser.resetChatWidget(cur_id)
         self.__chatWidget.showTitle(title)
-        self.__browser.replaceConv(cur_id, DB.selectCertainConv(cur_id))
+        self.__browser.replaceConv(cur_id, DB.selectCertainThread(cur_id))
         self.__lineEdit.setFocus()
         self.__chatNavWidget.add(called_from_parent=True)
 
     def __importConv(self, filename):
-        old_conv = DB.selectAllConv()
+        old_conv = DB.selectAllThread()
         if filename and old_conv and len(old_conv) > 0:
             message = '''There are already conversations. Would you export them before importing? 
             Warning: If you do not export, you will lose the current conversations.
@@ -342,7 +342,7 @@ class OpenAIChatBotWidget(QWidget):
                 compressed_file_type = file_data[1].split(' ')[0].lower()
                 ext_dict = {'txt': {'ext':'.txt', 'func':conv_unit_to_txt}, 'html': {'ext':'.html', 'func':conv_unit_to_html}}
                 for id in ids:
-                    row_info = DB.selectConv(id)
+                    row_info = DB.selectThread(id)
                     # Limit the title length to file name length
                     title = row_info['name'][:32]
                     txt_filename = f'{title}_{id}{ext_dict[compressed_file_type]["ext"]}'
@@ -354,7 +354,7 @@ class OpenAIChatBotWidget(QWidget):
 
     def __updateConvUnit(self, id, user_f, conv_unit=None, info=None):
         if conv_unit:
-            DB.insertConvUnit(id, user_f, conv_unit, info=info)
+            DB.insertThreadUnit(id, user_f, conv_unit, info=info)
 
     def setColumns(self, columns):
         self.__chatNavWidget.setColumns(columns)
