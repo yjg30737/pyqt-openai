@@ -1,7 +1,9 @@
 import sqlite3, json, shutil
 
 from pyqt_openai.constants import THREAD_TABLE_NAME, THREAD_TRIGGER_NAME, THREAD_TABLE_NAME_OLD, \
-    THREAD_TRIGGER_NAME_OLD, MESSAGE_TABLE_NAME_OLD, MESSAGE_TABLE_NAME
+    THREAD_TRIGGER_NAME_OLD, MESSAGE_TABLE_NAME_OLD, MESSAGE_TABLE_NAME, THREAD_MESSAGE_INSERTED_TR_NAME, \
+    THREAD_MESSAGE_UPDATED_TR_NAME, THREAD_MESSAGE_DELETED_TR_NAME, THREAD_MESSAGE_INSERTED_TR_NAME_OLD, \
+    THREAD_MESSAGE_UPDATED_TR_NAME_OLD, THREAD_MESSAGE_DELETED_TR_NAME_OLD
 from pyqt_openai.models import ImagePromptContainer
 from pyqt_openai.util.script import get_db_filename
 
@@ -495,32 +497,10 @@ class SqliteDatabase:
                     ''')
 
         # Make message table
-        # self.__c.execute(
-        # Unify all old message tables to new one
+        self.__createMessage()
+        # UNION all old message tables to new one
         for r in res.fetchall():
-            print(r)
-
-
-
-            # col_to_add = [{'field_name': 'finish_reason', 'type': 'TEXT'},
-            #               {'field_name': 'model_name', 'type': 'VARCHAR(255)'},
-            #               {'field_name': 'prompt_tokens', 'type': 'INTEGER'},
-            #               {'field_name': 'completion_tokens', 'type': 'INTEGER'},
-            #               {'field_name': 'total_tokens', 'type': 'INTEGER'}]
-            #
-            # self.__c.execute(f"PRAGMA table_info({name[0]})")
-            # existing_columns_to_add = [column[1] for column in self.__c.fetchall()]
-            #
-            # col_to_add = list(filter(lambda x: x['field_name'] not in existing_columns_to_add, col_to_add))
-            #
-            # if len(col_to_add) > 0:
-            #     for col in col_to_add:
-            #         field_name = col['field_name']
-            #         type = col['type']
-            #         statement = f'ALTER TABLE {name[0]} ADD COLUMN {field_name} {type}'
-            #         self.__c.execute(statement)
-
-        # Unify all old triggers to new trigger
+            name = r[0]
 
     def __createMessage(self):
         """
@@ -531,8 +511,10 @@ class SqliteDatabase:
             self.__c.execute(
                 f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{MESSAGE_TABLE_NAME}'")
             if self.__c.fetchone()[0] == 1:
+                # Let it pass if the table already exists
                 pass
             else:
+                # Create message table and triggers
                 self.__c.execute(f'''CREATE TABLE {MESSAGE_TABLE_NAME}
                              (id INTEGER PRIMARY KEY,
                               thread_id INTEGER,
@@ -545,12 +527,44 @@ class SqliteDatabase:
                               total_tokens INTEGER,
                               update_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
                               insert_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
-                              FOREIGN KEY (id_fk) REFERENCES {THREAD_TABLE_NAME}(id)
+                              FOREIGN KEY (thread_id) REFERENCES {THREAD_TABLE_NAME}
                               ON DELETE CASCADE)''')
 
+                # Remove old trigger
+                # remove INSERT trigger
+                self.__c.execute(f'''
+                    SELECT name
+                    FROM sqlite_master
+                    WHERE type = 'table'
+                      AND name LIKE '%{THREAD_MESSAGE_INSERTED_TR_NAME_OLD}%'
+                    ''')
+                for name in self.__c.fetchall():
+                    self.__c.execute(f'DROP TRIGGER {name[0]}')
+
+                # remove UPDATE trigger
+                self.__c.execute(f'''
+                    SELECT name
+                    FROM sqlite_master
+                    WHERE type = 'table'
+                      AND name LIKE '%{THREAD_MESSAGE_UPDATED_TR_NAME_OLD}%'
+                    ''')
+                for name in self.__c.fetchall():
+                    self.__c.execute(f'DROP TRIGGER {name[0]}')
+
+                # remove DELETE trigger
+                self.__c.execute(f'''
+                    SELECT name
+                    FROM sqlite_master
+                    WHERE type = 'table'
+                      AND name LIKE '%{THREAD_MESSAGE_DELETED_TR_NAME_OLD}%'
+                    ''')
+                for name in self.__c.fetchall():
+                    self.__c.execute(f'DROP TRIGGER {name[0]}')
+
+                # Create new trigger
                 # insert trigger
                 self.__c.execute(f'''
-                    CREATE TRIGGER conv_tb_updated_by_unit_inserted_tr
+                    CREATE TRIGGER {THREAD_MESSAGE_INSERTED_TR_NAME}
                     AFTER INSERT ON {MESSAGE_TABLE_NAME}
                     BEGIN
                       UPDATE {THREAD_TABLE_NAME} SET update_dt = CURRENT_TIMESTAMP WHERE id = NEW.id_fk;
@@ -559,7 +573,7 @@ class SqliteDatabase:
 
                 # update trigger
                 self.__c.execute(f'''
-                    CREATE TRIGGER conv_tb_updated_by_unit_updated_tr
+                    CREATE TRIGGER {THREAD_MESSAGE_UPDATED_TR_NAME}
                     AFTER UPDATE ON {MESSAGE_TABLE_NAME}
                     BEGIN
                       UPDATE {THREAD_TABLE_NAME} SET update_dt = CURRENT_TIMESTAMP WHERE id = NEW.id_fk;
@@ -568,7 +582,7 @@ class SqliteDatabase:
 
                 # delete trigger
                 self.__c.execute(f'''
-                    CREATE TRIGGER conv_tb_updated_by_unit_deleted_tr
+                    CREATE TRIGGER {THREAD_MESSAGE_DELETED_TR_NAME}
                     AFTER DELETE ON {MESSAGE_TABLE_NAME}
                     BEGIN
                       UPDATE {THREAD_TABLE_NAME} SET update_dt = CURRENT_TIMESTAMP WHERE id = OLD.id_fk;

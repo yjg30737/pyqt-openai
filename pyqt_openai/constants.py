@@ -11,6 +11,10 @@ THREAD_TABLE_NAME = 'thread_tb'
 THREAD_TRIGGER_NAME = 'thread_tr'
 MESSAGE_TABLE_NAME = 'message_tb'
 
-THREAD_MESSAGE_INSERTED_TR = 'thread_message_inserted_tr'
-THREAD_MESSAGE_UPDATED_TR = 'thread_message_updated_tr'
-THREAD_MESSAGE_DELETED_TR = 'thread_message_deleted_tr'
+THREAD_MESSAGE_INSERTED_TR_NAME_OLD = 'conv_tb_updated_by_unit_inserted_tr'
+THREAD_MESSAGE_UPDATED_TR_NAME_OLD = 'conv_tb_updated_by_unit_updated_tr'
+THREAD_MESSAGE_DELETED_TR_NAME_OLD = 'conv_tb_updated_by_unit_deleted_tr'
+
+THREAD_MESSAGE_INSERTED_TR_NAME = 'thread_message_inserted_tr'
+THREAD_MESSAGE_UPDATED_TR_NAME = 'thread_message_updated_tr'
+THREAD_MESSAGE_DELETED_TR_NAME = 'thread_message_deleted_tr'
