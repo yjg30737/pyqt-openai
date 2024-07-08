@@ -499,8 +499,14 @@ class SqliteDatabase:
         # Make message table
         self.__createMessage()
         # UNION all old message tables to new one
-        for r in res.fetchall():
-            name = r[0]
+        union_query = ''
+        for name in res.fetchall():
+            union_query += f'SELECT * FROM {name[0]}\n'
+        union_query = ' UNION '.join(union_query.split('\n')[:-1]) + ' order by id_fk'
+
+        # Insert all old message tables to new one
+
+
 
     def __createMessage(self):
         """
