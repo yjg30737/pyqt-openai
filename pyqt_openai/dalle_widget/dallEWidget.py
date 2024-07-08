@@ -88,7 +88,7 @@ class DallEWidget(QWidget):
         lay.setSpacing(0)
         self.setLayout(lay)
 
-    def showAiToolBar(self, f):
+    def showSecondaryToolBar(self, f):
         self.__menuWidget.setVisible(f)
 
     def setAIEnabled(self, f):

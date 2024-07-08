@@ -155,7 +155,7 @@ class MainWindow(QMainWindow):
 
         self.__showAiToolBarAction = QWidgetAction(self)
         self.__showAiToolBarChkBox = QCheckBox(LangClass.TRANSLATIONS['Show AI Toolbar'])
-        self.__showAiToolBarChkBox.setChecked(True)
+        self.__showAiToolBarChkBox.setChecked(self.__settingsParamContainer.show_secondary_toolbar)
         self.__showAiToolBarChkBox.toggled.connect(self.__showAiToolBarChkBoxChecked)
         self.__showAiToolBarAction.setDefaultWidget(self.__showAiToolBarChkBox)
 
@@ -268,6 +268,10 @@ class MainWindow(QMainWindow):
         self.__toolbar.setStyleSheet('QToolBar { spacing: 2px; }')
 
         self.__toolbar.setVisible(self.__settingsParamContainer.show_toolbar)
+        for i in range(self.__mainWidget.count()):
+            currentWidget = self.__mainWidget.widget(i)
+            currentWidget.showSecondaryToolBar(self.__settingsParamContainer.show_secondary_toolbar)
+        self.__mainWidget.currentWidget().showThreadToolWidget(self.__settingsParamContainer.thread_tool_widget)
 
     def __setApiKeyAndClient(self, api_key):
         # for subprocess (mostly)
@@ -335,7 +339,7 @@ class MainWindow(QMainWindow):
         self.setWindowOpacity(v / 100)
 
     def __showAiToolBarChkBoxChecked(self, f):
-        self.__mainWidget.currentWidget().showAiToolBar(f)
+        self.__mainWidget.currentWidget().showSecondaryToolBar(f)
 
     def __executeCustomizeDialog(self):
         dialog = CustomizeDialog(self)
@@ -360,9 +364,18 @@ class MainWindow(QMainWindow):
         # If db name is changed
         if self.__settingsParamContainer.db != self.__settings_struct.value('db'):
             QMessageBox.information(self, 'Info', "The name of the reference target database has been changed. The changes will take effect after a restart.")
-        # If show_ai_toolbar is changed
+        # If show_toolbar is changed
         if self.__settingsParamContainer.show_toolbar != self.__settings_struct.value('show_toolbar'):
             self.__toolbar.setVisible(self.__settingsParamContainer.show_toolbar)
+        # If show_secondary_toolbar is changed
+        if self.__settingsParamContainer.show_secondary_toolbar != self.__settings_struct.value('show_secondary_toolbar'):
+            for i in range(self.__mainWidget.count()):
+                currentWidget = self.__mainWidget.widget(i)
+                currentWidget.showSecondaryToolBar(self.__settingsParamContainer.show_secondary_toolbar)
+        # If thread_tool_widget is changed
+        if self.__settingsParamContainer.thread_tool_widget != self.__settings_struct.value('thread_tool_widget'):
+            if isinstance(self.__mainWidget.currentWidget(), OpenAIChatBotWidget):
+                self.__mainWidget.currentWidget().showThreadToolWidget(self.__settingsParamContainer.thread_tool_widget)
         for k, v in container.get_items():
             self.__settings_struct.setValue(k, v)
         # If language is changed

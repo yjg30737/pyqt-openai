@@ -170,7 +170,10 @@ class OpenAIChatBotWidget(QWidget):
 
         self.__lineEdit.setFocus()
 
-    def showAiToolBar(self, f):
+    def showThreadToolWidget(self, f):
+        self.__chatWidget.toggleMenuWidget(f)
+
+    def showSecondaryToolBar(self, f):
         self.__menuWidget.setVisible(f)
 
     def toolTipLinkClicked(self, url):

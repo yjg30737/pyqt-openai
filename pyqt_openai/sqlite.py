@@ -792,17 +792,17 @@ class SqliteDatabase:
         # Close the connection
         self.__conn.close()
 
-import os
+# import os
 
-old_filename = 'old_one/conv.db'
-old_filename_for_backup = 'old_one/conv_past.db'
-
-new_filename = 'new_one/conv.db'
-
-old_f = False
-if old_f:
-    if os.path.exists(old_filename):
-        shutil.copy2(old_filename, old_filename_for_backup)
-    db = SqliteDatabase(db_filename=old_filename)
-else:
-    db = SqliteDatabase(db_filename=new_filename)
+# old_filename = 'old_one/conv.db'
+# old_filename_for_backup = 'old_one/conv_past.db'
+#
+# new_filename = 'new_one/conv.db'
+#
+# old_f = False
+# if old_f:
+#     if os.path.exists(old_filename):
+#         shutil.copy2(old_filename, old_filename_for_backup)
+#     db = SqliteDatabase(db_filename=old_filename)
+# else:
+#     db = SqliteDatabase(db_filename=new_filename)
