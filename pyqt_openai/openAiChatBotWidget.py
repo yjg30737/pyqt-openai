@@ -9,7 +9,7 @@ from qtpy.QtWidgets import QHBoxLayout, QWidget, QSizePolicy, QVBoxLayout, QFram
 from pyqt_openai.chatNavWidget import ChatNavWidget
 from pyqt_openai.chat_widget.chatWidget import ChatWidget
 from pyqt_openai.chat_widget.prompt import Prompt
-from pyqt_openai.models import ChatThreadContainer
+from pyqt_openai.models import ChatThreadContainer, ChatMessageContainer
 from pyqt_openai.openAiThread import OpenAIThread, LlamaOpenAIThread
 from pyqt_openai.prompt_gen_widget.promptGeneratorWidget import PromptGeneratorWidget
 from pyqt_openai.pyqt_openai_data import DB, get_argument, LLAMAINDEX_WRAPPER
@@ -99,15 +99,15 @@ class OpenAIChatBotWidget(QWidget):
         sep.setFrameShape(QFrame.Shape.HLine)
         sep.setFrameShadow(QFrame.Shadow.Sunken)
 
-        self.__chatNavWidget.added.connect(self.__addConv)
+        self.__chatNavWidget.added.connect(self.__addThread)
         self.__chatNavWidget.clicked.connect(self.__showChat)
         self.__chatNavWidget.cleared.connect(self.__clearChat)
-        self.__chatNavWidget.onImport.connect(self.__importConv)
-        self.__chatNavWidget.onExport.connect(self.__exportConv)
+        self.__chatNavWidget.onImport.connect(self.__importChat)
+        self.__chatNavWidget.onExport.connect(self.__exportChat)
 
         self.__lineEdit.returnPressed.connect(self.__chat)
 
-        self.__browser.convUnitUpdated.connect(self.__updateConvUnit)
+        self.__browser.messageUpdated.connect(self.__updateMessage)
 
         lay = QHBoxLayout()
         lay.addWidget(self.__prompt)
@@ -216,7 +216,7 @@ class OpenAIChatBotWidget(QWidget):
 
             # If there is no current conversation selected on the list to the left, make a new one.
             if self.__chatWidget.isNew():
-                self.__addConv()
+                self.__addThread()
 
             # Conversation result information after response
             info = {
@@ -298,7 +298,7 @@ class OpenAIChatBotWidget(QWidget):
     def __showChat(self, id, title):
         conv_data = DB.selectCertainThread(id)
         self.__chatWidget.showTitle(title)
-        self.__browser.replaceConv(id, conv_data)
+        self.__browser.replaceThread(id, conv_data)
         self.__prompt.activateDuringGeneratingWidget(False)
         self.__prompt.activateAfterResponseWidget(False)
 
@@ -308,16 +308,16 @@ class OpenAIChatBotWidget(QWidget):
         self.__prompt.activateDuringGeneratingWidget(False)
         self.__prompt.activateAfterResponseWidget(False)
 
-    def __addConv(self):
+    def __addThread(self):
         title = LangClass.TRANSLATIONS['New Chat']
         cur_id = DB.insertThread(title)
         self.__browser.resetChatWidget(cur_id)
         self.__chatWidget.showTitle(title)
-        self.__browser.replaceConv(cur_id, DB.selectCertainThread(cur_id))
+        self.__browser.replaceThread(cur_id, DB.selectCertainThread(cur_id))
         self.__lineEdit.setFocus()
         self.__chatNavWidget.add(called_from_parent=True)
 
-    def __importConv(self, filename):
+    def __importChat(self, filename):
         old_conv = DB.selectAllThread()
         if filename and old_conv and len(old_conv) > 0:
             message = '''There are already conversations. Would you export them before importing? 
@@ -330,13 +330,13 @@ class OpenAIChatBotWidget(QWidget):
             reply = messageBox.exec()
             if reply == QMessageBox.StandardButton.Yes:
                 # Export previous conversation
-                self.__exportConv([_['id'] for _ in old_conv])
+                self.__exportChat([_['id'] for _ in old_conv])
             else:
                 pass
         else:
             print(f'Import {filename}')
 
-    def __exportConv(self, ids):
+    def __exportChat(self, ids):
         file_data = QFileDialog.getSaveFileName(self, LangClass.TRANSLATIONS['Save'], os.path.expanduser('~'), 'SQLite DB file (*.db);;txt files Compressed File (*.zip);;html files Compressed File (*.zip)')
         if file_data[0]:
             filename = file_data[0]
@@ -355,9 +355,9 @@ class OpenAIChatBotWidget(QWidget):
                 DB.export(ids, filename)
             open_directory(os.path.dirname(filename))
 
-    def __updateConvUnit(self, id, user_f, conv_unit=None, info=None):
-        if conv_unit:
-            DB.insertThreadUnit(id, user_f, conv_unit, info=info)
+    def __updateMessage(self, arg: ChatMessageContainer):
+        if arg.content:
+            DB.insertMessage(arg)
 
     def setColumns(self, columns):
         self.__chatNavWidget.setColumns(columns)

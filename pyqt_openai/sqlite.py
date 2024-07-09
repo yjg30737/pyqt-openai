@@ -1,10 +1,11 @@
-import sqlite3, json, shutil
+import shutil
+import sqlite3
 
 from pyqt_openai.constants import THREAD_TABLE_NAME, THREAD_TRIGGER_NAME, THREAD_TABLE_NAME_OLD, \
     THREAD_TRIGGER_NAME_OLD, MESSAGE_TABLE_NAME_OLD, MESSAGE_TABLE_NAME, THREAD_MESSAGE_INSERTED_TR_NAME, \
     THREAD_MESSAGE_UPDATED_TR_NAME, THREAD_MESSAGE_DELETED_TR_NAME, THREAD_MESSAGE_INSERTED_TR_NAME_OLD, \
     THREAD_MESSAGE_UPDATED_TR_NAME_OLD, THREAD_MESSAGE_DELETED_TR_NAME_OLD
-from pyqt_openai.models import ImagePromptContainer
+from pyqt_openai.models import ImagePromptContainer, ChatMessageContainer
 from pyqt_openai.util.script import get_db_filename
 
 
@@ -433,7 +434,7 @@ class SqliteDatabase:
 
     def selectAllThread(self, id_arr=None):
         """
-        select all conv
+        select all thread
         """
         try:
             query = f'SELECT * FROM {THREAD_TABLE_NAME}'
@@ -463,7 +464,6 @@ class SqliteDatabase:
             new_id = self.__c.lastrowid
             # Commit the transaction
             self.__conn.commit()
-            self.__createThreadUnit(new_id)
             return new_id
         except sqlite3.Error as e:
             print(f"An error occurred: {e}")
@@ -489,15 +489,15 @@ class SqliteDatabase:
             raise
 
     def __alterThreadUnit(self):
+        # Make message table
+        self.__createMessage()
+
         # search the conv unit tables
         res = self.__c.execute(f'''
                         SELECT name
                         FROM sqlite_master
                         WHERE type = 'table' AND name LIKE '{MESSAGE_TABLE_NAME_OLD}%';
                     ''')
-
-        # Make message table
-        self.__createMessage()
         # UNION all old message tables to new one
         union_query = ''
         for name in res.fetchall():
@@ -505,8 +505,98 @@ class SqliteDatabase:
         union_query = ' UNION '.join(union_query.split('\n')[:-1]) + ' order by id_fk'
 
         # Insert all old message tables to new one
+        res = self.__c.execute(union_query)
 
+        arg = ChatMessageContainer()
+        insert_query = arg.create_insert_query(table_name=MESSAGE_TABLE_NAME, excludes=['id'])
 
+        for row in res.fetchall():
+            row_dict = dict(row)
+            row_dict['role'] = 'user' if row_dict['is_user'] == 1 else 'assistant'
+            row_dict['thread_id'] = row_dict['id_fk']
+            row_dict['content'] = row_dict['conv']
+            del row_dict['is_user']
+            del row_dict['conv']
+            del row_dict['id_fk']
+            arg = ChatMessageContainer(**row_dict)
+            self.__c.execute(insert_query, arg.get_values_for_insert(excludes=['id']))
+            self.__conn.commit()
+
+        # Remove old message tables
+        self.__removeOldMessage()
+
+    def __removeOldMessage(self):
+        # remove old message tables
+        self.__c.execute(f'''
+            SELECT name
+            FROM sqlite_master
+            WHERE type = 'table'
+              AND name LIKE '%{MESSAGE_TABLE_NAME_OLD}%'
+            ''')
+        for name in self.__c.fetchall():
+            self.__c.execute(f'DROP TABLE {name[0]}')
+        self.__conn.commit()
+
+    def __removeOldTrigger(self):
+        # remove old trigger
+        self.__c.execute(f'''
+            SELECT name
+            FROM sqlite_master
+            WHERE type = 'trigger'
+              AND name LIKE '%{THREAD_MESSAGE_INSERTED_TR_NAME_OLD}%'
+            ''')
+        for name in self.__c.fetchall():
+            self.__c.execute(f'DROP TRIGGER {name[0]}')
+
+        self.__c.execute(f'''
+            SELECT name
+            FROM sqlite_master
+            WHERE type = 'trigger'
+              AND name LIKE '%{THREAD_MESSAGE_UPDATED_TR_NAME_OLD}%'
+            ''')
+        for name in self.__c.fetchall():
+            self.__c.execute(f'DROP TRIGGER {name[0]}')
+
+        self.__c.execute(f'''
+            SELECT name
+            FROM sqlite_master
+            WHERE type = 'trigger'
+              AND name LIKE '%{THREAD_MESSAGE_DELETED_TR_NAME_OLD}%'
+            ''')
+        for name in self.__c.fetchall():
+            self.__c.execute(f'DROP TRIGGER {name[0]}')
+        self.__conn.commit()
+
+    def __createMessageTrigger(self):
+        # Create new trigger
+        # insert trigger
+        self.__c.execute(f'''
+            CREATE TRIGGER {THREAD_MESSAGE_INSERTED_TR_NAME}
+            AFTER INSERT ON {MESSAGE_TABLE_NAME}
+            BEGIN
+              UPDATE {THREAD_TABLE_NAME} SET update_dt = CURRENT_TIMESTAMP WHERE id = NEW.thread_id;
+            END
+        ''')
+
+        # update trigger
+        self.__c.execute(f'''
+            CREATE TRIGGER {THREAD_MESSAGE_UPDATED_TR_NAME}
+            AFTER UPDATE ON {MESSAGE_TABLE_NAME}
+            BEGIN
+              UPDATE {THREAD_TABLE_NAME} SET update_dt = CURRENT_TIMESTAMP WHERE id = NEW.thread_id;
+            END
+        ''')
+
+        # delete trigger
+        self.__c.execute(f'''
+            CREATE TRIGGER {THREAD_MESSAGE_DELETED_TR_NAME}
+            AFTER DELETE ON {MESSAGE_TABLE_NAME}
+            BEGIN
+              UPDATE {THREAD_TABLE_NAME} SET update_dt = CURRENT_TIMESTAMP WHERE id = OLD.thread_id;
+            END
+        ''')
+        # Commit the transaction
+        self.__conn.commit()
 
     def __createMessage(self):
         """
@@ -536,136 +626,24 @@ class SqliteDatabase:
                               FOREIGN KEY (thread_id) REFERENCES {THREAD_TABLE_NAME}
                               ON DELETE CASCADE)''')
 
-                # Remove old trigger
-                # remove INSERT trigger
-                self.__c.execute(f'''
-                    SELECT name
-                    FROM sqlite_master
-                    WHERE type = 'table'
-                      AND name LIKE '%{THREAD_MESSAGE_INSERTED_TR_NAME_OLD}%'
-                    ''')
-                for name in self.__c.fetchall():
-                    self.__c.execute(f'DROP TRIGGER {name[0]}')
-
-                # remove UPDATE trigger
-                self.__c.execute(f'''
-                    SELECT name
-                    FROM sqlite_master
-                    WHERE type = 'table'
-                      AND name LIKE '%{THREAD_MESSAGE_UPDATED_TR_NAME_OLD}%'
-                    ''')
-                for name in self.__c.fetchall():
-                    self.__c.execute(f'DROP TRIGGER {name[0]}')
-
-                # remove DELETE trigger
-                self.__c.execute(f'''
-                    SELECT name
-                    FROM sqlite_master
-                    WHERE type = 'table'
-                      AND name LIKE '%{THREAD_MESSAGE_DELETED_TR_NAME_OLD}%'
-                    ''')
-                for name in self.__c.fetchall():
-                    self.__c.execute(f'DROP TRIGGER {name[0]}')
-
-                # Create new trigger
-                # insert trigger
-                self.__c.execute(f'''
-                    CREATE TRIGGER {THREAD_MESSAGE_INSERTED_TR_NAME}
-                    AFTER INSERT ON {MESSAGE_TABLE_NAME}
-                    BEGIN
-                      UPDATE {THREAD_TABLE_NAME} SET update_dt = CURRENT_TIMESTAMP WHERE id = NEW.id_fk;
-                    END
-                ''')
-
-                # update trigger
-                self.__c.execute(f'''
-                    CREATE TRIGGER {THREAD_MESSAGE_UPDATED_TR_NAME}
-                    AFTER UPDATE ON {MESSAGE_TABLE_NAME}
-                    BEGIN
-                      UPDATE {THREAD_TABLE_NAME} SET update_dt = CURRENT_TIMESTAMP WHERE id = NEW.id_fk;
-                    END
-                ''')
-
-                # delete trigger
-                self.__c.execute(f'''
-                    CREATE TRIGGER {THREAD_MESSAGE_DELETED_TR_NAME}
-                    AFTER DELETE ON {MESSAGE_TABLE_NAME}
-                    BEGIN
-                      UPDATE {THREAD_TABLE_NAME} SET update_dt = CURRENT_TIMESTAMP WHERE id = OLD.id_fk;
-                    END
-                ''')
-                # Commit the transaction
+                self.__removeOldTrigger()
+                self.__createMessageTrigger()
                 self.__conn.commit()
         except sqlite3.Error as e:
             print(f"An error occurred while creating the table: {e}")
             raise
 
-    def __createThreadUnit(self, id_fk):
-        try:
-            # Check if the table exists
-            self.__c.execute(
-                f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{self.__conv_unit_tb_nm}{id_fk}'")
-            if self.__c.fetchone()[0] == 1:
-                # each conv table already exists
-                pass
-            else:
-                self.__c.execute(f'''CREATE TABLE {self.__conv_unit_tb_nm}{id_fk}
-                                         (id INTEGER PRIMARY KEY,
-                                          id_fk INTEGER,
-                                          is_user INTEGER,
-                                          conv TEXT,
-                                          finish_reason VARCHAR(255),
-                                          model_name VARCHAR(255),
-                                          prompt_tokens INTEGER,
-                                          completion_tokens INTEGER,
-                                          total_tokens INTEGER,
-                                          update_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
-                                          insert_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
-                                          FOREIGN KEY (id_fk) REFERENCES {THREAD_TABLE_NAME}(id) ON DELETE CASCADE)''')
-
-                # insert trigger
-                self.__c.execute(f'''
-                    CREATE TRIGGER conv_tb_updated_by_unit_inserted_tr{id_fk}
-                    AFTER INSERT ON {self.__conv_unit_tb_nm}{id_fk}
-                    BEGIN
-                      UPDATE {THREAD_TABLE_NAME} SET update_dt = CURRENT_TIMESTAMP WHERE id = NEW.id_fk;
-                    END
-                ''')
-
-                # update trigger
-                self.__c.execute(f'''
-                    CREATE TRIGGER conv_tb_updated_by_unit_updated_tr{id_fk}
-                    AFTER UPDATE ON {self.__conv_unit_tb_nm}{id_fk}
-                    BEGIN
-                      UPDATE {THREAD_TABLE_NAME} SET update_dt = CURRENT_TIMESTAMP WHERE id = NEW.id_fk;
-                    END
-                ''')
-
-                # delete trigger
-                self.__c.execute(f'''
-                    CREATE TRIGGER conv_tb_updated_by_unit_deleted_tr{id_fk}
-                    AFTER DELETE ON {self.__conv_unit_tb_nm}{id_fk}
-                    BEGIN
-                      UPDATE {THREAD_TABLE_NAME} SET update_dt = CURRENT_TIMESTAMP WHERE id = OLD.id_fk;
-                    END
-                ''')
-                # Commit the transaction
-                self.__conn.commit()
-        except sqlite3.Error as e:
-            print(f"An error occurred: {e}")
-            raise
-
-    def selectCertainThreadRaw(self, id, content_to_select=None):
-        query = f'SELECT * FROM {self.__conv_unit_tb_nm}{id}'
+    def selectCertainThreadRaw(self, thread_id, content_to_select=None):
+        query = f'SELECT * FROM {MESSAGE_TABLE_NAME} WHERE thread_id = {thread_id}'
         if content_to_select:
-            query += f' WHERE conv LIKE "%{content_to_select}%"'
+            query += f' WHERE content LIKE "%{content_to_select}%"'
         self.__c.execute(query)
         return self.__c.fetchall()
 
-    def selectCertainThread(self, id, content_to_select=None):
+    def selectCertainThread(self, thread_id, content_to_select=None):
         result = []
-        for elem in self.selectCertainThreadRaw(id, content_to_select=content_to_select):
-            result.append(dict(elem))
+        for elem in self.selectCertainThreadRaw(thread_id, content_to_select=content_to_select):
+            result.append(ChatMessageContainer(**elem))
         return result
 
     def selectAllContentOfThread(self, content_to_select=None):
@@ -676,17 +654,10 @@ class SqliteDatabase:
                 arr.append((_id, result))
         return arr
 
-    def insertThreadUnit(self, id, user_f, conv, info):
+    def insertMessage(self, arg: ChatMessageContainer):
         try:
-            finish_reason = info['finish_reason']
-            model_name = info['model_name']
-            prompt_tokens = info['prompt_tokens']
-            completion_tokens = info['completion_tokens']
-            total_tokens = info['total_tokens']
-            self.__c.execute(
-                f'INSERT INTO {self.__conv_unit_tb_nm}{id} (id_fk, is_user, conv, finish_reason, model_name, '
-                f'prompt_tokens, completion_tokens, total_tokens) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-                (id, user_f, conv, finish_reason, model_name, prompt_tokens, completion_tokens, total_tokens))
+            insert_query = arg.create_insert_query(table_name=MESSAGE_TABLE_NAME, excludes=['id'])
+            self.__c.execute(insert_query, arg.get_values_for_insert(excludes=['id']))
             new_id = self.__c.lastrowid
             # Commit the transaction
             self.__conn.commit()
@@ -746,8 +717,6 @@ class SqliteDatabase:
             query = arg.create_insert_query(self.__image_tb_nm, excludes)
             values = arg.get_values_for_insert(excludes)
             self.__c.execute(query, values)
-                # f'INSERT INTO {self.__image_tb_nm} (prompt, n, size, quality, data, style, revised_prompt) VALUES (?, ?, ?, ?, ?, ?, ?)',
-                # (prompt, n, size, quality, data, style, revised_prompt))
             new_id = self.__c.lastrowid
             self.__conn.commit()
             return new_id
@@ -798,17 +767,18 @@ class SqliteDatabase:
         # Close the connection
         self.__conn.close()
 
-# import os
 
-# old_filename = 'old_one/conv.db'
-# old_filename_for_backup = 'old_one/conv_past.db'
-#
-# new_filename = 'new_one/conv.db'
-#
-# old_f = False
-# if old_f:
-#     if os.path.exists(old_filename):
-#         shutil.copy2(old_filename, old_filename_for_backup)
-#     db = SqliteDatabase(db_filename=old_filename)
-# else:
-#     db = SqliteDatabase(db_filename=new_filename)
+old_filename = 'old_one/conv.db'
+old_filename_for_backup = 'old_one/conv_past.db'
+
+new_filename = 'new_one/conv.db'
+
+import os
+
+old_f = True
+if old_f:
+    if os.path.exists(old_filename):
+        shutil.copy2(old_filename, old_filename_for_backup)
+    db = SqliteDatabase(db_filename=old_filename)
+else:
+    db = SqliteDatabase(db_filename=new_filename)
