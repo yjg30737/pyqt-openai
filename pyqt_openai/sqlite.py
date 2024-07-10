@@ -614,7 +614,7 @@ class SqliteDatabase:
                               role VARCHAR(255),
                               content TEXT,
                               finish_reason VARCHAR(255),
-                              model_name VARCHAR(255),
+                              model VARCHAR(255),
                               prompt_tokens INTEGER,
                               completion_tokens INTEGER,
                               total_tokens INTEGER,

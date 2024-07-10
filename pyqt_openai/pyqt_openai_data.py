@@ -104,11 +104,6 @@ def get_argument(model, system, messages, cur_text, temperature, top_p, frequenc
     else:
         openai_arg['messages'].append({"role": "user", "content": cur_text})
 
-    # If current model is "gpt-4-1106-preview", default max token set to very low number by openai,
-    # so let's set this to 4096 which is relatively better.
-    if is_gpt_vision(model):
-        openai_arg['max_tokens'] = 4096
-
     if is_llama_available:
         del openai_arg['messages']
     if use_max_tokens:

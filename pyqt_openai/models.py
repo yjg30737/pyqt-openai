@@ -80,7 +80,7 @@ class ChatMessageContainer(Container):
     insert_dt: str = "",
     update_dt: str = "",
     finish_reason: str = "",
-    model_name: str = "",
+    model: str = "",
     prompt_tokens: str = "",
     completion_tokens: str = "",
     total_tokens: str = ""
