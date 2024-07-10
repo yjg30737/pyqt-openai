@@ -763,25 +763,17 @@ class SqliteDatabase:
             print(f"An error occurred: {e}")
             raise
 
-    def export(self, ids, saved_dirname):
+    def export(self, ids, filename):
         # Get the records of the threads of the given ids
         thread_records = self.selectAllThread(ids)
-        # Get the messages of the threads
-        message_records = {record['id']: self.selectCertainThreadMessages(record['id']) for record in thread_records}
-
+        data = [dict(record) for record in thread_records]
         # Convert it into dictionary
-        thread_data = [dict(record) for record in thread_records]
-        message_data = [dict(message) for message in message_records]
-
-        thread_filename = os.path.join(saved_dirname, 'thread.json')
-        message_filename = os.path.join(saved_dirname, 'message.json')
+        for d in data:
+            d['messages'] = list(map(lambda x: x.__dict__, self.selectCertainThreadMessages(d['id'])))
 
         # Save the JSON
-        with open(thread_filename, 'w') as f:
-            json.dump(thread_data, f)
-
-        with open(message_filename, 'w') as f:
-            json.dump(message_data, f)
+        with open(filename, 'w') as f:
+            json.dump(data, f)
 
     def getCursor(self):
         return self.__c
@@ -795,10 +787,3 @@ class SqliteDatabase:
     def __exit__(self, exc_type, exc_val, exc_tb):
         # Close the connection
         self.__conn.close()
-
-
-# For testing purpose
-new_filename = 'new_dir/conv.db'
-
-db = SqliteDatabase(db_filename=new_filename)
-db.export([1, 2], 'new_dir/thread.json')

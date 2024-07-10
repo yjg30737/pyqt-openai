@@ -341,7 +341,7 @@ class OpenAIChatBotWidget(QWidget):
             print(f'Import {filename}')
 
     def __exportChat(self, ids):
-        file_data = QFileDialog.getSaveFileName(self, LangClass.TRANSLATIONS['Save'], os.path.expanduser('~'), 'SQLite DB file (*.db);;txt files Compressed File (*.zip);;html files Compressed File (*.zip)')
+        file_data = QFileDialog.getSaveFileName(self, LangClass.TRANSLATIONS['Save'], os.path.expanduser('~'), 'JSON file (*.json);;txt files Compressed File (*.zip);;html files Compressed File (*.zip)')
         if file_data[0]:
             filename = file_data[0]
             ext = os.path.splitext(filename)[-1] or get_generic_ext_out_of_qt_ext(file_data[1])
@@ -355,7 +355,7 @@ class OpenAIChatBotWidget(QWidget):
                     txt_filename = f'{title}_{id}{ext_dict[compressed_file_type]["ext"]}'
                     txt_content = ext_dict[compressed_file_type]['func'](DB, id, title)
                     add_file_to_zip(txt_content, txt_filename, os.path.splitext(filename)[0] + '.zip')
-            elif ext == '.db':
+            elif ext == '.json':
                 DB.export(ids, filename)
             open_directory(os.path.dirname(filename))
 
