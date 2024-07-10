@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QDialog
 from qtpy.QtCore import Signal, QSortFilterProxyModel, Qt
 from qtpy.QtSql import QSqlTableModel, QSqlQuery
-from qtpy.QtWidgets import QApplication, QWidget, QVBoxLayout, QMessageBox, QStyledItemDelegate, QTableView, \
+from qtpy.QtWidgets import QWidget, QVBoxLayout, QMessageBox, QStyledItemDelegate, QTableView, \
     QAbstractItemView, \
     QHBoxLayout, \
     QLabel, QSpacerItem, QSizePolicy, QFileDialog, QComboBox

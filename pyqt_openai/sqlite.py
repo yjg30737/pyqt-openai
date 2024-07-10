@@ -1,5 +1,6 @@
-import shutil
+import json, os
 import sqlite3
+from typing import List
 
 from pyqt_openai.constants import THREAD_TABLE_NAME, THREAD_TRIGGER_NAME, THREAD_TABLE_NAME_OLD, \
     THREAD_TRIGGER_NAME_OLD, MESSAGE_TABLE_NAME_OLD, MESSAGE_TABLE_NAME, THREAD_MESSAGE_INSERTED_TR_NAME, \
@@ -431,7 +432,8 @@ class SqliteDatabase:
 
     def selectAllThread(self, id_arr=None):
         """
-        select all thread
+        Select all thread
+        id_arr: list of thread id
         """
         try:
             query = f'SELECT * FROM {THREAD_TABLE_NAME}'
@@ -445,7 +447,7 @@ class SqliteDatabase:
 
     def selectThread(self, id):
         """
-        select specific conv
+        Select specific thread
         """
         try:
             self.__c.execute(f'SELECT * FROM {THREAD_TABLE_NAME} WHERE id={id}')
@@ -632,23 +634,32 @@ class SqliteDatabase:
             print(f"An error occurred while creating the table: {e}")
             raise
 
-    def selectCertainThreadRaw(self, thread_id, content_to_select=None):
+    def selectCertainThreadMessagesRaw(self, thread_id, content_to_select=None):
+        """
+        This is for selecting all messages in a thread with a specific thread_id.
+        The format of the result is a list of sqlite Rows.
+        """
         query = f'SELECT * FROM {MESSAGE_TABLE_NAME} WHERE thread_id = {thread_id}'
         if content_to_select:
             query += f' AND content LIKE "%{content_to_select}%"'
         self.__c.execute(query)
         return self.__c.fetchall()
 
-    def selectCertainThread(self, thread_id, content_to_select=None):
-        result = []
-        for elem in self.selectCertainThreadRaw(thread_id, content_to_select=content_to_select):
-            result.append(ChatMessageContainer(**elem))
+    def selectCertainThreadMessages(self, thread_id, content_to_select=None) -> List[ChatMessageContainer]:
+        """
+        This is for selecting all messages in a thread with a specific thread_id.
+        The format of the result is a list of ChatMessageContainer.
+        """
+        result = [ChatMessageContainer(**elem) for elem in self.selectCertainThreadMessagesRaw(thread_id, content_to_select=content_to_select)]
         return result
 
     def selectAllContentOfThread(self, content_to_select=None):
+        """
+        This is for selecting all messages in all threads which include the content_to_select.
+        """
         arr = []
         for _id in [conv[0] for conv in self.selectAllThread()]:
-            result = self.selectCertainThread(_id, content_to_select)
+            result = self.selectCertainThreadMessages(_id, content_to_select)
             if result:
                 arr.append((_id, result))
         return arr
@@ -752,8 +763,25 @@ class SqliteDatabase:
             print(f"An error occurred: {e}")
             raise
 
-    def export(self, ids, saved_filename):
-        shutil.copy2(self.__db_filename, saved_filename)
+    def export(self, ids, saved_dirname):
+        # Get the records of the threads of the given ids
+        thread_records = self.selectAllThread(ids)
+        # Get the messages of the threads
+        message_records = {record['id']: self.selectCertainThreadMessages(record['id']) for record in thread_records}
+
+        # Convert it into dictionary
+        thread_data = [dict(record) for record in thread_records]
+        message_data = [dict(message) for message in message_records]
+
+        thread_filename = os.path.join(saved_dirname, 'thread.json')
+        message_filename = os.path.join(saved_dirname, 'message.json')
+
+        # Save the JSON
+        with open(thread_filename, 'w') as f:
+            json.dump(thread_data, f)
+
+        with open(message_filename, 'w') as f:
+            json.dump(message_data, f)
 
     def getCursor(self):
         return self.__c
@@ -770,17 +798,7 @@ class SqliteDatabase:
 
 
 # For testing purpose
-# old_filename = 'old_one/conv.db'
-# old_filename_for_backup = 'old_one/conv_past.db'
-#
-# new_filename = 'conv.db'
-#
-# import os
-#
-# old_f = False
-# if old_f:
-#     if os.path.exists(old_filename):
-#         shutil.copy2(old_filename, old_filename_for_backup)
-#     db = SqliteDatabase(db_filename=old_filename)
-# else:
-#     db = SqliteDatabase(db_filename=new_filename)
+new_filename = 'new_dir/conv.db'
+
+db = SqliteDatabase(db_filename=new_filename)
+db.export([1, 2], 'new_dir/thread.json')

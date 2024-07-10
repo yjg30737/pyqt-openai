@@ -300,7 +300,7 @@ class OpenAIChatBotWidget(QWidget):
                 self.__notifierWidget.doubleClicked.connect(self.window().show)
 
     def __showChat(self, id, title):
-        conv_data = DB.selectCertainThread(id)
+        conv_data = DB.selectCertainThreadMessages(id)
         self.__chatWidget.showTitle(title)
         self.__browser.replaceThread(id, conv_data)
         self.__prompt.activateDuringGeneratingWidget(False)
@@ -317,7 +317,7 @@ class OpenAIChatBotWidget(QWidget):
         cur_id = DB.insertThread(title)
         self.__browser.resetChatWidget(cur_id)
         self.__chatWidget.showTitle(title)
-        self.__browser.replaceThread(cur_id, DB.selectCertainThread(cur_id))
+        self.__browser.replaceThread(cur_id, DB.selectCertainThreadMessages(cur_id))
         self.__lineEdit.setFocus()
         self.__chatNavWidget.add(called_from_parent=True)
 

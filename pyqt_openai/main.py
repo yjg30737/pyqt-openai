@@ -94,7 +94,7 @@ class MainWindow(QMainWindow):
             self.__apiCheckPreviewLbl.hide()
 
         self.setCentralWidget(self.__mainWidget)
-        self.resize(1024, 768)
+        self.resize(1280, 768)
 
         self.__refreshColumns()
 

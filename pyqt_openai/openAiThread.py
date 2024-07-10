@@ -67,8 +67,8 @@ class LlamaOpenAIThread(QThread):
         self.__openai_arg = openai_arg
         self.__query_text = query_text
         self.__stop_streaming = False
-
         self.__info = info
+        self.__info.role = 'assistant'
 
     def stop_streaming(self):
         self.__stop_streaming = True
