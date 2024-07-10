@@ -240,7 +240,7 @@ class OpenAIChatBotWidget(QWidget):
             if is_llama_available:
                 self.__t = LlamaOpenAIThread(LLAMAINDEX_WRAPPER, openai_arg=openai_arg, query_text=query_text, info=container)
             else:
-                self.__t = OpenAIThread(model, openai_arg, info=container)
+                self.__t = OpenAIThread(openai_arg, info=container)
             self.__t.started.connect(self.__beforeGenerated)
             self.__t.replyGenerated.connect(self.__browser.showLabel)
             self.__t.streamFinished.connect(self.__browser.streamFinished)
