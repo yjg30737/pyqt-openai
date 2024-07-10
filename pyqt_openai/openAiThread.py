@@ -2,6 +2,7 @@ import inspect
 import openai
 from qtpy.QtCore import QThread, Signal
 
+from pyqt_openai.models import ChatMessageContainer
 from pyqt_openai.pyqt_openai_data import OPENAI_STRUCT
 from pyqt_openai.pyqt_openai_data import get_model_endpoint, form_response, get_vision_response, is_gpt_vision
 
@@ -10,12 +11,11 @@ class OpenAIThread(QThread):
     """
     == replyGenerated Signal ==
     First: response
-    Second: user or AI
-    Third: streaming or not streaming
-    Forth: Finish reason
+    Second: streaming or not streaming
+    Third: Finish reason
     """
-    replyGenerated = Signal(str, bool, bool, dict)
-    streamFinished = Signal(dict)
+    replyGenerated = Signal(str, bool, ChatMessageContainer)
+    streamFinished = Signal(ChatMessageContainer)
 
     def __init__(self, model, openai_arg, info, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -23,7 +23,8 @@ class OpenAIThread(QThread):
         self.__openai_arg = openai_arg
         self.__stop_streaming = False
 
-        self.__info_dict = info
+        self.__info = info
+        self.__info.role = 'assistant'
 
     def stop_streaming(self):
         self.__stop_streaming = True
@@ -40,24 +41,24 @@ class OpenAIThread(QThread):
                     if inspect.isgenerator(response):
                         for chunk in response:
                             if self.__stop_streaming:
-                                self.__info_dict['finish_reason'] = 'stopped by user'
-                                self.streamFinished.emit(self.__info_dict)
+                                self.__info.finish_reason = 'stopped by user'
+                                self.streamFinished.emit(self.__info)
                                 break
                             else:
                                 delta = chunk['choices'][0]['delta']
                                 response_text = delta.get('content', '')
                                 if response_text:
-                                    self.replyGenerated.emit(response_text, False, True, self.__info_dict)
+                                    self.replyGenerated.emit(response_text, True, self.__info)
                                 else:
-                                    self.__info_dict['finish_reason'] = chunk['choices'][0].get('finish_reason', '')
-                                    self.streamFinished.emit(self.__info_dict)
+                                    self.__info.finish_reason = chunk['choices'][0].get('finish_reason', '')
+                                    self.streamFinished.emit(self.__info)
                     else:
-                        response_text, self.__info_dict = form_response(response, self.__info_dict)
-                        self.replyGenerated.emit(response_text, False, False, self.__info_dict)
+                        response_text, self.__info = form_response(response, self.__info)
+                        self.replyGenerated.emit(response_text, False, self.__info)
                 elif openai.__version__ >= str(1.0):
                     if is_gpt_vision(self.__openai_arg['model']):
-                        response_text, self.__info_dict = get_vision_response(self.__openai_arg, self.__info_dict)
-                        self.replyGenerated.emit(response_text, False, False, self.__info_dict)
+                        response_text, self.__info = get_vision_response(self.__openai_arg, self.__info)
+                        self.replyGenerated.emit(response_text, False, self.__info)
                     else:
                         response = OPENAI_STRUCT.chat.completions.create(
                             **self.__openai_arg
@@ -65,54 +66,55 @@ class OpenAIThread(QThread):
                         if isinstance(response, openai.Stream):
                             for chunk in response:
                                 if self.__stop_streaming:
-                                    self.__info_dict['finish_reason'] = 'stopped by user'
-                                    self.streamFinished.emit(self.__info_dict)
+                                    self.__info.finish_reason = 'stopped by user'
+                                    self.streamFinished.emit(self.__info)
                                     break
                                 else:
                                     response_text = chunk.choices[0].delta.content
                                     if response_text:
-                                        self.replyGenerated.emit(response_text, False, True, self.__info_dict)
+                                        self.replyGenerated.emit(response_text, True, self.__info)
                                     else:
-                                        self.__info_dict['finish_reason'] = chunk.choices[0].finish_reason
-                                        self.streamFinished.emit(self.__info_dict)
+                                        self.__info.finish_reason = chunk.choices[0].finish_reason
+                                        self.streamFinished.emit(self.__info)
                         else:
-                            response_text, self.__info_dict = form_response(response, self.__info_dict)
-                            self.replyGenerated.emit(response_text, False, False, self.__info_dict)
+                            response_text, self.__info = form_response(response, self.__info)
+                            self.__info.content = response_text
+                            self.replyGenerated.emit(self.__info.content, False, self.__info)
         except Exception as e:
-            self.__info_dict['finish_reason'] = 'Error'
-            self.replyGenerated.emit(f'<p style="color:red">{e}</p>', False, False, self.__info_dict)
+            self.__info.finish_reason = 'Error'
+            self.replyGenerated.emit(f'<p style="color:red">{e}</p>', False, self.__info)
 
 
 class LlamaOpenAIThread(QThread):
-    replyGenerated = Signal(str, bool, bool, dict)
+    replyGenerated = Signal(str, bool, ChatMessageContainer)
     streamFinished = Signal(dict)
 
-    def __init__(self, llama_idx_instance, openai_arg, query_text, info, *args, **kwargs):
+    def __init__(self, llama_idx_instance, openai_arg, query_text, info: ChatMessageContainer, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.__llama_idx_instance = llama_idx_instance
         self.__openai_arg = openai_arg
         self.__query_text = query_text
         self.__stop_streaming = False
 
-        self.__info_dict = info
+        self.__info = info
 
     def stop_streaming(self):
         self.__stop_streaming = True
 
     def run(self):
         try:
-            resp = self.__llama_idx_instance.get_response(self.__query_text)
+            self.__info.content = self.__llama_idx_instance.get_response(self.__query_text)
             # f = isinstance(resp, StreamingResponse)
             # if f:
             #     for response_text in resp.response_gen:
             #         if self.__stop_streaming:
             #             break
             #         else:
-            #             self.__info_dict['finish_reason'] = 'stopped by user'
-            #             self.replyGenerated.emit(response_text, False, f, self.__info_dict)
-            #     self.streamFinished.emit(self.__info_dict)
+            #             self.__info['finish_reason'] = 'stopped by user'
+            #             self.replyGenerated.emit(response_text, False, f, self.__info)
+            #     self.streamFinished.emit(self.__info)
             # else:
-            self.replyGenerated.emit(resp, False, False, self.__info_dict)
+            self.replyGenerated.emit(self.__info.content, False, self.__info)
         except Exception as e:
-            self.__info_dict['finish_reason'] = 'Error'
-            self.replyGenerated.emit(f'<p style="color:red">{e}</p>', False, False, self.__info_dict)
+            self.__info['finish_reason'] = 'Error'
+            self.replyGenerated.emit(f'<p style="color:red">{e}</p>', False, False, self.__info)

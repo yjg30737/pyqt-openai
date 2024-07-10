@@ -9,6 +9,7 @@ from qtpy.QtWidgets import QHBoxLayout, QWidget, QSizePolicy, QVBoxLayout, QFram
 from pyqt_openai.chatNavWidget import ChatNavWidget
 from pyqt_openai.chat_widget.chatWidget import ChatWidget
 from pyqt_openai.chat_widget.prompt import Prompt
+from pyqt_openai.constants import THREAD_TABLE_NAME
 from pyqt_openai.models import ChatThreadContainer, ChatMessageContainer
 from pyqt_openai.openAiThread import OpenAIThread, LlamaOpenAIThread
 from pyqt_openai.prompt_gen_widget.promptGeneratorWidget import PromptGeneratorWidget
@@ -33,7 +34,7 @@ class OpenAIChatBotWidget(QWidget):
         self.__notify_finish = self.__settings_ini.value('notify_finish', type=bool)
 
     def __initUi(self):
-        self.__chatNavWidget = ChatNavWidget(ChatThreadContainer.get_keys(), 'conv_tb')
+        self.__chatNavWidget = ChatNavWidget(ChatThreadContainer.get_keys(), THREAD_TABLE_NAME)
         self.__chatWidget = ChatWidget()
         self.__browser = self.__chatWidget.getChatBrowser()
 
@@ -219,28 +220,27 @@ class OpenAIChatBotWidget(QWidget):
                 self.__addThread()
 
             # Conversation result information after response
-            info = {
+            container = ChatMessageContainer(**{
+                'role': 'user',
+                'content': cur_text,
                 'model_name': openai_arg['model'],
                 'finish_reason': '',
                 'prompt_tokens': '',
                 'completion_tokens': '',
                 'total_tokens': '',
-            }
-
-            """
-            for make GPT continue to respond
-            """
+            })
+            # For make GPT continue to respond
             if continue_f:
                 query_text = 'Continue to respond.'
             else:
                 query_text = self.__prompt.getContent()
-            self.__browser.showLabel(query_text, True, False, info)
+            self.__browser.showLabel(query_text, False, container)
 
             # Run a different thread based on whether the llama-index is enabled or not.
             if is_llama_available:
-                self.__t = LlamaOpenAIThread(LLAMAINDEX_WRAPPER, openai_arg=openai_arg, query_text=query_text, info=info)
+                self.__t = LlamaOpenAIThread(LLAMAINDEX_WRAPPER, openai_arg=openai_arg, query_text=query_text, info=container)
             else:
-                self.__t = OpenAIThread(model, openai_arg, info=info)
+                self.__t = OpenAIThread(model, openai_arg, info=container)
             self.__t.started.connect(self.__beforeGenerated)
             self.__t.replyGenerated.connect(self.__browser.showLabel)
             self.__t.streamFinished.connect(self.__browser.streamFinished)

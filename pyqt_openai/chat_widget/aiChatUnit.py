@@ -1,12 +1,13 @@
 import pyperclip
 from qtpy.QtCore import Qt
-from qtpy.QtGui import QPalette, QColor
+from qtpy.QtGui import QPalette
 from qtpy.QtWidgets import QLabel, QWidget, QVBoxLayout, QApplication, QHBoxLayout, QSpacerItem, QSizePolicy, \
     QTextBrowser, QAbstractScrollArea
 
-from pyqt_openai.chat_widget.convUnitResultDialog import ConvUnitResultDialog
-from pyqt_openai.widgets.circleProfileImage import RoundedImage
+from pyqt_openai.chat_widget.messageResultDialog import MessageResultDialog
+from pyqt_openai.models import ChatMessageContainer
 from pyqt_openai.widgets.button import Button
+from pyqt_openai.widgets.circleProfileImage import RoundedImage
 
 
 class SourceBrowser(QWidget):
@@ -119,7 +120,7 @@ class AIChatUnit(QWidget):
         pyperclip.copy(self.text())
 
     def __showInfo(self):
-        dialog = ConvUnitResultDialog(self.__result_info)
+        dialog = MessageResultDialog(self.__result_info)
         dialog.exec()
 
     def text(self):
@@ -150,10 +151,10 @@ class AIChatUnit(QWidget):
         self.__copyBtn.setEnabled(False)
         self.__infoBtn.setEnabled(False)
 
-    def showConvResultInfo(self, info_dict):
+    def showConvResultInfo(self, arg: ChatMessageContainer):
         self.__copyBtn.setEnabled(True)
         self.__infoBtn.setEnabled(True)
-        self.__result_info = info_dict
+        self.__result_info = arg
 
     def setText(self, text: str):
         self.__lbl = QLabel(text)

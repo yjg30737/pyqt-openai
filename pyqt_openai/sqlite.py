@@ -24,9 +24,6 @@ class SqliteDatabase:
         # db names
         self.__db_filename = db_filename or get_db_filename()
 
-        # conv table names
-        self.__conv_unit_tb_nm = 'conv_unit_tb'
-
         # prompt table
         self.__prop_prompt_group_tb_nm = 'prop_prompt_grp_tb'
         self.__prop_prompt_unit_tb_nm = 'prop_prompt_unit_tb'
@@ -768,14 +765,15 @@ class SqliteDatabase:
         self.__conn.close()
 
 
+# For testing purpose
 old_filename = 'old_one/conv.db'
 old_filename_for_backup = 'old_one/conv_past.db'
 
-new_filename = 'new_one/conv.db'
+new_filename = 'conv.db'
 
 import os
 
-old_f = True
+old_f = False
 if old_f:
     if os.path.exists(old_filename):
         shutil.copy2(old_filename, old_filename_for_backup)
