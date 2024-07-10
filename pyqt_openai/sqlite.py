@@ -565,8 +565,10 @@ class SqliteDatabase:
         self.__conn.commit()
 
     def __createMessageTrigger(self):
-        # Create new trigger
-        # insert trigger
+        """
+        Create message trigger
+        """
+        # Create insert trigger
         self.__c.execute(f'''
             CREATE TRIGGER {THREAD_MESSAGE_INSERTED_TR_NAME}
             AFTER INSERT ON {MESSAGE_TABLE_NAME}
@@ -575,7 +577,7 @@ class SqliteDatabase:
             END
         ''')
 
-        # update trigger
+        # Create update trigger
         self.__c.execute(f'''
             CREATE TRIGGER {THREAD_MESSAGE_UPDATED_TR_NAME}
             AFTER UPDATE ON {MESSAGE_TABLE_NAME}
@@ -584,7 +586,7 @@ class SqliteDatabase:
             END
         ''')
 
-        # delete trigger
+        # Create delete trigger
         self.__c.execute(f'''
             CREATE TRIGGER {THREAD_MESSAGE_DELETED_TR_NAME}
             AFTER DELETE ON {MESSAGE_TABLE_NAME}
@@ -633,7 +635,7 @@ class SqliteDatabase:
     def selectCertainThreadRaw(self, thread_id, content_to_select=None):
         query = f'SELECT * FROM {MESSAGE_TABLE_NAME} WHERE thread_id = {thread_id}'
         if content_to_select:
-            query += f' WHERE content LIKE "%{content_to_select}%"'
+            query += f' AND content LIKE "%{content_to_select}%"'
         self.__c.execute(query)
         return self.__c.fetchall()
 
@@ -653,8 +655,9 @@ class SqliteDatabase:
 
     def insertMessage(self, arg: ChatMessageContainer):
         try:
-            insert_query = arg.create_insert_query(table_name=MESSAGE_TABLE_NAME, excludes=['id'])
-            self.__c.execute(insert_query, arg.get_values_for_insert(excludes=['id']))
+            excludes = ['id', 'update_dt', 'insert_dt']
+            insert_query = arg.create_insert_query(table_name=MESSAGE_TABLE_NAME, excludes=excludes)
+            self.__c.execute(insert_query, arg.get_values_for_insert(excludes=excludes))
             new_id = self.__c.lastrowid
             # Commit the transaction
             self.__conn.commit()
@@ -667,6 +670,7 @@ class SqliteDatabase:
         try:
             # Check if the table exists
             self.__c.execute(f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{self.__image_tb_nm}'")
+            # Will remove after v1.0.0
             if self.__c.fetchone()[0] == 1:
                 # To not make table every time to change column's name and type
                 self.__c.execute(f'PRAGMA table_info({self.__image_tb_nm})')
@@ -766,17 +770,17 @@ class SqliteDatabase:
 
 
 # For testing purpose
-old_filename = 'old_one/conv.db'
-old_filename_for_backup = 'old_one/conv_past.db'
-
-new_filename = 'conv.db'
-
-import os
-
-old_f = False
-if old_f:
-    if os.path.exists(old_filename):
-        shutil.copy2(old_filename, old_filename_for_backup)
-    db = SqliteDatabase(db_filename=old_filename)
-else:
-    db = SqliteDatabase(db_filename=new_filename)
+# old_filename = 'old_one/conv.db'
+# old_filename_for_backup = 'old_one/conv_past.db'
+#
+# new_filename = 'conv.db'
+#
+# import os
+#
+# old_f = False
+# if old_f:
+#     if os.path.exists(old_filename):
+#         shutil.copy2(old_filename, old_filename_for_backup)
+#     db = SqliteDatabase(db_filename=old_filename)
+# else:
+#     db = SqliteDatabase(db_filename=new_filename)

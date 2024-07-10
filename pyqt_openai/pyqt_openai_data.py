@@ -43,11 +43,11 @@ ENDPOINT_DICT = {
 # This doesn't need endpoint
 DALLE_ARR = ['dall-e-2', 'dall-e-3']
 
-# def get_model_endpoint(model):
-#     for k, v in ENDPOINT_DICT.items():
-#         endpoint_group = list(v)
-#         if model in endpoint_group:
-#             return k
+def get_model_endpoint(model):
+    for k, v in ENDPOINT_DICT.items():
+        endpoint_group = list(v)
+        if model in endpoint_group:
+            return k
 
 def get_chat_model():
     return ENDPOINT_DICT['/v1/chat/completions']

@@ -43,11 +43,11 @@ def get_version():
         raise RuntimeError("Version information not found.")
     return f'{version}'
 
-def conv_unit_to_txt(db, id, title, username='User', ai_name='AI'):
+def message_list_to_txt(db, thread_id, title, username='User', ai_name='AI'):
     content = ''
-    certain_conv_filename_content = db.selectCertainThreadRaw(id)
+    certain_thread_filename_content = db.selectCertainThreadRaw(thread_id)
     content += f'== {title} ==' + '\n'*2
-    for unit in certain_conv_filename_content:
+    for unit in certain_thread_filename_content:
         unit_prefix = username if unit[2] == 1 else ai_name
         unit_content = unit[3]
         content += f'{unit_prefix}: {unit_content}' + '\n'*2

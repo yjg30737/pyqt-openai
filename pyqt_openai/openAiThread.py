@@ -34,6 +34,7 @@ class OpenAIThread(QThread):
             response = OPENAI_STRUCT.chat.completions.create(
                 **self.__openai_arg
             )
+
             if isinstance(response, openai.Stream):
                 for chunk in response:
                     if self.__stop_streaming:
@@ -87,5 +88,5 @@ class LlamaOpenAIThread(QThread):
             # else:
             self.replyGenerated.emit(self.__info.content, False, self.__info)
         except Exception as e:
-            self.__info['finish_reason'] = 'Error'
-            self.replyGenerated.emit(f'<p style="color:red">{e}</p>', False, False, self.__info)
+            self.__info.finish_reason = 'Error'
+            self.replyGenerated.emit(f'<p style="color:red">{e}</p>', False, self.__info)

@@ -18,7 +18,7 @@ class MessageResultDialog(QDialog):
         self.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.WindowCloseButtonHint)
 
         lbls = []
-        for k, v in self.__result_info.items():
+        for k, v in self.__result_info.get_items(excludes=['content']):
             lbls.append(QLabel(f'{k}: {v}'))
 
         sep = QFrame()

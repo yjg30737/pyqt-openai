@@ -16,7 +16,7 @@ from pyqt_openai.prompt_gen_widget.promptGeneratorWidget import PromptGeneratorW
 from pyqt_openai.pyqt_openai_data import DB, get_argument, LLAMAINDEX_WRAPPER
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.right_sidebar.aiPlaygroundWidget import AIPlaygroundWidget
-from pyqt_openai.util.script import open_directory, get_generic_ext_out_of_qt_ext, conv_unit_to_txt, conv_unit_to_html, \
+from pyqt_openai.util.script import open_directory, get_generic_ext_out_of_qt_ext, message_list_to_txt, conv_unit_to_html, \
     add_file_to_zip
 from pyqt_openai.widgets.button import Button
 from pyqt_openai.widgets.notifier import NotifierWidget
@@ -210,7 +210,7 @@ class OpenAIChatBotWidget(QWidget):
             is_llama_available = LLAMAINDEX_WRAPPER.get_directory() and use_llama_index
             use_max_tokens = self.__settings_ini.value('use_max_tokens', type=bool)
 
-            openai_arg = get_argument(model, system, messages, cur_text, temperature, top_p, frequency_penalty, presence_penalty, stream,
+            openai_param = get_argument(model, system, messages, cur_text, temperature, top_p, frequency_penalty, presence_penalty, stream,
                                       use_max_tokens, max_tokens,
                                       images,
                                       is_llama_available)
@@ -219,16 +219,20 @@ class OpenAIChatBotWidget(QWidget):
             if self.__chatWidget.isNew():
                 self.__addThread()
 
-            # Conversation result information after response
-            container = ChatMessageContainer(**{
+            additional_info = {
                 'role': 'user',
                 'content': cur_text,
-                'model_name': openai_arg['model'],
+                'model_name': openai_param['model'],
                 'finish_reason': '',
                 'prompt_tokens': '',
                 'completion_tokens': '',
                 'total_tokens': '',
-            })
+            }
+
+            container_param = {k: v for k, v in {**openai_param, **additional_info}.items() if k in ChatMessageContainer.get_keys()}
+            # Conversation result information after response
+            container = ChatMessageContainer(**container_param)
+
             # For make GPT continue to respond
             if continue_f:
                 query_text = 'Continue to respond.'
@@ -238,9 +242,9 @@ class OpenAIChatBotWidget(QWidget):
 
             # Run a different thread based on whether the llama-index is enabled or not.
             if is_llama_available:
-                self.__t = LlamaOpenAIThread(LLAMAINDEX_WRAPPER, openai_arg=openai_arg, query_text=query_text, info=container)
+                self.__t = LlamaOpenAIThread(LLAMAINDEX_WRAPPER, openai_arg=openai_param, query_text=query_text, info=container)
             else:
-                self.__t = OpenAIThread(openai_arg, info=container)
+                self.__t = OpenAIThread(openai_param, info=container)
             self.__t.started.connect(self.__beforeGenerated)
             self.__t.replyGenerated.connect(self.__browser.showLabel)
             self.__t.streamFinished.connect(self.__browser.streamFinished)
@@ -343,7 +347,7 @@ class OpenAIChatBotWidget(QWidget):
             ext = os.path.splitext(filename)[-1] or get_generic_ext_out_of_qt_ext(file_data[1])
             if ext == '.zip':
                 compressed_file_type = file_data[1].split(' ')[0].lower()
-                ext_dict = {'txt': {'ext':'.txt', 'func':conv_unit_to_txt}, 'html': {'ext':'.html', 'func':conv_unit_to_html}}
+                ext_dict = {'txt': {'ext':'.txt', 'func':message_list_to_txt}, 'html': {'ext': '.html', 'func':conv_unit_to_html}}
                 for id in ids:
                     row_info = DB.selectThread(id)
                     # Limit the title length to file name length

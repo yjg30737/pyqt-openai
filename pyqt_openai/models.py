@@ -11,7 +11,7 @@ class Container:
         You don't have to call this if you want to use default class variables
         """
         for k in self.__annotations__:
-            setattr(self, k, kwargs.get(k, ""))
+            setattr(self, k, kwargs.get(k, getattr(self, k, "")))
         for key, value in kwargs.items():
             if key in self.__annotations__:
                 setattr(self, key, value)
@@ -66,23 +66,23 @@ class Container:
 
 @dataclass
 class ChatThreadContainer(Container):
-    id: str = "",
-    name: str = "",
-    insert_dt: str = "",
+    id: str = ""
+    name: str = ""
+    insert_dt: str = ""
     update_dt: str = ""
 
 @dataclass
 class ChatMessageContainer(Container):
-    id: str = "",
-    thread_id: str = "",
-    role: str = "",
-    content: str = "",
-    insert_dt: str = "",
-    update_dt: str = "",
-    finish_reason: str = "",
-    model: str = "",
-    prompt_tokens: str = "",
-    completion_tokens: str = "",
+    id: str = ""
+    thread_id: str = ""
+    role: str = ""
+    content: str = ""
+    insert_dt: str = ""
+    update_dt: str = ""
+    finish_reason: str = ""
+    model: str = ""
+    prompt_tokens: str = ""
+    completion_tokens: str = ""
     total_tokens: str = ""
 
     def __init__(self, **kwargs):

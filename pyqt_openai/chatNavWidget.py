@@ -220,9 +220,11 @@ class ChatNavWidget(QWidget):
         self.clicked.emit(id, title)
 
     def __getSelectedIds(self):
-        idx_s = [idx.siblingAtColumn(0) for idx in self.__tableView.selectedIndexes()]
-        idx_s = list(set(idx_s))
-        ids = [self.__model.data(idx, role=Qt.ItemDataRole.DisplayRole) for idx in idx_s]
+        selected_idx_s = self.__tableView.selectedIndexes()
+        ids = []
+        for idx in selected_idx_s:
+            ids.append(self.__model.data(self.__proxyModel.mapToSource(idx.siblingAtColumn(0)), role=Qt.ItemDataRole.DisplayRole))
+        ids = list(set(ids))
         return ids
 
     def __delete(self):
@@ -250,8 +252,8 @@ class ChatNavWidget(QWidget):
         # content
         elif self.__searchOptionCmbBox.currentText() == 'Content':
             if search_text:
-                convs = DB.selectAllContentOfThread(content_to_select=search_text)
-                ids = [_[0] for _ in convs]
+                threads = DB.selectAllContentOfThread(content_to_select=search_text)
+                ids = [_[0] for _ in threads]
                 self.__model.setQuery(QSqlQuery(f"SELECT {','.join(self.__columns)} FROM {self.__table_nm} "
                                                 f"WHERE id IN ({','.join(map(str, ids))})"))
             else:
