@@ -11,14 +11,13 @@ class OpenAIThread(QThread):
     == replyGenerated Signal ==
     First: response
     Second: streaming or not streaming
-    Third: Finish reason
+    Third: ChatMessageContainer
     """
     replyGenerated = Signal(str, bool, ChatMessageContainer)
     streamFinished = Signal(ChatMessageContainer)
 
     def __init__(self, openai_arg, info, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # self.__endpoint = get_model_endpoint(model)
         self.__openai_arg = openai_arg
         self.__stop_streaming = False
 
@@ -30,7 +29,6 @@ class OpenAIThread(QThread):
 
     def run(self):
         try:
-            # if self.__endpoint == '/v1/chat/completions':
             response = OPENAI_STRUCT.chat.completions.create(
                 **self.__openai_arg
             )

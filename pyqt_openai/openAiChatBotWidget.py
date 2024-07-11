@@ -1,3 +1,4 @@
+import json
 import os
 import sys
 import webbrowser
@@ -324,19 +325,24 @@ class OpenAIChatBotWidget(QWidget):
     def __importChat(self, filename):
         old_conv = DB.selectAllThread()
         if filename and old_conv and len(old_conv) > 0:
-            message = '''There are already conversations. Would you export them before importing? 
-            Warning: If you do not export, you will lose the current conversations.
-            '''
-            messageBox = QMessageBox(self)
-            messageBox.setWindowTitle('Information')
-            messageBox.setText(message)
-            messageBox.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
-            reply = messageBox.exec()
-            if reply == QMessageBox.StandardButton.Yes:
-                # Export previous conversation
-                self.__exportChat([_['id'] for _ in old_conv])
-            else:
-                pass
+            print(f'File {filename}!')
+            print('Now you can import the conversation.')
+            print('Let\'s see how it looks.')
+            with open(filename, 'r') as f:
+                print(json.load(f))
+            # message = '''There are already conversations. Would you export them before importing?
+            # Warning: If you do not export, you will lose the current conversations.
+            # '''
+            # messageBox = QMessageBox(self)
+            # messageBox.setWindowTitle('Information')
+            # messageBox.setText(message)
+            # messageBox.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+            # reply = messageBox.exec()
+            # if reply == QMessageBox.StandardButton.Yes:
+            #     # Export previous conversation
+            #     self.__exportChat([_['id'] for _ in old_conv])
+            # else:
+            #     pass
         else:
             print(f'Import {filename}')
 

@@ -186,7 +186,7 @@ class ChatNavWidget(QWidget):
         self.__model.select()
 
     def __import(self):
-        filename = QFileDialog.getOpenFileName(self, 'Import', '', 'SQLite DB files (*.db)')
+        filename = QFileDialog.getOpenFileName(self, 'Import', '', 'JSON files (*.json)')
         if filename:
             filename = filename[0]
             self.onImport.emit(filename)
