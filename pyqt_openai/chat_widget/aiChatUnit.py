@@ -1,11 +1,12 @@
 import pyperclip
 from qtpy.QtCore import Qt
 from qtpy.QtGui import QPalette
-from qtpy.QtWidgets import QLabel, QWidget, QVBoxLayout, QApplication, QHBoxLayout, QSpacerItem, QSizePolicy, \
+from qtpy.QtWidgets import QLabel, QMessageBox, QWidget, QVBoxLayout, QApplication, QHBoxLayout, QSpacerItem, QSizePolicy, \
     QTextBrowser, QAbstractScrollArea
 
 from pyqt_openai.chat_widget.messageResultDialog import MessageResultDialog
 from pyqt_openai.models import ChatMessageContainer
+from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.widgets.button import Button
 from pyqt_openai.widgets.circleProfileImage import RoundedImage
 
@@ -82,6 +83,11 @@ class AIChatUnit(QWidget):
         self.__icon = RoundedImage()
         self.__icon.setMaximumSize(24, 24)
 
+        self.__favoriteBtn = Button()
+        self.__favoriteBtn.setStyleAndIcon('ico/favorite_no.svg')
+        self.__favoriteBtn.setCheckable(True)
+        self.__favoriteBtn.toggled.connect(self.__favorite)
+
         self.__infoBtn = Button()
         self.__infoBtn.setStyleAndIcon('ico/info.svg')
         self.__infoBtn.clicked.connect(self.__showInfo)
@@ -93,6 +99,7 @@ class AIChatUnit(QWidget):
 
         lay.addWidget(self.__icon)
         lay.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.Policy.MinimumExpanding))
+        lay.addWidget(self.__favoriteBtn)
         lay.addWidget(self.__infoBtn)
         lay.addWidget(self.__copyBtn)
         lay.setContentsMargins(2, 2, 2, 2)
@@ -118,6 +125,18 @@ class AIChatUnit(QWidget):
 
     def __copy(self):
         pyperclip.copy(self.text())
+
+    def __favorite(self, f):
+        favorite = 1 if f else 0
+        if favorite:
+            self.__favoriteBtn.setStyleAndIcon('ico/favorite_yes.svg')
+        else:
+            self.__favoriteBtn.setStyleAndIcon('ico/favorite_no.svg')
+        if self.__result_info.id:
+            DB.updateMessage(self.__result_info.id, favorite)
+            self.__result_info.favorite = favorite
+        else:
+            QMessageBox.warning(self, 'Warning', 'Working for providing ID for this message. Please try again later.')
 
     def __showInfo(self):
         dialog = MessageResultDialog(self.__result_info)

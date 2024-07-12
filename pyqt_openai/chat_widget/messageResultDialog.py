@@ -19,7 +19,10 @@ class MessageResultDialog(QDialog):
 
         lbls = []
         for k, v in self.__result_info.get_items(excludes=['content']):
-            lbls.append(QLabel(f'{k}: {v}'))
+            if k == 'favorite':
+                lbls.append(QLabel(f'{k}: {"Yes" if v else "No"}'))
+            else:
+                lbls.append(QLabel(f'{k}: {v}'))
 
         sep = QFrame()
         sep.setFrameShape(QFrame.Shape.HLine)

@@ -1,10 +1,9 @@
-from PyQt5.QtWidgets import QDialog
 from qtpy.QtCore import Signal, QSortFilterProxyModel, Qt
 from qtpy.QtSql import QSqlTableModel, QSqlQuery
 from qtpy.QtWidgets import QWidget, QVBoxLayout, QMessageBox, QStyledItemDelegate, QTableView, \
     QAbstractItemView, \
     QHBoxLayout, \
-    QLabel, QSpacerItem, QSizePolicy, QFileDialog, QComboBox
+    QLabel, QSpacerItem, QSizePolicy, QFileDialog, QComboBox, QDialog
 
 # for search feature
 from pyqt_openai.exportDialog import ExportDialog

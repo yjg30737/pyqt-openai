@@ -622,6 +622,7 @@ class SqliteDatabase:
                               prompt_tokens INTEGER,
                               completion_tokens INTEGER,
                               total_tokens INTEGER,
+                              favorite INTEGER DEFAULT 0,
                               update_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
                               insert_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
                               FOREIGN KEY (thread_id) REFERENCES {THREAD_TABLE_NAME}
@@ -673,6 +674,17 @@ class SqliteDatabase:
             # Commit the transaction
             self.__conn.commit()
             return new_id
+        except sqlite3.Error as e:
+            print(f"An error occurred: {e}")
+            raise
+
+    def updateMessage(self, id, favorite):
+        """
+        Update message favorite
+        """
+        try:
+            self.__c.execute(f'UPDATE {MESSAGE_TABLE_NAME} SET favorite=(?) WHERE id={id}', (favorite,))
+            self.__conn.commit()
         except sqlite3.Error as e:
             print(f"An error occurred: {e}")
             raise
