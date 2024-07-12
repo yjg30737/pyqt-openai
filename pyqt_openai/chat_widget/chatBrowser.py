@@ -39,10 +39,9 @@ class ChatBrowser(QScrollArea):
         self.setWidgetResizable(True)
 
     def showLabel(self, text, stream_f, arg: ChatMessageContainer):
-        user_f = arg.role == 'user'
         arg.thread_id = self.__cur_id
         # for question & response below the menu
-        unit = self.__setLabel(text, stream_f, user_f)
+        unit = self.__setLabel(text, stream_f, arg.role)
         if not stream_f:
             self.__showConvResultInfo(unit, arg)
             # change user_f type from bool to int to insert in db
@@ -65,9 +64,9 @@ class ChatBrowser(QScrollArea):
         arg.content = self.getLastResponse()
         self.messageUpdated.emit(arg)
 
-    def __setLabel(self, text, stream_f, user_f):
+    def __setLabel(self, text, stream_f, role):
         chatUnit = QLabel()
-        if user_f:
+        if role == 'user':
             chatUnit = UserChatUnit()
             chatUnit.setText(text)
             chatUnit.setIcon(self.__user_image)
@@ -223,7 +222,7 @@ class ChatBrowser(QScrollArea):
         for i in range(len(args)):
             arg = args[i]
             # stream is False no matter what
-            unit = self.__setLabel(arg.content, False, arg.role == 'user')
+            unit = self.__setLabel(arg.content, False, arg.role)
             self.__showConvResultInfo(unit, arg)
 
     def setUserImage(self, img):

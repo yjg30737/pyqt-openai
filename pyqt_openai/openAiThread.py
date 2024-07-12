@@ -16,7 +16,7 @@ class OpenAIThread(QThread):
     replyGenerated = Signal(str, bool, ChatMessageContainer)
     streamFinished = Signal(ChatMessageContainer)
 
-    def __init__(self, openai_arg, info, *args, **kwargs):
+    def __init__(self, openai_arg, info: ChatMessageContainer, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.__openai_arg = openai_arg
         self.__stop_streaming = False
@@ -45,10 +45,11 @@ class OpenAIThread(QThread):
                             self.replyGenerated.emit(response_text, True, self.__info)
                         else:
                             self.__info.finish_reason = chunk.choices[0].finish_reason
+                            # self.__info.message_id = chunk.id
                             self.streamFinished.emit(self.__info)
             else:
-                response_text, self.__info = form_response(response, self.__info)
-                self.__info.content = response_text
+                # self.__info.message_id = response.id
+                self.__info = form_response(response, self.__info)
                 self.replyGenerated.emit(self.__info.content, False, self.__info)
         except Exception as e:
             self.__info.finish_reason = 'Error'

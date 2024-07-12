@@ -6,6 +6,7 @@ import openai
 import requests
 from openai.types.chat import ChatCompletion
 
+from pyqt_openai.models import ChatMessageContainer
 from pyqt_openai.sqlite import SqliteDatabase
 from pyqt_openai.util.llamapage_script import GPTLLamaIndexWrapper
 
@@ -111,42 +112,10 @@ def get_argument(model, system, messages, cur_text, temperature, top_p, frequenc
 
     return openai_arg
 
-def form_response(response, info_dict):
-    if isinstance(response, ChatCompletion):
-        response_text = response.choices[0].message.content
-        info_dict['prompt_tokens'] = response.usage.prompt_tokens
-        info_dict['completion_tokens'] = response.usage.completion_tokens
-        info_dict['total_tokens'] = response.usage.total_tokens
-        info_dict['finish_reason'] = response.choices[0].finish_reason
-    else:
-        response_text = response['choices'][0]['message']['content']
-        info_dict['prompt_tokens'] = response['usage']['prompt_tokens']
-        info_dict['completion_tokens'] = response['usage']['completion_tokens']
-        info_dict['total_tokens'] = response['usage']['total_tokens']
-        info_dict['finish_reason'] = response['choices'][0]['finish_reason']
-    return response_text, info_dict
-
-def get_vision_response(openai_arg, info_dict):
-    headers = {
-      "Content-Type": "application/json",
-      "Authorization": f"Bearer {OPENAI_STRUCT.api_key}"
-    }
-
-    # TODO
-    # Support stream
-    # Before that, i will temporarily set stream as false
-    openai_arg['stream'] = False
-    response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=openai_arg)
-    response = json.loads(response.text)
-    response_text, info_dict = form_response(response, info_dict)
-    return response_text, info_dict
-
-    # with requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=openai_arg,
-    #                    stream=True) as resp:
-    #     # try/except way to handle JSONDecodeError is not recommended, so i will change soon
-    #     try:
-    #         for line in resp.iter_lines():
-    #             if line:
-    #                 yield json.loads(':'.join(line.decode('utf8').split(':')[1:]).strip())
-    #     except JSONDecodeError as e:
-    #         pass
+def form_response(response, info: ChatMessageContainer):
+    info.content = response.choices[0].message.content
+    info.prompt_tokens = response.usage.prompt_tokens
+    info.completion_tokens = response.usage.completion_tokens
+    info.total_tokens = response.usage.total_tokens
+    info.finish_reason = response.choices[0].finish_reason
+    return info

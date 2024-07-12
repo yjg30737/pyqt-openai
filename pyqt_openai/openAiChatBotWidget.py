@@ -323,28 +323,21 @@ class OpenAIChatBotWidget(QWidget):
         self.__chatNavWidget.add(called_from_parent=True)
 
     def __importChat(self, filename):
-        old_conv = DB.selectAllThread()
-        if filename and old_conv and len(old_conv) > 0:
-            print(f'File {filename}!')
-            print('Now you can import the conversation.')
-            print('Let\'s see how it looks.')
-            with open(filename, 'r') as f:
-                print(json.load(f))
-            # message = '''There are already conversations. Would you export them before importing?
-            # Warning: If you do not export, you will lose the current conversations.
-            # '''
-            # messageBox = QMessageBox(self)
-            # messageBox.setWindowTitle('Information')
-            # messageBox.setText(message)
-            # messageBox.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
-            # reply = messageBox.exec()
-            # if reply == QMessageBox.StandardButton.Yes:
-            #     # Export previous conversation
-            #     self.__exportChat([_['id'] for _ in old_conv])
-            # else:
-            #     pass
-        else:
-            print(f'Import {filename}')
+        data = []
+        with open(filename, 'r') as f:
+            data = json.load(f)
+
+        # Import thread
+        for thread in data:
+            cur_id = DB.insertThread(thread['name'])
+            messages = thread['messages']
+            # Import message
+            for message in messages:
+                message['thread_id'] = cur_id
+                container = ChatMessageContainer(**message)
+                DB.insertMessage(container)
+
+        self.__chatNavWidget.refreshData()
 
     def __exportChat(self, ids):
         file_data = QFileDialog.getSaveFileName(self, LangClass.TRANSLATIONS['Save'], os.path.expanduser('~'), 'JSON file (*.json);;txt files Compressed File (*.zip);;html files Compressed File (*.zip)')

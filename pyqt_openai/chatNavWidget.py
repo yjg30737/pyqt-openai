@@ -195,10 +195,13 @@ class ChatNavWidget(QWidget):
         columns = ChatThreadContainer.get_keys()
         data = DB.selectAllThread()
         sort_by = 'update_dt'
-        dialog = ExportDialog(columns, data, sort_by=sort_by)
-        reply = dialog.exec()
-        if reply == QDialog.Accepted:
-            self.onExport.emit(dialog.getSelectedIds())
+        if len(data) > 0:
+            dialog = ExportDialog(columns, data, sort_by=sort_by)
+            reply = dialog.exec()
+            if reply == QDialog.Accepted:
+                self.onExport.emit(dialog.getSelectedIds())
+        else:
+            QMessageBox.information(self, 'Information', 'No data to export.')
 
     def __updated(self, i, r):
         # send updated signal
