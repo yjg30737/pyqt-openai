@@ -18,3 +18,5 @@ THREAD_MESSAGE_DELETED_TR_NAME_OLD = 'conv_tb_updated_by_unit_deleted_tr'
 THREAD_MESSAGE_INSERTED_TR_NAME = 'thread_message_inserted_tr'
 THREAD_MESSAGE_UPDATED_TR_NAME = 'thread_message_updated_tr'
 THREAD_MESSAGE_DELETED_TR_NAME = 'thread_message_deleted_tr'
+
+THREAD_ORDERBY = 'update_dt'

@@ -17,7 +17,8 @@ from pyqt_openai.prompt_gen_widget.promptGeneratorWidget import PromptGeneratorW
 from pyqt_openai.pyqt_openai_data import DB, get_argument, LLAMAINDEX_WRAPPER
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.right_sidebar.aiPlaygroundWidget import AIPlaygroundWidget
-from pyqt_openai.util.script import open_directory, get_generic_ext_out_of_qt_ext, message_list_to_txt, conv_unit_to_html, \
+from pyqt_openai.util.script import open_directory, get_generic_ext_out_of_qt_ext, message_list_to_txt, \
+    conv_unit_to_html, \
     add_file_to_zip
 from pyqt_openai.widgets.button import Button
 from pyqt_openai.widgets.notifier import NotifierWidget
@@ -30,7 +31,6 @@ class OpenAIChatBotWidget(QWidget):
         self.__initUi()
 
     def __initVal(self):
-        # ini
         self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.Format.IniFormat)
         self.__notify_finish = self.__settings_ini.value('notify_finish', type=bool)
 
@@ -105,6 +105,7 @@ class OpenAIChatBotWidget(QWidget):
         self.__chatNavWidget.clicked.connect(self.__showChat)
         self.__chatNavWidget.cleared.connect(self.__clearChat)
         self.__chatNavWidget.onImport.connect(self.__importChat)
+        self.__chatNavWidget.onChatGPTImport.connect(self.__chatGPTImport)
         self.__chatNavWidget.onExport.connect(self.__exportChat)
 
         self.__lineEdit.returnPressed.connect(self.__chat)
@@ -323,21 +324,38 @@ class OpenAIChatBotWidget(QWidget):
         self.__chatNavWidget.add(called_from_parent=True)
 
     def __importChat(self, filename):
-        data = []
-        with open(filename, 'r') as f:
-            data = json.load(f)
+        try:
+            data = []
+            with open(filename, 'r') as f:
+                data = json.load(f)
 
-        # Import thread
-        for thread in data:
-            cur_id = DB.insertThread(thread['name'])
-            messages = thread['messages']
-            # Import message
-            for message in messages:
-                message['thread_id'] = cur_id
-                container = ChatMessageContainer(**message)
-                DB.insertMessage(container)
+            # Import thread
+            for thread in data:
+                cur_id = DB.insertThread(thread['name'])
+                messages = thread['messages']
+                # Import message
+                for message in messages:
+                    message['thread_id'] = cur_id
+                    container = ChatMessageContainer(**message)
+                    DB.insertMessage(container)
+            self.__chatNavWidget.refreshData()
+        except Exception as e:
+            QMessageBox.critical(self, "Error", 'Check whether the file is a valid JSON file for importing.')
 
-        self.__chatNavWidget.refreshData()
+    def __chatGPTImport(self, data):
+        try:
+            # Import thread
+            for thread in data:
+                cur_id = DB.insertThread(thread['name'])
+                messages = thread['messages']
+                # Import message
+                for message in messages:
+                    message['thread_id'] = cur_id
+                    container = ChatMessageContainer(**message)
+                    DB.insertMessage(container)
+            self.__chatNavWidget.refreshData()
+        except Exception as e:
+            QMessageBox.critical(self, "Error", 'Check whether the file is a valid JSON file for importing.')
 
     def __exportChat(self, ids):
         file_data = QFileDialog.getSaveFileName(self, LangClass.TRANSLATIONS['Save'], os.path.expanduser('~'), 'JSON file (*.json);;txt files Compressed File (*.zip);;html files Compressed File (*.zip)')

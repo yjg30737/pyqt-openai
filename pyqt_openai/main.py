@@ -17,7 +17,7 @@ sys.path.insert(0, os.getcwd())  # Add the current directory as well
 # os.environ['QT_API'] = 'pyside6'
 
 # for testing pyqt6
-# os.environ['QT_API'] = 'pyqt6'
+os.environ['QT_API'] = 'pyqt6'
 
 from qtpy.QtGui import QGuiApplication, QFont, QIcon, QColor
 from qtpy.QtWidgets import QMainWindow, QToolBar, QHBoxLayout, QDialog, QLineEdit, QPushButton, QWidgetAction, QSpinBox, QLabel, QWidget, QApplication, \
@@ -146,6 +146,15 @@ class MainWindow(QMainWindow):
         self.__transparentSpinBox.setToolTip(LangClass.TRANSLATIONS['Set Transparency of Window'])
         self.__transparentSpinBox.setMinimumWidth(100)
 
+        self.__fullScreenAction = QWidgetAction(self)
+        self.__fullScreenBtn = Button()
+        self.__fullScreenBtn.setStyleAndIcon('ico/fullscreen.svg')
+        self.__fullScreenBtn.setCheckable(True)
+        self.__fullScreenBtn.toggled.connect(self.__fullScreenToggle)
+        self.__fullScreenAction.setDefaultWidget(self.__fullScreenBtn)
+        self.__fullScreenBtn.setToolTip('Full Screen')
+        self.__fullScreenBtn.setShortcut('F11')
+
         lay = QHBoxLayout()
         lay.addWidget(self.__transparentSpinBox)
 
@@ -187,6 +196,12 @@ class MainWindow(QMainWindow):
 
         self.__settingsAction = QAction('Settings', self)
         self.__settingsAction.triggered.connect(self.__showSettingsDialog)
+
+    def __fullScreenToggle(self, f):
+        if f:
+            self.showFullScreen()
+        else:
+            self.showNormal()
 
     def __lang_changed(self, lang):
         msg_box = QMessageBox()
@@ -256,6 +271,7 @@ class MainWindow(QMainWindow):
         self.__toolbar.addAction(self.__chooseAiAction)
         self.__toolbar.addAction(self.__stackAction)
         self.__toolbar.addAction(self.__customizeAction)
+        self.__toolbar.addAction(self.__fullScreenAction)
         self.__toolbar.addAction(self.__transparentAction)
         self.__toolbar.addAction(self.__showAiToolBarAction)
         self.__toolbar.addAction(self.__apiAction)
@@ -340,6 +356,7 @@ class MainWindow(QMainWindow):
 
     def __showAiToolBarChkBoxChecked(self, f):
         self.__mainWidget.currentWidget().showSecondaryToolBar(f)
+        self.__settingsParamContainer.show_secondary_toolbar = f
 
     def __executeCustomizeDialog(self):
         dialog = CustomizeDialog(self)

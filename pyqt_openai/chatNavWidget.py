@@ -6,7 +6,10 @@ from qtpy.QtWidgets import QWidget, QVBoxLayout, QMessageBox, QStyledItemDelegat
     QLabel, QSpacerItem, QSizePolicy, QFileDialog, QComboBox, QDialog
 
 # for search feature
+from pyqt_openai.chatGPTImportDialog import ChatGPTImportDialog
+from pyqt_openai.constants import THREAD_ORDERBY
 from pyqt_openai.exportDialog import ExportDialog
+from pyqt_openai.importDialog import ImportDialog
 from pyqt_openai.models import ChatThreadContainer
 from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.widgets.button import Button
@@ -57,6 +60,7 @@ class ChatNavWidget(QWidget):
     cleared = Signal()
     onImport = Signal(str)
     onExport = Signal(list)
+    onChatGPTImport = Signal(list)
 
     def __init__(self, columns, table_nm):
         super().__init__()
@@ -185,15 +189,27 @@ class ChatNavWidget(QWidget):
         self.__model.select()
 
     def __import(self):
-        filename = QFileDialog.getOpenFileName(self, 'Import', '', 'JSON files (*.json)')
-        if filename:
-            filename = filename[0]
-            self.onImport.emit(filename)
+        dialog = ImportDialog()
+        reply = dialog.exec()
+        if reply == QDialog.Accepted:
+            import_type = dialog.getImportType()
+            if import_type == 'General':
+                filename = QFileDialog.getOpenFileName(self, 'Import', '', 'JSON files (*.json)')
+                if filename:
+                    filename = filename[0]
+                    if filename:
+                        self.onImport.emit(filename)
+            else:
+                chatgptDialog = ChatGPTImportDialog()
+                reply = chatgptDialog.exec()
+                if reply == QDialog.Accepted:
+                    data = chatgptDialog.getData()
+                    self.onChatGPTImport.emit(data)
 
     def __export(self):
         columns = ChatThreadContainer.get_keys()
         data = DB.selectAllThread()
-        sort_by = 'update_dt'
+        sort_by = THREAD_ORDERBY
         if len(data) > 0:
             dialog = ExportDialog(columns, data, sort_by=sort_by)
             reply = dialog.exec()
