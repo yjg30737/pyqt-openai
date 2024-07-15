@@ -41,11 +41,13 @@ class OpenAIThread(QThread):
                         break
                     else:
                         response_text = chunk.choices[0].delta.content
+                        finish_reason = chunk.choices[0].finish_reason
                         if response_text:
                             self.replyGenerated.emit(response_text, True, self.__info)
                         else:
-                            self.__info.finish_reason = chunk.choices[0].finish_reason
-                            self.streamFinished.emit(self.__info)
+                            if finish_reason == 'stop':
+                                self.__info.finish_reason = chunk.choices[0].finish_reason
+                                self.streamFinished.emit(self.__info)
             else:
                 self.__info = form_response(response, self.__info)
                 self.replyGenerated.emit(self.__info.content, False, self.__info)

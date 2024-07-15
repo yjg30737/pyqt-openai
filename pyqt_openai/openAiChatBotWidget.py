@@ -125,7 +125,7 @@ class OpenAIChatBotWidget(QWidget):
 
         self.__lineEdit.returnPressed.connect(self.__chat)
 
-        self.__browser.messageUpdated.connect(self.__updateMessage)
+        # self.__browser.messageUpdated.connect(self.__updateMessage)
 
         lay = QHBoxLayout()
         lay.addWidget(self.__prompt)
@@ -413,9 +413,9 @@ class OpenAIChatBotWidget(QWidget):
                 DB.export(ids, filename)
             open_directory(os.path.dirname(filename))
 
-    def __updateMessage(self, arg: ChatMessageContainer):
-        if arg.content:
-            DB.insertMessage(arg)
+    # def __updateMessage(self, arg: ChatMessageContainer):
+    #     if arg.content:
+    #         DB.insertMessage(arg)
 
     def setColumns(self, columns):
         self.__chatNavWidget.setColumns(columns)

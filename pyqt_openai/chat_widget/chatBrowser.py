@@ -7,7 +7,7 @@ from qtpy.QtWidgets import QScrollArea, QVBoxLayout, QWidget, QLabel
 from pyqt_openai.chat_widget.aiChatUnit import AIChatUnit
 from pyqt_openai.chat_widget.userChatUnit import UserChatUnit
 from pyqt_openai.models import ChatMessageContainer
-from pyqt_openai.pyqt_openai_data import get_message_obj
+from pyqt_openai.pyqt_openai_data import get_message_obj, DB
 from pyqt_openai.util.script import is_valid_regex
 
 
@@ -42,8 +42,8 @@ class ChatBrowser(QScrollArea):
         arg.thread_id = arg.thread_id if arg.thread_id else self.__cur_id
         unit = self.__setLabel(text, stream_f, arg.role)
         if not stream_f:
+            arg.id = DB.insertMessage(arg)
             self.__showConvResultInfo(unit, arg)
-            self.messageUpdated.emit(arg)
 
     def __getLastUnit(self) -> AIChatUnit | None:
         item = self.widget().layout().itemAt(self.widget().layout().count() - 1)
@@ -58,9 +58,9 @@ class ChatBrowser(QScrollArea):
 
     def streamFinished(self, arg: ChatMessageContainer):
         unit = self.__getLastUnit()
-        self.__showConvResultInfo(unit, arg)
         arg.content = self.getLastResponse()
-        self.messageUpdated.emit(arg)
+        arg.id = DB.insertMessage(arg)
+        self.__showConvResultInfo(unit, arg)
 
     def __setLabel(self, text, stream_f, role):
         chatUnit = QLabel()
