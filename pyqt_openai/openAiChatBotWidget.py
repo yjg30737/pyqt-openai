@@ -270,7 +270,7 @@ class OpenAIChatBotWidget(QWidget):
             # Conversation result information after response
             container = ChatMessageContainer(**container_param)
 
-            # For make GPT continue to respond
+            # For make chatbot continue to respond
             if continue_f:
                 query_text = 'Continue to respond.'
             else:
@@ -337,8 +337,8 @@ class OpenAIChatBotWidget(QWidget):
                 self.__notifierWidget.doubleClicked.connect(self.window().show)
 
     def __showChat(self, id, title):
-        # self.__showFavorite(False)
-        # self.__chatNavWidget.activateFavoriteFromParent(False)
+        self.__showFavorite(False)
+        self.__chatNavWidget.activateFavoriteFromParent(False)
         conv_data = DB.selectCertainThreadMessages(id)
         self.__chatWidget.showTitle(title)
         self.__browser.replaceThread(conv_data, id)
@@ -421,21 +421,17 @@ class OpenAIChatBotWidget(QWidget):
         self.__chatNavWidget.setColumns(columns)
 
     def __showFavorite(self, f):
-        print(f)
-    #     if f:
-    #         lst = DB.selectFavorite()
-    #         if len(lst) == 0:
-    #             return
-    #         else:
-    #             self.__browser.messageUpdated.disconnect()
-    #             lst = [ChatMessageContainer(**dict(c)) for c in lst]
-    #             for c in lst:
-    #                 self.__browser.showLabel(c.content, False, c)
-    #             self.__browser.replaceThreadForFavorite(lst)
-    #             self.__browser.show()
+        if f:
+            lst = DB.selectFavorite()
+            if len(lst) == 0:
+                return
+            else:
+                lst = [ChatMessageContainer(**dict(c)) for c in lst]
+                self.__browser.replaceThreadForFavorite(lst)
+                # self.__browser.show()
     #             self.__browser.setWindowTitle('Favorite')
     #             self.__browser.setWindowModality(Qt.WindowModality.ApplicationModal)
     #     else:
     #         self.__browser.messageUpdated.connect(self.__updateMessage)
-    #     self.__prompt.setEnabled(not f)
-    #     self.__is_showing_favorite = f
+        self.__prompt.setEnabled(not f)
+        self.__is_showing_favorite = f

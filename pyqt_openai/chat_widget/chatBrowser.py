@@ -45,6 +45,10 @@ class ChatBrowser(QScrollArea):
             arg.id = DB.insertMessage(arg)
             self.__showConvResultInfo(unit, arg)
 
+    def showLabelForFavorite(self, arg: ChatMessageContainer):
+        unit = self.__setLabel(arg.content, False, arg.role)
+        self.__showConvResultInfo(unit, arg)
+
     def __getLastUnit(self) -> AIChatUnit | None:
         item = self.widget().layout().itemAt(self.widget().layout().count() - 1)
         if item:

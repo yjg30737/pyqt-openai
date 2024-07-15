@@ -696,6 +696,7 @@ class SqliteDatabase:
                             WHERE id = ?
                         ''', (favorite, favorite, current_date, id))
             self.__conn.commit()
+            return current_date
         except sqlite3.Error as e:
             print(f"An error occurred: {e}")
             raise

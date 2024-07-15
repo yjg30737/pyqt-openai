@@ -175,7 +175,7 @@ class ChatNavWidget(QWidget):
         self.__tableView.clicked.connect(self.__clicked)
         self.__tableView.activated.connect(self.__clicked)
 
-        self.__favoriteBtn = QPushButton('Favorite')
+        self.__favoriteBtn = QPushButton('Favorite List')
         self.__favoriteBtn.setCheckable(True)
         self.__favoriteBtn.toggled.connect(self.__onFavoriteClicked)
 
@@ -296,6 +296,5 @@ class ChatNavWidget(QWidget):
     def __onFavoriteClicked(self, f):
         self.onFavoriteClicked.emit(f)
 
-    # def activateFavoriteFromParent(self, f):
-    #     self.__favoriteBtn.setChecked(f)
-    #     self.__onFavoriteClicked(f)
+    def activateFavoriteFromParent(self, f):
+        self.__favoriteBtn.setChecked(f)
