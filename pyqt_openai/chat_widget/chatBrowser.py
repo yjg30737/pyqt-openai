@@ -40,11 +40,9 @@ class ChatBrowser(QScrollArea):
 
     def showLabel(self, text, stream_f, arg: ChatMessageContainer):
         arg.thread_id = arg.thread_id if arg.thread_id else self.__cur_id
-        # for question & response below the menu
         unit = self.__setLabel(text, stream_f, arg.role)
         if not stream_f:
             self.__showConvResultInfo(unit, arg)
-            # change user_f type from bool to int to insert in db
             self.messageUpdated.emit(arg)
 
     def __getLastUnit(self) -> AIChatUnit | None:

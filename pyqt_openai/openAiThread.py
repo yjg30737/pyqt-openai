@@ -35,7 +35,6 @@ class OpenAIThread(QThread):
 
             if isinstance(response, openai.Stream):
                 for chunk in response:
-                    # self.__info.id = chunk.id
                     if self.__stop_streaming:
                         self.__info.finish_reason = 'stopped by user'
                         self.streamFinished.emit(self.__info)
@@ -48,7 +47,6 @@ class OpenAIThread(QThread):
                             self.__info.finish_reason = chunk.choices[0].finish_reason
                             self.streamFinished.emit(self.__info)
             else:
-                # self.__info.id = response.id
                 self.__info = form_response(response, self.__info)
                 self.replyGenerated.emit(self.__info.content, False, self.__info)
         except Exception as e:

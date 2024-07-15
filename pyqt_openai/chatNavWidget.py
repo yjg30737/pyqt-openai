@@ -296,6 +296,6 @@ class ChatNavWidget(QWidget):
     def __onFavoriteClicked(self, f):
         self.onFavoriteClicked.emit(f)
 
-    def activateFavoriteFromParent(self, f):
-        self.__favoriteBtn.setChecked(f)
-        self.__onFavoriteClicked(f)
+    # def activateFavoriteFromParent(self, f):
+    #     self.__favoriteBtn.setChecked(f)
+    #     self.__onFavoriteClicked(f)

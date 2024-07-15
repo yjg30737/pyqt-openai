@@ -169,10 +169,12 @@ class AIChatUnit(QWidget):
                     widget.setAlignment(a0)
 
     def disableGUIDuringGenerateResponse(self):
+        self.__favoriteBtn.setEnabled(False)
         self.__copyBtn.setEnabled(False)
         self.__infoBtn.setEnabled(False)
 
-    def showConvResultInfo(self, arg: ChatMessageContainer, actually_insert_f=False):
+    def showConvResultInfo(self, arg: ChatMessageContainer):
+        self.__favoriteBtn.setEnabled(True)
         self.__copyBtn.setEnabled(True)
         self.__infoBtn.setEnabled(True)
         self.__result_info = arg
