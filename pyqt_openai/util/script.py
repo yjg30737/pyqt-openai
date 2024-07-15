@@ -7,7 +7,7 @@ import zipfile
 import requests
 import base64
 import pandas
-import datetime
+from datetime import datetime
 
 from pathlib import Path
 
@@ -173,8 +173,8 @@ def get_chatgpt_data(conv_arr):
                 metadata = message['metadata']
 
                 role = message['author']['role']
-                create_time = datetime.fromtimestamp(message['create_time']).strftime('%Y-%m-%d %H:%M:%S')
-                update_time = datetime.fromtimestamp(message['update_time']).strftime('%Y-%m-%d %H:%M:%S')
+                create_time = datetime.fromtimestamp(message['create_time']).strftime('%Y-%m-%d %H:%M:%S') if message['create_time'] else None
+                update_time = datetime.fromtimestamp(message['update_time']).strftime('%Y-%m-%d %H:%M:%S') if message['update_time'] else None
                 content = message['content']
 
                 obj['role'] = role
@@ -185,6 +185,7 @@ def get_chatgpt_data(conv_arr):
                 if role == 'user':
                     content_parts = '\n'.join(content['parts'])
                     obj['content'] = content_parts
+                    conv['messages'].append(obj)
                 else:
                     if role == 'tool':
                         # Tool is used for the internal use of the system of OpenAI
@@ -197,6 +198,7 @@ def get_chatgpt_data(conv_arr):
                         if content_type == 'text':
                             content_parts = '\n'.join(content['parts'])
                             obj['content'] = content_parts
+                            conv['messages'].append(obj)
                         elif content_type == 'code':
                             # Currently there is no way to apply every aspect of the "code" content_type into the code.
                             # So let it be for now.
@@ -211,7 +213,6 @@ def get_chatgpt_data(conv_arr):
                     elif role == 'system':
                         # Won't use the system
                         pass
-            conv['messages'].append(obj)
     # Remove mapping keys
     for conv in conv_arr:
         del conv['mapping']

@@ -90,6 +90,7 @@ class ChatBrowser(QScrollArea):
 
     def event(self, e):
         if e.type() == 43:
+            print('scroll')
             self.verticalScrollBar().setSliderPosition(self.verticalScrollBar().maximum())
         return super().event(e)
 

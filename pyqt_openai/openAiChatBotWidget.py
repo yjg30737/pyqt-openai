@@ -34,6 +34,17 @@ class OpenAIChatBotWidget(QWidget):
         self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.Format.IniFormat)
         self.__notify_finish = self.__settings_ini.value('notify_finish', type=bool)
 
+        if not self.__settings_ini.contains('show_chat_list'):
+            self.__settings_ini.setValue('show_chat_list', True)
+        if not self.__settings_ini.contains('show_setting'):
+            self.__settings_ini.setValue('show_setting', True)
+        if not self.__settings_ini.contains('show_prompt'):
+            self.__settings_ini.setValue('show_prompt', True)
+
+        self.__show_chat_list = self.__settings_ini.value('show_chat_list', type=bool)
+        self.__show_setting = self.__settings_ini.value('show_setting', type=bool)
+        self.__show_prompt = self.__settings_ini.value('show_prompt', type=bool)
+
     def __initUi(self):
         self.__chatNavWidget = ChatNavWidget(ChatThreadContainer.get_keys(), THREAD_TABLE_NAME)
         self.__chatWidget = ChatWidget()
@@ -58,22 +69,22 @@ class OpenAIChatBotWidget(QWidget):
         self.__sideBarBtn.setStyleAndIcon('ico/sidebar.svg')
         self.__sideBarBtn.setCheckable(True)
         self.__sideBarBtn.setToolTip('Chat List')
-        self.__sideBarBtn.setChecked(True)
-        self.__sideBarBtn.toggled.connect(self.__chatNavWidget.setVisible)
+        self.__sideBarBtn.setChecked(self.__show_chat_list)
+        self.__sideBarBtn.toggled.connect(self.__toggle_sidebar)
 
         self.__settingBtn = Button()
         self.__settingBtn.setStyleAndIcon('ico/setting.svg')
         self.__settingBtn.setToolTip('Chat Settings')
         self.__settingBtn.setCheckable(True)
-        self.__settingBtn.setChecked(True)
-        self.__settingBtn.toggled.connect(self.__aiPlaygroundWidget.setVisible)
+        self.__settingBtn.setChecked(self.__show_setting)
+        self.__settingBtn.toggled.connect(self.__toggle_setting)
 
         self.__promptBtn = Button()
         self.__promptBtn.setStyleAndIcon('ico/prompt.svg')
         self.__promptBtn.setToolTip('Prompt Generator')
         self.__promptBtn.setCheckable(True)
-        self.__promptBtn.setChecked(True)
-        self.__promptBtn.toggled.connect(self.__promptGeneratorWidget.setVisible)
+        self.__promptBtn.setChecked(self.__show_prompt)
+        self.__promptBtn.toggled.connect(self.__toggle_prompt)
 
         sep = QFrame()
         sep.setFrameShape(QFrame.Shape.VLine)
@@ -172,6 +183,26 @@ class OpenAIChatBotWidget(QWidget):
         self.setLayout(lay)
 
         self.__lineEdit.setFocus()
+
+        # Put this below to prevent the widgets pop up when app is opened
+        self.__chatNavWidget.setVisible(self.__show_chat_list)
+        self.__aiPlaygroundWidget.setVisible(self.__show_setting)
+        self.__promptGeneratorWidget.setVisible(self.__show_prompt)
+
+    def __toggle_sidebar(self, x):
+        self.__chatNavWidget.setVisible(x)
+        self.__show_chat_list = x
+        self.__settings_ini.setValue('show_chat_list', x)
+
+    def __toggle_setting(self, x):
+        self.__aiPlaygroundWidget.setVisible(x)
+        self.__show_setting = x
+        self.__settings_ini.setValue('show_setting', x)
+
+    def __toggle_prompt(self, x):
+        self.__promptGeneratorWidget.setVisible(x)
+        self.__show_prompt = x
+        self.__settings_ini.setValue('show_prompt', x)
 
     def showThreadToolWidget(self, f):
         self.__chatWidget.toggleMenuWidget(f)

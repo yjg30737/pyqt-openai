@@ -1,6 +1,5 @@
-from PyQt5.QtWidgets import QPushButton
 from qtpy.QtCore import Qt
-from qtpy.QtWidgets import QMessageBox, QGroupBox, QTableWidgetItem, \
+from qtpy.QtWidgets import QMessageBox, QPushButton, QGroupBox, QTableWidgetItem, \
     QLabel, QDialogButtonBox, QCheckBox, QDialog, QVBoxLayout, QSpinBox, QAbstractItemView
 
 from pyqt_openai.constants import THREAD_ORDERBY
@@ -66,17 +65,15 @@ class ChatGPTImportDialog(QDialog):
         self.__buttonBox.rejected.connect(self.reject)
         self.__buttonBox.button(QDialogButtonBox.Ok).setEnabled(False)
 
-        showCheckedButton = QPushButton('Show Checked')
-        showCheckedButton.clicked.connect(self.getData)
-
         lay = QVBoxLayout()
         lay.addWidget(findPathWidget)
         lay.addWidget(chatGPTImportGrpBox)
         lay.addWidget(self.__chatGPTDataGroupBox)
         lay.addWidget(self.__buttonBox)
-        lay.addWidget(showCheckedButton)
 
         self.setLayout(lay)
+
+        self.resize(800, 600)
 
     def __setData(self):
         checked_rows = self.__checkBoxTableWidget.getCheckedRows()
