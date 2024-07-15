@@ -431,6 +431,9 @@ class OpenAIChatBotWidget(QWidget):
                 for c in lst:
                     self.__browser.showLabel(c.content, False, c)
                 self.__browser.replaceThreadForFavorite(lst)
+                # self.__browser.show()
+                # self.__browser.setWindowTitle('Favorite')
+                # self.__browser.setWindowModality(Qt.WindowModality.ApplicationModal)
         else:
             self.__browser.messageUpdated.connect(self.__updateMessage)
         self.__prompt.setEnabled(not f)

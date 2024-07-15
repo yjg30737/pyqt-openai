@@ -87,7 +87,7 @@ class AIChatUnit(QWidget):
         self.__favoriteBtn = Button()
         self.__favoriteBtn.setStyleAndIcon('ico/favorite_no.svg')
         self.__favoriteBtn.setCheckable(True)
-        self.__favoriteBtn.toggled.connect(self.__favorite)
+        self.__favoriteBtn.toggled.connect(lambda x: self.__favorite(x, True))
 
         self.__infoBtn = Button()
         self.__infoBtn.setStyleAndIcon('ico/info.svg')
@@ -127,17 +127,18 @@ class AIChatUnit(QWidget):
     def __copy(self):
         pyperclip.copy(self.text())
 
-    def __favorite(self, f):
+    def __favorite(self, f, actually_insert_f: False):
         favorite = 1 if f else 0
         if favorite:
             self.__favoriteBtn.setStyleAndIcon('ico/favorite_yes.svg')
         else:
             self.__favoriteBtn.setStyleAndIcon('ico/favorite_no.svg')
-        if self.__result_info.id:
-            DB.updateMessage(self.__result_info.id, favorite)
-            self.__result_info.favorite = favorite
-        else:
-            QMessageBox.warning(self, 'Warning', 'Working for providing ID for this message. Please try again later.')
+        if actually_insert_f:
+            if self.__result_info.id:
+                DB.updateMessage(self.__result_info.id, favorite)
+                self.__result_info.favorite = favorite
+            else:
+                QMessageBox.warning(self, 'Warning', 'Working for providing ID for this message. Please try again later.')
 
     def __showInfo(self):
         dialog = MessageResultDialog(self.__result_info)
@@ -175,7 +176,7 @@ class AIChatUnit(QWidget):
         self.__copyBtn.setEnabled(True)
         self.__infoBtn.setEnabled(True)
         self.__result_info = arg
-        self.__favoriteBtn.setChecked(arg.favorite if arg.favorite else False)
+        self.__favoriteBtn.setChecked(True if arg.favorite else False)
 
     def setText(self, text: str):
         self.__lbl = QLabel(text)

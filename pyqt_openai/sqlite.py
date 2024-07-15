@@ -685,7 +685,6 @@ class SqliteDatabase:
         Update message favorite
         """
         try:
-            print('should not be called unless someone clicked favorite')
             current_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             self.__c.execute(f'''
                             UPDATE {MESSAGE_TABLE_NAME} 
