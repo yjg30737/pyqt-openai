@@ -25,7 +25,7 @@ class CheckBoxListWidget(QListWidget):
     def addItem(self, item, checked=False) -> None:
         if isinstance(item, str):
             item = QListWidgetItem(item)
-        item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
+        item.setFlags(item.flags() | Qt.ItemFlag.ItemIsUserCheckable)
         if checked:
             item.setCheckState(Qt.CheckState.Checked)
         else:
@@ -39,10 +39,10 @@ class CheckBoxListWidget(QListWidget):
                 item.setCheckState(state)
 
     def getCheckedRows(self):
-        return self.__getFlagRows(Qt.Checked)
+        return self.__getFlagRows(Qt.CheckState.Checked)
 
     def getUncheckedRows(self):
-        return self.__getFlagRows(Qt.Unchecked)
+        return self.__getFlagRows(Qt.CheckState.Unchecked)
 
     def __getFlagRows(self, flag: Qt.CheckState):
         flag_lst = []
@@ -54,10 +54,10 @@ class CheckBoxListWidget(QListWidget):
         return flag_lst
 
     def removeCheckedRows(self):
-        self.__removeFlagRows(Qt.Checked)
+        self.__removeFlagRows(Qt.CheckState.Checked)
 
     def removeUncheckedRows(self):
-        self.__removeFlagRows(Qt.Unchecked)
+        self.__removeFlagRows(Qt.CheckState.Unchecked)
 
     def __removeFlagRows(self, flag):
         flag_lst = self.__getFlagRows(flag)

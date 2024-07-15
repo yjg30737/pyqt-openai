@@ -26,6 +26,18 @@ class ReplicateWidget(QWidget):
         # ini
         self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.Format.IniFormat)
 
+        self.__settings_ini.beginGroup('REPLICATE')
+
+        if not self.__settings_ini.contains('show_history'):
+            self.__settings_ini.setValue('show_history', True)
+        if not self.__settings_ini.contains('show_setting'):
+            self.__settings_ini.setValue('show_setting', True)
+
+        self.__show_history = self.__settings_ini.value('show_history', type=bool)
+        self.__show_setting = self.__settings_ini.value('show_setting', type=bool)
+
+        self.__settings_ini.endGroup()
+
     def __initUi(self):
         self.__imageNavWidget = ImageNavWidget(ImagePromptContainer.get_keys(), 'image_tb')
         self.__viewWidget = ThumbnailView()
@@ -40,15 +52,15 @@ class ReplicateWidget(QWidget):
         self.__historyBtn.setStyleAndIcon('ico/history.svg')
         self.__historyBtn.setCheckable(True)
         self.__historyBtn.setToolTip('History')
-        self.__historyBtn.setChecked(True)
-        self.__historyBtn.toggled.connect(self.__imageNavWidget.setVisible)
+        self.__historyBtn.setChecked(self.__show_history)
+        self.__historyBtn.toggled.connect(self.__toggle_history)
 
         self.__settingBtn = Button()
         self.__settingBtn.setStyleAndIcon('ico/setting.svg')
         self.__settingBtn.setCheckable(True)
         self.__settingBtn.setToolTip('Settings')
-        self.__settingBtn.setChecked(True)
-        self.__settingBtn.toggled.connect(self.__rightSideBarWidget.setVisible)
+        self.__settingBtn.setChecked(self.__show_setting)
+        self.__settingBtn.toggled.connect(self.__toggle_setting)
 
         self.__toReplicateLabel = LinkLabel('To Replicate / What is Replicate?', 'https://replicate.com/')
         self.__howToUseReplicateLabel = LinkLabel('Get Replicate API Token (Need to sign in first)', 'https://replicate.com/account/api-tokens')
@@ -103,7 +115,11 @@ class ReplicateWidget(QWidget):
         lay.setSpacing(0)
         self.setLayout(lay)
 
-    def showAiToolBar(self, f):
+        # Put this below to prevent the widgets pop up when app is opened
+        self.__imageNavWidget.setVisible(self.__show_history)
+        self.__rightSideBarWidget.setVisible(self.__show_setting)
+
+    def showSecondaryToolBar(self, f):
         self.__menuWidget.setVisible(f)
 
     def setAIEnabled(self, f):
@@ -145,3 +161,17 @@ class ReplicateWidget(QWidget):
 
     def setColumns(self, columns):
         self.__imageNavWidget.setColumns(columns)
+
+    def __toggle_history(self, f):
+        self.__imageNavWidget.setVisible(f)
+        self.__show_history = f
+        self.__settings_ini.beginGroup('REPLICATE')
+        self.__settings_ini.setValue('show_history', f)
+        self.__settings_ini.endGroup()
+
+    def __toggle_setting(self, f):
+        self.__rightSideBarWidget.setVisible(f)
+        self.__show_setting = f
+        self.__settings_ini.beginGroup('REPLICATE')
+        self.__settings_ini.setValue('show_setting', f)
+        self.__settings_ini.endGroup()

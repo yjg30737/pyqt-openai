@@ -1,16 +1,18 @@
 import re
+from typing import List
 
 from qtpy.QtCore import Qt, Signal
 from qtpy.QtWidgets import QScrollArea, QVBoxLayout, QWidget, QLabel
 
 from pyqt_openai.chat_widget.aiChatUnit import AIChatUnit
 from pyqt_openai.chat_widget.userChatUnit import UserChatUnit
+from pyqt_openai.models import ChatMessageContainer
 from pyqt_openai.pyqt_openai_data import get_message_obj
 from pyqt_openai.util.script import is_valid_regex
 
 
 class ChatBrowser(QScrollArea):
-    convUnitUpdated = Signal(int, int, str, dict)
+    messageUpdated = Signal(ChatMessageContainer)
     onReplacedCurrentPage = Signal(int)
 
     def __init__(self):
@@ -36,13 +38,14 @@ class ChatBrowser(QScrollArea):
         self.setWidget(self.__chatWidget)
         self.setWidgetResizable(True)
 
-    def showLabel(self, text, user_f, stream_f, info=None):
+    def showLabel(self, text, stream_f, arg: ChatMessageContainer):
+        arg.thread_id = self.__cur_id
         # for question & response below the menu
-        unit = self.showText(text, stream_f, user_f)
+        unit = self.__setLabel(text, stream_f, arg.role)
         if not stream_f:
-            self.__showConvResultInfo(unit, info)
+            self.__showConvResultInfo(unit, arg)
             # change user_f type from bool to int to insert in db
-            self.convUnitUpdated.emit(self.__cur_id, int(user_f), text, info)
+            self.messageUpdated.emit(arg)
 
     def __getLastUnit(self) -> AIChatUnit | None:
         item = self.widget().layout().itemAt(self.widget().layout().count() - 1)
@@ -51,25 +54,19 @@ class ChatBrowser(QScrollArea):
         else:
             return None
 
-    def __showConvResultInfo(self, unit, info):
+    def __showConvResultInfo(self, unit, arg: ChatMessageContainer):
         if isinstance(unit, AIChatUnit):
-            unit.showConvResultInfo(info)
+            unit.showConvResultInfo(arg)
 
-    def streamFinished(self, info):
+    def streamFinished(self, arg: ChatMessageContainer):
         unit = self.__getLastUnit()
-        self.__showConvResultInfo(unit, info)
-        self.convUnitUpdated.emit(self.__cur_id, 0, self.getLastResponse(), info)
+        self.__showConvResultInfo(unit, arg)
+        arg.content = self.getLastResponse()
+        self.messageUpdated.emit(arg)
 
-    def showText(self, text, stream_f, user_f):
-        # if self.widget().currentWidget() == self.__chatWidget:
-        #     pass
-        # else:
-        #     self.widget().setCurrentIndex(1)
-        return self.__setLabel(text, stream_f, user_f)
-
-    def __setLabel(self, text, stream_f, user_f):
+    def __setLabel(self, text, stream_f, role):
         chatUnit = QLabel()
-        if user_f:
+        if role == 'user':
             chatUnit = UserChatUnit()
             chatUnit.setText(text)
             chatUnit.setIcon(self.__user_image)
@@ -93,6 +90,7 @@ class ChatBrowser(QScrollArea):
 
     def event(self, e):
         if e.type() == 43:
+            print('scroll')
             self.verticalScrollBar().setSliderPosition(self.verticalScrollBar().maximum())
         return super().event(e)
 
@@ -215,24 +213,18 @@ class ChatBrowser(QScrollArea):
 
         return res_lbl
 
-    def replaceConv(self, id, conv_data):
+    def replaceThread(self, id, args: List[ChatMessageContainer]):
         """
         for showing old conversation
         """
         self.clear()
         self.setCurId(id)
         self.onReplacedCurrentPage.emit(1)
-        for i in range(len(conv_data)):
+        for i in range(len(args)):
+            arg = args[i]
             # stream is False no matter what
-            unit = self.__setLabel(conv_data[i]['conv'], False, conv_data[i]['is_user'])
-            info = {
-            'finish_reason': conv_data[i]['finish_reason'],
-            'model_name': conv_data[i]['model_name'],
-            'prompt_tokens': conv_data[i]['prompt_tokens'],
-            'completion_tokens': conv_data[i]['completion_tokens'],
-            'total_tokens': conv_data[i]['total_tokens'],
-            }
-            self.__showConvResultInfo(unit, info)
+            unit = self.__setLabel(arg.content, False, arg.role)
+            self.__showConvResultInfo(unit, arg)
 
     def setUserImage(self, img):
         self.__user_image = img

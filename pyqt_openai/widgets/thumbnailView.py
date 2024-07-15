@@ -106,7 +106,8 @@ class ThumbnailView(QGraphicsView):
         filename = QFileDialog.getSaveFileName(self, LangClass.TRANSLATIONS['Save'], os.path.expanduser('~'), 'Image file (*.png)')
         if filename[0]:
             filename = filename[0]
-            self._p.save(filename)
+            if filename:
+                self._p.save(filename)
 
     def __zoomIn(self):
         self.scale(self.__factor, self.__factor)

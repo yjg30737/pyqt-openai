@@ -5,11 +5,12 @@ This dialog is for exporting conversation threads selected by the user from the 
 from qtpy.QtCore import Qt
 from qtpy.QtWidgets import QTableWidgetItem, QLabel, QDialogButtonBox, QCheckBox, QDialog, QVBoxLayout
 
+from pyqt_openai.constants import THREAD_ORDERBY
 from pyqt_openai.widgets.checkBoxTableWidget import CheckBoxTableWidget
 
 
 class ExportDialog(QDialog):
-    def __init__(self, columns, data, sort_by='update_dt', parent=None):
+    def __init__(self, columns, data, sort_by=THREAD_ORDERBY, parent=None):
         super(ExportDialog, self).__init__(parent)
         self.__initVal(columns, data, sort_by)
         self.__initUi()

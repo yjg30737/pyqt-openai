@@ -17,7 +17,7 @@ sys.path.insert(0, os.getcwd())  # Add the current directory as well
 # os.environ['QT_API'] = 'pyside6'
 
 # for testing pyqt6
-# os.environ['QT_API'] = 'pyqt6'
+os.environ['QT_API'] = 'pyqt6'
 
 from qtpy.QtGui import QGuiApplication, QFont, QIcon, QColor
 from qtpy.QtWidgets import QMainWindow, QToolBar, QHBoxLayout, QDialog, QLineEdit, QPushButton, QWidgetAction, QSpinBox, QLabel, QWidget, QApplication, \
@@ -94,7 +94,7 @@ class MainWindow(QMainWindow):
             self.__apiCheckPreviewLbl.hide()
 
         self.setCentralWidget(self.__mainWidget)
-        self.resize(1024, 768)
+        self.resize(1280, 768)
 
         self.__refreshColumns()
 
@@ -146,6 +146,15 @@ class MainWindow(QMainWindow):
         self.__transparentSpinBox.setToolTip(LangClass.TRANSLATIONS['Set Transparency of Window'])
         self.__transparentSpinBox.setMinimumWidth(100)
 
+        self.__fullScreenAction = QWidgetAction(self)
+        self.__fullScreenBtn = Button()
+        self.__fullScreenBtn.setStyleAndIcon('ico/fullscreen.svg')
+        self.__fullScreenBtn.setCheckable(True)
+        self.__fullScreenBtn.toggled.connect(self.__fullScreenToggle)
+        self.__fullScreenAction.setDefaultWidget(self.__fullScreenBtn)
+        self.__fullScreenBtn.setToolTip('Full Screen')
+        self.__fullScreenBtn.setShortcut('F11')
+
         lay = QHBoxLayout()
         lay.addWidget(self.__transparentSpinBox)
 
@@ -155,7 +164,7 @@ class MainWindow(QMainWindow):
 
         self.__showAiToolBarAction = QWidgetAction(self)
         self.__showAiToolBarChkBox = QCheckBox(LangClass.TRANSLATIONS['Show AI Toolbar'])
-        self.__showAiToolBarChkBox.setChecked(True)
+        self.__showAiToolBarChkBox.setChecked(self.__settingsParamContainer.show_secondary_toolbar)
         self.__showAiToolBarChkBox.toggled.connect(self.__showAiToolBarChkBoxChecked)
         self.__showAiToolBarAction.setDefaultWidget(self.__showAiToolBarChkBox)
 
@@ -187,6 +196,12 @@ class MainWindow(QMainWindow):
 
         self.__settingsAction = QAction('Settings', self)
         self.__settingsAction.triggered.connect(self.__showSettingsDialog)
+
+    def __fullScreenToggle(self, f):
+        if f:
+            self.showFullScreen()
+        else:
+            self.showNormal()
 
     def __lang_changed(self, lang):
         msg_box = QMessageBox()
@@ -256,6 +271,7 @@ class MainWindow(QMainWindow):
         self.__toolbar.addAction(self.__chooseAiAction)
         self.__toolbar.addAction(self.__stackAction)
         self.__toolbar.addAction(self.__customizeAction)
+        self.__toolbar.addAction(self.__fullScreenAction)
         self.__toolbar.addAction(self.__transparentAction)
         self.__toolbar.addAction(self.__showAiToolBarAction)
         self.__toolbar.addAction(self.__apiAction)
@@ -268,6 +284,10 @@ class MainWindow(QMainWindow):
         self.__toolbar.setStyleSheet('QToolBar { spacing: 2px; }')
 
         self.__toolbar.setVisible(self.__settingsParamContainer.show_toolbar)
+        for i in range(self.__mainWidget.count()):
+            currentWidget = self.__mainWidget.widget(i)
+            currentWidget.showSecondaryToolBar(self.__settingsParamContainer.show_secondary_toolbar)
+        self.__mainWidget.currentWidget().showThreadToolWidget(self.__settingsParamContainer.thread_tool_widget)
 
     def __setApiKeyAndClient(self, api_key):
         # for subprocess (mostly)
@@ -335,7 +355,8 @@ class MainWindow(QMainWindow):
         self.setWindowOpacity(v / 100)
 
     def __showAiToolBarChkBoxChecked(self, f):
-        self.__mainWidget.currentWidget().showAiToolBar(f)
+        self.__mainWidget.currentWidget().showSecondaryToolBar(f)
+        self.__settingsParamContainer.show_secondary_toolbar = f
 
     def __executeCustomizeDialog(self):
         dialog = CustomizeDialog(self)
@@ -345,6 +366,8 @@ class MainWindow(QMainWindow):
 
     def __aiTypeChanged(self, i):
         self.__mainWidget.setCurrentIndex(i)
+        widget = self.__mainWidget.currentWidget()
+        widget.showSecondaryToolBar(self.__settingsParamContainer.show_secondary_toolbar)
 
     def __initSettings(self, container):
         self.__settingsParamContainer = container
@@ -360,9 +383,18 @@ class MainWindow(QMainWindow):
         # If db name is changed
         if self.__settingsParamContainer.db != self.__settings_struct.value('db'):
             QMessageBox.information(self, 'Info', "The name of the reference target database has been changed. The changes will take effect after a restart.")
-        # If show_ai_toolbar is changed
+        # If show_toolbar is changed
         if self.__settingsParamContainer.show_toolbar != self.__settings_struct.value('show_toolbar'):
             self.__toolbar.setVisible(self.__settingsParamContainer.show_toolbar)
+        # If show_secondary_toolbar is changed
+        if self.__settingsParamContainer.show_secondary_toolbar != self.__settings_struct.value('show_secondary_toolbar'):
+            for i in range(self.__mainWidget.count()):
+                currentWidget = self.__mainWidget.widget(i)
+                currentWidget.showSecondaryToolBar(self.__settingsParamContainer.show_secondary_toolbar)
+        # If thread_tool_widget is changed
+        if self.__settingsParamContainer.thread_tool_widget != self.__settings_struct.value('thread_tool_widget'):
+            if isinstance(self.__mainWidget.currentWidget(), OpenAIChatBotWidget):
+                self.__mainWidget.currentWidget().showThreadToolWidget(self.__settingsParamContainer.thread_tool_widget)
         for k, v in container.get_items():
             self.__settings_struct.setValue(k, v)
         # If language is changed
