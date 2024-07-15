@@ -366,6 +366,8 @@ class MainWindow(QMainWindow):
 
     def __aiTypeChanged(self, i):
         self.__mainWidget.setCurrentIndex(i)
+        widget = self.__mainWidget.currentWidget()
+        widget.showSecondaryToolBar(self.__settingsParamContainer.show_secondary_toolbar)
 
     def __initSettings(self, container):
         self.__settingsParamContainer = container

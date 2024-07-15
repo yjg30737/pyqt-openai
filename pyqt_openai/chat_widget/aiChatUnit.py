@@ -5,6 +5,7 @@ from qtpy.QtWidgets import QLabel, QMessageBox, QWidget, QVBoxLayout, QApplicati
     QTextBrowser, QAbstractScrollArea
 
 from pyqt_openai.chat_widget.messageResultDialog import MessageResultDialog
+from pyqt_openai.constants import DEFAULT_ICON_SIZE
 from pyqt_openai.models import ChatMessageContainer
 from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.widgets.button import Button
@@ -81,7 +82,7 @@ class AIChatUnit(QWidget):
         lay = QHBoxLayout()
 
         self.__icon = RoundedImage()
-        self.__icon.setMaximumSize(24, 24)
+        self.__icon.setMaximumSize(*DEFAULT_ICON_SIZE)
 
         self.__favoriteBtn = Button()
         self.__favoriteBtn.setStyleAndIcon('ico/favorite_no.svg')
@@ -120,7 +121,7 @@ class AIChatUnit(QWidget):
 
         self.setLayout(lay)
 
-        self.setBackgroundRole(QPalette.ColorRole.Midlight)
+        self.setBackgroundRole(QPalette.ColorRole.AlternateBase)
         self.setAutoFillBackground(True)
 
     def __copy(self):
