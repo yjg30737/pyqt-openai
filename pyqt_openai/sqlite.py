@@ -1,11 +1,12 @@
-import json, os
+import json
+from datetime import datetime
 import sqlite3
 from typing import List
 
 from pyqt_openai.constants import THREAD_TABLE_NAME, THREAD_TRIGGER_NAME, THREAD_TABLE_NAME_OLD, \
     THREAD_TRIGGER_NAME_OLD, MESSAGE_TABLE_NAME_OLD, MESSAGE_TABLE_NAME, THREAD_MESSAGE_INSERTED_TR_NAME, \
     THREAD_MESSAGE_UPDATED_TR_NAME, THREAD_MESSAGE_DELETED_TR_NAME, THREAD_MESSAGE_INSERTED_TR_NAME_OLD, \
-    THREAD_MESSAGE_UPDATED_TR_NAME_OLD, THREAD_MESSAGE_DELETED_TR_NAME_OLD
+    THREAD_MESSAGE_UPDATED_TR_NAME_OLD, THREAD_MESSAGE_DELETED_TR_NAME_OLD, IMAGE_TABLE_NAME
 from pyqt_openai.models import ImagePromptContainer, ChatMessageContainer
 from pyqt_openai.util.script import get_db_filename
 
@@ -33,7 +34,7 @@ class SqliteDatabase:
         self.__template_prompt_tb_nm = 'template_prompt_tb'
 
         # image table names
-        self.__image_tb_nm = 'image_tb'
+        self.__image_tb_nm = IMAGE_TABLE_NAME
 
         self.__prop_prompt_unit_default_value = [{'name': 'Task', 'text': ''},
                                                  {'name': 'Topic', 'text': ''},
@@ -625,6 +626,7 @@ class SqliteDatabase:
                               favorite INTEGER DEFAULT 0,
                               update_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
                               insert_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
+                              favorite_set_date DATETIME,
                               FOREIGN KEY (thread_id) REFERENCES {THREAD_TABLE_NAME}
                               ON DELETE CASCADE)''')
 
@@ -683,7 +685,17 @@ class SqliteDatabase:
         Update message favorite
         """
         try:
-            self.__c.execute(f'UPDATE {MESSAGE_TABLE_NAME} SET favorite=(?) WHERE id={id}', (favorite,))
+            print('should not be called unless someone clicked favorite')
+            current_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            self.__c.execute(f'''
+                            UPDATE {MESSAGE_TABLE_NAME} 
+                            SET favorite = ?,
+                                favorite_set_date = CASE 
+                                                      WHEN ? = 1 THEN ? 
+                                                      ELSE NULL 
+                                                    END 
+                            WHERE id = ?
+                        ''', (favorite, favorite, current_date, id))
             self.__conn.commit()
         except sqlite3.Error as e:
             print(f"An error occurred: {e}")
@@ -771,6 +783,14 @@ class SqliteDatabase:
                 query += f' WHERE id = {id}'
             self.__c.execute(query)
             self.__conn.commit()
+        except sqlite3.Error as e:
+            print(f"An error occurred: {e}")
+            raise
+
+    def selectFavorite(self):
+        try:
+            self.__c.execute(f'SELECT * FROM {MESSAGE_TABLE_NAME} WHERE favorite=1 order by favorite_set_date')
+            return self.__c.fetchall()
         except sqlite3.Error as e:
             print(f"An error occurred: {e}")
             raise

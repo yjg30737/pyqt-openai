@@ -147,7 +147,7 @@ class ImageNavWidget(QWidget):
         data = DB.selectCertainImage(cur_id)['data']
         if data:
             if isinstance(data, str):
-                QMessageBox.critical(self, 'Error', f'Image URL can\'t bee seen after v0.2.51, Now it is replaced with b64_json.')
+                QMessageBox.critical(self, 'Error', f'Image URL can\'t be seen after v0.2.51, Now it is replaced with b64_json.')
             else:
                 data = QByteArray(data).data()
                 self.getContent.emit(data)

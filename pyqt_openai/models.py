@@ -85,6 +85,7 @@ class ChatMessageContainer(Container):
     completion_tokens: str = ""
     total_tokens: str = ""
     favorite: int = 0
+    favorite_set_date: str = ""
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

@@ -39,7 +39,7 @@ class ChatBrowser(QScrollArea):
         self.setWidgetResizable(True)
 
     def showLabel(self, text, stream_f, arg: ChatMessageContainer):
-        arg.thread_id = self.__cur_id
+        arg.thread_id = arg.thread_id if arg.thread_id else self.__cur_id
         # for question & response below the menu
         unit = self.__setLabel(text, stream_f, arg.role)
         if not stream_f:
@@ -90,7 +90,6 @@ class ChatBrowser(QScrollArea):
 
     def event(self, e):
         if e.type() == 43:
-            print('scroll')
             self.verticalScrollBar().setSliderPosition(self.verticalScrollBar().maximum())
         return super().event(e)
 
@@ -213,12 +212,24 @@ class ChatBrowser(QScrollArea):
 
         return res_lbl
 
-    def replaceThread(self, id, args: List[ChatMessageContainer]):
+    def replaceThread(self, args: List[ChatMessageContainer], id):
         """
-        for showing old conversation
+        For showing messages from the thread
         """
         self.clear()
         self.setCurId(id)
+        self.onReplacedCurrentPage.emit(1)
+        for i in range(len(args)):
+            arg = args[i]
+            # stream is False no matter what
+            unit = self.__setLabel(arg.content, False, arg.role)
+            self.__showConvResultInfo(unit, arg)
+
+    def replaceThreadForFavorite(self, args: List[ChatMessageContainer]):
+        """
+        For showing favorite messages
+        """
+        self.clear()
         self.onReplacedCurrentPage.emit(1)
         for i in range(len(args)):
             arg = args[i]

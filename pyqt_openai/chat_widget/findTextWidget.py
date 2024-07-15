@@ -2,7 +2,7 @@ import re
 
 from qtpy.QtCore import Signal
 from qtpy.QtWidgets import QWidget, QLabel, \
-    QHBoxLayout, QGridLayout, QLineEdit
+    QHBoxLayout, QGridLayout, QLineEdit, QMessageBox
 
 from pyqt_openai.chat_widget.chatBrowser import ChatBrowser
 from pyqt_openai.widgets.button import Button
@@ -104,7 +104,7 @@ class FindTextWidget(QWidget):
     def __findInit(self, text):
         # show "bad pattern" message if text is "\"
         if self.__regexBtn.isChecked() and re.escape(text) == re.escape('\\'):
-            print('bad pattern!')
+            QMessageBox.warning(self, 'Warning', 'Bad pattern')
         else:
             self.__selections = self.__chatBrowser.setCurrentLabelIncludingTextBySliderPosition(text,
                                                                                                 case_sensitive=self.__caseBtn.isChecked(),

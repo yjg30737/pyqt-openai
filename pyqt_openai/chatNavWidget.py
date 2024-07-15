@@ -1,6 +1,6 @@
 from qtpy.QtCore import Signal, QSortFilterProxyModel, Qt
 from qtpy.QtSql import QSqlTableModel, QSqlQuery
-from qtpy.QtWidgets import QWidget, QVBoxLayout, QMessageBox, QStyledItemDelegate, QTableView, \
+from qtpy.QtWidgets import QWidget, QVBoxLayout, QMessageBox, QPushButton, QStyledItemDelegate, QTableView, \
     QAbstractItemView, \
     QHBoxLayout, \
     QLabel, QSpacerItem, QSizePolicy, QFileDialog, QComboBox, QDialog
@@ -61,6 +61,7 @@ class ChatNavWidget(QWidget):
     onImport = Signal(str)
     onExport = Signal(list)
     onChatGPTImport = Signal(list)
+    onFavoriteClicked = Signal(bool)
 
     def __init__(self, columns, table_nm):
         super().__init__()
@@ -174,9 +175,14 @@ class ChatNavWidget(QWidget):
         self.__tableView.clicked.connect(self.__clicked)
         self.__tableView.activated.connect(self.__clicked)
 
+        self.__favoriteBtn = QPushButton('Favorite')
+        self.__favoriteBtn.setCheckable(True)
+        self.__favoriteBtn.toggled.connect(self.__onFavoriteClicked)
+
         lay = QVBoxLayout()
         lay.addWidget(menuWidget)
         lay.addWidget(self.__tableView)
+        lay.addWidget(self.__favoriteBtn)
         self.setLayout(lay)
 
         self.refreshData()
@@ -286,3 +292,10 @@ class ChatNavWidget(QWidget):
         self.__model.setTable(self.__table_nm)
         self.__model.setQuery(QSqlQuery(f"SELECT {','.join(self.__columns)} FROM {self.__table_nm}"))
         self.__model.select()
+
+    def __onFavoriteClicked(self, f):
+        self.onFavoriteClicked.emit(f)
+
+    def activateFavoriteFromParent(self, f):
+        self.__favoriteBtn.setChecked(f)
+        self.__onFavoriteClicked(f)

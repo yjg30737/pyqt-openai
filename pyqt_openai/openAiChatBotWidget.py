@@ -8,6 +8,7 @@ from qtpy.QtWidgets import QHBoxLayout, QWidget, QSizePolicy, QVBoxLayout, QFram
     QFileDialog, QMessageBox, QPushButton
 
 from pyqt_openai.chatNavWidget import ChatNavWidget
+from pyqt_openai.chat_widget.chatBrowser import ChatBrowser
 from pyqt_openai.chat_widget.chatWidget import ChatWidget
 from pyqt_openai.chat_widget.prompt import Prompt
 from pyqt_openai.constants import THREAD_TABLE_NAME
@@ -44,6 +45,8 @@ class OpenAIChatBotWidget(QWidget):
         self.__show_chat_list = self.__settings_ini.value('show_chat_list', type=bool)
         self.__show_setting = self.__settings_ini.value('show_setting', type=bool)
         self.__show_prompt = self.__settings_ini.value('show_prompt', type=bool)
+
+        self.__is_showing_favorite = False
 
     def __initUi(self):
         self.__chatNavWidget = ChatNavWidget(ChatThreadContainer.get_keys(), THREAD_TABLE_NAME)
@@ -118,6 +121,7 @@ class OpenAIChatBotWidget(QWidget):
         self.__chatNavWidget.onImport.connect(self.__importChat)
         self.__chatNavWidget.onChatGPTImport.connect(self.__chatGPTImport)
         self.__chatNavWidget.onExport.connect(self.__exportChat)
+        self.__chatNavWidget.onFavoriteClicked.connect(self.__showFavorite)
 
         self.__lineEdit.returnPressed.connect(self.__chat)
 
@@ -333,9 +337,11 @@ class OpenAIChatBotWidget(QWidget):
                 self.__notifierWidget.doubleClicked.connect(self.window().show)
 
     def __showChat(self, id, title):
+        self.__showFavorite(False)
+        self.__chatNavWidget.activateFavoriteFromParent(False)
         conv_data = DB.selectCertainThreadMessages(id)
         self.__chatWidget.showTitle(title)
-        self.__browser.replaceThread(id, conv_data)
+        self.__browser.replaceThread(conv_data, id)
         self.__prompt.activateDuringGeneratingWidget(False)
         self.__prompt.activateAfterResponseWidget(False)
 
@@ -350,7 +356,7 @@ class OpenAIChatBotWidget(QWidget):
         cur_id = DB.insertThread(title)
         self.__browser.resetChatWidget(cur_id)
         self.__chatWidget.showTitle(title)
-        self.__browser.replaceThread(cur_id, DB.selectCertainThreadMessages(cur_id))
+        self.__browser.replaceThread(DB.selectCertainThreadMessages(cur_id), cur_id)
         self.__lineEdit.setFocus()
         self.__chatNavWidget.add(called_from_parent=True)
 
@@ -413,3 +419,19 @@ class OpenAIChatBotWidget(QWidget):
 
     def setColumns(self, columns):
         self.__chatNavWidget.setColumns(columns)
+
+    def __showFavorite(self, f):
+        if f:
+            lst = DB.selectFavorite()
+            if len(lst) == 0:
+                return
+            else:
+                self.__browser.messageUpdated.disconnect()
+                lst = [ChatMessageContainer(**dict(c)) for c in lst]
+                for c in lst:
+                    self.__browser.showLabel(c.content, False, c)
+                self.__browser.replaceThreadForFavorite(lst)
+        else:
+            self.__browser.messageUpdated.connect(self.__updateMessage)
+        self.__prompt.setEnabled(not f)
+        self.__is_showing_favorite = f
