@@ -11,7 +11,7 @@ from pyqt_openai.chatNavWidget import ChatNavWidget
 from pyqt_openai.chat_widget.chatBrowser import ChatBrowser
 from pyqt_openai.chat_widget.chatWidget import ChatWidget
 from pyqt_openai.chat_widget.prompt import Prompt
-from pyqt_openai.constants import THREAD_TABLE_NAME
+from pyqt_openai.constants import THREAD_TABLE_NAME, INI_FILE_NAME
 from pyqt_openai.models import ChatThreadContainer, ChatMessageContainer
 from pyqt_openai.openAiThread import OpenAIThread, LlamaOpenAIThread
 from pyqt_openai.prompt_gen_widget.promptGeneratorWidget import PromptGeneratorWidget
@@ -32,7 +32,7 @@ class OpenAIChatBotWidget(QWidget):
         self.__initUi()
 
     def __initVal(self):
-        self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.Format.IniFormat)
+        self.__settings_ini = QSettings(INI_FILE_NAME, QSettings.Format.IniFormat)
         self.__notify_finish = self.__settings_ini.value('notify_finish', type=bool)
 
         if not self.__settings_ini.contains('show_chat_list'):
@@ -232,6 +232,7 @@ class OpenAIChatBotWidget(QWidget):
             temperature = self.__settings_ini.value('temperature', type=float)
             max_tokens = self.__settings_ini.value('max_tokens', type=int)
             top_p = self.__settings_ini.value('top_p', type=float)
+            response_format = self.__settings_ini.value('json_object', type=bool)
             frequency_penalty = self.__settings_ini.value('frequency_penalty', type=float)
             presence_penalty = self.__settings_ini.value('presence_penalty', type=float)
             use_llama_index = self.__settings_ini.value('use_llama_index', type=bool)

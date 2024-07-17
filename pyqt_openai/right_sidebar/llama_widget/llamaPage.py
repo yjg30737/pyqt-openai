@@ -3,7 +3,7 @@ from qtpy.QtGui import QFont
 from qtpy.QtWidgets import QFrame, QTextBrowser
 from qtpy.QtWidgets import QWidget, QLabel, QVBoxLayout
 
-from pyqt_openai.pyqt_openai_data import LLAMAINDEX_WRAPPER
+from pyqt_openai.constants import INI_FILE_NAME
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.right_sidebar.llama_widget.listWidget import FileListWidget
 
@@ -51,7 +51,7 @@ class LlamaPage(QWidget):
             self.__txtBrowser.setText(f.read())
 
     def setDirectory(self):
-        self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.Format.IniFormat)
+        self.__settings_ini = QSettings(INI_FILE_NAME, QSettings.Format.IniFormat)
         if self.__settings_ini.contains('llama_index_directory'):
             directory = self.__settings_ini.value('llama_index_directory', type=str)
             self.__listWidget.setDirectory(directory)

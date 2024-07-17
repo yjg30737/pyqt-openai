@@ -1,8 +1,10 @@
 from qtpy.QtCore import Qt, Signal, QSettings
 from qtpy.QtWidgets import QWidget, QDoubleSpinBox, QSpinBox, QFormLayout, QFrame, QSizePolicy, QComboBox, QTextEdit, QLabel, QVBoxLayout, QCheckBox, QPushButton
 
+from pyqt_openai.constants import INI_FILE_NAME
 from pyqt_openai.pyqt_openai_data import get_chat_model
 from pyqt_openai.res.language_dict import LangClass
+from pyqt_openai.widgets.questionTooltipLabel import QuestionTooltipLabel
 
 
 class ChatPage(QWidget):
@@ -14,7 +16,7 @@ class ChatPage(QWidget):
         self.__initUi()
 
     def __initVal(self):
-        self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.Format.IniFormat)
+        self.__settings_ini = QSettings(INI_FILE_NAME, QSettings.Format.IniFormat)
 
         # default value of each properties based on https://platform.openai.com/docs/api-reference/chat/create
         # param
@@ -34,6 +36,8 @@ class ChatPage(QWidget):
             self.__settings_ini.setValue('frequency_penalty', 0)
         if not self.__settings_ini.contains('presence_penalty'):
             self.__settings_ini.setValue('presence_penalty', 0)
+        if not self.__settings_ini.contains('json_object'):
+            self.__settings_ini.setValue('json_object', False)
 
         # etc
         if not self.__settings_ini.contains('use_max_tokens'):
@@ -49,6 +53,7 @@ class ChatPage(QWidget):
         self.__top_p = self.__settings_ini.value('top_p', type=float)
         self.__frequency_penalty = self.__settings_ini.value('frequency_penalty', type=float)
         self.__presence_penalty = self.__settings_ini.value('presence_penalty', type=float)
+        self.__json_object = self.__settings_ini.value('json_object', type=bool)
 
         self.__use_max_tokens = self.__settings_ini.value('use_max_tokens', type=bool)
         self.__use_llama_index = self.__settings_ini.value('use_llama_index', type=bool)
@@ -106,6 +111,13 @@ class ChatPage(QWidget):
         streamChkBox.toggled.connect(self.__streamChecked)
         streamChkBox.setText(LangClass.TRANSLATIONS['Stream'])
 
+        jsonChkBox = QCheckBox()
+        jsonChkBox.setChecked(self.__json_object)
+        jsonChkBox.toggled.connect(self.__jsonObjectChecked)
+        jsonChkBox.setText('Enable JSON mode')
+        jsonChkBox.setToolTip('When enabled, you can send a JSON object to the API and'
+                              'the response will be in JSON format. Otherwise, it will be in plain text.')
+
         llamaChkBox = QCheckBox()
         llamaChkBox.setChecked(self.__use_llama_index)
         llamaChkBox.toggled.connect(self.__use_llama_indexChecked)
@@ -139,6 +151,7 @@ class ChatPage(QWidget):
         lay.addWidget(saveSystemBtn)
         lay.addWidget(modelCmbBox)
         lay.addWidget(streamChkBox)
+        lay.addWidget(jsonChkBox)
         lay.addWidget(useMaxTokenChkBox)
         lay.addWidget(llamaChkBox)
         lay.addWidget(sep)
@@ -158,6 +171,10 @@ class ChatPage(QWidget):
     def __streamChecked(self, f):
         self.__stream = f
         self.__settings_ini.setValue('stream', f)
+
+    def __jsonObjectChecked(self, f):
+        self.__json_object = f
+        self.__settings_ini.setValue('json_object', f)
 
     def __use_llama_indexChecked(self, f):
         self.__use_llama_index = f

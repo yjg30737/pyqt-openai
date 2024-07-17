@@ -7,6 +7,7 @@ from qtpy.QtWidgets import QMessageBox, QScrollArea, QWidget, QCheckBox, QSpinBo
     QPlainTextEdit, \
     QFormLayout, QLabel, QFrame, QRadioButton
 
+from pyqt_openai.constants import INI_FILE_NAME
 from pyqt_openai.models import ImagePromptContainer
 from pyqt_openai.pyqt_openai_data import OPENAI_STRUCT
 from pyqt_openai.res.language_dict import LangClass
@@ -63,7 +64,7 @@ class DallEControlWidget(QScrollArea):
     def __initVal(self):
         default_directory = 'image_result'
 
-        self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.Format.IniFormat)
+        self.__settings_ini = QSettings(INI_FILE_NAME, QSettings.Format.IniFormat)
         self.__settings_ini.beginGroup('DALLE')
 
         if not self.__settings_ini.contains('quality'):
@@ -107,7 +108,6 @@ class DallEControlWidget(QScrollArea):
         self.__style = self.__settings_ini.value('style', type=str)
         self.__response_format = self.__settings_ini.value('response_format', type=str)
         self.__save_prompt_as_text = self.__settings_ini.value('save_prompt_as_text', type=bool)
-        self.__show_prompt_on_image = self.__settings_ini.value('show_prompt_on_image', type=bool)
         self.__prompt_type = self.__settings_ini.value('prompt_type', type=int)
         self.__width = self.__settings_ini.value('width', type=int)
         self.__height = self.__settings_ini.value('height', type=int)
@@ -145,11 +145,6 @@ class DallEControlWidget(QScrollArea):
         self.__savePromptAsTextChkBox.toggled.connect(self.__savePromptAsTextChkBoxToggled)
         self.__savePromptAsTextChkBox.setChecked(self.__save_prompt_as_text)
 
-        self.__showPromptOnImageChkBox = QCheckBox('Show Prompt on Image (Working)')
-        self.__showPromptOnImageChkBox.setChecked(True)
-        self.__showPromptOnImageChkBox.toggled.connect(self.__showPromptOnImageChkBoxToggled)
-        self.__showPromptOnImageChkBox.setChecked(self.__show_prompt_on_image)
-
         self.__normalOne = QRadioButton('Normal')
         self.__revisedOne = QRadioButton('Revised')
 
@@ -175,7 +170,6 @@ class DallEControlWidget(QScrollArea):
         lay.addWidget(self.__continueGenerationChkBox)
         lay.addWidget(self.__numberOfImagesToCreateSpinBox)
         lay.addWidget(self.__savePromptAsTextChkBox)
-        lay.addWidget(self.__showPromptOnImageChkBox)
         lay.addWidget(self.__promptTypeToShowRadioGrpBox)
         self.__generalGrpBox.setLayout(lay)
 
@@ -315,13 +309,6 @@ class DallEControlWidget(QScrollArea):
         self.__settings_ini.beginGroup('DALLE')
         self.__settings_ini.setValue('save_prompt_as_text', self.__save_prompt_as_text)
         self.__settings_ini.endGroup()
-        
-    def __showPromptOnImageChkBoxToggled(self, f):
-        self.__show_prompt_on_image = f
-        self.__settings_ini.beginGroup('DALLE')
-        self.__settings_ini.setValue('show_prompt_on_image', self.__show_prompt_on_image)
-        self.__settings_ini.endGroup()
-        self.__promptTypeToShowRadioGrpBox.setEnabled(self.__show_prompt_on_image)
 
     def __promptTypeToggled(self, f):
         sender = self.sender()

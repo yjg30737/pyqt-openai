@@ -4,6 +4,7 @@ from qtpy.QtCore import Qt, QSettings
 
 from pyqt_openai.chat_widget.chatBrowser import ChatBrowser
 from pyqt_openai.chat_widget.menuWidget import MenuWidget
+from pyqt_openai.constants import INI_FILE_NAME
 from pyqt_openai.res.language_dict import LangClass
 
 
@@ -14,7 +15,7 @@ class ChatWidget(QWidget):
         self.__initUi()
 
     def __initVal(self):
-        self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.Format.IniFormat)
+        self.__settings_ini = QSettings(INI_FILE_NAME, QSettings.Format.IniFormat)
 
         if not self.__settings_ini.contains('background_image'):
             self.__settings_ini.setValue('background_image', '')

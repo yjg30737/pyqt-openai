@@ -3,6 +3,7 @@ from functools import partial
 from qtpy.QtCore import QSettings, Signal
 from qtpy.QtWidgets import QScrollArea, QWidget, QTabWidget, QGridLayout
 
+from pyqt_openai.constants import INI_FILE_NAME
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.right_sidebar.chatPage import ChatPage
 from pyqt_openai.right_sidebar.llama_widget.llamaPage import LlamaPage
@@ -17,7 +18,7 @@ class AIPlaygroundWidget(QScrollArea):
         self.__initUi()
 
     def __initVal(self):
-        self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.Format.IniFormat)
+        self.__settings_ini = QSettings(INI_FILE_NAME, QSettings.Format.IniFormat)
 
         # load tab widget's last current index
         if self.__settings_ini.contains('TAB_IDX'):

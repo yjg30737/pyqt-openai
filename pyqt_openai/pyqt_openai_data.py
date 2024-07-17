@@ -68,7 +68,7 @@ def get_message_obj(role, content):
 def get_argument(model, system, messages, cur_text, temperature, top_p, frequency_penalty, presence_penalty, stream,
                  use_max_tokens, max_tokens,
                  images,
-                 is_llama_available=False):
+                 is_llama_available=False, response_format=False):
     system_obj = get_message_obj("system", system)
     messages = [system_obj] + messages
 
@@ -82,6 +82,9 @@ def get_argument(model, system, messages, cur_text, temperature, top_p, frequenc
         'presence_penalty': presence_penalty,
         'stream': stream,
     }
+    if response_format:
+        openai_arg['response_format'] = {"type": 'json_object'}
+
     # If there is at least one image, it should add
     if len(images) > 0:
         multiple_images_content = []

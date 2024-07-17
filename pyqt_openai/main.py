@@ -41,7 +41,7 @@ from pyqt_openai.doNotAskAgainDialog import DoNotAskAgainDialog
 os.environ['OPENAI_API_KEY'] = ''
 
 from pyqt_openai.pyqt_openai_data import OPENAI_STRUCT, LLAMAINDEX_WRAPPER
-from pyqt_openai.constants import PAYPAL_URL, BUYMEACOFFEE_URL
+from pyqt_openai.constants import PAYPAL_URL, BUYMEACOFFEE_URL, INI_FILE_NAME
 
 # HighDPI support
 # qt version should be above 5.14
@@ -61,7 +61,7 @@ class MainWindow(QMainWindow):
         self.__initUi()
 
     def __initVal(self):
-        self.__settings_struct = QSettings('pyqt_openai.ini', QSettings.Format.IniFormat)
+        self.__settings_struct = QSettings(INI_FILE_NAME, QSettings.Format.IniFormat)
         self.__settingsParamContainer = SettingsParamsContainer()
         self.__initSettings(self.__settingsParamContainer)
 

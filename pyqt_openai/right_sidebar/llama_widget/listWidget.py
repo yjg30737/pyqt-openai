@@ -1,7 +1,6 @@
 import os
 
-from qtpy.QtCore import Signal, Qt
-from qtpy.QtGui import QFontMetrics
+from qtpy.QtCore import Signal
 from qtpy.QtWidgets import QListWidget, QWidget, QVBoxLayout, QLabel, QHBoxLayout, QSpacerItem, QPushButton, \
     QSizePolicy, QFileDialog, QFrame
 

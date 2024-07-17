@@ -6,6 +6,7 @@ from qtpy.QtWidgets import QLineEdit, QScrollArea, QMessageBox, QWidget, QCheckB
     QPlainTextEdit, \
     QFormLayout, QLabel, QFrame, QSplitter
 
+from pyqt_openai.constants import INI_FILE_NAME
 from pyqt_openai.models import ImagePromptContainer
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.util.replicate_script import ReplicateWrapper
@@ -54,7 +55,7 @@ class ReplicateControlWidget(QScrollArea):
     def __initVal(self):
         default_directory = 'image_result'
 
-        self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.Format.IniFormat)
+        self.__settings_ini = QSettings(INI_FILE_NAME, QSettings.Format.IniFormat)
         self.__settings_ini.beginGroup('REPLICATE')
         if not self.__settings_ini.contains('REPLICATE_API_TOKEN'):
             self.__settings_ini.setValue('REPLICATE_API_TOKEN', '')
@@ -92,7 +93,6 @@ class ReplicateControlWidget(QScrollArea):
         self.__continue_generation = self.__settings_ini.value('continue_generation', type=bool)
         self.__number_of_images_to_create = self.__settings_ini.value('number_of_images_to_create', type=int)
         self.__save_prompt_as_text = self.__settings_ini.value('save_prompt_as_text', type=bool)
-        self.__show_prompt_on_image = self.__settings_ini.value('show_prompt_on_image', type=bool)
 
         self.__wrapper = ReplicateWrapper(self.__api_key)
         self.__settings_ini.endGroup()
@@ -148,11 +148,6 @@ class ReplicateControlWidget(QScrollArea):
         self.__savePromptAsTextChkBox.toggled.connect(self.__savePromptAsTextChkBoxToggled)
         self.__savePromptAsTextChkBox.setChecked(self.__save_prompt_as_text)
 
-        self.__showPromptOnImageChkBox = QCheckBox('Show Prompt on Image (Working)')
-        self.__showPromptOnImageChkBox.setChecked(True)
-        self.__showPromptOnImageChkBox.toggled.connect(self.__showPromptOnImageChkBoxToggled)
-        self.__showPromptOnImageChkBox.setChecked(self.__show_prompt_on_image)
-
         self.__generalGrpBox = QGroupBox()
         self.__generalGrpBox.setTitle('General')
 
@@ -163,7 +158,6 @@ class ReplicateControlWidget(QScrollArea):
         lay.addWidget(self.__continueGenerationChkBox)
         lay.addWidget(self.__numberOfImagesToCreateSpinBox)
         lay.addWidget(self.__savePromptAsTextChkBox)
-        lay.addWidget(self.__showPromptOnImageChkBox)
         self.__generalGrpBox.setLayout(lay)
 
         self.__promptWidget = QPlainTextEdit()
@@ -289,12 +283,6 @@ class ReplicateControlWidget(QScrollArea):
         self.__save_prompt_as_text = f
         self.__settings_ini.beginGroup('REPLICATE')
         self.__settings_ini.setValue('save_prompt_as_text', self.__save_prompt_as_text)
-        self.__settings_ini.endGroup()
-        
-    def __showPromptOnImageChkBoxToggled(self, f):
-        self.__show_prompt_on_image = f
-        self.__settings_ini.beginGroup('REPLICATE')
-        self.__settings_ini.setValue('show_prompt_on_image', self.__show_prompt_on_image)
         self.__settings_ini.endGroup()
 
     def __submit(self):

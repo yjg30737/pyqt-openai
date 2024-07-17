@@ -3,7 +3,7 @@ from qtpy.QtGui import QPixmap
 from qtpy.QtWidgets import QDialog, QFrame, QPushButton, QHBoxLayout, QVBoxLayout, QWidget, QFormLayout
 from qtpy.QtWidgets import QGraphicsScene, QGraphicsView
 
-from pyqt_openai.constants import IMAGE_FILE_EXT, DEFAULT_ICON_SIZE
+from pyqt_openai.constants import IMAGE_FILE_EXT, DEFAULT_ICON_SIZE, INI_FILE_NAME
 from pyqt_openai.widgets.circleProfileImage import RoundedImage
 from pyqt_openai.widgets.findPathWidget import FindPathWidget
 from pyqt_openai.res.language_dict import LangClass
@@ -54,7 +54,7 @@ class CustomizeDialog(QDialog):
         self.__initUi()
 
     def __initVal(self):
-        self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.Format.IniFormat)
+        self.__settings_ini = QSettings(INI_FILE_NAME, QSettings.Format.IniFormat)
 
         if not self.__settings_ini.contains('background_image'):
             self.__settings_ini.setValue('background_image', '')
