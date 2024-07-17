@@ -710,7 +710,7 @@ class SqliteDatabase:
                 # To not make table every time to change column's name and type
                 self.__c.execute(f'PRAGMA table_info({self.__image_tb_nm})')
                 existing_columns = set([column[1] for column in self.__c.fetchall()])
-                required_columns = set(ImagePromptContainer.get_keys_for_insert(['id', 'update_dt', 'insert_dt']))
+                required_columns = set(ImagePromptContainer.get_keys(['id', 'update_dt', 'insert_dt']))
 
                 # Find missing columns
                 missing_columns = required_columns - existing_columns

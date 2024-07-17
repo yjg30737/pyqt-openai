@@ -17,18 +17,14 @@ class Container:
                 setattr(self, key, value)
 
     @classmethod
-    def get_keys(cls):
-        return [field.name for field in fields(cls)]
-
-    @classmethod
-    def get_keys_for_insert(cls, excludes: list = None):
+    def get_keys(cls, excludes: list = None):
         """
         Function that returns the keys of the target data type as a list.
         Exclude the keys in the "excludes" list.
         """
         if excludes is None:
             excludes = []
-        arr = cls.get_keys()
+        arr = [field.name for field in fields(cls)]
         for exclude in excludes:
             if exclude in arr:
                 arr.remove(exclude)
@@ -40,7 +36,7 @@ class Container:
         """
         if excludes is None:
             excludes = []
-        arr = [getattr(self, key) for key in self.get_keys_for_insert(excludes)]
+        arr = [getattr(self, key) for key in self.get_keys(excludes)]
         return arr
 
     def get_items(self, excludes: list = None):
@@ -49,7 +45,7 @@ class Container:
         """
         if excludes is None:
             excludes = []
-        return {key: getattr(self, key) for key in self.get_keys_for_insert(excludes)}.items()
+        return {key: getattr(self, key) for key in self.get_keys(excludes)}.items()
 
     def create_insert_query(self, table_name: str, excludes: list = None):
         if excludes is None:
@@ -58,7 +54,7 @@ class Container:
         Function to dynamically generate an SQLite insert statement.
         Takes the table name as a parameter.
         """
-        field_names = self.get_keys_for_insert(excludes)
+        field_names = self.get_keys(excludes)
         columns = ', '.join(field_names)
         placeholders = ', '.join(['?' for _ in field_names])
         query = f'INSERT INTO {table_name} ({columns}) VALUES ({placeholders})'

@@ -1,6 +1,7 @@
 import os
 import sys
 
+from pyqt_openai.constants import COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE
 from pyqt_openai.widgets.checkBoxListWidget import CheckBoxListWidget
 
 # Get the absolute path of the current script file
@@ -104,7 +105,7 @@ class SettingsDialog(QDialog):
 
         chatColAllCheckBox = QCheckBox('Check all')
         self.__chatColCheckBoxListWidget = CheckBoxListWidget()
-        for k in ChatThreadContainer.get_keys():
+        for k in ChatThreadContainer.get_keys(excludes=COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE):
             self.__chatColCheckBoxListWidget.addItem(k, checked=k in self.__chat_column_to_show)
 
         chatColAllCheckBox.stateChanged.connect(self.__chatColCheckBoxListWidget.toggleState)
@@ -119,7 +120,7 @@ class SettingsDialog(QDialog):
 
         imageColAllCheckBox = QCheckBox('Check all')
         self.__imageColCheckBoxListWidget = CheckBoxListWidget()
-        for k in ImagePromptContainer.get_keys():
+        for k in ImagePromptContainer.get_keys(excludes=COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE):
             self.__imageColCheckBoxListWidget.addItem(k, checked=k in self.__image_column_to_show)
 
         imageColAllCheckBox.stateChanged.connect(self.__imageColCheckBoxListWidget.toggleState)
@@ -171,6 +172,6 @@ class SettingsDialog(QDialog):
             show_toolbar=self.__showToolbarCheckBox.isChecked(),
             show_secondary_toolbar=self.__showSecondaryToolBarChkBox.isChecked(),
             thread_tool_widget=self.__showThreadToolWidgetChkBox.isChecked(),
-            chat_column_to_show=self.__chatColCheckBoxListWidget.getCheckedItemsText(),
-            image_column_to_show=self.__imageColCheckBoxListWidget.getCheckedItemsText()
+            chat_column_to_show=COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE+self.__chatColCheckBoxListWidget.getCheckedItemsText(),
+            image_column_to_show=COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE+self.__imageColCheckBoxListWidget.getCheckedItemsText()
         )

@@ -147,7 +147,7 @@ class ChatNavWidget(QWidget):
             self.__model.setHeaderData(i, Qt.Orientation.Horizontal, self.__columns[i])
         self.__model.select()
         # descending order by insert date
-        idx = self.__columns.index('insert_dt')
+        idx = self.__columns.index(THREAD_ORDERBY)
         self.__model.sort(idx, Qt.SortOrder.DescendingOrder)
 
         # init the proxy model
@@ -237,11 +237,15 @@ class ChatNavWidget(QWidget):
         self.__proxyModel.setFilterRegularExpression(title)
 
     def __clicked(self, idx):
-        # get id of record
-        id = self.__model.data(self.__proxyModel.mapToSource(idx.siblingAtColumn(0)), role=Qt.ItemDataRole.DisplayRole)
-        title = self.__model.data(self.__proxyModel.mapToSource(idx.siblingAtColumn(1)), role=Qt.ItemDataRole.DisplayRole)
+        # get the source index
+        source_idx = self.__proxyModel.mapToSource(idx)
+        # get the primary key value of the row
+        cur_id = self.__model.record(source_idx.row()).value("id")
+        clicked_thread = DB.selectThread(cur_id)
+        # get the title
+        title = clicked_thread['name']
 
-        self.clicked.emit(id, title)
+        self.clicked.emit(cur_id, title)
 
     def __getSelectedIds(self):
         selected_idx_s = self.__tableView.selectedIndexes()

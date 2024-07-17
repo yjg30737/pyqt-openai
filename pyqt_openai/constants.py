@@ -1,6 +1,7 @@
 # APP
 IMAGE_FILE_EXT = 'Image file (*.jpg *.png)'
 DEFAULT_ICON_SIZE = (24, 24)
+COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE = ['id']
 
 PAYPAL_URL = 'https://paypal.me/yjg30737'
 BUYMEACOFFEE_URL = 'https://www.buymeacoffee.com/yjg30737'
