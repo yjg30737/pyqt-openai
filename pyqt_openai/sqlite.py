@@ -1,6 +1,13 @@
-import sqlite3, json, shutil
+import json
+from datetime import datetime
+import sqlite3
+from typing import List
 
-from pyqt_openai.models import ImagePromptContainer
+from pyqt_openai.constants import THREAD_TABLE_NAME, THREAD_TRIGGER_NAME, THREAD_TABLE_NAME_OLD, \
+    THREAD_TRIGGER_NAME_OLD, MESSAGE_TABLE_NAME_OLD, MESSAGE_TABLE_NAME, THREAD_MESSAGE_INSERTED_TR_NAME, \
+    THREAD_MESSAGE_UPDATED_TR_NAME, THREAD_MESSAGE_DELETED_TR_NAME, THREAD_MESSAGE_INSERTED_TR_NAME_OLD, \
+    THREAD_MESSAGE_UPDATED_TR_NAME_OLD, THREAD_MESSAGE_DELETED_TR_NAME_OLD, IMAGE_TABLE_NAME
+from pyqt_openai.models import ImagePromptContainer, ChatMessageContainer
 from pyqt_openai.util.script import get_db_filename
 
 
@@ -19,11 +26,6 @@ class SqliteDatabase:
         # db names
         self.__db_filename = db_filename or get_db_filename()
 
-        # conv table names
-        self.__conv_tb_nm = 'conv_tb'
-        self.__conv_tb_tr_nm = 'conv_tr'
-        self.__conv_unit_tb_nm = 'conv_unit_tb'
-
         # prompt table
         self.__prop_prompt_group_tb_nm = 'prop_prompt_grp_tb'
         self.__prop_prompt_unit_tb_nm = 'prop_prompt_unit_tb'
@@ -32,7 +34,7 @@ class SqliteDatabase:
         self.__template_prompt_tb_nm = 'template_prompt_tb'
 
         # image table names
-        self.__image_tb_nm = 'image_tb'
+        self.__image_tb_nm = IMAGE_TABLE_NAME
 
         self.__prop_prompt_unit_default_value = [{'name': 'Task', 'text': ''},
                                                  {'name': 'Topic', 'text': ''},
@@ -63,7 +65,7 @@ class SqliteDatabase:
             self.__c = self.__conn.cursor()
 
             # create conversation tables
-            self.__createConv()
+            self.__createThread()
 
             # create prompt tables
             self.__createPrompt()
@@ -362,50 +364,80 @@ class SqliteDatabase:
             self.__createPropPromptGroup()
             self.__createTemplatePromptGroup()
 
-            # alter tables for applying latest update
-            self.__alterConvUnit()
-
             # Commit the transaction
             self.__conn.commit()
         except sqlite3.Error as e:
             print(f"An error occurred while creating the table: {e}")
             raise
 
-    def __createConv(self):
+    def __alterOldThread(self):
+        # Check if the old thread table exists for v0.6.5 and below for migration purpose
+        table_name_old_exists = self.__c.execute(
+            f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{THREAD_TABLE_NAME_OLD}'").fetchone()[
+                                    0] == 1
+        if table_name_old_exists:
+            # Rename the table (will remove this later)
+            self.__c.execute(f'ALTER TABLE {THREAD_TABLE_NAME_OLD} RENAME TO {THREAD_TABLE_NAME}')
+            # Alter message tables for migration purpose
+            self.__alterThreadUnit()
+
+        # Check if the old trigger table exists for v0.6.5 and below for migration purpose
+        trigger_name_old_exists = self.__c.execute(
+            f"SELECT count(*) FROM sqlite_master WHERE type='trigger' AND name='{THREAD_TRIGGER_NAME_OLD}'").fetchone()[0] == 1
+        if trigger_name_old_exists:
+            self.__c.execute(f'DROP TRIGGER {THREAD_TRIGGER_NAME_OLD}')
+
+    def __createThread(self):
         try:
-            # Check if the table exists
-            self.__c.execute(f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{self.__conv_tb_nm}'")
-            if self.__c.fetchone()[0] == 1:
-                # each conv table already exists
+            # Will remove after v1.0.0
+            # Check if the old thread table exists for v0.6.5 and below for migration purpose
+            self.__alterOldThread()
+
+            # Create new thread table if not exists
+            table_name_new_exists = self.__c.execute(
+                    f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{THREAD_TABLE_NAME}'").fetchone()[
+                                            0] == 1
+            if table_name_new_exists:
                 pass
             else:
+                # If user uses app for the first time, create a table
                 # Create a table with update_dt and insert_dt columns
-                self.__c.execute(f'''CREATE TABLE {self.__conv_tb_nm}
+                self.__c.execute(f'''CREATE TABLE {THREAD_TABLE_NAME}
                              (id INTEGER PRIMARY KEY,
                               name TEXT,
                               update_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
                               insert_dt DATETIME DEFAULT CURRENT_TIMESTAMP)''')
+                # Create message table
+                self.__createMessage()
+            # Create new thread trigger if not exists
+            trigger_name_new_exists = self.__c.execute(
+                f"SELECT count(*) FROM sqlite_master WHERE type='trigger' AND name='{THREAD_TRIGGER_NAME}'").fetchone()[
+                                        0] == 1
+            if trigger_name_new_exists:
+                pass
+            else:
                 # Create a trigger to update the update_dt column with the current timestamp
-                self.__c.execute(f'''CREATE TRIGGER {self.__conv_tb_tr_nm}
-                             AFTER UPDATE ON {self.__conv_tb_nm}
+                self.__c.execute(f'''CREATE TRIGGER {THREAD_TRIGGER_NAME}
+                             AFTER UPDATE ON {THREAD_TABLE_NAME}
                              FOR EACH ROW
                              BEGIN
-                               UPDATE {self.__conv_tb_nm}
+                               UPDATE {THREAD_TABLE_NAME}
                                SET update_dt=CURRENT_TIMESTAMP
                                WHERE id=OLD.id;
                              END;''')
-                # Commit the transaction
-                self.__conn.commit()
+            # Commit the transaction
+            self.__conn.commit()
         except sqlite3.Error as e:
             print(f"An error occurred while creating the table: {e}")
             raise
 
-    def selectAllConv(self, id_arr=None):
+    def selectAllThread(self, id_arr=None):
         """
-        select all conv
+        Select all thread
+        id_arr: list of thread id
         """
         try:
-            query = f'SELECT * FROM {self.__conv_tb_nm}'
+            query = f'SELECT * FROM {THREAD_TABLE_NAME}'
             if id_arr:
                 query += f' WHERE id IN ({",".join(map(str, id_arr))})'
             self.__c.execute(query)
@@ -414,41 +446,40 @@ class SqliteDatabase:
             print(f"An error occurred: {e}")
             raise
 
-    def selectConv(self, id):
+    def selectThread(self, id):
         """
-        select specific conv
+        Select specific thread
         """
         try:
-            self.__c.execute(f'SELECT * FROM {self.__conv_tb_nm} WHERE id={id}')
+            self.__c.execute(f'SELECT * FROM {THREAD_TABLE_NAME} WHERE id={id}')
             return self.__c.fetchone()
         except sqlite3.Error as e:
             print(f"An error occurred: {e}")
             raise
 
-    def insertConv(self, name):
+    def insertThread(self, name):
         try:
             # Insert a row into the table
-            self.__c.execute(f'INSERT INTO {self.__conv_tb_nm} (name) VALUES (?)', (name,))
+            self.__c.execute(f'INSERT INTO {THREAD_TABLE_NAME} (name) VALUES (?)', (name,))
             new_id = self.__c.lastrowid
             # Commit the transaction
             self.__conn.commit()
-            self.__createConvUnit(new_id)
             return new_id
         except sqlite3.Error as e:
             print(f"An error occurred: {e}")
             raise
 
-    def updateConv(self, id, name):
+    def updateThread(self, id, name):
         try:
-            self.__c.execute(f'UPDATE {self.__conv_tb_nm} SET name=(?) WHERE id={id}', (name,))
+            self.__c.execute(f'UPDATE {THREAD_TABLE_NAME} SET name=(?) WHERE id={id}', (name,))
             self.__conn.commit()
         except sqlite3.Error as e:
             print(f"An error occurred: {e}")
             raise
 
-    def deleteConv(self, id=None):
+    def deleteThread(self, id=None):
         try:
-            query = f'DELETE FROM {self.__conv_tb_nm}'
+            query = f'DELETE FROM {THREAD_TABLE_NAME}'
             if id:
                 query += f' WHERE id = {id}'
             self.__c.execute(query)
@@ -457,121 +488,190 @@ class SqliteDatabase:
             print(f"An error occurred: {e}")
             raise
 
-    def __alterConvUnit(self):
+    def __alterThreadUnit(self):
+        # Make message table
+        self.__createMessage()
+
         # search the conv unit tables
         res = self.__c.execute(f'''
                         SELECT name
                         FROM sqlite_master
-                        WHERE type = 'table' AND name LIKE '{self.__conv_unit_tb_nm}%';
+                        WHERE type = 'table' AND name LIKE '{MESSAGE_TABLE_NAME_OLD}%';
                     ''')
-
-        # get the columns
+        # UNION all old message tables to new one
+        union_query = ''
         for name in res.fetchall():
-            col_to_add = [{'field_name': 'finish_reason', 'type': 'TEXT'},
-                          {'field_name': 'model_name', 'type': 'VARCHAR(255)'},
-                          {'field_name': 'prompt_tokens', 'type': 'INTEGER'},
-                          {'field_name': 'completion_tokens', 'type': 'INTEGER'},
-                          {'field_name': 'total_tokens', 'type': 'INTEGER'}]
+            union_query += f'SELECT * FROM {name[0]}\n'
+        union_query = ' UNION '.join(union_query.split('\n')[:-1]) + ' order by id_fk'
 
-            self.__c.execute(f"PRAGMA table_info({name[0]})")
-            existing_columns_to_add = [column[1] for column in self.__c.fetchall()]
+        # Insert all old message tables to new one
+        res = self.__c.execute(union_query)
 
-            col_to_add = list(filter(lambda x: x['field_name'] not in existing_columns_to_add, col_to_add))
+        arg = ChatMessageContainer()
+        insert_query = arg.create_insert_query(table_name=MESSAGE_TABLE_NAME, excludes=['id'])
 
-            if len(col_to_add) > 0:
-                for col in col_to_add:
-                    field_name = col['field_name']
-                    type = col['type']
-                    statement = f'ALTER TABLE {name[0]} ADD COLUMN {field_name} {type}'
-                    self.__c.execute(statement)
+        for row in res.fetchall():
+            row_dict = dict(row)
+            row_dict['role'] = 'user' if row_dict['is_user'] == 1 else 'assistant'
+            row_dict['thread_id'] = row_dict['id_fk']
+            row_dict['content'] = row_dict['conv']
+            del row_dict['is_user']
+            del row_dict['conv']
+            del row_dict['id_fk']
+            arg = ChatMessageContainer(**row_dict)
+            self.__c.execute(insert_query, arg.get_values_for_insert(excludes=['id']))
+            self.__conn.commit()
 
-    def __createConvUnit(self, id_fk):
+        # Remove old message tables
+        self.__removeOldMessage()
+
+    def __removeOldMessage(self):
+        # remove old message tables
+        self.__c.execute(f'''
+            SELECT name
+            FROM sqlite_master
+            WHERE type = 'table'
+              AND name LIKE '%{MESSAGE_TABLE_NAME_OLD}%'
+            ''')
+        for name in self.__c.fetchall():
+            self.__c.execute(f'DROP TABLE {name[0]}')
+        self.__conn.commit()
+
+    def __removeOldTrigger(self):
+        # remove old trigger
+        self.__c.execute(f'''
+            SELECT name
+            FROM sqlite_master
+            WHERE type = 'trigger'
+              AND name LIKE '%{THREAD_MESSAGE_INSERTED_TR_NAME_OLD}%'
+            ''')
+        for name in self.__c.fetchall():
+            self.__c.execute(f'DROP TRIGGER {name[0]}')
+
+        self.__c.execute(f'''
+            SELECT name
+            FROM sqlite_master
+            WHERE type = 'trigger'
+              AND name LIKE '%{THREAD_MESSAGE_UPDATED_TR_NAME_OLD}%'
+            ''')
+        for name in self.__c.fetchall():
+            self.__c.execute(f'DROP TRIGGER {name[0]}')
+
+        self.__c.execute(f'''
+            SELECT name
+            FROM sqlite_master
+            WHERE type = 'trigger'
+              AND name LIKE '%{THREAD_MESSAGE_DELETED_TR_NAME_OLD}%'
+            ''')
+        for name in self.__c.fetchall():
+            self.__c.execute(f'DROP TRIGGER {name[0]}')
+        self.__conn.commit()
+
+    def __createMessageTrigger(self):
+        """
+        Create message trigger
+        """
+        # Create insert trigger
+        self.__c.execute(f'''
+            CREATE TRIGGER {THREAD_MESSAGE_INSERTED_TR_NAME}
+            AFTER INSERT ON {MESSAGE_TABLE_NAME}
+            BEGIN
+              UPDATE {THREAD_TABLE_NAME} SET update_dt = CURRENT_TIMESTAMP WHERE id = NEW.thread_id;
+            END
+        ''')
+
+        # Create update trigger
+        self.__c.execute(f'''
+            CREATE TRIGGER {THREAD_MESSAGE_UPDATED_TR_NAME}
+            AFTER UPDATE ON {MESSAGE_TABLE_NAME}
+            BEGIN
+              UPDATE {THREAD_TABLE_NAME} SET update_dt = CURRENT_TIMESTAMP WHERE id = NEW.thread_id;
+            END
+        ''')
+
+        # Create delete trigger
+        self.__c.execute(f'''
+            CREATE TRIGGER {THREAD_MESSAGE_DELETED_TR_NAME}
+            AFTER DELETE ON {MESSAGE_TABLE_NAME}
+            BEGIN
+              UPDATE {THREAD_TABLE_NAME} SET update_dt = CURRENT_TIMESTAMP WHERE id = OLD.thread_id;
+            END
+        ''')
+        # Commit the transaction
+        self.__conn.commit()
+
+    def __createMessage(self):
+        """
+        Create message table
+        """
         try:
             # Check if the table exists
             self.__c.execute(
-                f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{self.__conv_unit_tb_nm}{id_fk}'")
+                f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{MESSAGE_TABLE_NAME}'")
             if self.__c.fetchone()[0] == 1:
-                # each conv table already exists
+                # Let it pass if the table already exists
                 pass
             else:
-                self.__c.execute(f'''CREATE TABLE {self.__conv_unit_tb_nm}{id_fk}
-                                         (id INTEGER PRIMARY KEY,
-                                          id_fk INTEGER,
-                                          is_user INTEGER,
-                                          conv TEXT,
-                                          finish_reason VARCHAR(255),
-                                          model_name VARCHAR(255),
-                                          prompt_tokens INTEGER,
-                                          completion_tokens INTEGER,
-                                          total_tokens INTEGER,
-                                          update_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
-                                          insert_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
-                                          FOREIGN KEY (id_fk) REFERENCES {self.__conv_tb_nm}(id) ON DELETE CASCADE)''')
+                # Create message table and triggers
+                self.__c.execute(f'''CREATE TABLE {MESSAGE_TABLE_NAME}
+                             (id INTEGER PRIMARY KEY,
+                              thread_id INTEGER,
+                              role VARCHAR(255),
+                              content TEXT,
+                              finish_reason VARCHAR(255),
+                              model VARCHAR(255),
+                              prompt_tokens INTEGER,
+                              completion_tokens INTEGER,
+                              total_tokens INTEGER,
+                              favorite INTEGER DEFAULT 0,
+                              update_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
+                              insert_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
+                              favorite_set_date DATETIME,
+                              FOREIGN KEY (thread_id) REFERENCES {THREAD_TABLE_NAME}
+                              ON DELETE CASCADE)''')
 
-                # insert trigger
-                self.__c.execute(f'''
-                    CREATE TRIGGER conv_tb_updated_by_unit_inserted_tr{id_fk}
-                    AFTER INSERT ON {self.__conv_unit_tb_nm}{id_fk}
-                    BEGIN
-                      UPDATE {self.__conv_tb_nm} SET update_dt = CURRENT_TIMESTAMP WHERE id = NEW.id_fk;
-                    END
-                ''')
-
-                # update trigger
-                self.__c.execute(f'''
-                    CREATE TRIGGER conv_tb_updated_by_unit_updated_tr{id_fk}
-                    AFTER UPDATE ON {self.__conv_unit_tb_nm}{id_fk}
-                    BEGIN
-                      UPDATE {self.__conv_tb_nm} SET update_dt = CURRENT_TIMESTAMP WHERE id = NEW.id_fk;
-                    END
-                ''')
-
-                # delete trigger
-                self.__c.execute(f'''
-                    CREATE TRIGGER conv_tb_updated_by_unit_deleted_tr{id_fk}
-                    AFTER DELETE ON {self.__conv_unit_tb_nm}{id_fk}
-                    BEGIN
-                      UPDATE {self.__conv_tb_nm} SET update_dt = CURRENT_TIMESTAMP WHERE id = OLD.id_fk;
-                    END
-                ''')
-                # Commit the transaction
+                self.__removeOldTrigger()
+                self.__createMessageTrigger()
                 self.__conn.commit()
         except sqlite3.Error as e:
-            print(f"An error occurred: {e}")
+            print(f"An error occurred while creating the table: {e}")
             raise
 
-    def selectCertainConvRaw(self, id, content_to_select=None):
-        query = f'SELECT * FROM {self.__conv_unit_tb_nm}{id}'
+    def selectCertainThreadMessagesRaw(self, thread_id, content_to_select=None):
+        """
+        This is for selecting all messages in a thread with a specific thread_id.
+        The format of the result is a list of sqlite Rows.
+        """
+        query = f'SELECT * FROM {MESSAGE_TABLE_NAME} WHERE thread_id = {thread_id}'
         if content_to_select:
-            query += f' WHERE conv LIKE "%{content_to_select}%"'
+            query += f' AND content LIKE "%{content_to_select}%"'
         self.__c.execute(query)
         return self.__c.fetchall()
 
-    def selectCertainConv(self, id, content_to_select=None):
-        result = []
-        for elem in self.selectCertainConvRaw(id, content_to_select=content_to_select):
-            result.append(dict(elem))
+    def selectCertainThreadMessages(self, thread_id, content_to_select=None) -> List[ChatMessageContainer]:
+        """
+        This is for selecting all messages in a thread with a specific thread_id.
+        The format of the result is a list of ChatMessageContainer.
+        """
+        result = [ChatMessageContainer(**elem) for elem in self.selectCertainThreadMessagesRaw(thread_id, content_to_select=content_to_select)]
         return result
 
-    def selectAllContentOfConv(self, content_to_select=None):
+    def selectAllContentOfThread(self, content_to_select=None):
+        """
+        This is for selecting all messages in all threads which include the content_to_select.
+        """
         arr = []
-        for _id in [conv[0] for conv in self.selectAllConv()]:
-            result = self.selectCertainConv(_id, content_to_select)
+        for _id in [conv[0] for conv in self.selectAllThread()]:
+            result = self.selectCertainThreadMessages(_id, content_to_select)
             if result:
                 arr.append((_id, result))
         return arr
 
-    def insertConvUnit(self, id, user_f, conv, info):
+    def insertMessage(self, arg: ChatMessageContainer):
         try:
-            finish_reason = info['finish_reason']
-            model_name = info['model_name']
-            prompt_tokens = info['prompt_tokens']
-            completion_tokens = info['completion_tokens']
-            total_tokens = info['total_tokens']
-            self.__c.execute(
-                f'INSERT INTO {self.__conv_unit_tb_nm}{id} (id_fk, is_user, conv, finish_reason, model_name, '
-                f'prompt_tokens, completion_tokens, total_tokens) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-                (id, user_f, conv, finish_reason, model_name, prompt_tokens, completion_tokens, total_tokens))
+            excludes = ['id', 'update_dt', 'insert_dt']
+            insert_query = arg.create_insert_query(table_name=MESSAGE_TABLE_NAME, excludes=excludes)
+            self.__c.execute(insert_query, arg.get_values_for_insert(excludes=excludes))
             new_id = self.__c.lastrowid
             # Commit the transaction
             self.__conn.commit()
@@ -580,15 +680,37 @@ class SqliteDatabase:
             print(f"An error occurred: {e}")
             raise
 
+    def updateMessage(self, id, favorite):
+        """
+        Update message favorite
+        """
+        try:
+            current_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            self.__c.execute(f'''
+                            UPDATE {MESSAGE_TABLE_NAME} 
+                            SET favorite = ?,
+                                favorite_set_date = CASE 
+                                                      WHEN ? = 1 THEN ? 
+                                                      ELSE NULL 
+                                                    END 
+                            WHERE id = ?
+                        ''', (favorite, favorite, current_date, id))
+            self.__conn.commit()
+            return current_date
+        except sqlite3.Error as e:
+            print(f"An error occurred: {e}")
+            raise
+
     def __createImage(self):
         try:
             # Check if the table exists
             self.__c.execute(f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{self.__image_tb_nm}'")
+            # Will remove after v1.0.0
             if self.__c.fetchone()[0] == 1:
                 # To not make table every time to change column's name and type
                 self.__c.execute(f'PRAGMA table_info({self.__image_tb_nm})')
                 existing_columns = set([column[1] for column in self.__c.fetchall()])
-                required_columns = set(ImagePromptContainer.get_keys_for_insert(['id', 'update_dt', 'insert_dt']))
+                required_columns = set(ImagePromptContainer.get_keys(['id', 'update_dt', 'insert_dt']))
 
                 # Find missing columns
                 missing_columns = required_columns - existing_columns
@@ -631,8 +753,6 @@ class SqliteDatabase:
             query = arg.create_insert_query(self.__image_tb_nm, excludes)
             values = arg.get_values_for_insert(excludes)
             self.__c.execute(query, values)
-                # f'INSERT INTO {self.__image_tb_nm} (prompt, n, size, quality, data, style, revised_prompt) VALUES (?, ?, ?, ?, ?, ?, ?)',
-                # (prompt, n, size, quality, data, style, revised_prompt))
             new_id = self.__c.lastrowid
             self.__conn.commit()
             return new_id
@@ -667,17 +787,28 @@ class SqliteDatabase:
             print(f"An error occurred: {e}")
             raise
 
-    def export(self, ids, saved_filename):
-        shutil.copy2(self.__db_filename, saved_filename)
+    def selectFavorite(self):
+        try:
+            self.__c.execute(f'SELECT * FROM {MESSAGE_TABLE_NAME} WHERE favorite=1 order by favorite_set_date')
+            return self.__c.fetchall()
+        except sqlite3.Error as e:
+            print(f"An error occurred: {e}")
+            raise
+
+    def export(self, ids, filename):
+        # Get the records of the threads of the given ids
+        thread_records = self.selectAllThread(ids)
+        data = [dict(record) for record in thread_records]
+        # Convert it into dictionary
+        for d in data:
+            d['messages'] = list(map(lambda x: x.__dict__, self.selectCertainThreadMessages(d['id'])))
+
+        # Save the JSON
+        with open(filename, 'w') as f:
+            json.dump(data, f)
 
     def getCursor(self):
         return self.__c
-
-    def getConvTableName(self):
-        return self.__conv_tb_nm
-
-    def getConvUnitTableName(self):
-        return self.__conv_unit_tb_nm
 
     def close(self):
         self.__conn.close()

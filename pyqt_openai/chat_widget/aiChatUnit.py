@@ -1,12 +1,15 @@
 import pyperclip
 from qtpy.QtCore import Qt
-from qtpy.QtGui import QPalette, QColor
-from qtpy.QtWidgets import QLabel, QWidget, QVBoxLayout, QApplication, QHBoxLayout, QSpacerItem, QSizePolicy, \
+from qtpy.QtGui import QPalette
+from qtpy.QtWidgets import QLabel, QMessageBox, QWidget, QVBoxLayout, QApplication, QHBoxLayout, QSpacerItem, QSizePolicy, \
     QTextBrowser, QAbstractScrollArea
 
-from pyqt_openai.chat_widget.convUnitResultDialog import ConvUnitResultDialog
-from pyqt_openai.widgets.circleProfileImage import RoundedImage
+from pyqt_openai.chat_widget.messageResultDialog import MessageResultDialog
+from pyqt_openai.constants import DEFAULT_ICON_SIZE
+from pyqt_openai.models import ChatMessageContainer
+from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.widgets.button import Button
+from pyqt_openai.widgets.circleProfileImage import RoundedImage
 
 
 class SourceBrowser(QWidget):
@@ -79,7 +82,12 @@ class AIChatUnit(QWidget):
         lay = QHBoxLayout()
 
         self.__icon = RoundedImage()
-        self.__icon.setMaximumSize(24, 24)
+        self.__icon.setMaximumSize(*DEFAULT_ICON_SIZE)
+
+        self.__favoriteBtn = Button()
+        self.__favoriteBtn.setStyleAndIcon('ico/favorite_no.svg')
+        self.__favoriteBtn.setCheckable(True)
+        self.__favoriteBtn.toggled.connect(self.__favorite)
 
         self.__infoBtn = Button()
         self.__infoBtn.setStyleAndIcon('ico/info.svg')
@@ -92,6 +100,7 @@ class AIChatUnit(QWidget):
 
         lay.addWidget(self.__icon)
         lay.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.Policy.MinimumExpanding))
+        lay.addWidget(self.__favoriteBtn)
         lay.addWidget(self.__infoBtn)
         lay.addWidget(self.__copyBtn)
         lay.setContentsMargins(2, 2, 2, 2)
@@ -112,14 +121,25 @@ class AIChatUnit(QWidget):
 
         self.setLayout(lay)
 
-        self.setBackgroundRole(QPalette.ColorRole.Midlight)
+        self.setBackgroundRole(QPalette.ColorRole.AlternateBase)
         self.setAutoFillBackground(True)
 
     def __copy(self):
         pyperclip.copy(self.text())
 
+    def __favorite(self, f, insert_f=True):
+        favorite = 1 if f else 0
+        if favorite:
+            self.__favoriteBtn.setStyleAndIcon('ico/favorite_yes.svg')
+        else:
+            self.__favoriteBtn.setStyleAndIcon('ico/favorite_no.svg')
+        if insert_f:
+            current_date = DB.updateMessage(self.__result_info.id, favorite)
+            self.__result_info.favorite = favorite
+            self.__result_info.favorite_set_date = current_date
+
     def __showInfo(self):
-        dialog = ConvUnitResultDialog(self.__result_info)
+        dialog = MessageResultDialog(self.__result_info)
         dialog.exec()
 
     def text(self):
@@ -147,13 +167,16 @@ class AIChatUnit(QWidget):
                     widget.setAlignment(a0)
 
     def disableGUIDuringGenerateResponse(self):
+        self.__favoriteBtn.setEnabled(False)
         self.__copyBtn.setEnabled(False)
         self.__infoBtn.setEnabled(False)
 
-    def showConvResultInfo(self, info_dict):
+    def showConvResultInfo(self, arg: ChatMessageContainer):
+        self.__favoriteBtn.setEnabled(True)
         self.__copyBtn.setEnabled(True)
         self.__infoBtn.setEnabled(True)
-        self.__result_info = info_dict
+        self.__result_info = arg
+        self.__favorite(True if arg.favorite else False, insert_f=False)
 
     def setText(self, text: str):
         self.__lbl = QLabel(text)

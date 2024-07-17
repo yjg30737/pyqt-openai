@@ -6,6 +6,9 @@ import sys
 import zipfile
 import requests
 import base64
+import pandas
+from datetime import datetime
+
 from pathlib import Path
 
 from jinja2 import Template
@@ -43,11 +46,11 @@ def get_version():
         raise RuntimeError("Version information not found.")
     return f'{version}'
 
-def conv_unit_to_txt(db, id, title, username='User', ai_name='AI'):
+def message_list_to_txt(db, thread_id, title, username='User', ai_name='AI'):
     content = ''
-    certain_conv_filename_content = db.selectCertainConvRaw(id)
+    certain_thread_filename_content = db.selectCertainThreadMessagesRaw(thread_id)
     content += f'== {title} ==' + '\n'*2
-    for unit in certain_conv_filename_content:
+    for unit in certain_thread_filename_content:
         unit_prefix = username if unit[2] == 1 else ai_name
         unit_content = unit[3]
         content += f'{unit_prefix}: {unit_content}' + '\n'*2
@@ -61,7 +64,7 @@ def is_valid_regex(pattern):
         return False
 
 def conv_unit_to_html(db, id, title):
-    certain_conv_filename_content = db.selectCertainConvRaw(id)
+    certain_conv_filename_content = db.selectCertainThreadMessagesRaw(id)
     chat_history = [unit[3] for unit in certain_conv_filename_content]
     template = Template('''
     <html>
@@ -132,3 +135,86 @@ def get_db_filename():
     settings = QSettings("pyqt_openai.ini", QSettings.Format.IniFormat)
     db_path = settings.value("db", "conv") + ".db"
     return db_path
+
+def get_conversation_from_chatgpt(filename, most_recent_n:int = None):
+    conversations_df = pandas.read_json(filename)
+    conv_arr = []
+    count = conversations_df.shape[0] if most_recent_n is None else most_recent_n
+    for i in range(count):
+        conv = conversations_df.iloc[i]
+        conv_dict = {}
+        name = conv.title
+        insert_dt = str(conv.create_time).split('.')[0]
+        update_dt = str(conv.update_time).split('.')[0]
+        conv_dict['id'] = conv.id
+        conv_dict['name'] = name
+        conv_dict['insert_dt'] = insert_dt
+        conv_dict['update_dt'] = update_dt
+        conv_dict['mapping'] = conv.mapping
+        conv_arr.append(conv_dict)
+    return {
+        'columns': ['id', 'name', 'insert_dt', 'update_dt'],
+        'data': conv_arr
+    }
+
+def get_chatgpt_data(conv_arr):
+    for conv in conv_arr:
+        # role
+        # content
+        # insert_dt
+        # update_dt
+        # model
+        conv['messages'] = []
+        for k, v in conv['mapping'].items():
+            obj = {}
+            # We need the create_time, update_time, role, content_type, and content
+            message = v['message']
+            if message:
+                metadata = message['metadata']
+
+                role = message['author']['role']
+                create_time = datetime.fromtimestamp(message['create_time']).strftime('%Y-%m-%d %H:%M:%S') if message['create_time'] else None
+                update_time = datetime.fromtimestamp(message['update_time']).strftime('%Y-%m-%d %H:%M:%S') if message['update_time'] else None
+                content = message['content']
+
+                obj['role'] = role
+                obj['insert_dt'] = create_time
+                obj['update_dt'] = update_time
+
+                # print(f'content: {content}')
+                if role == 'user':
+                    content_parts = '\n'.join(content['parts'])
+                    obj['content'] = content_parts
+                    conv['messages'].append(obj)
+                else:
+                    if role == 'tool':
+                        # Tool is used for the internal use of the system of OpenAI
+                        pass
+                    elif role == 'assistant':
+                        model_slug = metadata.get('model_slug', None)
+                        obj['model'] = model_slug
+                        content_type = content['content_type']
+                        # Text (General chat)
+                        if content_type == 'text':
+                            content_parts = '\n'.join(content['parts'])
+                            obj['content'] = content_parts
+                            conv['messages'].append(obj)
+                        elif content_type == 'code':
+                            # Currently there is no way to apply every aspect of the "code" content_type into the code.
+                            # So let it be for now.
+                            pass
+
+                            # image: content: dict_keys(['content_type', 'language', 'response_format_name', 'text'])
+                            # language = content['language']
+                            # response_format_name = content['response_format_name']
+                            # print(f'language: {language}')
+                            # print(f'response_format_name: {response_format_name}')
+                            # print(f'content: {content["text"]}')
+                    elif role == 'system':
+                        # Won't use the system
+                        pass
+    # Remove mapping keys
+    for conv in conv_arr:
+        del conv['mapping']
+
+    return conv_arr

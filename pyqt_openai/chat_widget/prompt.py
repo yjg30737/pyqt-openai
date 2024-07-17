@@ -6,7 +6,7 @@ from qtpy.QtWidgets import QVBoxLayout, QAction, QPushButton, QFileDialog, QTool
 
 from pyqt_openai.chat_widget.textEditPromptGroup import TextEditPromptGroup
 from pyqt_openai.chat_widget.uploadedImageFileWidget import UploadedImageFileWidget
-from pyqt_openai.prompt_command_completer.commandSuggestionWidget import CommandSuggestionWidget
+from pyqt_openai.commandSuggestionWidget import CommandSuggestionWidget
 from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.widgets.toolButton import ToolButton

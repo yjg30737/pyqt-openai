@@ -1,6 +1,7 @@
 import os
 import sys
 
+from pyqt_openai.constants import COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE
 from pyqt_openai.widgets.checkBoxListWidget import CheckBoxListWidget
 
 # Get the absolute path of the current script file
@@ -36,6 +37,8 @@ class SettingsDialog(QDialog):
         self.__do_not_ask_again = args.do_not_ask_again
         self.__notify_finish = args.notify_finish
         self.__show_toolbar = args.show_toolbar
+        self.__show_secondary_toolbar = args.show_secondary_toolbar
+        self.__thread_tool_widget = args.thread_tool_widget
         self.__chat_column_to_show = args.chat_column_to_show
         self.__image_column_to_show = args.image_column_to_show
 
@@ -74,6 +77,10 @@ class SettingsDialog(QDialog):
         self.__notifyFinishCheckBox.setChecked(self.__notify_finish)
         self.__showToolbarCheckBox = QCheckBox("Show toolbar")
         self.__showToolbarCheckBox.setChecked(self.__show_toolbar)
+        self.__showSecondaryToolBarChkBox = QCheckBox(LangClass.TRANSLATIONS['Show AI Toolbar'])
+        self.__showSecondaryToolBarChkBox.setChecked(self.__show_secondary_toolbar)
+        self.__showThreadToolWidgetChkBox = QCheckBox('Show thread tool widget')
+        self.__showThreadToolWidgetChkBox.setChecked(self.__thread_tool_widget)
 
         # Dialog buttons
         buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
@@ -90,13 +97,15 @@ class SettingsDialog(QDialog):
         lay.addWidget(self.__doNotAskAgainCheckBox)
         lay.addWidget(self.__notifyFinishCheckBox)
         lay.addWidget(self.__showToolbarCheckBox)
+        lay.addWidget(self.__showSecondaryToolBarChkBox)
+        lay.addWidget(self.__showThreadToolWidgetChkBox)
 
         generalGrpBox = QGroupBox('General')
         generalGrpBox.setLayout(lay)
 
         chatColAllCheckBox = QCheckBox('Check all')
         self.__chatColCheckBoxListWidget = CheckBoxListWidget()
-        for k in ChatThreadContainer.get_keys():
+        for k in ChatThreadContainer.get_keys(excludes=COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE):
             self.__chatColCheckBoxListWidget.addItem(k, checked=k in self.__chat_column_to_show)
 
         chatColAllCheckBox.stateChanged.connect(self.__chatColCheckBoxListWidget.toggleState)
@@ -111,7 +120,7 @@ class SettingsDialog(QDialog):
 
         imageColAllCheckBox = QCheckBox('Check all')
         self.__imageColCheckBoxListWidget = CheckBoxListWidget()
-        for k in ImagePromptContainer.get_keys():
+        for k in ImagePromptContainer.get_keys(excludes=COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE):
             self.__imageColCheckBoxListWidget.addItem(k, checked=k in self.__image_column_to_show)
 
         imageColAllCheckBox.stateChanged.connect(self.__imageColCheckBoxListWidget.toggleState)
@@ -161,6 +170,8 @@ class SettingsDialog(QDialog):
             do_not_ask_again=self.__doNotAskAgainCheckBox.isChecked(),
             notify_finish=self.__notifyFinishCheckBox.isChecked(),
             show_toolbar=self.__showToolbarCheckBox.isChecked(),
-            chat_column_to_show=self.__chatColCheckBoxListWidget.getCheckedItemsText(),
-            image_column_to_show=self.__imageColCheckBoxListWidget.getCheckedItemsText()
+            show_secondary_toolbar=self.__showSecondaryToolBarChkBox.isChecked(),
+            thread_tool_widget=self.__showThreadToolWidgetChkBox.isChecked(),
+            chat_column_to_show=COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE+self.__chatColCheckBoxListWidget.getCheckedItemsText(),
+            image_column_to_show=COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE+self.__imageColCheckBoxListWidget.getCheckedItemsText()
         )

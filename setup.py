@@ -9,7 +9,7 @@ with codecs.open(os.path.join(here, "README.md"), encoding="utf-8") as fh:
 
 setup(
     name='pyqt-openai',
-    version='0.6.5',
+    version='0.7.6',
     author='Jung Gyu Yoon',
     author_email='yjg30737@gmail.com',
     license='MIT',
@@ -20,7 +20,10 @@ setup(
                                       'next.svg', 'prev.svg', 'regex.svg', 'word.svg',
                                       'vertical_three_dots.svg',
                                       'add_light.svg', 'delete_light.svg',
-                                      'import.svg']},
+                                      'import.svg',
+                                      'favorite_yes.svg',
+                                      'favorite_no.svg',
+                                      'fullscreen.svg']},
     description='PyQt/PySide(Python cross-platform GUI toolkit) OpenAI Chatbot',
     url='https://github.com/yjg30737/pyqt-openai.git',
     long_description_content_type='text/markdown',

@@ -3,6 +3,7 @@ from qtpy.QtGui import QPalette
 from qtpy.QtCore import Qt
 from qtpy.QtWidgets import QSpacerItem, QSizePolicy, QWidget, QVBoxLayout, QHBoxLayout, QLabel
 
+from pyqt_openai.constants import DEFAULT_ICON_SIZE
 from pyqt_openai.widgets.button import Button
 
 from pyqt_openai.widgets.circleProfileImage import RoundedImage
@@ -24,7 +25,7 @@ class UserChatUnit(QWidget):
         lay = QHBoxLayout()
 
         self.__icon = RoundedImage()
-        self.__icon.setMaximumSize(24, 24)
+        self.__icon.setMaximumSize(*DEFAULT_ICON_SIZE)
 
         copyBtn = Button()
         copyBtn.setStyleAndIcon('ico/copy.svg')
@@ -55,7 +56,7 @@ class UserChatUnit(QWidget):
 
         self.setLayout(lay)
 
-        self.setBackgroundRole(QPalette.ColorRole.Light)
+        self.setBackgroundRole(QPalette.ColorRole.Base)
         self.setAutoFillBackground(True)
 
     def __copy(self):

@@ -142,12 +142,17 @@ class ImageNavWidget(QWidget):
         self.__model.select()
 
     def __clicked(self, idx):
-        cur_id = self.__proxyModel.data(self.__proxyModel.index(idx.row(), self.__columns.index('id')))
+        # get the source index
+        source_idx = self.__proxyModel.mapToSource(idx)
+
+        # get the primary key value of the row
+        cur_id = self.__model.record(source_idx.row()).value("id")
+
         # Get data from DB id
         data = DB.selectCertainImage(cur_id)['data']
         if data:
             if isinstance(data, str):
-                QMessageBox.critical(self, 'Error', f'Image URL can\'t bee seen after v0.2.51, Now it is replaced with b64_json.')
+                QMessageBox.critical(self, 'Error', f'Image URL can\'t be seen after v0.2.51, Now it is replaced with b64_json.')
             else:
                 data = QByteArray(data).data()
                 self.getContent.emit(data)

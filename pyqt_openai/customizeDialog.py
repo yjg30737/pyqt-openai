@@ -3,6 +3,7 @@ from qtpy.QtGui import QPixmap
 from qtpy.QtWidgets import QDialog, QFrame, QPushButton, QHBoxLayout, QVBoxLayout, QWidget, QFormLayout
 from qtpy.QtWidgets import QGraphicsScene, QGraphicsView
 
+from pyqt_openai.constants import IMAGE_FILE_EXT, DEFAULT_ICON_SIZE
 from pyqt_openai.widgets.circleProfileImage import RoundedImage
 from pyqt_openai.widgets.findPathWidget import FindPathWidget
 from pyqt_openai.res.language_dict import LangClass
@@ -67,33 +68,33 @@ class CustomizeDialog(QDialog):
         self.__ai_image = self.__settings_ini.value('ai_image', type=str)
 
     def __initUi(self):
-        self.setWindowTitle(LangClass.TRANSLATIONS['Customize (working)'])
+        self.setWindowTitle('Customize')
         self.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.WindowCloseButtonHint)
 
         self.__homePageGraphicsView = SingleImageGraphicsView()
         self.__homePageGraphicsView.setFilename(self.__background_image)
 
         self.__userImage = RoundedImage()
-        self.__userImage.setMaximumSize(24, 24)
+        self.__userImage.setMaximumSize(*DEFAULT_ICON_SIZE)
         self.__userImage.setImage(self.__user_image)
         self.__AIImage = RoundedImage()
         self.__AIImage.setImage(self.__ai_image)
-        self.__AIImage.setMaximumSize(24, 24)
+        self.__AIImage.setMaximumSize(*DEFAULT_ICON_SIZE)
 
         self.__findPathWidget1 = FindPathWidget()
         self.__findPathWidget1.getLineEdit().setText(self.__background_image)
         self.__findPathWidget1.added.connect(self.__homePageGraphicsView.setFilename)
-        self.__findPathWidget1.setExtOfFiles('Image file (*.jpg *.png)')
+        self.__findPathWidget1.setExtOfFiles(IMAGE_FILE_EXT)
 
         self.__findPathWidget2 = FindPathWidget()
         self.__findPathWidget2.getLineEdit().setText(self.__user_image)
         self.__findPathWidget2.added.connect(self.__userImage.setImage)
-        self.__findPathWidget2.setExtOfFiles('Image file (*.jpg *.png)')
+        self.__findPathWidget2.setExtOfFiles(IMAGE_FILE_EXT)
 
         self.__findPathWidget3 = FindPathWidget()
         self.__findPathWidget3.getLineEdit().setText(self.__ai_image)
         self.__findPathWidget3.added.connect(self.__AIImage.setImage)
-        self.__findPathWidget3.setExtOfFiles('Image file (*.jpg *.png)')
+        self.__findPathWidget3.setExtOfFiles(IMAGE_FILE_EXT)
 
         lay1 = QVBoxLayout()
         lay1.setContentsMargins(0, 0, 0, 0)

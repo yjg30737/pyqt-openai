@@ -1,13 +1,15 @@
-from PyQt5.QtWidgets import QDialog
 from qtpy.QtCore import Signal, QSortFilterProxyModel, Qt
 from qtpy.QtSql import QSqlTableModel, QSqlQuery
-from qtpy.QtWidgets import QApplication, QWidget, QVBoxLayout, QMessageBox, QStyledItemDelegate, QTableView, \
+from qtpy.QtWidgets import QWidget, QVBoxLayout, QMessageBox, QPushButton, QStyledItemDelegate, QTableView, \
     QAbstractItemView, \
     QHBoxLayout, \
-    QLabel, QSpacerItem, QSizePolicy, QFileDialog, QComboBox
+    QLabel, QSpacerItem, QSizePolicy, QFileDialog, QComboBox, QDialog
 
 # for search feature
+from pyqt_openai.chatGPTImportDialog import ChatGPTImportDialog
+from pyqt_openai.constants import THREAD_ORDERBY
 from pyqt_openai.exportDialog import ExportDialog
+from pyqt_openai.importDialog import ImportDialog
 from pyqt_openai.models import ChatThreadContainer
 from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.widgets.button import Button
@@ -58,6 +60,8 @@ class ChatNavWidget(QWidget):
     cleared = Signal()
     onImport = Signal(str)
     onExport = Signal(list)
+    onChatGPTImport = Signal(list)
+    onFavoriteClicked = Signal(bool)
 
     def __init__(self, columns, table_nm):
         super().__init__()
@@ -143,7 +147,7 @@ class ChatNavWidget(QWidget):
             self.__model.setHeaderData(i, Qt.Orientation.Horizontal, self.__columns[i])
         self.__model.select()
         # descending order by insert date
-        idx = self.__columns.index('insert_dt')
+        idx = self.__columns.index(THREAD_ORDERBY)
         self.__model.sort(idx, Qt.SortOrder.DescendingOrder)
 
         # init the proxy model
@@ -171,9 +175,14 @@ class ChatNavWidget(QWidget):
         self.__tableView.clicked.connect(self.__clicked)
         self.__tableView.activated.connect(self.__clicked)
 
+        self.__favoriteBtn = QPushButton('Favorite List')
+        self.__favoriteBtn.setCheckable(True)
+        self.__favoriteBtn.toggled.connect(self.__onFavoriteClicked)
+
         lay = QVBoxLayout()
         lay.addWidget(menuWidget)
         lay.addWidget(self.__tableView)
+        lay.addWidget(self.__favoriteBtn)
         self.setLayout(lay)
 
         self.refreshData()
@@ -186,19 +195,34 @@ class ChatNavWidget(QWidget):
         self.__model.select()
 
     def __import(self):
-        filename = QFileDialog.getOpenFileName(self, 'Import', '', 'SQLite DB files (*.db)')
-        if filename:
-            filename = filename[0]
-            self.onImport.emit(filename)
+        dialog = ImportDialog()
+        reply = dialog.exec()
+        if reply == QDialog.Accepted:
+            import_type = dialog.getImportType()
+            if import_type == 'General':
+                filename = QFileDialog.getOpenFileName(self, 'Import', '', 'JSON files (*.json)')
+                if filename:
+                    filename = filename[0]
+                    if filename:
+                        self.onImport.emit(filename)
+            else:
+                chatgptDialog = ChatGPTImportDialog()
+                reply = chatgptDialog.exec()
+                if reply == QDialog.Accepted:
+                    data = chatgptDialog.getData()
+                    self.onChatGPTImport.emit(data)
 
     def __export(self):
         columns = ChatThreadContainer.get_keys()
-        data = DB.selectAllConv()
-        sort_by = 'update_dt'
-        dialog = ExportDialog(columns, data, sort_by=sort_by)
-        reply = dialog.exec()
-        if reply == QDialog.Accepted:
-            self.onExport.emit(dialog.getSelectedIds())
+        data = DB.selectAllThread()
+        sort_by = THREAD_ORDERBY
+        if len(data) > 0:
+            dialog = ExportDialog(columns, data, sort_by=sort_by)
+            reply = dialog.exec()
+            if reply == QDialog.Accepted:
+                self.onExport.emit(dialog.getSelectedIds())
+        else:
+            QMessageBox.information(self, 'Information', 'No data to export.')
 
     def __updated(self, i, r):
         # send updated signal
@@ -213,22 +237,28 @@ class ChatNavWidget(QWidget):
         self.__proxyModel.setFilterRegularExpression(title)
 
     def __clicked(self, idx):
-        # get id of record
-        id = self.__model.data(self.__proxyModel.mapToSource(idx.siblingAtColumn(0)), role=Qt.ItemDataRole.DisplayRole)
-        title = self.__model.data(self.__proxyModel.mapToSource(idx.siblingAtColumn(1)), role=Qt.ItemDataRole.DisplayRole)
+        # get the source index
+        source_idx = self.__proxyModel.mapToSource(idx)
+        # get the primary key value of the row
+        cur_id = self.__model.record(source_idx.row()).value("id")
+        clicked_thread = DB.selectThread(cur_id)
+        # get the title
+        title = clicked_thread['name']
 
-        self.clicked.emit(id, title)
+        self.clicked.emit(cur_id, title)
 
     def __getSelectedIds(self):
-        idx_s = [idx.siblingAtColumn(0) for idx in self.__tableView.selectedIndexes()]
-        idx_s = list(set(idx_s))
-        ids = [self.__model.data(idx, role=Qt.ItemDataRole.DisplayRole) for idx in idx_s]
+        selected_idx_s = self.__tableView.selectedIndexes()
+        ids = []
+        for idx in selected_idx_s:
+            ids.append(self.__model.data(self.__proxyModel.mapToSource(idx.siblingAtColumn(0)), role=Qt.ItemDataRole.DisplayRole))
+        ids = list(set(ids))
         return ids
 
     def __delete(self):
         ids = self.__getSelectedIds()
         for _id in ids:
-            DB.deleteConv(_id)
+            DB.deleteThread(_id)
         self.__model.select()
         self.cleared.emit()
 
@@ -239,7 +269,7 @@ class ChatNavWidget(QWidget):
         # Before clearing, confirm the action
         reply = QMessageBox.question(self, 'Confirm', 'Are you sure to clear all data?', QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
         if reply == QMessageBox.StandardButton.Yes:
-            DB.deleteConv()
+            DB.deleteThread()
             self.__model.select()
             self.cleared.emit()
 
@@ -250,8 +280,8 @@ class ChatNavWidget(QWidget):
         # content
         elif self.__searchOptionCmbBox.currentText() == 'Content':
             if search_text:
-                convs = DB.selectAllContentOfConv(content_to_select=search_text)
-                ids = [_[0] for _ in convs]
+                threads = DB.selectAllContentOfThread(content_to_select=search_text)
+                ids = [_[0] for _ in threads]
                 self.__model.setQuery(QSqlQuery(f"SELECT {','.join(self.__columns)} FROM {self.__table_nm} "
                                                 f"WHERE id IN ({','.join(map(str, ids))})"))
             else:
@@ -266,3 +296,9 @@ class ChatNavWidget(QWidget):
         self.__model.setTable(self.__table_nm)
         self.__model.setQuery(QSqlQuery(f"SELECT {','.join(self.__columns)} FROM {self.__table_nm}"))
         self.__model.select()
+
+    def __onFavoriteClicked(self, f):
+        self.onFavoriteClicked.emit(f)
+
+    def activateFavoriteFromParent(self, f):
+        self.__favoriteBtn.setChecked(f)
