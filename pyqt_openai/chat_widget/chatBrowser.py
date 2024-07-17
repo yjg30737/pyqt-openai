@@ -7,7 +7,7 @@ from qtpy.QtWidgets import QScrollArea, QVBoxLayout, QWidget, QLabel
 from pyqt_openai.chat_widget.aiChatUnit import AIChatUnit
 from pyqt_openai.chat_widget.userChatUnit import UserChatUnit
 from pyqt_openai.models import ChatMessageContainer
-from pyqt_openai.pyqt_openai_data import get_message_obj
+from pyqt_openai.pyqt_openai_data import get_message_obj, DB
 from pyqt_openai.util.script import is_valid_regex
 
 
@@ -39,13 +39,15 @@ class ChatBrowser(QScrollArea):
         self.setWidgetResizable(True)
 
     def showLabel(self, text, stream_f, arg: ChatMessageContainer):
-        arg.thread_id = self.__cur_id
-        # for question & response below the menu
+        arg.thread_id = arg.thread_id if arg.thread_id else self.__cur_id
         unit = self.__setLabel(text, stream_f, arg.role)
         if not stream_f:
+            arg.id = DB.insertMessage(arg)
             self.__showConvResultInfo(unit, arg)
-            # change user_f type from bool to int to insert in db
-            self.messageUpdated.emit(arg)
+
+    def showLabelForFavorite(self, arg: ChatMessageContainer):
+        unit = self.__setLabel(arg.content, False, arg.role)
+        self.__showConvResultInfo(unit, arg)
 
     def __getLastUnit(self) -> AIChatUnit | None:
         item = self.widget().layout().itemAt(self.widget().layout().count() - 1)
@@ -60,9 +62,9 @@ class ChatBrowser(QScrollArea):
 
     def streamFinished(self, arg: ChatMessageContainer):
         unit = self.__getLastUnit()
-        self.__showConvResultInfo(unit, arg)
         arg.content = self.getLastResponse()
-        self.messageUpdated.emit(arg)
+        arg.id = DB.insertMessage(arg)
+        self.__showConvResultInfo(unit, arg)
 
     def __setLabel(self, text, stream_f, role):
         chatUnit = QLabel()
@@ -90,7 +92,6 @@ class ChatBrowser(QScrollArea):
 
     def event(self, e):
         if e.type() == 43:
-            print('scroll')
             self.verticalScrollBar().setSliderPosition(self.verticalScrollBar().maximum())
         return super().event(e)
 
@@ -213,12 +214,24 @@ class ChatBrowser(QScrollArea):
 
         return res_lbl
 
-    def replaceThread(self, id, args: List[ChatMessageContainer]):
+    def replaceThread(self, args: List[ChatMessageContainer], id):
         """
-        for showing old conversation
+        For showing messages from the thread
         """
         self.clear()
         self.setCurId(id)
+        self.onReplacedCurrentPage.emit(1)
+        for i in range(len(args)):
+            arg = args[i]
+            # stream is False no matter what
+            unit = self.__setLabel(arg.content, False, arg.role)
+            self.__showConvResultInfo(unit, arg)
+
+    def replaceThreadForFavorite(self, args: List[ChatMessageContainer]):
+        """
+        For showing favorite messages
+        """
+        self.clear()
         self.onReplacedCurrentPage.emit(1)
         for i in range(len(args)):
             arg = args[i]

@@ -3,6 +3,7 @@ import os
 from qtpy.QtCore import Qt, QSettings
 from qtpy.QtWidgets import QHBoxLayout, QVBoxLayout, QFrame, QWidget, QSplitter
 
+from pyqt_openai.constants import IMAGE_TABLE_NAME
 from pyqt_openai.dalle_widget.dallEControlWidget import DallEControlWidget
 from pyqt_openai.models import ImagePromptContainer
 from pyqt_openai.pyqt_openai_data import DB
@@ -39,7 +40,7 @@ class DallEWidget(QWidget):
         self.__settings_ini.endGroup()
 
     def __initUi(self):
-        self.__imageNavWidget = ImageNavWidget(ImagePromptContainer.get_keys(), 'image_tb')
+        self.__imageNavWidget = ImageNavWidget(ImagePromptContainer.get_keys(), IMAGE_TABLE_NAME)
         self.__viewWidget = ThumbnailView()
         self.__rightSideBarWidget = DallEControlWidget()
 

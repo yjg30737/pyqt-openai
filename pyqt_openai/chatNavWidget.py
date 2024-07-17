@@ -1,6 +1,6 @@
 from qtpy.QtCore import Signal, QSortFilterProxyModel, Qt
 from qtpy.QtSql import QSqlTableModel, QSqlQuery
-from qtpy.QtWidgets import QWidget, QVBoxLayout, QMessageBox, QStyledItemDelegate, QTableView, \
+from qtpy.QtWidgets import QWidget, QVBoxLayout, QMessageBox, QPushButton, QStyledItemDelegate, QTableView, \
     QAbstractItemView, \
     QHBoxLayout, \
     QLabel, QSpacerItem, QSizePolicy, QFileDialog, QComboBox, QDialog
@@ -61,6 +61,7 @@ class ChatNavWidget(QWidget):
     onImport = Signal(str)
     onExport = Signal(list)
     onChatGPTImport = Signal(list)
+    onFavoriteClicked = Signal(bool)
 
     def __init__(self, columns, table_nm):
         super().__init__()
@@ -146,7 +147,7 @@ class ChatNavWidget(QWidget):
             self.__model.setHeaderData(i, Qt.Orientation.Horizontal, self.__columns[i])
         self.__model.select()
         # descending order by insert date
-        idx = self.__columns.index('insert_dt')
+        idx = self.__columns.index(THREAD_ORDERBY)
         self.__model.sort(idx, Qt.SortOrder.DescendingOrder)
 
         # init the proxy model
@@ -174,9 +175,14 @@ class ChatNavWidget(QWidget):
         self.__tableView.clicked.connect(self.__clicked)
         self.__tableView.activated.connect(self.__clicked)
 
+        self.__favoriteBtn = QPushButton('Favorite List')
+        self.__favoriteBtn.setCheckable(True)
+        self.__favoriteBtn.toggled.connect(self.__onFavoriteClicked)
+
         lay = QVBoxLayout()
         lay.addWidget(menuWidget)
         lay.addWidget(self.__tableView)
+        lay.addWidget(self.__favoriteBtn)
         self.setLayout(lay)
 
         self.refreshData()
@@ -231,11 +237,15 @@ class ChatNavWidget(QWidget):
         self.__proxyModel.setFilterRegularExpression(title)
 
     def __clicked(self, idx):
-        # get id of record
-        id = self.__model.data(self.__proxyModel.mapToSource(idx.siblingAtColumn(0)), role=Qt.ItemDataRole.DisplayRole)
-        title = self.__model.data(self.__proxyModel.mapToSource(idx.siblingAtColumn(1)), role=Qt.ItemDataRole.DisplayRole)
+        # get the source index
+        source_idx = self.__proxyModel.mapToSource(idx)
+        # get the primary key value of the row
+        cur_id = self.__model.record(source_idx.row()).value("id")
+        clicked_thread = DB.selectThread(cur_id)
+        # get the title
+        title = clicked_thread['name']
 
-        self.clicked.emit(id, title)
+        self.clicked.emit(cur_id, title)
 
     def __getSelectedIds(self):
         selected_idx_s = self.__tableView.selectedIndexes()
@@ -286,3 +296,9 @@ class ChatNavWidget(QWidget):
         self.__model.setTable(self.__table_nm)
         self.__model.setQuery(QSqlQuery(f"SELECT {','.join(self.__columns)} FROM {self.__table_nm}"))
         self.__model.select()
+
+    def __onFavoriteClicked(self, f):
+        self.onFavoriteClicked.emit(f)
+
+    def activateFavoriteFromParent(self, f):
+        self.__favoriteBtn.setChecked(f)
