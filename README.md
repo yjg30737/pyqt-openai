@@ -24,8 +24,6 @@ You can select the model and change each parameters of openai from the right sid
 
 Also you can combine openai with llama-index feature to make GPT model answer your question based on information you had provided!
 
-An internet connection is required.
-
 If you have any questions or you want to make AI related software with PyQt or PySide, feel free to join Discord server of pyqt-openai.
 
 And if you would like to support this project, you can click the button below to make a donation. Your contribution will greatly assist various projects, including this one!
@@ -58,11 +56,13 @@ And if you would like to support this project, you can click the button below to
   * AI remembers past conversation
   * Support copy button
   * Able to stop response in the middle of text generation
-* <b>Conversation management</b>
+* <b>Conversation(=Thread) management</b>
   * Add & delete conversations
-  * Save conversations - SQlite db, text files compressed file, html files compressed file (both are zip)
+  * Export conversations - JSON file, text files compressed file, html files compressed file (both are zip)
+  * Import conversations from pyqt-openai, GPT
   * Rename conversation
-  * everything above is saved in an SQLite database file named conv.db.
+  * "Favorite" feature
+  * everything above is saved in an SQLite database file named conv.db. (File's name can be changed by yourself)
 * Support controlling parameters(temperature, top_p, etc) just like openai playground
 * Able to see the reason why stream is finished
 * Support token count (only for non-streaming response)
@@ -81,7 +81,8 @@ And if you would like to support this project, you can click the button below to
 * Support text(*.txt), image(*.png, *.jpg) file uploading
 * Support searching title and content in the conversation
 * Support "find text" feature (match word, case-sensitive, regex, etc.)
-* Support customizing feature (homepage, user and AI profile image) 
+* Support customizing feature (homepage, user and AI profile image)
+* Full screen feature
 
 ## Supported Languages
 * English
