@@ -27,7 +27,7 @@ ROOT_DIR = os.path.dirname(__file__)
 
 # https://platform.openai.com/docs/models/model-endpoint-compatibility
 ENDPOINT_DICT = {
-    '/v1/chat/completions': ['gpt-4o', 'gpt-4-turbo',
+    '/v1/chat/completions': ['gpt-4o', 'gpt-4o-mini', 'gpt-4-turbo',
                              'gpt-3.5-turbo'],
     '/v1/completions': [
         'text-davinci-003', 'text-davinci-002', 'text-curie-001', 'text-babbage-001', 'text-ada-001', 'davinci',
