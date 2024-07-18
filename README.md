@@ -12,7 +12,7 @@ PyQt/PySide(Python cross-platform GUI toolkit) OpenAI Chatbot which supports mor
 
 <b>This supports Windows, MacOS, Linux.</b>
 
-You can use OpenAI models(GPT4o, GPT4-turbo, DALL-E, etc.), Replicate image generation models with PyQt.
+You can use OpenAI models(GPT4o, GPT4o-mini, DALL-E, etc.), Replicate image generation models with PyQt.
 
 The major advantage of this package is that you don't need to know other language aside from Python.
 
