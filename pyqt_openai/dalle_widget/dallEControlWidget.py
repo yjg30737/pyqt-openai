@@ -7,7 +7,7 @@ from qtpy.QtWidgets import QMessageBox, QScrollArea, QWidget, QCheckBox, QSpinBo
     QPlainTextEdit, \
     QFormLayout, QLabel, QFrame, QRadioButton
 
-from pyqt_openai.constants import INI_FILE_NAME
+from pyqt_openai.constants import INI_FILE_NAME, IMAGE_DEFAULT_SAVE_DIRECTORY
 from pyqt_openai.models import ImagePromptContainer
 from pyqt_openai.pyqt_openai_data import OPENAI_STRUCT
 from pyqt_openai.res.language_dict import LangClass
@@ -62,7 +62,7 @@ class DallEControlWidget(QScrollArea):
         self.__initUi()
 
     def __initVal(self):
-        default_directory = 'image_result'
+        default_directory = IMAGE_DEFAULT_SAVE_DIRECTORY
 
         self.__settings_ini = QSettings(INI_FILE_NAME, QSettings.Format.IniFormat)
         self.__settings_ini.beginGroup('DALLE')

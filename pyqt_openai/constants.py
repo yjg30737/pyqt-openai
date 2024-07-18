@@ -3,6 +3,8 @@ IMAGE_FILE_EXT = 'Image file (*.jpg *.png)'
 DEFAULT_ICON_SIZE = (24, 24)
 COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE = ['id']
 INI_FILE_NAME = 'pyqt_openai.ini'
+IMAGE_DEFAULT_SAVE_DIRECTORY = 'image_result'
+LLAMA_INDEX_DEFAULT_READ_DIRECTORY = './example'
 
 PAYPAL_URL = 'https://paypal.me/yjg30737'
 BUYMEACOFFEE_URL = 'https://www.buymeacoffee.com/yjg30737'

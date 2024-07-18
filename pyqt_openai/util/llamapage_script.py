@@ -1,10 +1,12 @@
 from llama_index.core import VectorStoreIndex, SimpleDirectoryReader
 
+from pyqt_openai.constants import LLAMA_INDEX_DEFAULT_READ_DIRECTORY
+
 
 class GPTLLamaIndexWrapper:
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._directory = './example'
+        self._directory = LLAMA_INDEX_DEFAULT_READ_DIRECTORY
         self._query_engine = None
 
     def set_directory(self, directory):

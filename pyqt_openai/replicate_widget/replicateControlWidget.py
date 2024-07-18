@@ -6,7 +6,7 @@ from qtpy.QtWidgets import QLineEdit, QScrollArea, QMessageBox, QWidget, QCheckB
     QPlainTextEdit, \
     QFormLayout, QLabel, QFrame, QSplitter
 
-from pyqt_openai.constants import INI_FILE_NAME
+from pyqt_openai.constants import INI_FILE_NAME, IMAGE_DEFAULT_SAVE_DIRECTORY
 from pyqt_openai.models import ImagePromptContainer
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.util.replicate_script import ReplicateWrapper
@@ -53,7 +53,7 @@ class ReplicateControlWidget(QScrollArea):
         self.__initUi()
 
     def __initVal(self):
-        default_directory = 'image_result'
+        default_directory = IMAGE_DEFAULT_SAVE_DIRECTORY
 
         self.__settings_ini = QSettings(INI_FILE_NAME, QSettings.Format.IniFormat)
         self.__settings_ini.beginGroup('REPLICATE')
