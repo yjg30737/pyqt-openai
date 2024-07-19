@@ -26,7 +26,7 @@ from qtpy.QtWidgets import QMainWindow, QToolBar, QHBoxLayout, QDialog, QLineEdi
 from qtpy.QtCore import Qt, QCoreApplication, QSettings
 from qtpy.QtSql import QSqlDatabase
 
-from pyqt_openai.models import SettingsParamsContainer
+from pyqt_openai.models import SettingsParamsContainer, CustomizeParamsContainer
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.aboutDialog import AboutDialog
 from pyqt_openai.customizeDialog import CustomizeDialog
@@ -60,7 +60,10 @@ class MainWindow(QMainWindow):
     def __initVal(self):
         self.__settings_struct = QSettings(INI_FILE_NAME, QSettings.Format.IniFormat)
         self.__settingsParamContainer = SettingsParamsContainer()
-        self.__initSettings(self.__settingsParamContainer)
+        self.__customizeParamsContainer = CustomizeParamsContainer()
+
+        self.__initContainer(self.__settingsParamContainer)
+        self.__initContainer(self.__customizeParamsContainer)
 
     def __initUi(self):
         self.setWindowTitle(LangClass.TRANSLATIONS['PyQt OpenAI Chatbot'])
@@ -356,24 +359,28 @@ class MainWindow(QMainWindow):
         self.__settingsParamContainer.show_secondary_toolbar = f
 
     def __executeCustomizeDialog(self):
-        dialog = CustomizeDialog(self)
+        dialog = CustomizeDialog(self.__customizeParamsContainer)
         reply = dialog.exec()
         if reply == QDialog.DialogCode.Accepted:
             self.__openAiChatBotWidget.refreshCustomizedInformation()
+            self.__refreshSettings(dialog.getSettingsParam())
 
     def __aiTypeChanged(self, i):
         self.__mainWidget.setCurrentIndex(i)
         widget = self.__mainWidget.currentWidget()
         widget.showSecondaryToolBar(self.__settingsParamContainer.show_secondary_toolbar)
 
-    def __initSettings(self, container):
-        self.__settingsParamContainer = container
+    def __initContainer(self, container):
+        """
+        Initialize the container with the values in the settings file
+        """
         for k, v in container.get_items():
             if not self.__settings_struct.contains(k):
                 self.__settings_struct.setValue(k, v)
             else:
                 setattr(container, k, self.__settings_struct.value(k, type=type(v)))
-        self.__lang = LangClass.lang_changed(self.__settingsParamContainer.lang)
+        if isinstance(container, SettingsParamsContainer):
+            self.__lang = LangClass.lang_changed(container.lang)
 
     def __refreshSettings(self, container):
         self.__settingsParamContainer = container

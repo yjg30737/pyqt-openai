@@ -1,8 +1,11 @@
-from qtpy.QtCore import Qt, QSettings
-from qtpy.QtWidgets import QDialog, QFrame, QPushButton, QHBoxLayout, QVBoxLayout, QWidget, QFormLayout
+from qtpy.QtCore import Qt
+from qtpy.QtGui import QFont
+from qtpy.QtWidgets import QDialog, QFrame, QPushButton, QHBoxLayout, QVBoxLayout, QWidget, QFormLayout, QSplitter, \
+    QSizePolicy
 
-from pyqt_openai.constants import IMAGE_FILE_EXT, DEFAULT_ICON_SIZE, DEFAULT_FONT_SIZE, DEFAULT_FONT_FAMILY, \
-    DEFAULT_USER_IMAGE_PATH, DEFAULT_AI_IMAGE_PATH, INI_FILE_NAME
+from pyqt_openai.constants import IMAGE_FILE_EXT, DEFAULT_ICON_SIZE
+from pyqt_openai.fontWidget import FontWidget
+from pyqt_openai.models import CustomizeParamsContainer
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.widgets.circleProfileImage import RoundedImage
 from pyqt_openai.widgets.findPathWidget import FindPathWidget
@@ -10,30 +13,17 @@ from pyqt_openai.widgets.normalImageView import NormalImageView
 
 
 class CustomizeDialog(QDialog):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.__initVal()
+    def __init__(self, args: CustomizeParamsContainer):
+        super().__init__()
+        self.__initVal(args)
         self.__initUi()
 
-    def __initVal(self):
-        self.__settings_ini = QSettings(INI_FILE_NAME, QSettings.Format.IniFormat)
-
-        if not self.__settings_ini.contains('background_image'):
-            self.__settings_ini.setValue('background_image', '')
-        if not self.__settings_ini.contains('user_image'):
-            self.__settings_ini.setValue('user_image', DEFAULT_USER_IMAGE_PATH)
-        if not self.__settings_ini.contains('ai_image'):
-            self.__settings_ini.setValue('ai_image', DEFAULT_AI_IMAGE_PATH)
-        if not self.__settings_ini.contains('font_size'):
-            self.__settings_ini.setValue('font_size', DEFAULT_FONT_SIZE)
-        if not self.__settings_ini.contains('font_family'):
-            self.__settings_ini.setValue('font_family', DEFAULT_FONT_FAMILY)
-
-        self.__background_image = self.__settings_ini.value('background_image', type=str)
-        self.__user_image = self.__settings_ini.value('user_image', type=str)
-        self.__ai_image = self.__settings_ini.value('ai_image', type=str)
-        self.__font_size = self.__settings_ini.value('font_size', type=int)
-        self.__font_family = self.__settings_ini.value('font_family', type=str)
+    def __initVal(self, args):
+        self.__background_image = args.background_image
+        self.__user_image = args.user_image
+        self.__ai_image = args.ai_image
+        self.__font_size = args.font_size
+        self.__font_family = args.font_family
 
     def __initUi(self):
         self.setWindowTitle('Customize')
@@ -90,15 +80,27 @@ class CustomizeDialog(QDialog):
         lay.addRow(LangClass.TRANSLATIONS['User Image'], userWidget)
         lay.addRow(LangClass.TRANSLATIONS['AI Image'], aiWidget)
 
-        self.__topWidget = QWidget()
-        self.__topWidget.setLayout(lay)
+        leftWidget = QWidget()
+        leftWidget.setLayout(lay)
+
+        self.__fontWidget = FontWidget(QFont(self.__font_family, self.__font_size))
+
+        self.__splitter = QSplitter()
+        self.__splitter.addWidget(leftWidget)
+        self.__splitter.addWidget(self.__fontWidget)
+        self.__splitter.setHandleWidth(1)
+        self.__splitter.setChildrenCollapsible(False)
+        self.__splitter.setSizes([500, 500])
+        self.__splitter.setStyleSheet(
+            "QSplitterHandle {background-color: lightgray;}")
+        self.__splitter.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
 
         sep = QFrame()
         sep.setFrameShape(QFrame.Shape.HLine)
         sep.setFrameShadow(QFrame.Shadow.Sunken)
 
         self.__okBtn = QPushButton(LangClass.TRANSLATIONS['OK'])
-        self.__okBtn.clicked.connect(self.__accept)
+        self.__okBtn.clicked.connect(self.accept)
 
         cancelBtn = QPushButton(LangClass.TRANSLATIONS['Cancel'])
         cancelBtn.clicked.connect(self.close)
@@ -113,14 +115,17 @@ class CustomizeDialog(QDialog):
         okCancelWidget.setLayout(lay)
 
         lay = QVBoxLayout()
-        lay.addWidget(self.__topWidget)
+        lay.addWidget(self.__splitter)
         lay.addWidget(sep)
         lay.addWidget(okCancelWidget)
 
         self.setLayout(lay)
 
-    def __accept(self):
-        self.__settings_ini.setValue('background_image', self.__findPathWidget1.getFileName())
-        self.__settings_ini.setValue('user_image', self.__findPathWidget2.getFileName())
-        self.__settings_ini.setValue('ai_image', self.__findPathWidget3.getFileName())
-        self.accept()
+    def getSettingsParam(self):
+        return CustomizeParamsContainer(
+            background_image=self.__findPathWidget1.getFileName(),
+            user_image=self.__findPathWidget2.getFileName(),
+            ai_image=self.__findPathWidget3.getFileName(),
+            font_size=self.__fontWidget.getFont().getFontSize(),
+            font_family=self.__fontWidget.getFont().getFontFamily()
+        )
