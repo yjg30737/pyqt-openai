@@ -8,6 +8,8 @@ LLAMA_INDEX_DEFAULT_READ_DIRECTORY = './example'
 DB_FILE_NAME = 'conv'
 DEFAULT_FONT_SIZE = 12
 DEFAULT_FONT_FAMILY = 'Arial'
+DEFAULT_USER_IMAGE_PATH = 'ico/user.png'
+DEFAULT_AI_IMAGE_PATH = 'ico/openai.png'
 
 PAYPAL_URL = 'https://paypal.me/yjg30737'
 BUYMEACOFFEE_URL = 'https://www.buymeacoffee.com/yjg30737'

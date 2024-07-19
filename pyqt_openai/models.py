@@ -1,7 +1,8 @@
 from typing import List
 from dataclasses import dataclass, fields, field
 
-from pyqt_openai.constants import DB_FILE_NAME, DEFAULT_FONT_SIZE, DEFAULT_FONT_FAMILY
+from pyqt_openai.constants import DB_FILE_NAME, DEFAULT_FONT_SIZE, DEFAULT_FONT_FAMILY, DEFAULT_USER_IMAGE_PATH, \
+    DEFAULT_AI_IMAGE_PATH
 from pyqt_openai.res.language_dict import LangClass
 
 
@@ -121,7 +122,7 @@ class SettingsParamsContainer(Container):
 @dataclass
 class CustomizeParamsContainer(Container):
     background_image: str = ''
-    user_image: str = 'ico/user.png'
-    ai_image: str = 'ico/openai.png'
+    user_image: str = DEFAULT_USER_IMAGE_PATH
+    ai_image: str = DEFAULT_AI_IMAGE_PATH
     font_size: int = DEFAULT_FONT_SIZE
     font_family: str = DEFAULT_FONT_FAMILY

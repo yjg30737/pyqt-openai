@@ -1,7 +1,8 @@
 from qtpy.QtCore import Qt, QSettings
 from qtpy.QtWidgets import QDialog, QFrame, QPushButton, QHBoxLayout, QVBoxLayout, QWidget, QFormLayout
 
-from pyqt_openai.constants import IMAGE_FILE_EXT, DEFAULT_ICON_SIZE
+from pyqt_openai.constants import IMAGE_FILE_EXT, DEFAULT_ICON_SIZE, DEFAULT_FONT_SIZE, DEFAULT_FONT_FAMILY, \
+    DEFAULT_USER_IMAGE_PATH, DEFAULT_AI_IMAGE_PATH, INI_FILE_NAME
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.widgets.circleProfileImage import RoundedImage
 from pyqt_openai.widgets.findPathWidget import FindPathWidget
@@ -15,18 +16,24 @@ class CustomizeDialog(QDialog):
         self.__initUi()
 
     def __initVal(self):
-        self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.Format.IniFormat)
+        self.__settings_ini = QSettings(INI_FILE_NAME, QSettings.Format.IniFormat)
 
         if not self.__settings_ini.contains('background_image'):
             self.__settings_ini.setValue('background_image', '')
         if not self.__settings_ini.contains('user_image'):
-            self.__settings_ini.setValue('user_image', 'ico/user.png')
+            self.__settings_ini.setValue('user_image', DEFAULT_USER_IMAGE_PATH)
         if not self.__settings_ini.contains('ai_image'):
-            self.__settings_ini.setValue('ai_image', 'ico/openai.png')
+            self.__settings_ini.setValue('ai_image', DEFAULT_AI_IMAGE_PATH)
+        if not self.__settings_ini.contains('font_size'):
+            self.__settings_ini.setValue('font_size', DEFAULT_FONT_SIZE)
+        if not self.__settings_ini.contains('font_family'):
+            self.__settings_ini.setValue('font_family', DEFAULT_FONT_FAMILY)
 
         self.__background_image = self.__settings_ini.value('background_image', type=str)
         self.__user_image = self.__settings_ini.value('user_image', type=str)
         self.__ai_image = self.__settings_ini.value('ai_image', type=str)
+        self.__font_size = self.__settings_ini.value('font_size', type=int)
+        self.__font_family = self.__settings_ini.value('font_family', type=str)
 
     def __initUi(self):
         self.setWindowTitle('Customize')
