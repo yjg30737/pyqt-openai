@@ -1,10 +1,10 @@
 from qtpy.QtCore import Qt, Signal, QSettings
-from qtpy.QtWidgets import QWidget, QDoubleSpinBox, QSpinBox, QFormLayout, QFrame, QSizePolicy, QComboBox, QTextEdit, QLabel, QVBoxLayout, QCheckBox, QPushButton
+from qtpy.QtWidgets import QWidget, QDoubleSpinBox, QSpinBox, QFormLayout, QFrame, QSizePolicy, QComboBox, QTextEdit, \
+    QLabel, QVBoxLayout, QCheckBox, QPushButton
 
 from pyqt_openai.constants import INI_FILE_NAME
 from pyqt_openai.pyqt_openai_data import get_chat_model
 from pyqt_openai.res.language_dict import LangClass
-from pyqt_openai.widgets.questionTooltipLabel import QuestionTooltipLabel
 
 
 class ChatPage(QWidget):

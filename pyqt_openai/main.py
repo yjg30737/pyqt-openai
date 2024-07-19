@@ -50,9 +50,6 @@ if os.environ['QT_API'] == 'pyqt5':
     QCoreApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
     QGuiApplication.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
 
-QApplication.setFont(QFont('Arial', 12))
-QApplication.setWindowIcon(QIcon('ico/openai.svg'))
-
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -446,6 +443,7 @@ class MainWindow(QMainWindow):
 
 # Application
 class App(QApplication):
+
     def __init__(self, *args):
         super().__init__(*args)
         self.setQuitOnLastWindowClosed(False)
@@ -462,6 +460,8 @@ if __name__ == "__main__":
     import sys
 
     app = App(sys.argv)
+    QApplication.setWindowIcon(QIcon('ico/openai.svg'))
+    QApplication.setFont(QFont('Arial', 12))
     w = MainWindow()
     w.show()
     sys.exit(app.exec())

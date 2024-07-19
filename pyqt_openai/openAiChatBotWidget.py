@@ -246,6 +246,11 @@ class OpenAIChatBotWidget(QWidget):
 
             # Check llamaindex is available
             is_llama_available = LLAMAINDEX_WRAPPER.get_directory() and use_llama_index
+            if LLAMAINDEX_WRAPPER.is_query_engine_set():
+                pass
+            else:
+                LLAMAINDEX_WRAPPER.set_query_engine(streaming=stream, similarity_top_k=3)
+
             use_max_tokens = self.__settings_ini.value('use_max_tokens', type=bool)
 
             openai_param = get_argument(model, system, messages, cur_text, temperature, top_p, frequency_penalty, presence_penalty, stream,

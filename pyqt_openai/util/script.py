@@ -15,6 +15,7 @@ from jinja2 import Template
 
 from qtpy.QtCore import QSettings
 
+from pyqt_openai.constants import INI_FILE_NAME
 from pyqt_openai.models import ImagePromptContainer
 
 
@@ -132,7 +133,7 @@ def download_image_as_base64(url: str):
     return base64_encoded
 
 def get_db_filename():
-    settings = QSettings("pyqt_openai.ini", QSettings.Format.IniFormat)
+    settings = QSettings(INI_FILE_NAME, QSettings.Format.IniFormat)
     db_path = settings.value("db", "conv") + ".db"
     return db_path
 
