@@ -5,6 +5,9 @@ COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE = ['id']
 INI_FILE_NAME = 'pyqt_openai.ini'
 IMAGE_DEFAULT_SAVE_DIRECTORY = 'image_result'
 LLAMA_INDEX_DEFAULT_READ_DIRECTORY = './example'
+DB_FILE_NAME = 'conv'
+DEFAULT_FONT_SIZE = 12
+DEFAULT_FONT_FAMILY = 'Arial'
 
 PAYPAL_URL = 'https://paypal.me/yjg30737'
 BUYMEACOFFEE_URL = 'https://www.buymeacoffee.com/yjg30737'

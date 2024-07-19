@@ -1,6 +1,7 @@
 from typing import List
 from dataclasses import dataclass, fields, field
 
+from pyqt_openai.constants import DB_FILE_NAME, DEFAULT_FONT_SIZE, DEFAULT_FONT_FAMILY
 from pyqt_openai.res.language_dict import LangClass
 
 
@@ -108,7 +109,7 @@ class ImagePromptContainer(Container):
 @dataclass
 class SettingsParamsContainer(Container):
     lang: str = LangClass.lang_changed()
-    db: str = 'conv'
+    db: str = DB_FILE_NAME
     do_not_ask_again: bool = False
     notify_finish: bool = True
     show_toolbar: bool = True
@@ -116,3 +117,11 @@ class SettingsParamsContainer(Container):
     thread_tool_widget: bool = True
     chat_column_to_show: List[str] = field(default_factory=ChatThreadContainer.get_keys)
     image_column_to_show: List[str] = field(default_factory=ImagePromptContainer.get_keys)
+
+@dataclass
+class CustomizeParamsContainer(Container):
+    background_image: str = ''
+    user_image: str = 'ico/user.png'
+    ai_image: str = 'ico/openai.png'
+    font_size: int = DEFAULT_FONT_SIZE
+    font_family: str = DEFAULT_FONT_FAMILY

@@ -15,7 +15,7 @@ from jinja2 import Template
 
 from qtpy.QtCore import QSettings
 
-from pyqt_openai.constants import INI_FILE_NAME
+from pyqt_openai.constants import INI_FILE_NAME, DB_FILE_NAME, DEFAULT_FONT_SIZE, DEFAULT_FONT_FAMILY
 from pyqt_openai.models import ImagePromptContainer
 
 
@@ -134,8 +134,17 @@ def download_image_as_base64(url: str):
 
 def get_db_filename():
     settings = QSettings(INI_FILE_NAME, QSettings.Format.IniFormat)
-    db_path = settings.value("db", "conv") + ".db"
+    db_path = settings.value("db", DB_FILE_NAME) + ".db"
     return db_path
+
+def get_font():
+    settings = QSettings(INI_FILE_NAME, QSettings.Format.IniFormat)
+    font_family = settings.value("font_family", DEFAULT_FONT_FAMILY)
+    font_size = settings.value("font_size", DEFAULT_FONT_SIZE)
+    return {
+        'font_family': font_family,
+        'font_size': font_size
+    }
 
 def get_conversation_from_chatgpt(filename, most_recent_n:int = None):
     conversations_df = pandas.read_json(filename)

@@ -35,7 +35,7 @@ from pyqt_openai.dalle_widget.dallEWidget import DallEWidget
 from pyqt_openai.openAiChatBotWidget import OpenAIChatBotWidget
 from pyqt_openai.replicate_widget.replicateWidget import ReplicateWidget
 from pyqt_openai.settingsDialog import SettingsDialog
-from pyqt_openai.util.script import get_db_filename
+from pyqt_openai.util.script import get_db_filename, get_font
 from pyqt_openai.doNotAskAgainDialog import DoNotAskAgainDialog
 
 os.environ['OPENAI_API_KEY'] = ''
@@ -448,6 +448,7 @@ class App(QApplication):
         super().__init__(*args)
         self.setQuitOnLastWindowClosed(False)
         self.__initQSqlDb()
+        self.__initFont()
 
     def __initQSqlDb(self):
         # Set up the database and table model (you'll need to configure this part based on your database)
@@ -455,13 +456,18 @@ class App(QApplication):
         self.__imageDb.setDatabaseName(get_db_filename())  # Replace with your database name
         self.__imageDb.open()
 
+    def __initFont(self):
+        font_dict = get_font()
+        font_family = font_dict['font_family']
+        font_size = font_dict['font_size']
+        self.setFont(QFont(font_family, font_size))
+
 
 if __name__ == "__main__":
     import sys
 
     app = App(sys.argv)
     QApplication.setWindowIcon(QIcon('ico/openai.svg'))
-    QApplication.setFont(QFont('Arial', 12))
     w = MainWindow()
     w.show()
     sys.exit(app.exec())
