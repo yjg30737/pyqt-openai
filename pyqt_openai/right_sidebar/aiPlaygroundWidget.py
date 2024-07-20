@@ -11,6 +11,7 @@ from pyqt_openai.right_sidebar.llama_widget.llamaPage import LlamaPage
 
 class AIPlaygroundWidget(QScrollArea):
     onDirectorySelected = Signal(str)
+    onToggleJSON = Signal(bool)
 
     def __init__(self):
         super().__init__()
@@ -53,6 +54,7 @@ class AIPlaygroundWidget(QScrollArea):
 
         partial_func = partial(tabWidget.setTabEnabled, 1)
         chatPage.onToggleLlama.connect(lambda x: partial_func(x))
+        chatPage.onToggleJSON.connect(self.onToggleJSON)
 
         lay = QGridLayout()
         lay.addWidget(tabWidget)

@@ -5,6 +5,7 @@ from qtpy.QtWidgets import QWidget, QLabel, \
     QHBoxLayout, QGridLayout, QLineEdit, QMessageBox
 
 from pyqt_openai.chat_widget.chatBrowser import ChatBrowser
+from pyqt_openai.constants import SHORTCUT_FIND_PREV, SHORTCUT_FIND_NEXT, SHORTCUT_GENERAL_ACTION, SHORTCUT_FIND_CLOSE
 from pyqt_openai.widgets.button import Button
 
 
@@ -38,12 +39,12 @@ class FindTextWidget(QWidget):
 
         self.__prevBtn = Button()
         self.__prevBtn.setStyleAndIcon('ico/prev.svg')
-        self.__prevBtn.setShortcut('Ctrl+Shift+D')
+        self.__prevBtn.setShortcut(SHORTCUT_FIND_PREV)
 
         self.__nextBtn = Button()
-        self.__nextBtn.setShortcut('Enter')
+        self.__nextBtn.setShortcut(SHORTCUT_GENERAL_ACTION)
         self.__nextBtn.setStyleAndIcon('ico/next.svg')
-        self.__nextBtn.setShortcut('Ctrl+D')
+        self.__nextBtn.setShortcut(SHORTCUT_FIND_NEXT)
 
         self.__prevBtn.clicked.connect(self.prev)
         self.__nextBtn.clicked.connect(self.next)
@@ -68,7 +69,7 @@ class FindTextWidget(QWidget):
         self.__closeBtn = Button()
         self.__closeBtn.setVisible(False)
         self.__closeBtn.clicked.connect(self.close)
-        self.__closeBtn.setShortcut('Escape')
+        self.__closeBtn.setShortcut(SHORTCUT_FIND_CLOSE)
         self.__closeBtn.setStyleAndIcon('ico/close.svg')
 
         self.__prevBtn.setToolTip('Previous Occurrence')

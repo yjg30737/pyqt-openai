@@ -41,7 +41,7 @@ from pyqt_openai.doNotAskAgainDialog import DoNotAskAgainDialog
 os.environ['OPENAI_API_KEY'] = ''
 
 from pyqt_openai.pyqt_openai_data import OPENAI_STRUCT, LLAMAINDEX_WRAPPER
-from pyqt_openai.constants import PAYPAL_URL, BUYMEACOFFEE_URL, INI_FILE_NAME
+from pyqt_openai.constants import PAYPAL_URL, BUYMEACOFFEE_URL, INI_FILE_NAME, SHORTCUT_FULL_SCREEN
 
 # HighDPI support
 # qt version should be above 5.14
@@ -118,9 +118,8 @@ class MainWindow(QMainWindow):
         self.__chooseAiAction = QWidgetAction(self)
         self.__chooseAiCmbBox = QComboBox()
         self.__chooseAiCmbBox.addItems([LangClass.TRANSLATIONS['Chat'], LangClass.TRANSLATIONS['Image'], 'Replicate'])
-        self.__chooseAiCmbBox.setSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.MinimumExpanding)
+        self.__chooseAiCmbBox.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.MinimumExpanding)
         self.__chooseAiCmbBox.currentIndexChanged.connect(self.__aiTypeChanged)
-        self.__chooseAiCmbBox.setMaximumWidth(100)
         self.__chooseAiAction.setDefaultWidget(self.__chooseAiCmbBox)
 
         self.__stackAction = QWidgetAction(self)
@@ -153,7 +152,7 @@ class MainWindow(QMainWindow):
         self.__fullScreenBtn.toggled.connect(self.__fullScreenToggle)
         self.__fullScreenAction.setDefaultWidget(self.__fullScreenBtn)
         self.__fullScreenBtn.setToolTip('Full Screen')
-        self.__fullScreenBtn.setShortcut('F11')
+        self.__fullScreenBtn.setShortcut(SHORTCUT_FULL_SCREEN)
 
         lay = QHBoxLayout()
         lay.addWidget(self.__transparentSpinBox)

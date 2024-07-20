@@ -1,12 +1,15 @@
 import os
 from pathlib import Path
 
-from qtpy.QtCore import Qt, Signal
+from qtpy.QtCore import Qt, Signal, QSettings
 from qtpy.QtWidgets import QVBoxLayout, QAction, QPushButton, QFileDialog, QToolButton, QMenu, QWidget, QHBoxLayout
 
 from pyqt_openai.chat_widget.textEditPromptGroup import TextEditPromptGroup
 from pyqt_openai.chat_widget.uploadedImageFileWidget import UploadedImageFileWidget
 from pyqt_openai.commandSuggestionWidget import CommandSuggestionWidget
+from pyqt_openai.constants import INI_FILE_NAME, READ_FILE_EXT, PROMPT_BEGINNING_KEY_NAME, \
+    PROMPT_END_KEY_NAME, PROMPT_MAIN_KEY_NAME, PROMPT_JSON_KEY_NAME, SHORTCUT_PROMPT_BEGINNING, SHORTCUT_PROMPT_ENDING, \
+    SHORTCUT_SUPPORT_PROMPT_COMMAND
 from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.widgets.toolButton import ToolButton
@@ -93,27 +96,33 @@ class Prompt(QWidget):
 
         # Create the actions
         beginningAction = QAction(LangClass.TRANSLATIONS['Show Beginning'], self)
-        beginningAction.setShortcut('Ctrl+B')
+        beginningAction.setShortcut(SHORTCUT_PROMPT_BEGINNING)
         beginningAction.setCheckable(True)
         beginningAction.toggled.connect(self.__showBeginning)
 
         endingAction = QAction(LangClass.TRANSLATIONS['Show Ending'], self)
-        endingAction.setShortcut('Ctrl+E')
+        endingAction.setShortcut(SHORTCUT_PROMPT_ENDING)
         endingAction.setCheckable(True)
         endingAction.toggled.connect(self.__showEnding)
 
         supportPromptCommandAction = QAction(LangClass.TRANSLATIONS['Support Prompt Command'], self)
-        supportPromptCommandAction.setShortcut('Ctrl+Shift+P')
+        supportPromptCommandAction.setShortcut(SHORTCUT_SUPPORT_PROMPT_COMMAND)
         supportPromptCommandAction.setCheckable(True)
         supportPromptCommandAction.toggled.connect(self.__supportPromptCommand)
 
         readingFilesAction = QAction(LangClass.TRANSLATIONS['Upload Files...'], self)
         readingFilesAction.triggered.connect(self.__readingFiles)
 
+        self.__writeJSONAction = QAction('Write JSON', self)
+        self.__writeJSONAction.toggled.connect(self.__showJSON)
+        self.__writeJSONAction.setCheckable(True)
+        self.__writeJSONAction.setChecked(QSettings().value(INI_FILE_NAME, False, type=bool))
+
         # Add the actions to the menu
         menu.addAction(beginningAction)
         menu.addAction(endingAction)
         menu.addAction(supportPromptCommandAction)
+        menu.addAction(self.__writeJSONAction)
         menu.addAction(readingFilesAction)
 
         # Connect the button to the menu
@@ -234,24 +243,24 @@ class Prompt(QWidget):
         # Set the maximum height of the widget - should fit the device screen
         self.setMaximumHeight(overallHeight + self.__suggestionWidget.height() + self.__uploadedImageFileWidget.height() + 100)
 
-    def getTextEdit(self):
-        return self.__textEditGroup.getGroup()[1]
+    def getMainPromptInput(self):
+        return self.__textEditGroup.getMainTextEdit()
 
     def getContent(self):
         return self.__textEditGroup.getContent()
 
     def __showBeginning(self, f):
-        self.__textEditGroup.getGroup()[0].setVisible(f)
+        self.__textEditGroup.setVisibleTo(PROMPT_BEGINNING_KEY_NAME, False)
 
     def __showEnding(self, f):
-        self.__textEditGroup.getGroup()[-1].setVisible(f)
+        self.__textEditGroup.setVisibleTo(PROMPT_END_KEY_NAME, False)
 
     def __supportPromptCommand(self, f):
         self.__commandEnabled = f
         self.__textEditGroup.setCommandEnabled(f)
 
     def __readingFiles(self):
-        filenames = QFileDialog.getOpenFileNames(self, 'Find', os.path.expanduser('~'), 'Text Files (*.txt);;Image Files (*.jpg, *.png)')
+        filenames = QFileDialog.getOpenFileNames(self, 'Find', os.path.expanduser('~'), READ_FILE_EXT)
         if filenames[0]:
             filenames = filenames[0]
             cur_file_extension = Path(filenames[0]).suffix
@@ -268,7 +277,7 @@ class Prompt(QWidget):
                     source_context += f'=== {base_filename} end ==='
                     source_context += '\n'*2
                 prompt_context = f'== Source Start ==\n{source_context}== Source End =='
-                self.__textEditGroup.getGroup()[1].setText(prompt_context)
+                self.__textEditGroup.getMainTextEdit().setText(prompt_context)
             # Image
             elif cur_file_extension in ['.jpg', '.png']:
                 self.__uploadedImageFileWidget.addFiles(filenames)
@@ -279,3 +288,9 @@ class Prompt(QWidget):
     def resetUploadImageFileWidget(self):
         self.__uploadedImageFileWidget.setVisible(False)
         self.__uploadedImageFileWidget.clear()
+
+    def toggleJSONAction(self, f):
+        self.__writeJSONAction.setEnabled(f)
+
+    def __showJSON(self, f):
+        self.__textEditGroup.setVisibleTo(PROMPT_JSON_KEY_NAME, f)

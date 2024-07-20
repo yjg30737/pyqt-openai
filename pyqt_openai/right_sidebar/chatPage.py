@@ -9,6 +9,7 @@ from pyqt_openai.res.language_dict import LangClass
 
 class ChatPage(QWidget):
     onToggleLlama = Signal(bool)
+    onToggleJSON = Signal(bool)
 
     def __init__(self):
         super().__init__()
@@ -175,6 +176,7 @@ class ChatPage(QWidget):
     def __jsonObjectChecked(self, f):
         self.__json_object = f
         self.__settings_ini.setValue('json_object', f)
+        self.onToggleJSON.emit(f)
 
     def __use_llama_indexChecked(self, f):
         self.__use_llama_index = f

@@ -58,8 +58,10 @@ class OpenAIChatBotWidget(QWidget):
         self.__prompt.onContinuedClicked.connect(self.__continueResponse)
         self.__prompt.onRegenerateClicked.connect(self.__regenerateResponse)
 
-        self.__lineEdit = self.__prompt.getTextEdit()
+        self.__lineEdit = self.__prompt.getMainPromptInput()
         self.__aiPlaygroundWidget = AIPlaygroundWidget()
+
+        self.__aiPlaygroundWidget.onToggleJSON.connect(self.__prompt.toggleJSONAction)
 
         try:
             self.__aiPlaygroundWidget.onDirectorySelected.connect(LLAMAINDEX_WRAPPER.set_directory)
@@ -320,6 +322,9 @@ class OpenAIChatBotWidget(QWidget):
         get last question and make it another response based on it
         """
         pass
+
+    def __showJSONEdit(self, x):
+        self.showJSONEdit(x)
 
     def __toggleWidgetWhileChatting(self, f, continue_f=False):
         self.__lineEdit.setExecuteEnabled(f)
