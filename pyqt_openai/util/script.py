@@ -139,8 +139,8 @@ def get_db_filename():
 
 def get_font():
     settings = QSettings(INI_FILE_NAME, QSettings.Format.IniFormat)
-    font_family = settings.value("font_family", DEFAULT_FONT_FAMILY)
-    font_size = settings.value("font_size", DEFAULT_FONT_SIZE)
+    font_family = settings.value("font_family", DEFAULT_FONT_FAMILY, type=str)
+    font_size = settings.value("font_size", DEFAULT_FONT_SIZE, type=int)
     return {
         'font_family': font_family,
         'font_size': font_size
