@@ -42,9 +42,7 @@ class TextEditPromptGroup(QWidget):
         for w in self.__textGroup.values():
             w.textChanged.connect(self.onUpdateSuggestion)
             w.textChanged.connect(self.textChanged)
-            if isinstance(w, JSONEditor):
-                pass
-            else:
+            if isinstance(w, TextEditPrompt):
                 w.sendSuggestionWidget.connect(self.onSendKeySignalToSuggestion)
             lay.addWidget(w)
         lay.setContentsMargins(0, 0, 0, 0)
@@ -80,7 +78,8 @@ class TextEditPromptGroup(QWidget):
 
     def setCommandEnabled(self, f: bool):
         for w in self.__textGroup.values():
-            w.setCommandSuggestionEnabled(f)
+            if isinstance(w, TextEditPrompt):
+                w.setCommandSuggestionEnabled(f)
 
     def adjustHeight(self) -> int:
         """

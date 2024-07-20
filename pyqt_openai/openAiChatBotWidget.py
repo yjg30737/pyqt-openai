@@ -61,7 +61,7 @@ class OpenAIChatBotWidget(QWidget):
         self.__lineEdit = self.__prompt.getMainPromptInput()
         self.__aiPlaygroundWidget = AIPlaygroundWidget()
 
-        self.__aiPlaygroundWidget.onToggleJSON.connect(self.__prompt.toggleJSONAction)
+        self.__aiPlaygroundWidget.onToggleJSON.connect(self.__prompt.toggleJSON)
 
         try:
             self.__aiPlaygroundWidget.onDirectorySelected.connect(LLAMAINDEX_WRAPPER.set_directory)
@@ -248,10 +248,11 @@ class OpenAIChatBotWidget(QWidget):
 
             # Check llamaindex is available
             is_llama_available = LLAMAINDEX_WRAPPER.get_directory() and use_llama_index
-            if LLAMAINDEX_WRAPPER.is_query_engine_set():
-                pass
-            else:
-                LLAMAINDEX_WRAPPER.set_query_engine(streaming=stream, similarity_top_k=3)
+            if is_llama_available:
+                if LLAMAINDEX_WRAPPER.is_query_engine_set():
+                    pass
+                else:
+                    LLAMAINDEX_WRAPPER.set_query_engine(streaming=stream, similarity_top_k=3)
 
             use_max_tokens = self.__settings_ini.value('use_max_tokens', type=bool)
 

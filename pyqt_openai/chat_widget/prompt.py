@@ -32,6 +32,9 @@ class Prompt(QWidget):
         # False by default
         self.__commandEnabled = False
 
+        self.__settings_ini = QSettings(INI_FILE_NAME, QSettings.Format.IniFormat)
+        self.__json_object = self.__settings_ini.value('json_object', False, type=bool)
+
     def __initUi(self):
         # prompt control buttons
         self.__stopBtn = QPushButton('Stop')
@@ -116,7 +119,7 @@ class Prompt(QWidget):
         self.__writeJSONAction = QAction('Write JSON', self)
         self.__writeJSONAction.toggled.connect(self.__showJSON)
         self.__writeJSONAction.setCheckable(True)
-        self.__writeJSONAction.setChecked(QSettings().value(INI_FILE_NAME, False, type=bool))
+        self.__toggleJSONAction(self.__json_object)
 
         # Add the actions to the menu
         menu.addAction(beginningAction)
@@ -250,10 +253,10 @@ class Prompt(QWidget):
         return self.__textEditGroup.getContent()
 
     def __showBeginning(self, f):
-        self.__textEditGroup.setVisibleTo(PROMPT_BEGINNING_KEY_NAME, False)
+        self.__textEditGroup.setVisibleTo(PROMPT_BEGINNING_KEY_NAME, f)
 
     def __showEnding(self, f):
-        self.__textEditGroup.setVisibleTo(PROMPT_END_KEY_NAME, False)
+        self.__textEditGroup.setVisibleTo(PROMPT_END_KEY_NAME, f)
 
     def __supportPromptCommand(self, f):
         self.__commandEnabled = f
@@ -289,8 +292,16 @@ class Prompt(QWidget):
         self.__uploadedImageFileWidget.setVisible(False)
         self.__uploadedImageFileWidget.clear()
 
-    def toggleJSONAction(self, f):
+    def __toggleJSONAction(self, f):
         self.__writeJSONAction.setEnabled(f)
+        self.__writeJSONAction.setChecked(f)
+
+    def toggleJSON(self, f):
+        self.__toggleJSONAction(f)
+        self.__showJSON(f)
+        self.__textEditGroup.getGroup()[PROMPT_JSON_KEY_NAME].clear()
 
     def __showJSON(self, f):
+        self.__json_object = f
         self.__textEditGroup.setVisibleTo(PROMPT_JSON_KEY_NAME, f)
+

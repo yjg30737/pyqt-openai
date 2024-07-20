@@ -24,6 +24,7 @@ class PromptGeneratorWidget(QScrollArea):
 
         self.__prompt = QTextBrowser()
         self.__prompt.setPlaceholderText(LangClass.TRANSLATIONS['Generated Prompt'])
+        self.__prompt.setAcceptRichText(False)
 
         promptTabWidget = QTabWidget()
         promptTabWidget.addTab(propPage, LangClass.TRANSLATIONS['Property'])

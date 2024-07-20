@@ -8,6 +8,7 @@ class GPTLLamaIndexWrapper:
         super().__init__(*args, **kwargs)
         self._directory = LLAMA_INDEX_DEFAULT_READ_DIRECTORY
         self._query_engine = None
+        self._index = None
 
     def set_directory(self, directory):
         try:
