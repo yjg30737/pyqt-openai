@@ -11,7 +11,7 @@ from pyqt_openai.constants import DEFAULT_FONT_FAMILY
 class SizeWidget(QWidget):
     sizeItemChanged = Signal(int)
 
-    def __init__(self, font: QFont = QFont('Arial', 10)):
+    def __init__(self, font: QFont):
         super().__init__()
         self.__initUi(font=font)
 
@@ -95,48 +95,6 @@ class SizeWidget(QWidget):
 
     def getSize(self):
         return self.__sizeListWidget.currentItem().text()
-
-class StyleWidget(QWidget):
-    boldChecked = Signal(int)
-    italicChecked = Signal(int)
-
-    def __init__(self, font):
-        super().__init__()
-        self.__initUi(font=font)
-
-    def __initUi(self, font: QFont):
-        groupBox = QGroupBox()
-        groupBox.setTitle('Style')
-
-        self.__boldChkBox = QCheckBox('Bold')
-        self.__italicChkBox = QCheckBox('Italic')
-
-        self.__boldChkBox.stateChanged.connect(self.boldChecked)
-        self.__italicChkBox.stateChanged.connect(self.italicChecked)
-
-        self.setCurrentStyle(font=font)
-
-        lay = QVBoxLayout()
-        lay.setAlignment(Qt.AlignmentFlag.AlignTop)
-        lay.addWidget(self.__boldChkBox)
-        lay.addWidget(self.__italicChkBox)
-
-        groupBox.setLayout(lay)
-
-        lay = QGridLayout()
-        lay.addWidget(groupBox)
-
-        self.setLayout(lay)
-
-    def setCurrentStyle(self, font: QFont):
-        self.__boldChkBox.setChecked(font.bold())
-        self.__italicChkBox.setChecked(font.italic())
-
-    def isBold(self):
-        return self.__boldChkBox.isChecked()
-
-    def isItalic(self):
-        return self.__italicChkBox.isChecked()
 
 class FontItemWidget(QWidget):
     fontItemChanged = Signal(str, QFontDatabase)
@@ -239,16 +197,11 @@ class FontWidget(QWidget):
         self.__sizeWidget = SizeWidget(font)
         self.__sizeWidget.sizeItemChanged.connect(self.__sizeItemChangedExec)
 
-        self.__styleWidget = StyleWidget(font)
-        self.__styleWidget.boldChecked.connect(self.__setBold)
-        self.__styleWidget.italicChecked.connect(self.__setItalic)
-
         self.__initPreviewTextEdit()
 
         lay = QHBoxLayout()
         lay.addWidget(self.__fontItemWidget)
         lay.addWidget(self.__sizeWidget)
-        lay.addWidget(self.__styleWidget)
         lay.setContentsMargins(0, 0, 0, 0)
         lay.setSpacing(0)
 
@@ -273,33 +226,11 @@ class FontWidget(QWidget):
     def __initPreviewTextEdit(self):
         font_family = self.__fontItemWidget.getFontFamily()
         font_size = self.__sizeWidget.getSize()
-        bold_f = self.__styleWidget.isBold()
-        italic_f = self.__styleWidget.isItalic()
         font = self.__previewTextEdit.currentFont()
         font.setFamily(font_family)
         font.setPointSize(int(font_size))
-        font.setBold(bold_f)
-        font.setItalic(italic_f)
         self.__previewTextEdit.setCurrentFont(font)
         self.__previewTextEdit.setText('Sample')
-
-    def __setBold(self, f: int):
-        self.__previewTextEdit.selectAll()
-        font = self.__previewTextEdit.currentFont()
-        font.setBold(f)
-        self.__previewTextEdit.setCurrentFont(font)
-
-        self.__current_font = font
-        self.fontChanged.emit(self.__current_font)
-
-    def __setItalic(self, f: bool):
-        self.__previewTextEdit.selectAll()
-        font = self.__previewTextEdit.currentFont()
-        font.setItalic(f)
-        self.__previewTextEdit.setCurrentFont(font)
-
-        self.__current_font = font
-        self.fontChanged.emit(self.__current_font)
 
     def __sizeItemChangedExec(self, size):
         self.__previewTextEdit.selectAll()
@@ -319,6 +250,8 @@ class FontWidget(QWidget):
         font.setFamily(font_text)
 
         sizes = fd.pointSizes(font_text, styles[0])
+        sizes = list(filter(lambda x: x <= 20 and x >= 8, sizes))
+
         if prev_size in sizes:
             self.__sizeWidget.setSizes(sizes, prev_size)
             font.setPointSize(prev_size)
@@ -335,7 +268,6 @@ class FontWidget(QWidget):
     def setCurrentFont(self, font):
         self.__fontItemWidget.setCurrentFont(font=font)
         self.__sizeWidget.setCurrentSize(font=font)
-        self.__styleWidget.setCurrentStyle(font=font)
 
         self.__previewTextEdit.setCurrentFont(font)
         self.__current_font = font

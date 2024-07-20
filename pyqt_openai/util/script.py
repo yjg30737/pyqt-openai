@@ -1,21 +1,20 @@
+import base64
 import os
 import random
 import re
 import string
 import sys
 import zipfile
-import requests
-import base64
-import pandas
 from datetime import datetime
-
 from pathlib import Path
 
+import pandas
+import requests
 from jinja2 import Template
-
 from qtpy.QtCore import QSettings
+from qtpy.QtWidgets import QMessageBox
 
-from pyqt_openai.constants import INI_FILE_NAME, DB_FILE_NAME, DEFAULT_FONT_SIZE, DEFAULT_FONT_FAMILY
+from pyqt_openai.constants import INI_FILE_NAME, DB_FILE_NAME, DEFAULT_FONT_SIZE, DEFAULT_FONT_FAMILY, MAIN_INDEX
 from pyqt_openai.models import ImagePromptContainer
 
 
@@ -145,6 +144,24 @@ def get_font():
         'font_family': font_family,
         'font_size': font_size
     }
+
+def restart_app(settings=None):
+    if settings:
+        # Save before restart
+        settings.sync()
+    # Define the arguments to be passed to the executable
+    args = [sys.executable, MAIN_INDEX]
+    # Call os.execv() to execute the new process
+    os.execv(sys.executable, args)
+
+def show_message_box(title, text):
+    msg_box = QMessageBox()
+    msg_box.setWindowTitle(title)
+    msg_box.setText(text)
+    msg_box.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+    msg_box.setDefaultButton(QMessageBox.StandardButton.Yes)
+    result = msg_box.exec()
+    return result
 
 def get_conversation_from_chatgpt(filename, most_recent_n:int = None):
     conversations_df = pandas.read_json(filename)

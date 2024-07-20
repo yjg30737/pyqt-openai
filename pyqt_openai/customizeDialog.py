@@ -121,11 +121,11 @@ class CustomizeDialog(QDialog):
 
         self.setLayout(lay)
 
-    def getSettingsParam(self):
+    def getParam(self):
         return CustomizeParamsContainer(
             background_image=self.__findPathWidget1.getFileName(),
             user_image=self.__findPathWidget2.getFileName(),
             ai_image=self.__findPathWidget3.getFileName(),
-            font_size=self.__fontWidget.getFont().getFontSize(),
-            font_family=self.__fontWidget.getFont().getFontFamily()
+            font_size=self.__fontWidget.getFont().pointSize(),
+            font_family=self.__fontWidget.getFont().family()
         )

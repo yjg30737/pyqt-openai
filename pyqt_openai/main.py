@@ -35,7 +35,7 @@ from pyqt_openai.dalle_widget.dallEWidget import DallEWidget
 from pyqt_openai.openAiChatBotWidget import OpenAIChatBotWidget
 from pyqt_openai.replicate_widget.replicateWidget import ReplicateWidget
 from pyqt_openai.settingsDialog import SettingsDialog
-from pyqt_openai.util.script import get_db_filename, get_font
+from pyqt_openai.util.script import get_db_filename, get_font, restart_app, show_message_box
 from pyqt_openai.doNotAskAgainDialog import DoNotAskAgainDialog
 
 os.environ['OPENAI_API_KEY'] = ''
@@ -203,23 +203,13 @@ class MainWindow(QMainWindow):
         else:
             self.showNormal()
 
-    def __lang_changed(self, lang):
-        msg_box = QMessageBox()
-        msg_box.setWindowTitle(LangClass.TRANSLATIONS['Language Change'])
-        msg_box.setText(LangClass.TRANSLATIONS['When changing the language, the program needs to be restarted. Would you like to restart it?'])
-        msg_box.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
-        msg_box.setDefaultButton(QMessageBox.StandardButton.Yes)
-
-        result = msg_box.exec()
-
+    def __langChanged(self, lang):
+        title = LangClass.TRANSLATIONS['Language Change']
+        text = LangClass.TRANSLATIONS['When changing the language, the program needs to be restarted. Would you like to restart it?']
+        result = show_message_box(title, text)
         if result == QMessageBox.StandardButton.Yes:
             self.__settings_struct.setValue('lang', lang)
-            # save the changes to the file
-            self.__settings_struct.sync()
-            # Define the arguments to be passed to the executable
-            args = [sys.executable, "main.py"]
-            # Call os.execv() to execute the new process
-            os.execv(sys.executable, args)
+            restart_app(settings=self.__settings_struct)
 
     def __setMenuBar(self):
         menubar = self.menuBar()
@@ -363,7 +353,7 @@ class MainWindow(QMainWindow):
         reply = dialog.exec()
         if reply == QDialog.DialogCode.Accepted:
             self.__openAiChatBotWidget.refreshCustomizedInformation()
-            self.__refreshSettings(dialog.getSettingsParam())
+            self.__refreshContainer(dialog.getParam())
 
     def __aiTypeChanged(self, i):
         self.__mainWidget.setCurrentIndex(i)
@@ -382,30 +372,37 @@ class MainWindow(QMainWindow):
         if isinstance(container, SettingsParamsContainer):
             self.__lang = LangClass.lang_changed(container.lang)
 
-    def __refreshSettings(self, container):
-        self.__settingsParamContainer = container
-        # If db name is changed
-        if self.__settingsParamContainer.db != self.__settings_struct.value('db'):
-            QMessageBox.information(self, 'Info', "The name of the reference target database has been changed. The changes will take effect after a restart.")
-        # If show_toolbar is changed
-        if self.__settingsParamContainer.show_toolbar != self.__settings_struct.value('show_toolbar'):
-            self.__toolbar.setVisible(self.__settingsParamContainer.show_toolbar)
-        # If show_secondary_toolbar is changed
-        if self.__settingsParamContainer.show_secondary_toolbar != self.__settings_struct.value('show_secondary_toolbar'):
-            for i in range(self.__mainWidget.count()):
-                currentWidget = self.__mainWidget.widget(i)
-                currentWidget.showSecondaryToolBar(self.__settingsParamContainer.show_secondary_toolbar)
-        # If thread_tool_widget is changed
-        if self.__settingsParamContainer.thread_tool_widget != self.__settings_struct.value('thread_tool_widget'):
-            if isinstance(self.__mainWidget.currentWidget(), OpenAIChatBotWidget):
-                self.__mainWidget.currentWidget().showThreadToolWidget(self.__settingsParamContainer.thread_tool_widget)
-        for k, v in container.get_items():
-            self.__settings_struct.setValue(k, v)
-        # If language is changed
-        if self.__settingsParamContainer.lang != self.__lang:
-            self.__lang = LangClass.lang_changed(self.__settingsParamContainer.lang)
-            self.__lang_changed(self.__settingsParamContainer.lang)
-        self.__refreshColumns()
+    def __refreshContainer(self, container):
+        if isinstance(container, SettingsParamsContainer):
+            # If db name is changed
+            if container.db != self.__settings_struct.value('db'):
+                QMessageBox.information(self, 'Info', "The name of the reference target database has been changed. The changes will take effect after a restart.")
+            # If show_toolbar is changed
+            if container.show_toolbar != self.__settings_struct.value('show_toolbar'):
+                self.__toolbar.setVisible(container.show_toolbar)
+            # If show_secondary_toolbar is changed
+            if container.show_secondary_toolbar != self.__settings_struct.value('show_secondary_toolbar'):
+                for i in range(self.__mainWidget.count()):
+                    currentWidget = self.__mainWidget.widget(i)
+                    currentWidget.showSecondaryToolBar(container.show_secondary_toolbar)
+            # If thread_tool_widget is changed
+            if container.thread_tool_widget != self.__settings_struct.value('thread_tool_widget'):
+                if isinstance(self.__mainWidget.currentWidget(), OpenAIChatBotWidget):
+                    self.__mainWidget.currentWidget().showThreadToolWidget(container.thread_tool_widget)
+            for k, v in container.get_items():
+                self.__settings_struct.setValue(k, v)
+            # If language is changed
+            if container.lang != self.__lang:
+                self.__lang = LangClass.lang_changed(container.lang)
+                self.__langChanged(container.lang)
+        elif isinstance(container, CustomizeParamsContainer):
+            title = 'Font Change'
+            text = 'To apply the changed font, you need to restart the program. Would you like to restart it?'
+            result = show_message_box(title, text)
+            if result == QMessageBox.StandardButton.Yes:
+                for k, v in container.get_items():
+                    self.__settings_struct.setValue(k, v)
+                restart_app(settings=self.__settings_struct)
 
     def __refreshColumns(self):
         self.__openAiChatBotWidget.setColumns(self.__settingsParamContainer.chat_column_to_show)
@@ -416,11 +413,14 @@ class MainWindow(QMainWindow):
         dialog = SettingsDialog(self.__settingsParamContainer)
         reply = dialog.exec()
         if reply == QDialog.DialogCode.Accepted:
-            self.__refreshSettings(dialog.getSettingsParam())
+            container = dialog.getParam()
+            self.__settingsParamContainer = container
+            self.__refreshContainer(container)
+            self.__refreshColumns()
 
     def __doNotAskAgainChanged(self, value):
         self.__settingsParamContainer.do_not_ask_again = value
-        self.__refreshSettings(self.__settingsParamContainer)
+        self.__refreshContainer(self.__settingsParamContainer)
 
     def __beforeClose(self):
         if self.__settingsParamContainer.do_not_ask_again:

@@ -163,7 +163,7 @@ class SettingsDialog(QDialog):
         else:
             self.accept()
 
-    def getSettingsParam(self):
+    def getParam(self):
         return SettingsParamsContainer(
             lang=self.__langCmbBox.currentText(),
             db=self.__dbLineEdit.text(),
