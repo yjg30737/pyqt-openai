@@ -234,7 +234,7 @@ class OpenAIChatBotWidget(QWidget):
             temperature = self.__settings_ini.value('temperature', type=float)
             max_tokens = self.__settings_ini.value('max_tokens', type=int)
             top_p = self.__settings_ini.value('top_p', type=float)
-            response_format = self.__settings_ini.value('json_object', type=bool)
+            is_json_response_available = self.__settings_ini.value('json_object', type=bool)
             frequency_penalty = self.__settings_ini.value('frequency_penalty', type=float)
             presence_penalty = self.__settings_ini.value('presence_penalty', type=float)
             use_llama_index = self.__settings_ini.value('use_llama_index', type=bool)
@@ -246,6 +246,8 @@ class OpenAIChatBotWidget(QWidget):
 
             cur_text = self.__prompt.getContent()
 
+            json_content = self.__prompt.getJSONContent()
+
             # Check llamaindex is available
             is_llama_available = LLAMAINDEX_WRAPPER.get_directory() and use_llama_index
             if is_llama_available:
@@ -256,10 +258,21 @@ class OpenAIChatBotWidget(QWidget):
 
             use_max_tokens = self.__settings_ini.value('use_max_tokens', type=bool)
 
+            # Check JSON response is valid
+            if is_json_response_available:
+                if not json_content:
+                    QMessageBox.critical(self, "Error", 'JSON content is empty. Please fill in the JSON content field.')
+                    return
+                try:
+                    json.loads(json_content)
+                except Exception as e:
+                    QMessageBox.critical(self, "Error", f'JSON content is not valid. Please check the JSON content field.\n\n{e}')
+                    return
+
             openai_param = get_argument(model, system, messages, cur_text, temperature, top_p, frequency_penalty, presence_penalty, stream,
                                       use_max_tokens, max_tokens,
                                       images,
-                                      is_llama_available)
+                                      is_llama_available, is_json_response_available, json_content)
 
             # If there is no current conversation selected on the list to the left, make a new one.
             if self.__chatWidget.isNew():
@@ -323,9 +336,6 @@ class OpenAIChatBotWidget(QWidget):
         get last question and make it another response based on it
         """
         pass
-
-    def __showJSONEdit(self, x):
-        self.showJSONEdit(x)
 
     def __toggleWidgetWhileChatting(self, f, continue_f=False):
         self.__lineEdit.setExecuteEnabled(f)

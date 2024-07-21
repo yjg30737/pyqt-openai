@@ -101,19 +101,20 @@ class TextEditPromptGroup(QWidget):
     def getContent(self):
         b = self.__textGroup[PROMPT_BEGINNING_KEY_NAME].toPlainText().strip()
         m = self.__textGroup[PROMPT_MAIN_KEY_NAME].toPlainText().strip()
-        j = self.__textGroup[PROMPT_JSON_KEY_NAME].toPlainText().strip()
         e = self.__textGroup[PROMPT_END_KEY_NAME].toPlainText().strip()
 
         content = ''
         if b:
             content = b + '\n'
         content += m
-        if j:
-            content += '\n' + j
         if e:
             content += '\n' + e
 
         return content
+
+    def getJSONContent(self):
+        j = self.__textGroup[PROMPT_JSON_KEY_NAME].toPlainText().strip()
+        return j
 
     def getMainTextEdit(self):
         return self.__textEdit

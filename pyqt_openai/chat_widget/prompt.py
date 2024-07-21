@@ -252,6 +252,9 @@ class Prompt(QWidget):
     def getContent(self):
         return self.__textEditGroup.getContent()
 
+    def getJSONContent(self):
+        return self.__textEditGroup.getJSONContent()
+
     def __showBeginning(self, f):
         self.__textEditGroup.setVisibleTo(PROMPT_BEGINNING_KEY_NAME, f)
 
