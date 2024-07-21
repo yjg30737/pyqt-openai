@@ -1,5 +1,6 @@
 import json
 import sys
+import re
 
 from qtpy.QtCore import Qt, QTimer
 from qtpy.QtGui import QFont, QTextCursor, QTextCharFormat, QColor
@@ -14,7 +15,6 @@ class JSONEditor(QTextEdit):
         super().__init__()
         font = get_font()
         font_size = font.get('font_size', DEFAULT_FONT_SIZE)
-
         font = QFont(FONT_FAMILY_FOR_SOURCE, font_size)
 
         self.setFont(font)
@@ -59,7 +59,6 @@ class JSONEditor(QTextEdit):
         self.setUpdatesEnabled(True)
 
     def find_iter(self, pattern):
-        import re
         regex = re.compile(pattern)
         for match in regex.finditer(self.toPlainText()):
             yield match.span()
@@ -119,10 +118,9 @@ class JSONEditor(QTextEdit):
             cursor.movePosition(QTextCursor.StartOfLine)
             line_text = cursor.block().text()
             if line_text.startswith(' ' * INDENT_SIZE):
-                cursor.deleteChar()
-                cursor.deleteChar()
-                cursor.deleteChar()
-                cursor.deleteChar()
+                cursor.movePosition(QTextCursor.Right, QTextCursor.KeepAnchor, INDENT_SIZE)
+                for _ in range(INDENT_SIZE):
+                    cursor.deleteChar()
             cursor.movePosition(QTextCursor.Down)
 
         cursor.endEditBlock()
@@ -132,10 +130,9 @@ class JSONEditor(QTextEdit):
         cursor.movePosition(QTextCursor.StartOfLine)
         line_text = cursor.block().text()
         if line_text.startswith(' ' * INDENT_SIZE):
-            cursor.deleteChar()
-            cursor.deleteChar()
-            cursor.deleteChar()
-            cursor.deleteChar()
+            cursor.movePosition(QTextCursor.Right, QTextCursor.KeepAnchor, INDENT_SIZE)
+            for _ in range(INDENT_SIZE):
+                cursor.deleteChar()
 
     def format_json(self):
         try:
@@ -145,8 +142,8 @@ class JSONEditor(QTextEdit):
             self.setPlainText(formatted)
         except json.JSONDecodeError as e:
             QMessageBox.critical(self, "Invalid JSON", f"Error: {str(e)}")
-
-# Usage
+#
+# # Usage
 # class MainWindow(QWidget):
 #     def __init__(self):
 #         super().__init__()
