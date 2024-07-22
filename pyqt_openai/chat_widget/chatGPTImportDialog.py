@@ -3,6 +3,7 @@ from qtpy.QtWidgets import QMessageBox, QGroupBox, QTableWidgetItem, \
     QLabel, QDialogButtonBox, QCheckBox, QDialog, QVBoxLayout, QSpinBox, QAbstractItemView
 
 from pyqt_openai.constants import THREAD_ORDERBY
+from pyqt_openai.lang.language_dict import LangClass
 from pyqt_openai.util.script import get_conversation_from_chatgpt, get_chatgpt_data
 from pyqt_openai.widgets.checkBoxTableWidget import CheckBoxTableWidget
 from pyqt_openai.widgets.findPathWidget import FindPathWidget
@@ -21,15 +22,15 @@ class ChatGPTImportDialog(QDialog):
         self.__data = []
 
     def __initUi(self):
-        self.setWindowTitle("Import ChatGPT Data")
+        self.setWindowTitle(LangClass.TRANSLATIONS["Import ChatGPT Data"])
         self.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.WindowCloseButtonHint)
 
         findPathWidget = FindPathWidget()
         findPathWidget.added.connect(self.__setPath)
-        findPathWidget.getLineEdit().setPlaceholderText('Select a ChatGPT JSON file')
+        findPathWidget.getLineEdit().setPlaceholderText(LangClass.TRANSLATIONS['Select a ChatGPT JSON file'])
         findPathWidget.setExtOfFiles('JSON Files (*.json)')
 
-        self.__chkBoxMostRecent = QCheckBox('Get most recent')
+        self.__chkBoxMostRecent = QCheckBox(LangClass.TRANSLATIONS['Get most recent'])
 
         self.__mostRecentNSpinBox = QSpinBox()
         self.__mostRecentNSpinBox.setRange(1, 10000)
@@ -38,7 +39,7 @@ class ChatGPTImportDialog(QDialog):
 
         self.__chkBoxMostRecent.stateChanged.connect(lambda state: self.__mostRecentNSpinBox.setEnabled(state == Qt.CheckState.Checked))
 
-        chatGPTImportGrpBox = QGroupBox('ChatGPT Import Options')
+        chatGPTImportGrpBox = QGroupBox(LangClass.TRANSLATIONS['ChatGPT Import Options'])
         lay = QVBoxLayout()
         lay.addWidget(self.__chkBoxMostRecent)
         lay.addWidget(self.__mostRecentNSpinBox)
@@ -48,15 +49,15 @@ class ChatGPTImportDialog(QDialog):
         self.__checkBoxTableWidget.setColumnCount(0)
         # self.__checkBoxTableWidget.checkedSignal.connect(self.getData)
 
-        self.__allCheckBox = QCheckBox('Select All')
+        self.__allCheckBox = QCheckBox(LangClass.TRANSLATIONS['Select All'])
         self.__allCheckBox.stateChanged.connect(self.__checkBoxTableWidget.toggleState) # if allChkBox is checked, tablewidget checkboxes will also be checked
 
         lay = QVBoxLayout()
-        lay.addWidget(QLabel('Select the threads you want to import.'))
+        lay.addWidget(QLabel(LangClass.TRANSLATIONS['Select the threads you want to import.']))
         lay.addWidget(self.__allCheckBox)
         lay.addWidget(self.__checkBoxTableWidget)
 
-        self.__chatGPTDataGroupBox = QGroupBox('ChatGPT Data')
+        self.__chatGPTDataGroupBox = QGroupBox(LangClass.TRANSLATIONS['ChatGPT Data'])
         self.__chatGPTDataGroupBox.setLayout(lay)
         self.__chatGPTDataGroupBox.setEnabled(False)
 
@@ -106,14 +107,14 @@ class ChatGPTImportDialog(QDialog):
 
             self.__checkBoxTableWidget.hideColumn(1)
         except Exception as e:
-            QMessageBox.critical(self, "Error", 'Check whether the file is a valid JSON file for importing.')
+            QMessageBox.critical(self, LangClass.TRANSLATIONS["Error"], LangClass.TRANSLATIONS['Check whether the file is a valid JSON file for importing.'])
 
     def __accept(self):
         if len(self.__checkBoxTableWidget.getCheckedRows()) > 0:
             self.__setData()
             self.accept()
         else:
-            QMessageBox.critical(self, "Error", 'Select at least one thread to import.')
+            QMessageBox.critical(self, LangClass.TRANSLATIONS["Error"], LangClass.TRANSLATIONS['Select at least one thread to import.'])
 
     def getData(self):
         return self.__data

@@ -6,6 +6,7 @@ from qtpy.QtWidgets import QWidget, QLabel, \
 
 from pyqt_openai.chat_widget.chatBrowser import ChatBrowser
 from pyqt_openai.constants import SHORTCUT_FIND_PREV, SHORTCUT_FIND_NEXT, SHORTCUT_GENERAL_ACTION, SHORTCUT_FIND_CLOSE
+from pyqt_openai.lang.language_dict import LangClass
 from pyqt_openai.widgets.button import Button
 
 
@@ -72,6 +73,7 @@ class FindTextWidget(QWidget):
         self.__closeBtn.setShortcut(SHORTCUT_FIND_CLOSE)
         self.__closeBtn.setStyleAndIcon('ico/close.svg')
 
+        # TODO LANGUAGE
         self.__prevBtn.setToolTip('Previous Occurrence')
         self.__nextBtn.setToolTip('Next Occurrence')
         self.__caseBtn.setToolTip('Match Case')
@@ -105,7 +107,7 @@ class FindTextWidget(QWidget):
     def __findInit(self, text):
         # show "bad pattern" message if text is "\"
         if self.__regexBtn.isChecked() and re.escape(text) == re.escape('\\'):
-            QMessageBox.warning(self, 'Warning', 'Bad pattern')
+            QMessageBox.warning(self, LangClass.TRANSLATIONS['Warning'], LangClass.TRANSLATIONS['Bad pattern'])
         else:
             self.__selections = self.__chatBrowser.setCurrentLabelIncludingTextBySliderPosition(text,
                                                                                                 case_sensitive=self.__caseBtn.isChecked(),

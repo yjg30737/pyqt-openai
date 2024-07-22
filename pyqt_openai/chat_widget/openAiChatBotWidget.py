@@ -65,27 +65,27 @@ class OpenAIChatBotWidget(QWidget):
         try:
             self.__aiPlaygroundWidget.onDirectorySelected.connect(LLAMAINDEX_WRAPPER.set_directory)
         except Exception as e:
-            QMessageBox.critical(self, "Error", str(e))
+            QMessageBox.critical(self, LangClass.TRANSLATIONS["Error"], str(e))
 
         self.__promptGeneratorWidget = PromptGeneratorWidget()
 
         self.__sideBarBtn = Button()
         self.__sideBarBtn.setStyleAndIcon('ico/sidebar.svg')
         self.__sideBarBtn.setCheckable(True)
-        self.__sideBarBtn.setToolTip('Chat List')
+        self.__sideBarBtn.setToolTip(LangClass.TRANSLATIONS['Chat List'])
         self.__sideBarBtn.setChecked(self.__show_chat_list)
         self.__sideBarBtn.toggled.connect(self.__toggle_sidebar)
 
         self.__settingBtn = Button()
         self.__settingBtn.setStyleAndIcon('ico/setting.svg')
-        self.__settingBtn.setToolTip('Chat Settings')
+        self.__settingBtn.setToolTip(LangClass.TRANSLATIONS['Chat Settings'])
         self.__settingBtn.setCheckable(True)
         self.__settingBtn.setChecked(self.__show_setting)
         self.__settingBtn.toggled.connect(self.__toggle_setting)
 
         self.__promptBtn = Button()
         self.__promptBtn.setStyleAndIcon('ico/prompt.svg')
-        self.__promptBtn.setToolTip('Prompt Generator')
+        self.__promptBtn.setToolTip(LangClass.TRANSLATIONS['Prompt Generator'])
         self.__promptBtn.setCheckable(True)
         self.__promptBtn.setChecked(self.__show_prompt)
         self.__promptBtn.toggled.connect(self.__toggle_prompt)
@@ -94,7 +94,7 @@ class OpenAIChatBotWidget(QWidget):
         sep.setFrameShape(QFrame.Shape.VLine)
         sep.setFrameShadow(QFrame.Shadow.Sunken)
 
-        toggleFindToolButton = QPushButton('Show Find Tool')
+        toggleFindToolButton = QPushButton(LangClass.TRANSLATIONS['Show Find Tool'])
         toggleFindToolButton.setCheckable(True)
         toggleFindToolButton.setChecked(True)
         toggleFindToolButton.toggled.connect(self.__chatWidget.toggleMenuWidget)
@@ -260,12 +260,12 @@ class OpenAIChatBotWidget(QWidget):
             # Check JSON response is valid
             if is_json_response_available:
                 if not json_content:
-                    QMessageBox.critical(self, "Error", 'JSON content is empty. Please fill in the JSON content field.')
+                    QMessageBox.critical(self, LangClass.TRANSLATIONS["Error"], LangClass.TRANSLATIONS['JSON content is empty. Please fill in the JSON content field.'])
                     return
                 try:
                     json.loads(json_content)
                 except Exception as e:
-                    QMessageBox.critical(self, "Error", f'JSON content is not valid. Please check the JSON content field.\n\n{e}')
+                    QMessageBox.critical(self, LangClass.TRANSLATIONS["Error"], f'{LangClass.TRANSLATIONS["JSON content is not valid. Please check the JSON content field."]}\n\n{e}')
                     return
 
             openai_param = get_argument(model, system, messages, cur_text, temperature, top_p, frequency_penalty, presence_penalty, stream,
@@ -293,7 +293,7 @@ class OpenAIChatBotWidget(QWidget):
 
             # For make chatbot continue to respond
             if continue_f:
-                query_text = 'Continue to respond.'
+                query_text = LangClass.TRANSLATIONS['Continue to respond.']
             else:
                 query_text = self.__prompt.getContent()
             self.__browser.showLabel(query_text, False, container)
@@ -317,7 +317,7 @@ class OpenAIChatBotWidget(QWidget):
             f = tb.tb_frame
             lineno = tb.tb_lineno
             filename = f.f_code.co_filename
-            QMessageBox.critical(self, "Error", f'''
+            QMessageBox.critical(self, LangClass.TRANSLATIONS["Error"], f'''
             {str(e)},
             'File: {filename}',
             'Line: {lineno}'
@@ -398,7 +398,7 @@ class OpenAIChatBotWidget(QWidget):
                     DB.insertMessage(container)
             self.__chatNavWidget.refreshData()
         except Exception as e:
-            QMessageBox.critical(self, "Error", 'Check whether the file is a valid JSON file for importing.')
+            QMessageBox.critical(self, LangClass.TRANSLATIONS["Error"], LangClass.TRANSLATIONS['Check whether the file is a valid JSON file for importing.'])
 
     def __chatGPTImport(self, data):
         try:
@@ -413,7 +413,7 @@ class OpenAIChatBotWidget(QWidget):
                     DB.insertMessage(container)
             self.__chatNavWidget.refreshData()
         except Exception as e:
-            QMessageBox.critical(self, "Error", 'Check whether the file is a valid JSON file for importing.')
+            QMessageBox.critical(self, LangClass.TRANSLATIONS["Error"], LangClass.TRANSLATIONS['Check whether the file is a valid JSON file for importing.'])
 
     def __exportChat(self, ids):
         file_data = QFileDialog.getSaveFileName(self, LangClass.TRANSLATIONS['Save'], os.path.expanduser('~'), 'JSON file (*.json);;txt files Compressed File (*.zip);;html files Compressed File (*.zip)')

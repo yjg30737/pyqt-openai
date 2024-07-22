@@ -6,6 +6,7 @@ from qtpy.QtWidgets import QSizePolicy, \
     QTextEdit, QHBoxLayout
 
 from pyqt_openai.constants import DEFAULT_FONT_FAMILY
+from pyqt_openai.lang.language_dict import LangClass
 
 
 class SizeWidget(QWidget):
@@ -33,7 +34,7 @@ class SizeWidget(QWidget):
         sizeBottomWidget.setLayout(lay)
 
         lay = QVBoxLayout()
-        lay.addWidget(QLabel('Size'))
+        lay.addWidget(QLabel(LangClass.TRANSLATIONS['Size']))
         lay.addWidget(sizeBottomWidget)
         lay.setContentsMargins(0, 0, 0, 0)
         lay.setSpacing(5)
@@ -122,7 +123,7 @@ class FontItemWidget(QWidget):
         fontBottomWidget.setLayout(lay)
 
         lay = QVBoxLayout()
-        lay.addWidget(QLabel('Font'))
+        lay.addWidget(QLabel(LangClass.TRANSLATIONS['Font']))
         lay.addWidget(fontBottomWidget)
         lay.setContentsMargins(0, 0, 0, 0)
         lay.setSpacing(5)
@@ -209,7 +210,7 @@ class FontWidget(QWidget):
         topWidget.setLayout(lay)
 
         lay = QVBoxLayout()
-        lay.addWidget(QLabel('Preview'))
+        lay.addWidget(QLabel(LangClass.TRANSLATIONS['Preview']))
         lay.addWidget(self.__previewTextEdit)
         lay.setContentsMargins(0, 0, 0, 0)
         lay.setSpacing(5)
@@ -230,7 +231,7 @@ class FontWidget(QWidget):
         font.setFamily(font_family)
         font.setPointSize(int(font_size))
         self.__previewTextEdit.setCurrentFont(font)
-        self.__previewTextEdit.setText('Sample')
+        self.__previewTextEdit.setText(LangClass.TRANSLATIONS['Sample'])
 
     def __sizeItemChangedExec(self, size):
         self.__previewTextEdit.selectAll()

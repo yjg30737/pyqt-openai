@@ -35,12 +35,12 @@ class AboutDialog(QDialog):
         ''')
 
         descWidget2 = LinkLabel()
-        descWidget2.setText('Read MIT License Full Text')
+        descWidget2.setText(LangClass.TRANSLATIONS['Read MIT License Full Text'])
         descWidget2.setUrl(LICENSE_URL)
 
         descWidget3 = QLabel()
         descWidget3.setText(f'''
-        <br/><br/>{LangClass.TRANSLATIONS['Language']}: {CONTACT}<br/>
+        <br/><br/>Contact: {CONTACT}<br/>
         <p>Powered by qtpy</p>
         ''')
 

@@ -16,6 +16,6 @@ class LinkLabel(SvgLabel):
         self.__url = url
 
     def mouseReleaseEvent(self, QMouseEvent):
-        v = 1 if os.environ['QT_API'] == 'PyQt5' else Qt.MouseButtons.LeftButton
+        v = 1 if os.environ['QT_API'] == 'pyqt5' else Qt.MouseButtons.LeftButton
         if QMouseEvent.button() == v:
             QDesktopServices.openUrl(QUrl(self.__url))

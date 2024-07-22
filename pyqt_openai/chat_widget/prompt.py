@@ -37,6 +37,7 @@ class Prompt(QWidget):
 
     def __initUi(self):
         # prompt control buttons
+        # TODO LANGUAGE
         self.__stopBtn = QPushButton('Stop')
         self.__stopBtn.clicked.connect(self.onStoppedClicked.emit)
 
@@ -49,9 +50,11 @@ class Prompt(QWidget):
         self.__controlWidgetDuringGeneration = QWidget()
         self.__controlWidgetDuringGeneration.setLayout(lay)
 
+        # TODO LANGUAGE
         self.__continueBtn = QPushButton('Continue')
         self.__continueBtn.clicked.connect(self.onContinuedClicked.emit)
 
+        # TODO LANGUAGE
         self.__regenerateBtn = QPushButton('Regenerate')
         self.__regenerateBtn.clicked.connect(self.onRegenerateClicked.emit)
 
@@ -116,6 +119,7 @@ class Prompt(QWidget):
         readingFilesAction = QAction(LangClass.TRANSLATIONS['Upload Files...'], self)
         readingFilesAction.triggered.connect(self.__readingFiles)
 
+        # TODO LANGUAGE
         self.__writeJSONAction = QAction('Write JSON', self)
         self.__writeJSONAction.toggled.connect(self.__showJSON)
         self.__writeJSONAction.setCheckable(True)
@@ -266,7 +270,7 @@ class Prompt(QWidget):
         self.__textEditGroup.setCommandEnabled(f)
 
     def __readingFiles(self):
-        filenames = QFileDialog.getOpenFileNames(self, 'Find', os.path.expanduser('~'), READ_FILE_EXT)
+        filenames = QFileDialog.getOpenFileNames(self, LangClass.TRANSLATIONS['Find'], os.path.expanduser('~'), READ_FILE_EXT)
         if filenames[0]:
             filenames = filenames[0]
             cur_file_extension = Path(filenames[0]).suffix

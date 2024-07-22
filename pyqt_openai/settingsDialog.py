@@ -43,7 +43,7 @@ class SettingsDialog(QDialog):
         self.__image_column_to_show = args.image_column_to_show
 
     def __initUi(self):
-        self.setWindowTitle("Settings")
+        self.setWindowTitle(LangClass.TRANSLATIONS["Settings"])
         self.setWindowFlags(Qt.WindowType.WindowCloseButtonHint)
 
         # Language setting
@@ -53,7 +53,7 @@ class SettingsDialog(QDialog):
         self.__langCmbBox.setSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.MinimumExpanding)
 
         lay = QHBoxLayout()
-        lay.addWidget(QLabel("Language"))
+        lay.addWidget(QLabel(LangClass.TRANSLATIONS["Language"]))
         lay.addWidget(self.__langCmbBox)
         lay.setContentsMargins(0, 0, 0, 0)
 
@@ -67,19 +67,20 @@ class SettingsDialog(QDialog):
         re = QRegularExpression(constants.DB_NAME_REGEX)
         self.__validator.setRegularExpression(re)
         self.__dbLineEdit.setValidator(self.__validator)
-        dbLayout.addWidget(QLabel("Name of target database (without extension)"))
+        dbLayout.addWidget(QLabel(LangClass.TRANSLATIONS["Name of target database (without extension)"]))
         dbLayout.addWidget(self.__dbLineEdit)
 
         # Checkboxes
-        self.__doNotAskAgainCheckBox = QCheckBox("Do not ask again when closing (Always close the application)")
+        self.__doNotAskAgainCheckBox = QCheckBox(f'{LangClass.TRANSLATIONS["Do not ask again when closing"]} ({LangClass.TRANSLATIONS["Always close the application"]})')
         self.__doNotAskAgainCheckBox.setChecked(self.__do_not_ask_again)
+        # TODO LANGUAGE
         self.__notifyFinishCheckBox = QCheckBox("Notify when finish processing any task (Conversion, etc.)")
         self.__notifyFinishCheckBox.setChecked(self.__notify_finish)
-        self.__showToolbarCheckBox = QCheckBox("Show Toolbar")
+        self.__showToolbarCheckBox = QCheckBox(LangClass.TRANSLATIONS["Show Toolbar"])
         self.__showToolbarCheckBox.setChecked(self.__show_toolbar)
         self.__showSecondaryToolBarChkBox = QCheckBox(LangClass.TRANSLATIONS['Show Secondary Toolbar'])
         self.__showSecondaryToolBarChkBox.setChecked(self.__show_secondary_toolbar)
-        self.__showThreadToolWidgetChkBox = QCheckBox('Show thread tool widget')
+        self.__showThreadToolWidgetChkBox = QCheckBox(LangClass.TRANSLATIONS['Show thread tool widget'])
         self.__showThreadToolWidgetChkBox.setChecked(self.__thread_tool_widget)
 
         # Dialog buttons
@@ -100,10 +101,10 @@ class SettingsDialog(QDialog):
         lay.addWidget(self.__showSecondaryToolBarChkBox)
         lay.addWidget(self.__showThreadToolWidgetChkBox)
 
-        generalGrpBox = QGroupBox('General')
+        generalGrpBox = QGroupBox(LangClass.TRANSLATIONS['General'])
         generalGrpBox.setLayout(lay)
 
-        chatColAllCheckBox = QCheckBox('Check All')
+        chatColAllCheckBox = QCheckBox(LangClass.TRANSLATIONS['Check All'])
         self.__chatColCheckBoxListWidget = CheckBoxListWidget()
         for k in ChatThreadContainer.get_keys(excludes=COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE):
             self.__chatColCheckBoxListWidget.addItem(k, checked=k in self.__chat_column_to_show)
@@ -111,14 +112,14 @@ class SettingsDialog(QDialog):
         chatColAllCheckBox.stateChanged.connect(self.__chatColCheckBoxListWidget.toggleState)
 
         lay = QVBoxLayout()
-        lay.addWidget(QLabel('Select the columns you want to show in the chat list.'))
+        lay.addWidget(QLabel(LangClass.TRANSLATIONS['Select the columns you want to show in the chat list.']))
         lay.addWidget(chatColAllCheckBox)
         lay.addWidget(self.__chatColCheckBoxListWidget)
 
         chatColWidget = QWidget()
         chatColWidget.setLayout(lay)
 
-        imageColAllCheckBox = QCheckBox('Check all')
+        imageColAllCheckBox = QCheckBox(LangClass.TRANSLATIONS['Check all'])
         self.__imageColCheckBoxListWidget = CheckBoxListWidget()
         for k in ImagePromptContainer.get_keys(excludes=COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE):
             self.__imageColCheckBoxListWidget.addItem(k, checked=k in self.__image_column_to_show)
@@ -126,7 +127,7 @@ class SettingsDialog(QDialog):
         imageColAllCheckBox.stateChanged.connect(self.__imageColCheckBoxListWidget.toggleState)
 
         lay = QVBoxLayout()
-        lay.addWidget(QLabel('Select the columns you want to show in the image list.'))
+        lay.addWidget(QLabel(LangClass.TRANSLATIONS['Select the columns you want to show in the image list.']))
         lay.addWidget(imageColAllCheckBox)
         lay.addWidget(self.__imageColCheckBoxListWidget)
 
@@ -146,6 +147,7 @@ class SettingsDialog(QDialog):
         lay = QVBoxLayout()
         lay.addWidget(self.__splitter)
 
+        # TODO LANGUAGE
         columnGrpBox = QGroupBox('Show/hide columns')
         columnGrpBox.setLayout(lay)
 
@@ -159,7 +161,7 @@ class SettingsDialog(QDialog):
     def __accept(self):
         # If DB file name is empty
         if self.__dbLineEdit.text().strip() == '':
-            QMessageBox.critical(self, 'Error', 'Database name cannot be empty.')
+            QMessageBox.critical(self, LangClass.TRANSLATIONS['Error'], LangClass.TRANSLATIONS['Database name cannot be empty.'])
         else:
             self.accept()
 

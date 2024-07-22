@@ -10,6 +10,7 @@ from pyqt_openai.chat_widget.chatGPTImportDialog import ChatGPTImportDialog
 from pyqt_openai.constants import THREAD_ORDERBY
 from pyqt_openai.chat_widget.exportDialog import ExportDialog
 from pyqt_openai.chat_widget.importDialog import ImportDialog
+from pyqt_openai.lang.language_dict import LangClass
 from pyqt_openai.models import ChatThreadContainer
 from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.widgets.button import Button
@@ -74,7 +75,7 @@ class ChatNavWidget(QWidget):
 
     def __initUi(self):
         imageGenerationHistoryLbl = QLabel()
-        imageGenerationHistoryLbl.setText('History')
+        imageGenerationHistoryLbl.setText(LangClass.TRANSLATIONS['History'])
 
         self.__addBtn = Button()
         self.__delBtn = Button()
@@ -88,11 +89,11 @@ class ChatNavWidget(QWidget):
         self.__saveBtn.setStyleAndIcon('ico/save.svg')
         self.__clearBtn.setStyleAndIcon('ico/close.svg')
 
-        self.__addBtn.setToolTip('Add')
-        self.__delBtn.setToolTip('Delete')
-        self.__importBtn.setToolTip('Import')
-        self.__saveBtn.setToolTip('Save')
-        self.__delBtn.setToolTip('Remove All')
+        self.__addBtn.setToolTip(LangClass.TRANSLATIONS['Add'])
+        self.__delBtn.setToolTip(LangClass.TRANSLATIONS['Delete'])
+        self.__importBtn.setToolTip(LangClass.TRANSLATIONS['Import'])
+        self.__saveBtn.setToolTip(LangClass.TRANSLATIONS['Save'])
+        self.__delBtn.setToolTip(LangClass.TRANSLATIONS['Remove All'])
 
         self.__addBtn.clicked.connect(self.add)
         self.__delBtn.clicked.connect(self.__delete)
@@ -114,11 +115,11 @@ class ChatNavWidget(QWidget):
         menuSubWidget1.setLayout(lay)
 
         self.__searchBar = SearchBar()
-        self.__searchBar.setPlaceHolder('Search...')
+        self.__searchBar.setPlaceHolder(LangClass.TRANSLATIONS['Search...'])
         self.__searchBar.searched.connect(self.__search)
 
         self.__searchOptionCmbBox = QComboBox()
-        self.__searchOptionCmbBox.addItems(['Title', 'Content'])
+        self.__searchOptionCmbBox.addItems([LangClass.TRANSLATIONS['Title'], LangClass.TRANSLATIONS['Content']])
         self.__searchOptionCmbBox.setMinimumHeight(self.__searchBar.sizeHint().height())
         self.__searchOptionCmbBox.currentIndexChanged.connect(
             lambda _: self.__search(self.__searchBar.getSearchBar().text()))
@@ -175,7 +176,7 @@ class ChatNavWidget(QWidget):
         self.__tableView.clicked.connect(self.__clicked)
         self.__tableView.activated.connect(self.__clicked)
 
-        self.__favoriteBtn = QPushButton('Favorite List')
+        self.__favoriteBtn = QPushButton(LangClass.TRANSLATIONS['Favorite List'])
         self.__favoriteBtn.setCheckable(True)
         self.__favoriteBtn.toggled.connect(self.__onFavoriteClicked)
 
@@ -199,8 +200,8 @@ class ChatNavWidget(QWidget):
         reply = dialog.exec()
         if reply == QDialog.Accepted:
             import_type = dialog.getImportType()
-            if import_type == 'General':
-                filename = QFileDialog.getOpenFileName(self, 'Import', '', 'JSON files (*.json)')
+            if import_type == LangClass.TRANSLATIONS['General']:
+                filename = QFileDialog.getOpenFileName(self, LangClass.TRANSLATIONS['Import'], '', 'JSON files (*.json)')
                 if filename:
                     filename = filename[0]
                     if filename:
@@ -222,7 +223,7 @@ class ChatNavWidget(QWidget):
             if reply == QDialog.Accepted:
                 self.onExport.emit(dialog.getSelectedIds())
         else:
-            QMessageBox.information(self, 'Information', 'No data to export.')
+            QMessageBox.information(self, LangClass.TRANSLATIONS['Information'], LangClass.TRANSLATIONS['No data to export.'])
 
     def __updated(self, i, r):
         # send updated signal
@@ -267,7 +268,7 @@ class ChatNavWidget(QWidget):
         Clear all data in the table
         '''
         # Before clearing, confirm the action
-        reply = QMessageBox.question(self, 'Confirm', 'Are you sure to clear all data?', QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+        reply = QMessageBox.question(self, LangClass.TRANSLATIONS['Confirm'], LangClass.TRANSLATIONS['Are you sure to clear all data?'], QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
         if reply == QMessageBox.StandardButton.Yes:
             DB.deleteThread()
             self.__model.select()
@@ -275,10 +276,10 @@ class ChatNavWidget(QWidget):
 
     def __search(self, search_text):
         # title
-        if self.__searchOptionCmbBox.currentText() == 'Title':
+        if self.__searchOptionCmbBox.currentText() == LangClass.TRANSLATIONS['Title']:
             self.refreshData(search_text)
         # content
-        elif self.__searchOptionCmbBox.currentText() == 'Content':
+        elif self.__searchOptionCmbBox.currentText() == LangClass.TRANSLATIONS['Content']:
             if search_text:
                 threads = DB.selectAllContentOfThread(content_to_select=search_text)
                 ids = [_[0] for _ in threads]

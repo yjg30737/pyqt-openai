@@ -14,7 +14,7 @@ sys.path.insert(0, project_root)
 sys.path.insert(0, os.getcwd())  # Add the current directory as well
 
 # for testing pyside6
-os.environ['QT_API'] = 'pyside6'
+# os.environ['QT_API'] = 'pyside6'
 
 # for testing pyqt6
 # os.environ['QT_API'] = 'pyqt6'
@@ -135,7 +135,7 @@ class MainWindow(QMainWindow):
         self.__customizeBtn.setStyleAndIcon('ico/customize.svg')
         self.__customizeBtn.clicked.connect(self.__executeCustomizeDialog)
         self.__customizeAction.setDefaultWidget(self.__customizeBtn)
-        self.__customizeBtn.setToolTip('Customize')
+        self.__customizeBtn.setToolTip(LangClass.TRANSLATIONS['Customize'])
 
         self.__transparentAction = QWidgetAction(self)
         self.__transparentSpinBox = QSpinBox()
@@ -151,7 +151,7 @@ class MainWindow(QMainWindow):
         self.__fullScreenBtn.setCheckable(True)
         self.__fullScreenBtn.toggled.connect(self.__fullScreenToggle)
         self.__fullScreenAction.setDefaultWidget(self.__fullScreenBtn)
-        self.__fullScreenBtn.setToolTip('Full Screen')
+        self.__fullScreenBtn.setToolTip(LangClass.TRANSLATIONS['Full Screen'])
         self.__fullScreenBtn.setShortcut(SHORTCUT_FULL_SCREEN)
 
         lay = QHBoxLayout()
@@ -170,10 +170,10 @@ class MainWindow(QMainWindow):
         self.__apiCheckPreviewLbl = QLabel()
         self.__apiCheckPreviewLbl.setFont(QFont('Arial', 10))
 
-        apiLbl = QLabel('API')
+        apiLbl = QLabel(LangClass.TRANSLATIONS['API'])
 
         self.__apiLineEdit = QLineEdit()
-        self.__apiLineEdit.setPlaceholderText('Write your API Key...')
+        self.__apiLineEdit.setPlaceholderText(LangClass.TRANSLATIONS['Write your API Key...'])
         self.__apiLineEdit.returnPressed.connect(self.__setApi)
         self.__apiLineEdit.setEchoMode(QLineEdit.EchoMode.Password)
 
@@ -225,7 +225,7 @@ class MainWindow(QMainWindow):
 
         helpMenu.addAction(self.__aboutAction)
 
-        donateMenu = QMenu('Donate', self)
+        donateMenu = QMenu(LangClass.TRANSLATIONS['Donate'], self)
         donateMenu.addAction(self.__paypalAction)
         donateMenu.addAction(self.__buyMeCoffeeAction)
 
@@ -375,7 +375,7 @@ class MainWindow(QMainWindow):
         if isinstance(container, SettingsParamsContainer):
             # If db name is changed
             if container.db != self.__settings_struct.value('db'):
-                QMessageBox.information(self, 'Info', "The name of the reference target database has been changed. The changes will take effect after a restart.")
+                QMessageBox.information(self, LangClass.TRANSLATIONS['Info'], LangClass.TRANSLATIONS["The name of the reference target database has been changed. The changes will take effect after a restart."])
             # If show_toolbar is changed
             if container.show_toolbar != self.__settings_struct.value('show_toolbar'):
                 self.__toolbar.setVisible(container.show_toolbar)
@@ -395,8 +395,8 @@ class MainWindow(QMainWindow):
                 self.__lang = LangClass.lang_changed(container.lang)
                 self.__langChanged(container.lang)
         elif isinstance(container, CustomizeParamsContainer):
-            title = 'Font Change'
-            text = 'To apply the changed font, you need to restart the program. Would you like to restart it?'
+            title = LangClass.TRANSLATIONS['Font Change']
+            text = LangClass.TRANSLATIONS['To apply the changed font, you need to restart the program. Would you like to restart it?']
             result = show_message_box(title, text)
             if result == QMessageBox.StandardButton.Yes:
                 for k, v in container.get_items():

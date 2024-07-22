@@ -16,8 +16,6 @@ class LlamaPage(QWidget):
         self.__initUi()
 
     def __initUi(self):
-        self.setWindowTitle('PyQt LlamaIndex')
-
         self.__apiCheckPreviewLbl = QLabel()
         self.__apiCheckPreviewLbl.setFont(QFont('Arial', 10))
 

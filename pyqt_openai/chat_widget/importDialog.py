@@ -1,6 +1,8 @@
 from qtpy.QtCore import Qt
 from qtpy.QtWidgets import QButtonGroup, QGroupBox, QRadioButton, QDialogButtonBox, QDialog, QVBoxLayout
 
+from pyqt_openai.lang.language_dict import LangClass
+
 
 class ImportDialog(QDialog):
     def __init__(self):
@@ -12,11 +14,11 @@ class ImportDialog(QDialog):
         self.__selected_import_type = None
 
     def __initUi(self):
-        self.setWindowTitle("Import From...")
+        self.setWindowTitle(LangClass.TRANSLATIONS["Import From..."])
         self.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.WindowCloseButtonHint)
 
-        self.__generalRadBtn = QRadioButton('General')
-        self.__chatGptRadBtn = QRadioButton('ChatGPT')
+        self.__generalRadBtn = QRadioButton(LangClass.TRANSLATIONS['General'])
+        self.__chatGptRadBtn = QRadioButton(LangClass.TRANSLATIONS['ChatGPT'])
 
         self.__generalRadBtn.setChecked(True)
 
@@ -29,7 +31,7 @@ class ImportDialog(QDialog):
         lay.addWidget(self.__chatGptRadBtn)
         lay.setAlignment(Qt.AlignmentFlag.AlignTop)
 
-        importTypeGrpBox = QGroupBox('Import Type')
+        importTypeGrpBox = QGroupBox(LangClass.TRANSLATIONS['Import Type'])
         importTypeGrpBox.setLayout(lay)
 
         buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
@@ -45,8 +47,8 @@ class ImportDialog(QDialog):
     def getImportType(self):
         selected_button_id = self.__buttonGroup.checkedId()
         if selected_button_id == 1:
-            return 'General'
+            return LangClass.TRANSLATIONS['General']
         elif selected_button_id == 2:
-            return 'ChatGPT'
+            return LangClass.TRANSLATIONS['ChatGPT']
         else:
             return None

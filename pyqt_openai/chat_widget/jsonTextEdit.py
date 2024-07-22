@@ -7,6 +7,7 @@ from qtpy.QtWidgets import QTextEdit, QMessageBox
 
 from pyqt_openai.constants import FONT_FAMILY_FOR_SOURCE, INDENT_SIZE, DEFAULT_FONT_SIZE
 from pyqt_openai.util.script import get_font
+from pyqt_openai.lang.language_dict import LangClass
 
 
 class JSONEditor(QTextEdit):
@@ -17,7 +18,7 @@ class JSONEditor(QTextEdit):
         font = QFont(FONT_FAMILY_FOR_SOURCE, font_size)
 
         self.setFont(font)
-        self.setPlaceholderText("Enter JSON data here...")
+        self.setPlaceholderText(LangClass.TRANSLATIONS["Enter JSON data here..."])
         self.textChanged.connect(self.on_text_changed)
         self.error_format = QTextCharFormat()
         self.error_format.setUnderlineColor(QColor('red'))

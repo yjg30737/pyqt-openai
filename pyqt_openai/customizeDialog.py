@@ -26,7 +26,7 @@ class CustomizeDialog(QDialog):
         self.__font_family = args.font_family
 
     def __initUi(self):
-        self.setWindowTitle('Customize')
+        self.setWindowTitle(LangClass.TRANSLATIONS['Customize'])
         self.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.WindowCloseButtonHint)
 
         self.__homePageGraphicsView = NormalImageView()

@@ -115,6 +115,7 @@ class ChatPage(QWidget):
         jsonChkBox = QCheckBox()
         jsonChkBox.setChecked(self.__json_object)
         jsonChkBox.toggled.connect(self.__jsonObjectChecked)
+        # TODO LANGUAGE
         jsonChkBox.setText('Enable JSON mode')
         jsonChkBox.setToolTip('When enabled, you can send a JSON object to the API and'
                               'the response will be in JSON format. Otherwise, it will be in plain text.')
