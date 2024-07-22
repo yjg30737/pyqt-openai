@@ -6,7 +6,9 @@ from typing import List
 from pyqt_openai.constants import THREAD_TABLE_NAME, THREAD_TRIGGER_NAME, THREAD_TABLE_NAME_OLD, \
     THREAD_TRIGGER_NAME_OLD, MESSAGE_TABLE_NAME_OLD, MESSAGE_TABLE_NAME, THREAD_MESSAGE_INSERTED_TR_NAME, \
     THREAD_MESSAGE_UPDATED_TR_NAME, THREAD_MESSAGE_DELETED_TR_NAME, THREAD_MESSAGE_INSERTED_TR_NAME_OLD, \
-    THREAD_MESSAGE_UPDATED_TR_NAME_OLD, THREAD_MESSAGE_DELETED_TR_NAME_OLD, IMAGE_TABLE_NAME
+    THREAD_MESSAGE_UPDATED_TR_NAME_OLD, THREAD_MESSAGE_DELETED_TR_NAME_OLD, IMAGE_TABLE_NAME, \
+    PROPERTY_PROMPT_UNIT_TABLE_NAME, PROPERTY_PROMPT_GROUP_TABLE_NAME, TEMPLATE_PROMPT_GROUP_TABLE_NAME, \
+    TEMPLATE_PROMPT_TABLE_NAME, PROPERTY_PROMPT_UNIT_DEFAULT_VALUE
 from pyqt_openai.models import ImagePromptContainer, ChatMessageContainer
 from pyqt_openai.util.script import get_db_filename
 
@@ -25,13 +27,6 @@ class SqliteDatabase:
     def __initVal(self, db_filename):
         # db names
         self.__db_filename = db_filename or get_db_filename()
-
-        # prompt table
-        self.__prop_prompt_group_tb_nm = 'prop_prompt_grp_tb'
-        self.__prop_prompt_unit_tb_nm = 'prop_prompt_unit_tb'
-
-        self.__template_prompt_group_tb_nm = 'template_prompt_grp_tb'
-        self.__template_prompt_tb_nm = 'template_prompt_tb'
 
         # image table names
         self.__image_tb_nm = IMAGE_TABLE_NAME
@@ -78,11 +73,11 @@ class SqliteDatabase:
 
     def __createPropPromptGroup(self):
         self.__c.execute(
-            f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{self.__prop_prompt_group_tb_nm}'")
+            f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{PROPERTY_PROMPT_GROUP_TABLE_NAME}'")
         if self.__c.fetchone()[0] == 1:
             pass
         else:
-            self.__c.execute(f'''CREATE TABLE {self.__prop_prompt_group_tb_nm}
+            self.__c.execute(f'''CREATE TABLE {PROPERTY_PROMPT_GROUP_TABLE_NAME}
                                                  (id INTEGER PRIMARY KEY,
                                                   name VARCHAR(50),
 
@@ -96,7 +91,7 @@ class SqliteDatabase:
 
     def selectPropPromptGroup(self):
         try:
-            self.__c.execute(f'SELECT * FROM {self.__prop_prompt_group_tb_nm}')
+            self.__c.execute(f'SELECT * FROM {PROPERTY_PROMPT_GROUP_TABLE_NAME}')
             return self.__c.fetchall()
         except sqlite3.Error as e:
             print(f"An error occurred: {e}")
@@ -104,7 +99,7 @@ class SqliteDatabase:
 
     def selectPropPromptGroupId(self, id):
         try:
-            self.__c.execute(f'SELECT * FROM {self.__prop_prompt_group_tb_nm} WHERE id={id}')
+            self.__c.execute(f'SELECT * FROM {PROPERTY_PROMPT_GROUP_TABLE_NAME} WHERE id={id}')
             return self.__c.fetchone()
         except sqlite3.Error as e:
             print(f"An error occurred: {e}")
@@ -113,7 +108,7 @@ class SqliteDatabase:
     def insertPropPromptGroup(self, name):
         try:
             # Insert a row into the table
-            self.__c.execute(f'INSERT INTO {self.__prop_prompt_group_tb_nm} (name) VALUES (?)', (name,))
+            self.__c.execute(f'INSERT INTO {PROPERTY_PROMPT_GROUP_TABLE_NAME} (name) VALUES (?)', (name,))
             new_id = self.__c.lastrowid
             # Commit the transaction
             self.__conn.commit()
@@ -126,7 +121,7 @@ class SqliteDatabase:
 
     def updatePropPromptGroup(self, id, name):
         try:
-            self.__c.execute(f'UPDATE {self.__prop_prompt_group_tb_nm} SET name=(?) WHERE id={id}', (name,))
+            self.__c.execute(f'UPDATE {PROPERTY_PROMPT_GROUP_TABLE_NAME} SET name=(?) WHERE id={id}', (name,))
             self.__conn.commit()
         except sqlite3.Error as e:
             print(f"An error occurred: {e}")
@@ -134,7 +129,7 @@ class SqliteDatabase:
 
     def deletePropPromptGroup(self, id):
         try:
-            self.__c.execute(f'DELETE FROM {self.__prop_prompt_group_tb_nm} WHERE id={id}')
+            self.__c.execute(f'DELETE FROM {PROPERTY_PROMPT_GROUP_TABLE_NAME} WHERE id={id}')
             self.__conn.commit()
         except sqlite3.Error as e:
             print(f"An error occurred: {e}")
@@ -142,31 +137,31 @@ class SqliteDatabase:
 
     def createDefaultPropPromptAttributes(self, id_fk):
         self.__c.execute(
-            f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{self.__prop_prompt_unit_tb_nm}{id_fk}'")
+            f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{PROPERTY_PROMPT_UNIT_TABLE_NAME}{id_fk}'")
         if self.__c.fetchone()[0] == 1:
             pass
         else:
-            self.__c.execute(f'''CREATE TABLE {self.__prop_prompt_unit_tb_nm}{id_fk}
+            self.__c.execute(f'''CREATE TABLE {PROPERTY_PROMPT_UNIT_TABLE_NAME}{id_fk}
                                                              (id INTEGER PRIMARY KEY,
                                                               id_fk INTEGER,
                                                               name VARCHAR(50),
                                                               text TEXT,
                                                               update_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
                                                               insert_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
-                                                              FOREIGN KEY (id_fk) REFERENCES {self.__prop_prompt_group_tb_nm}(id)
+                                                              FOREIGN KEY (id_fk) REFERENCES {PROPERTY_PROMPT_GROUP_TABLE_NAME}(id)
                                                               ON DELETE CASCADE)''')
 
         # insert default property group
-        for obj in self.__prop_prompt_unit_default_value:
+        for obj in PROPERTY_PROMPT_UNIT_DEFAULT_VALUE:
             lst = [id_fk] + list(tuple(obj.values()))
-            self.__c.execute(f"INSERT INTO {self.__prop_prompt_unit_tb_nm}{id_fk} (id_fk, name, text) VALUES (?, ?, ?)", tuple(lst))
+            self.__c.execute(f"INSERT INTO {PROPERTY_PROMPT_UNIT_TABLE_NAME}{id_fk} (id_fk, name, text) VALUES (?, ?, ?)", tuple(lst))
 
         # Commit the transaction
         self.__conn.commit()
 
     def selectPropPromptAttribute(self, id):
         try:
-            self.__c.execute(f'SELECT * FROM {self.__prop_prompt_unit_tb_nm}{id}')
+            self.__c.execute(f'SELECT * FROM {PROPERTY_PROMPT_UNIT_TABLE_NAME}{id}')
             return self.__c.fetchall()
         except sqlite3.Error as e:
             print(f"An error occurred: {e}")
@@ -175,7 +170,7 @@ class SqliteDatabase:
     def insertPropPromptAttribute(self, id, name):
         try:
             # Insert a row into the table
-            self.__c.execute(f'INSERT INTO {self.__prop_prompt_unit_tb_nm}{id} (id_fk, name) VALUES (?, ?)',
+            self.__c.execute(f'INSERT INTO {PROPERTY_PROMPT_UNIT_TABLE_NAME}{id} (id_fk, name) VALUES (?, ?)',
                              (id, name,))
             new_id = self.__c.lastrowid
             # Commit the transaction
@@ -187,7 +182,7 @@ class SqliteDatabase:
 
     def updatePropPromptAttribute(self, p_id, id, name, text):
         try:
-            self.__c.execute(f'UPDATE {self.__prop_prompt_unit_tb_nm}{p_id} SET name=?, text=? WHERE id={id}',
+            self.__c.execute(f'UPDATE {PROPERTY_PROMPT_UNIT_TABLE_NAME}{p_id} SET name=?, text=? WHERE id={id}',
                              (name, text))
             self.__conn.commit()
         except sqlite3.Error as e:
@@ -196,7 +191,7 @@ class SqliteDatabase:
 
     def deletePropPromptAttribute(self, p_id, id):
         try:
-            self.__c.execute(f'DELETE FROM {self.__prop_prompt_unit_tb_nm}{p_id} WHERE id={id}')
+            self.__c.execute(f'DELETE FROM {PROPERTY_PROMPT_UNIT_TABLE_NAME}{p_id} WHERE id={id}')
             self.__conn.commit()
         except sqlite3.Error as e:
             print(f"An error occurred: {e}")
@@ -204,11 +199,11 @@ class SqliteDatabase:
 
     def __createTemplatePromptGroup(self):
         self.__c.execute(
-            f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{self.__template_prompt_group_tb_nm}'")
+            f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{TEMPLATE_PROMPT_GROUP_TABLE_NAME}'")
         if self.__c.fetchone()[0] == 1:
             pass
         else:
-            self.__c.execute(f'''CREATE TABLE {self.__template_prompt_group_tb_nm}
+            self.__c.execute(f'''CREATE TABLE {TEMPLATE_PROMPT_GROUP_TABLE_NAME}
                                                          (id INTEGER PRIMARY KEY,
                                                           name VARCHAR(50),
 
@@ -221,31 +216,9 @@ class SqliteDatabase:
             self.insertTemplatePromptGroup(self.__template_prompt_default_value_awesome_chatgpt_prompts)
             self.insertTemplatePromptGroup(self.__template_prompt_default_value_alex_brogan)
 
-            self.__migratePrevTemplateDataInEtcPreviousGroup()
-
-    # legacy
-    # migrate previous template table data in "__template_prompt_tb_nm" to "etc_previous" group
-    def __migratePrevTemplateDataInEtcPreviousGroup(self):
-        self.__c.execute(f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{self.__template_prompt_tb_nm}'")
-        if self.__c.fetchone()[0] == 1:
-            self.__c.execute(f"SELECT name, text FROM {self.__template_prompt_tb_nm}")
-            prev_template_data = list(map(lambda x: { 'name': x[0], 'text': x[1] }, self.__c.fetchall()))
-
-            etc = {
-                'name': 'etc_previous',
-                'data': prev_template_data
-            }
-
-            for i in etc.get('data', []):
-                i['name'] = i['name'].lower().replace(' ', '_')
-
-            self.insertTemplatePromptGroup(etc)
-            self.__c.execute(f'DROP TABLE {self.__template_prompt_tb_nm}')
-            self.__conn.commit()
-
     def selectTemplatePromptGroup(self):
         try:
-            self.__c.execute(f'SELECT * FROM {self.__template_prompt_group_tb_nm}')
+            self.__c.execute(f'SELECT * FROM {TEMPLATE_PROMPT_GROUP_TABLE_NAME}')
             return self.__c.fetchall()
         except sqlite3.Error as e:
             print(f"An error occurred: {e}")
@@ -253,7 +226,7 @@ class SqliteDatabase:
 
     def selectTemplatePromptGroupId(self, id):
         try:
-            self.__c.execute(f'SELECT * FROM {self.__template_prompt_group_tb_nm} WHERE id={id}')
+            self.__c.execute(f'SELECT * FROM {TEMPLATE_PROMPT_GROUP_TABLE_NAME} WHERE id={id}')
             return self.__c.fetchone()
         except sqlite3.Error as e:
             print(f"An error occurred: {e}")
@@ -264,7 +237,7 @@ class SqliteDatabase:
             name = template_data_dict['name']
             data = template_data_dict['data']
             # insert group
-            self.__c.execute(f'INSERT INTO {self.__template_prompt_group_tb_nm} (name) VALUES (?)', (name,))
+            self.__c.execute(f'INSERT INTO {TEMPLATE_PROMPT_GROUP_TABLE_NAME} (name) VALUES (?)', (name,))
             new_id = self.__c.lastrowid
             # commit the transaction
             self.__conn.commit()
@@ -276,7 +249,7 @@ class SqliteDatabase:
 
     def updateTemplatePromptGroup(self, id, name):
         try:
-            self.__c.execute(f'UPDATE {self.__template_prompt_group_tb_nm} SET name=(?) WHERE id={id}', (name,))
+            self.__c.execute(f'UPDATE {TEMPLATE_PROMPT_GROUP_TABLE_NAME} SET name=(?) WHERE id={id}', (name,))
             self.__conn.commit()
         except sqlite3.Error as e:
             print(f"An error occurred: {e}")
@@ -284,7 +257,7 @@ class SqliteDatabase:
 
     def deleteTemplatePromptGroup(self, id):
         try:
-            self.__c.execute(f'DELETE FROM {self.__template_prompt_group_tb_nm} WHERE id={id}')
+            self.__c.execute(f'DELETE FROM {TEMPLATE_PROMPT_GROUP_TABLE_NAME} WHERE id={id}')
             self.__conn.commit()
         except sqlite3.Error as e:
             print(f"An error occurred: {e}")
@@ -292,18 +265,18 @@ class SqliteDatabase:
 
     def __createTemplatePrompt(self, id_fk, data):
         self.__c.execute(
-            f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{self.__template_prompt_tb_nm}{id_fk}'")
+            f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{TEMPLATE_PROMPT_TABLE_NAME}{id_fk}'")
         if self.__c.fetchone()[0] == 1:
             pass
         else:
-            self.__c.execute(f'''CREATE TABLE {self.__template_prompt_tb_nm}{id_fk}
+            self.__c.execute(f'''CREATE TABLE {TEMPLATE_PROMPT_TABLE_NAME}{id_fk}
                                                              (id INTEGER PRIMARY KEY,
                                                               id_fk INTEGER,
                                                               name VARCHAR(50),
                                                               text TEXT,
                                                               update_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
                                                               insert_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
-                                                              FOREIGN KEY (id_fk) REFERENCES {self.__template_prompt_group_tb_nm}(id)
+                                                              FOREIGN KEY (id_fk) REFERENCES {TEMPLATE_PROMPT_GROUP_TABLE_NAME}(id)
                                                               ON DELETE CASCADE)''')
             # Commit the transaction
             self.__conn.commit()
@@ -318,9 +291,9 @@ class SqliteDatabase:
         try:
             # TODO make every select statement check if it exists
             self.__c.execute(
-                f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{self.__template_prompt_tb_nm}{id}'")
+                f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{TEMPLATE_PROMPT_TABLE_NAME}{id}'")
             if self.__c.fetchone()[0] == 1:
-                self.__c.execute(f'SELECT * FROM {self.__template_prompt_tb_nm}{id}')
+                self.__c.execute(f'SELECT * FROM {TEMPLATE_PROMPT_TABLE_NAME}{id}')
                 return self.__c.fetchall()
             else:
                 return []
@@ -331,7 +304,7 @@ class SqliteDatabase:
     def insertTemplatePromptUnit(self, id, name, text=''):
         try:
             # insert template prompt unit
-            self.__c.execute(f"INSERT INTO {self.__template_prompt_tb_nm}{id} (id_fk, name, text) VALUES (?, ?, ?)",
+            self.__c.execute(f"INSERT INTO {TEMPLATE_PROMPT_TABLE_NAME}{id} (id_fk, name, text) VALUES (?, ?, ?)",
                              (id, name, text))
             new_id = self.__c.lastrowid
             # Commit the transaction
@@ -343,7 +316,7 @@ class SqliteDatabase:
 
     def updateTemplatePromptUnit(self, p_id, id, name, text):
         try:
-            self.__c.execute(f'UPDATE {self.__template_prompt_tb_nm}{p_id} SET name=(?), text=(?) WHERE id={id}',
+            self.__c.execute(f'UPDATE {TEMPLATE_PROMPT_TABLE_NAME}{p_id} SET name=(?), text=(?) WHERE id={id}',
                              (name, text))
             self.__conn.commit()
         except sqlite3.Error as e:
@@ -352,7 +325,7 @@ class SqliteDatabase:
 
     def deleteTemplatePromptUnit(self, p_id, id):
         try:
-            self.__c.execute(f'DELETE FROM {self.__template_prompt_tb_nm}{p_id} WHERE id={id}')
+            self.__c.execute(f'DELETE FROM {TEMPLATE_PROMPT_TABLE_NAME}{p_id} WHERE id={id}')
             self.__conn.commit()
         except sqlite3.Error as e:
             print(f"An error occurred: {e}")

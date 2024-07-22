@@ -1,5 +1,5 @@
 from qtpy.QtCore import Qt
-from qtpy.QtWidgets import QMessageBox, QPushButton, QGroupBox, QTableWidgetItem, \
+from qtpy.QtWidgets import QMessageBox, QGroupBox, QTableWidgetItem, \
     QLabel, QDialogButtonBox, QCheckBox, QDialog, QVBoxLayout, QSpinBox, QAbstractItemView
 
 from pyqt_openai.constants import THREAD_ORDERBY

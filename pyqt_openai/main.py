@@ -32,7 +32,7 @@ from pyqt_openai.aboutDialog import AboutDialog
 from pyqt_openai.customizeDialog import CustomizeDialog
 from pyqt_openai.widgets.button import Button
 from pyqt_openai.dalle_widget.dallEWidget import DallEWidget
-from pyqt_openai.openAiChatBotWidget import OpenAIChatBotWidget
+from pyqt_openai.chat_widget.openAiChatBotWidget import OpenAIChatBotWidget
 from pyqt_openai.replicate_widget.replicateWidget import ReplicateWidget
 from pyqt_openai.settingsDialog import SettingsDialog
 from pyqt_openai.util.script import get_db_filename, get_font, restart_app, show_message_box
@@ -466,7 +466,7 @@ class App(QApplication):
         font_dict = get_font()
         font_family = font_dict['font_family']
         font_size = font_dict['font_size']
-        self.setFont(QFont(font_family, font_size))
+        QApplication.setFont(QFont(font_family, font_size))
 
 
 if __name__ == "__main__":

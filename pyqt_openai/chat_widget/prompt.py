@@ -4,11 +4,11 @@ from pathlib import Path
 from qtpy.QtCore import Qt, Signal, QSettings
 from qtpy.QtWidgets import QVBoxLayout, QAction, QPushButton, QFileDialog, QToolButton, QMenu, QWidget, QHBoxLayout
 
+from pyqt_openai.chat_widget.commandSuggestionWidget import CommandSuggestionWidget
 from pyqt_openai.chat_widget.textEditPromptGroup import TextEditPromptGroup
 from pyqt_openai.chat_widget.uploadedImageFileWidget import UploadedImageFileWidget
-from pyqt_openai.commandSuggestionWidget import CommandSuggestionWidget
 from pyqt_openai.constants import INI_FILE_NAME, READ_FILE_EXT, PROMPT_BEGINNING_KEY_NAME, \
-    PROMPT_END_KEY_NAME, PROMPT_MAIN_KEY_NAME, PROMPT_JSON_KEY_NAME, SHORTCUT_PROMPT_BEGINNING, SHORTCUT_PROMPT_ENDING, \
+    PROMPT_END_KEY_NAME, PROMPT_JSON_KEY_NAME, SHORTCUT_PROMPT_BEGINNING, SHORTCUT_PROMPT_ENDING, \
     SHORTCUT_SUPPORT_PROMPT_COMMAND
 from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.res.language_dict import LangClass

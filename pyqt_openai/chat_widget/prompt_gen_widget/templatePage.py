@@ -3,8 +3,8 @@ from qtpy.QtWidgets import QLabel, QSpacerItem, QListWidget, QListWidgetItem, QS
 from qtpy.QtWidgets import QWidget, QDialog, QTableWidget, QVBoxLayout, QHBoxLayout, QHeaderView, QTableWidgetItem, \
     QAbstractItemView
 
-from pyqt_openai.prompt_gen_widget.promptGroupInputDialog import PromptGroupInputDialog
-from pyqt_openai.prompt_gen_widget.templatePromptUnitInputDialog import TemplatePromptUnitInputDialog
+from pyqt_openai.chat_widget.prompt_gen_widget.promptGroupInputDialog import PromptGroupInputDialog
+from pyqt_openai.chat_widget.prompt_gen_widget.templatePromptUnitInputDialog import TemplatePromptUnitInputDialog
 from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.widgets.button import Button

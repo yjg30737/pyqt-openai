@@ -3,21 +3,20 @@ import os
 import sys
 import webbrowser
 
+from pyqt_openai.chat_widget.chatNavWidget import ChatNavWidget
+from pyqt_openai.chat_widget.prompt_gen_widget.promptGeneratorWidget import PromptGeneratorWidget
+from pyqt_openai.chat_widget.right_sidebar.aiPlaygroundWidget import AIPlaygroundWidget
 from qtpy.QtCore import Qt, QSettings
 from qtpy.QtWidgets import QHBoxLayout, QWidget, QSizePolicy, QVBoxLayout, QFrame, QSplitter, \
     QFileDialog, QMessageBox, QPushButton
 
-from pyqt_openai.chatNavWidget import ChatNavWidget
-from pyqt_openai.chat_widget.chatBrowser import ChatBrowser
 from pyqt_openai.chat_widget.chatWidget import ChatWidget
 from pyqt_openai.chat_widget.prompt import Prompt
 from pyqt_openai.constants import THREAD_TABLE_NAME, INI_FILE_NAME
 from pyqt_openai.models import ChatThreadContainer, ChatMessageContainer
 from pyqt_openai.openAiThread import OpenAIThread, LlamaOpenAIThread
-from pyqt_openai.prompt_gen_widget.promptGeneratorWidget import PromptGeneratorWidget
 from pyqt_openai.pyqt_openai_data import DB, get_argument, LLAMAINDEX_WRAPPER
 from pyqt_openai.res.language_dict import LangClass
-from pyqt_openai.right_sidebar.aiPlaygroundWidget import AIPlaygroundWidget
 from pyqt_openai.util.script import open_directory, get_generic_ext_out_of_qt_ext, message_list_to_txt, \
     conv_unit_to_html, \
     add_file_to_zip
@@ -95,17 +94,17 @@ class OpenAIChatBotWidget(QWidget):
         sep.setFrameShape(QFrame.Shape.VLine)
         sep.setFrameShadow(QFrame.Shadow.Sunken)
 
-        toggleMenuWidgetBtn = QPushButton('Show Menu Widget')
-        toggleMenuWidgetBtn.setCheckable(True)
-        toggleMenuWidgetBtn.setChecked(True)
-        toggleMenuWidgetBtn.toggled.connect(self.__chatWidget.toggleMenuWidget)
+        toggleFindToolButton = QPushButton('Show Find Tool')
+        toggleFindToolButton.setCheckable(True)
+        toggleFindToolButton.setChecked(True)
+        toggleFindToolButton.toggled.connect(self.__chatWidget.toggleMenuWidget)
 
         lay = QHBoxLayout()
         lay.addWidget(self.__sideBarBtn)
         lay.addWidget(self.__settingBtn)
         lay.addWidget(self.__promptBtn)
         lay.addWidget(sep)
-        lay.addWidget(toggleMenuWidgetBtn)
+        lay.addWidget(toggleFindToolButton)
         lay.setContentsMargins(2, 2, 2, 2)
         lay.setAlignment(Qt.AlignmentFlag.AlignLeft)
 

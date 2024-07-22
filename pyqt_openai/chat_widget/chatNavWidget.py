@@ -6,10 +6,10 @@ from qtpy.QtWidgets import QWidget, QVBoxLayout, QMessageBox, QPushButton, QStyl
     QLabel, QSpacerItem, QSizePolicy, QFileDialog, QComboBox, QDialog
 
 # for search feature
-from pyqt_openai.chatGPTImportDialog import ChatGPTImportDialog
+from pyqt_openai.chat_widget.chatGPTImportDialog import ChatGPTImportDialog
 from pyqt_openai.constants import THREAD_ORDERBY
-from pyqt_openai.exportDialog import ExportDialog
-from pyqt_openai.importDialog import ImportDialog
+from pyqt_openai.chat_widget.exportDialog import ExportDialog
+from pyqt_openai.chat_widget.importDialog import ImportDialog
 from pyqt_openai.models import ChatThreadContainer
 from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.widgets.button import Button
@@ -90,7 +90,7 @@ class ChatNavWidget(QWidget):
 
         self.__addBtn.setToolTip('Add')
         self.__delBtn.setToolTip('Delete')
-        self.__importBtn.setToolTip('SQLite DB Import (Working)')
+        self.__importBtn.setToolTip('Import')
         self.__saveBtn.setToolTip('Save')
         self.__delBtn.setToolTip('Remove All')
 

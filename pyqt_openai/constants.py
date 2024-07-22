@@ -66,3 +66,15 @@ THREAD_MESSAGE_DELETED_TR_NAME = 'thread_message_deleted_tr'
 
 THREAD_ORDERBY = 'update_dt'
 
+PROPERTY_PROMPT_GROUP_TABLE_NAME = 'prop_prompt_grp_tb'
+PROPERTY_PROMPT_UNIT_TABLE_NAME = 'prop_prompt_unit_tb'
+TEMPLATE_PROMPT_GROUP_TABLE_NAME = 'template_prompt_grp_tb'
+TEMPLATE_PROMPT_TABLE_NAME = 'template_prompt_tb'
+PROPERTY_PROMPT_UNIT_DEFAULT_VALUE = [{'name': 'Task', 'text': ''},
+                                      {'name': 'Topic', 'text': ''},
+                                      {'name': 'Style', 'text': ''},
+                                      {'name': 'Tone', 'text': ''},
+                                      {'name': 'Audience', 'text': ''},
+                                      {'name': 'Length', 'text': ''},
+                                      {'name': 'Form', 'text': ''}]
+
