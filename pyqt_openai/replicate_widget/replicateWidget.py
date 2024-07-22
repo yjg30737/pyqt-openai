@@ -63,8 +63,13 @@ class ReplicateWidget(QWidget):
         self.__settingBtn.setChecked(self.__show_setting)
         self.__settingBtn.toggled.connect(self.__toggle_setting)
 
-        self.__toReplicateLabel = LinkLabel('To Replicate / What is Replicate?', 'https://replicate.com/')
-        self.__howToUseReplicateLabel = LinkLabel('Get Replicate API Token (Need to sign in first)', 'https://replicate.com/account/api-tokens')
+        self.__toReplicateLabel = LinkLabel()
+        self.__toReplicateLabel.setText('To Replicate / What is Replicate?')
+        self.__toReplicateLabel.setUrl('https://replicate.com/')
+
+        self.__howToUseReplicateLabel = LinkLabel()
+        self.__howToUseReplicateLabel.setText('How to use Replicate?')
+        self.__howToUseReplicateLabel.setUrl('https://replicate.com/account/api-tokens')
 
         sep1 = QFrame()
         sep1.setFrameShape(QFrame.Shape.VLine)

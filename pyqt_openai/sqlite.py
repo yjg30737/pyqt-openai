@@ -31,13 +31,7 @@ class SqliteDatabase:
         # image table names
         self.__image_tb_nm = IMAGE_TABLE_NAME
 
-        self.__prop_prompt_unit_default_value = [{'name': 'Task', 'text': ''},
-                                                 {'name': 'Topic', 'text': ''},
-                                                 {'name': 'Style', 'text': ''},
-                                                 {'name': 'Tone', 'text': ''},
-                                                 {'name': 'Audience', 'text': ''},
-                                                 {'name': 'Length', 'text': ''},
-                                                 {'name': 'Form', 'text': ''}]
+        self.__prop_prompt_unit_default_value = PROPERTY_PROMPT_UNIT_DEFAULT_VALUE
 
         # based on fka/awesome-chatgpt-prompts
         self.__template_prompt_default_value_awesome_chatgpt_prompts = {'name': 'awesome_chatGPT_prompts', 'data': [

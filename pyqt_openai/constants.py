@@ -1,4 +1,21 @@
 # APP
+APP_TITLE = 'pyqt-openai'
+APP_ICON = 'icon.png'
+LICENSE_URL = 'https://github.com/yjg30737/pyqt-openai/blob/main/LICENSE'
+CONTACT = 'yjg30737@gmail.com'
+PAYPAL_URL = 'https://paypal.me/yjg30737'
+BUYMEACOFFEE_URL = 'https://www.buymeacoffee.com/yjg30737'
+GITHUB_URL = 'https://github.com/yjg30737/pyqt-openai'
+DISCORD_URL = 'https://discord.gg/cHekprskVE'
+COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE = ['id']
+
+## PROFILE IMAGE & FONT & ICON
+DEFAULT_ICON_SIZE = (24, 24)
+DEFAULT_USER_IMAGE_PATH = 'ico/user.png'
+DEFAULT_AI_IMAGE_PATH = 'ico/openai.png'
+DEFAULT_FONT_SIZE = 12
+DEFAULT_FONT_FAMILY = 'Arial'
+FONT_FAMILY_FOR_SOURCE = 'Courier'
 
 ## SHORTCUT
 SHORTCUT_GENERAL_ACTION = 'Enter'
@@ -22,25 +39,12 @@ IMAGE_FILE_EXT = 'Image File (*.jpg *.png)'
 TEXT_FILE_EXT = 'Text File (*.txt)'
 READ_FILE_EXT = f'{TEXT_FILE_EXT};;{IMAGE_FILE_EXT}'
 
-## PROFILE IMAGE & FONT & ICON
-DEFAULT_ICON_SIZE = (24, 24)
-DEFAULT_USER_IMAGE_PATH = 'ico/user.png'
-DEFAULT_AI_IMAGE_PATH = 'ico/openai.png'
-DEFAULT_FONT_SIZE = 12
-DEFAULT_FONT_FAMILY = 'Arial'
-FONT_FAMILY_FOR_SOURCE = 'Courier'
-
 ## PROMPT
 PROMPT_BEGINNING_KEY_NAME = 'prompt_beginning'
 PROMPT_JSON_KEY_NAME = 'prompt_json'
 PROMPT_MAIN_KEY_NAME = 'prompt_main'
 PROMPT_END_KEY_NAME = 'prompt_ending'
 INDENT_SIZE = 4
-
-## ETC
-COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE = ['id']
-PAYPAL_URL = 'https://paypal.me/yjg30737'
-BUYMEACOFFEE_URL = 'https://www.buymeacoffee.com/yjg30737'
 
 # DB
 
