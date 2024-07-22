@@ -15,14 +15,14 @@ sys.path.insert(0, project_root)
 sys.path.insert(0, os.getcwd())  # Add the current directory as well
 
 from qtpy.QtCore import Qt, QRegularExpression
-from qtpy.QtGui import QIcon, QRegularExpressionValidator
+from qtpy.QtGui import QRegularExpressionValidator
 from qtpy.QtWidgets import QFrame, QDialog, QComboBox, QLineEdit, QCheckBox, QSizePolicy, \
     QVBoxLayout, QHBoxLayout, QGroupBox, QSplitter, QLabel, QDialogButtonBox, QWidget, QMessageBox
 
 
 from pyqt_openai import constants
 from pyqt_openai.models import SettingsParamsContainer, ImagePromptContainer, ChatThreadContainer
-from pyqt_openai.res.language_dict import LangClass
+from pyqt_openai.lang.language_dict import LangClass
 
 
 class SettingsDialog(QDialog):
@@ -77,7 +77,7 @@ class SettingsDialog(QDialog):
         self.__notifyFinishCheckBox.setChecked(self.__notify_finish)
         self.__showToolbarCheckBox = QCheckBox("Show Toolbar")
         self.__showToolbarCheckBox.setChecked(self.__show_toolbar)
-        self.__showSecondaryToolBarChkBox = QCheckBox(LangClass.TRANSLATIONS['Show AI Toolbar'])
+        self.__showSecondaryToolBarChkBox = QCheckBox(LangClass.TRANSLATIONS['Show Secondary Toolbar'])
         self.__showSecondaryToolBarChkBox.setChecked(self.__show_secondary_toolbar)
         self.__showThreadToolWidgetChkBox = QCheckBox('Show thread tool widget')
         self.__showThreadToolWidgetChkBox.setChecked(self.__thread_tool_widget)

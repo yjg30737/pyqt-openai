@@ -5,7 +5,7 @@ from qtpy.QtCore import Qt
 
 from pyqt_openai.chat_widget.prompt_gen_widget.propPage import PropPage
 from pyqt_openai.chat_widget.prompt_gen_widget.templatePage import TemplatePage
-from pyqt_openai.res.language_dict import LangClass
+from pyqt_openai.lang.language_dict import LangClass
 
 
 class PromptGeneratorWidget(QScrollArea):

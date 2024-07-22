@@ -5,7 +5,7 @@ from qtpy.QtGui import QPixmap
 from qtpy.QtWidgets import QDialog, QPushButton, QHBoxLayout, QWidget, QVBoxLayout, QLabel
 
 from pyqt_openai.constants import APP_ICON, LICENSE_URL, CONTACT, GITHUB_URL, DISCORD_URL, APP_TITLE
-from pyqt_openai.res.language_dict import LangClass
+from pyqt_openai.lang.language_dict import LangClass
 from pyqt_openai.util.script import get_version
 from pyqt_openai.widgets.linkLabel import LinkLabel
 
@@ -40,8 +40,8 @@ class AboutDialog(QDialog):
 
         descWidget3 = QLabel()
         descWidget3.setText(f'''
-        <br/><br/>Contact: {CONTACT}<br/>
-        <p>{LangClass.TRANSLATIONS['Powered by qtpy']}</p>
+        <br/><br/>{LangClass.TRANSLATIONS['Language']}: {CONTACT}<br/>
+        <p>Powered by qtpy</p>
         ''')
 
         descWidget1.setAlignment(Qt.AlignmentFlag.AlignTop)

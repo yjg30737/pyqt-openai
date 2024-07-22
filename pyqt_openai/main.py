@@ -27,7 +27,7 @@ from qtpy.QtCore import Qt, QCoreApplication, QSettings
 from qtpy.QtSql import QSqlDatabase
 
 from pyqt_openai.models import SettingsParamsContainer, CustomizeParamsContainer
-from pyqt_openai.res.language_dict import LangClass
+from pyqt_openai.lang.language_dict import LangClass
 from pyqt_openai.aboutDialog import AboutDialog
 from pyqt_openai.customizeDialog import CustomizeDialog
 from pyqt_openai.widgets.button import Button
@@ -41,7 +41,7 @@ from pyqt_openai.doNotAskAgainDialog import DoNotAskAgainDialog
 os.environ['OPENAI_API_KEY'] = ''
 
 from pyqt_openai.pyqt_openai_data import OPENAI_STRUCT, LLAMAINDEX_WRAPPER
-from pyqt_openai.constants import PAYPAL_URL, BUYMEACOFFEE_URL, INI_FILE_NAME, SHORTCUT_FULL_SCREEN
+from pyqt_openai.constants import PAYPAL_URL, BUYMEACOFFEE_URL, INI_FILE_NAME, SHORTCUT_FULL_SCREEN, APP_TITLE
 
 # HighDPI support
 # qt version should be above 5.14
@@ -66,7 +66,7 @@ class MainWindow(QMainWindow):
         self.__initContainer(self.__customizeParamsContainer)
 
     def __initUi(self):
-        self.setWindowTitle(LangClass.TRANSLATIONS['PyQt OpenAI Chatbot'])
+        self.setWindowTitle(APP_TITLE)
 
         self.__openAiChatBotWidget = OpenAIChatBotWidget()
         self.__dallEWidget = DallEWidget()
@@ -162,7 +162,7 @@ class MainWindow(QMainWindow):
         self.__transparentAction.setDefaultWidget(transparencyActionWidget)
 
         self.__showAiToolBarAction = QWidgetAction(self)
-        self.__showAiToolBarChkBox = QCheckBox(LangClass.TRANSLATIONS['Show AI Toolbar'])
+        self.__showAiToolBarChkBox = QCheckBox(LangClass.TRANSLATIONS['Show Secondary Toolbar'])
         self.__showAiToolBarChkBox.setChecked(self.__settingsParamContainer.show_secondary_toolbar)
         self.__showAiToolBarChkBox.toggled.connect(self.__showAiToolBarChkBoxChecked)
         self.__showAiToolBarAction.setDefaultWidget(self.__showAiToolBarChkBox)

@@ -1,0 +1,7 @@
+import json
+
+from pyqt_openai.constants import AWESOME_CHATGPT_PROMPTS_FILENAME, ALEX_BROGAN_PROMPT_FILENAME
+
+# Load the default prompt
+AWESOME_CHATGPT_PROMPTS = json.load(open(AWESOME_CHATGPT_PROMPTS_FILENAME))
+ALEX_BROGAN_PROMPT = json.load(open(ALEX_BROGAN_PROMPT_FILENAME))

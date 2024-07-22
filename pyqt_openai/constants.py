@@ -8,6 +8,8 @@ BUYMEACOFFEE_URL = 'https://www.buymeacoffee.com/yjg30737'
 GITHUB_URL = 'https://github.com/yjg30737/pyqt-openai'
 DISCORD_URL = 'https://discord.gg/cHekprskVE'
 COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE = ['id']
+DEFAULT_LANGUAGE = 'en_US'
+LANGUAGE_FILE = 'translations.json'
 
 ## PROFILE IMAGE & FONT & ICON
 DEFAULT_ICON_SIZE = (24, 24)
@@ -82,3 +84,6 @@ PROPERTY_PROMPT_UNIT_DEFAULT_VALUE = [{'name': 'Task', 'text': ''},
                                       {'name': 'Length', 'text': ''},
                                       {'name': 'Form', 'text': ''}]
 
+# DEFAULT JSON FILENAME FOR PROMPT
+AWESOME_CHATGPT_PROMPTS_FILENAME = 'prompt_res/awesome_chatgpt_prompts.json'
+ALEX_BROGAN_PROMPT_FILENAME = 'prompt_res/alex_brogan.json'
