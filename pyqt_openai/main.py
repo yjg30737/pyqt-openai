@@ -14,7 +14,7 @@ sys.path.insert(0, project_root)
 sys.path.insert(0, os.getcwd())  # Add the current directory as well
 
 # for testing pyside6
-# os.environ['QT_API'] = 'pyside6'
+os.environ['QT_API'] = 'pyside6'
 
 # for testing pyqt6
 # os.environ['QT_API'] = 'pyqt6'
@@ -27,12 +27,12 @@ from qtpy.QtCore import Qt, QCoreApplication, QSettings
 from qtpy.QtSql import QSqlDatabase
 
 from pyqt_openai.models import SettingsParamsContainer, CustomizeParamsContainer
-from pyqt_openai.res.language_dict import LangClass
+from pyqt_openai.lang.language_dict import LangClass
 from pyqt_openai.aboutDialog import AboutDialog
 from pyqt_openai.customizeDialog import CustomizeDialog
 from pyqt_openai.widgets.button import Button
 from pyqt_openai.dalle_widget.dallEWidget import DallEWidget
-from pyqt_openai.openAiChatBotWidget import OpenAIChatBotWidget
+from pyqt_openai.chat_widget.openAiChatBotWidget import OpenAIChatBotWidget
 from pyqt_openai.replicate_widget.replicateWidget import ReplicateWidget
 from pyqt_openai.settingsDialog import SettingsDialog
 from pyqt_openai.util.script import get_db_filename, get_font, restart_app, show_message_box
@@ -41,7 +41,7 @@ from pyqt_openai.doNotAskAgainDialog import DoNotAskAgainDialog
 os.environ['OPENAI_API_KEY'] = ''
 
 from pyqt_openai.pyqt_openai_data import OPENAI_STRUCT, LLAMAINDEX_WRAPPER
-from pyqt_openai.constants import PAYPAL_URL, BUYMEACOFFEE_URL, INI_FILE_NAME, SHORTCUT_FULL_SCREEN
+from pyqt_openai.constants import PAYPAL_URL, BUYMEACOFFEE_URL, INI_FILE_NAME, SHORTCUT_FULL_SCREEN, APP_TITLE
 
 # HighDPI support
 # qt version should be above 5.14
@@ -66,7 +66,7 @@ class MainWindow(QMainWindow):
         self.__initContainer(self.__customizeParamsContainer)
 
     def __initUi(self):
-        self.setWindowTitle(LangClass.TRANSLATIONS['PyQt OpenAI Chatbot'])
+        self.setWindowTitle(APP_TITLE)
 
         self.__openAiChatBotWidget = OpenAIChatBotWidget()
         self.__dallEWidget = DallEWidget()
@@ -162,7 +162,7 @@ class MainWindow(QMainWindow):
         self.__transparentAction.setDefaultWidget(transparencyActionWidget)
 
         self.__showAiToolBarAction = QWidgetAction(self)
-        self.__showAiToolBarChkBox = QCheckBox(LangClass.TRANSLATIONS['Show AI Toolbar'])
+        self.__showAiToolBarChkBox = QCheckBox(LangClass.TRANSLATIONS['Show Secondary Toolbar'])
         self.__showAiToolBarChkBox.setChecked(self.__settingsParamContainer.show_secondary_toolbar)
         self.__showAiToolBarChkBox.toggled.connect(self.__showAiToolBarChkBoxChecked)
         self.__showAiToolBarAction.setDefaultWidget(self.__showAiToolBarChkBox)
@@ -466,7 +466,7 @@ class App(QApplication):
         font_dict = get_font()
         font_family = font_dict['font_family']
         font_size = font_dict['font_size']
-        self.setFont(QFont(font_family, font_size))
+        QApplication.setFont(QFont(font_family, font_size))
 
 
 if __name__ == "__main__":

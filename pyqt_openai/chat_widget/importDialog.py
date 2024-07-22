@@ -1,8 +1,5 @@
 from qtpy.QtCore import Qt
-from qtpy.QtWidgets import QButtonGroup, QApplication, QGroupBox, QRadioButton, QTableWidgetItem, QLabel, QDialogButtonBox, QCheckBox, QDialog, QVBoxLayout
-
-from pyqt_openai.constants import THREAD_ORDERBY
-from pyqt_openai.widgets.checkBoxTableWidget import CheckBoxTableWidget
+from qtpy.QtWidgets import QButtonGroup, QGroupBox, QRadioButton, QDialogButtonBox, QDialog, QVBoxLayout
 
 
 class ImportDialog(QDialog):

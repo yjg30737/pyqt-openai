@@ -1,15 +1,21 @@
-from qtpy.QtCore import Qt
-from qtpy.QtWidgets import QLabel
-import webbrowser
+import os
+
+from qtpy.QtCore import Qt, QUrl
+from qtpy.QtGui import QDesktopServices
+
+from pyqt_openai.widgets.svgLabel import SvgLabel
 
 
-class LinkLabel(QLabel):
-    def __init__(self, text, link):
-        super().__init__(text)
-        self.link = link
-        self.setText(f"<a href=\"{link}\">{text}</a>")
-        self.setTextInteractionFlags(Qt.TextInteractionFlag.TextBrowserInteraction)
-        self.linkActivated.connect(lambda: webbrowser.open(link))
-        self.setContentsMargins(2, 2, 2, 2)
-        self.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        self.setOpenExternalLinks(True)
+class LinkLabel(SvgLabel):
+    def __init__(self):
+        super().__init__()
+        self.__url = '127.0.0.1'
+        self.setStyleSheet('QLabel { color: blue;  } QLabel:hover { color: red; }')
+
+    def setUrl(self, url):
+        self.__url = url
+
+    def mouseReleaseEvent(self, QMouseEvent):
+        v = 1 if os.environ['QT_API'] == 'PyQt5' else Qt.MouseButtons.LeftButton
+        if QMouseEvent.button() == v:
+            QDesktopServices.openUrl(QUrl(self.__url))

@@ -1,10 +1,9 @@
 import json
-import sys
 import re
 
 from qtpy.QtCore import Qt, QTimer
 from qtpy.QtGui import QFont, QTextCursor, QTextCharFormat, QColor
-from qtpy.QtWidgets import QApplication, QTextEdit, QVBoxLayout, QWidget, QPushButton, QMessageBox
+from qtpy.QtWidgets import QTextEdit, QMessageBox
 
 from pyqt_openai.constants import FONT_FAMILY_FOR_SOURCE, INDENT_SIZE, DEFAULT_FONT_SIZE
 from pyqt_openai.util.script import get_font

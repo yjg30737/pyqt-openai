@@ -3,10 +3,10 @@ from qtpy.QtWidgets import QTableWidget, QSizePolicy, QSpacerItem, QStackedWidge
     QAbstractItemView, QTableWidgetItem, QHeaderView, QHBoxLayout, \
     QVBoxLayout, QWidget, QDialog, QListWidget, QListWidgetItem, QSplitter
 
-from pyqt_openai.prompt_gen_widget.promptGroupInputDialog import PromptGroupInputDialog
-from pyqt_openai.prompt_gen_widget.propPromptUnitInputDialog import PropPromptUnitInputDialog
+from pyqt_openai.chat_widget.prompt_gen_widget.promptGroupInputDialog import PromptGroupInputDialog
+from pyqt_openai.chat_widget.prompt_gen_widget.propPromptUnitInputDialog import PropPromptUnitInputDialog
 from pyqt_openai.pyqt_openai_data import DB
-from pyqt_openai.res.language_dict import LangClass
+from pyqt_openai.lang.language_dict import LangClass
 from pyqt_openai.widgets.button import Button
 
 
@@ -29,11 +29,21 @@ class PropGroupList(QWidget):
         self.__addBtn.clicked.connect(self.__addGroup)
         self.__delBtn.clicked.connect(self.__deleteGroup)
 
+        self.__importBtn = Button()
+        self.__importBtn.setStyleAndIcon('ico/import.svg')
+        self.__importBtn.setToolTip(LangClass.TRANSLATIONS['Import'])
+
+        self.__exportBtn = Button()
+        self.__exportBtn.setStyleAndIcon('ico/export.svg')
+        self.__exportBtn.setToolTip(LangClass.TRANSLATIONS['Export'])
+
         lay = QHBoxLayout()
         lay.addWidget(QLabel(LangClass.TRANSLATIONS['Property Group']))
         lay.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.Policy.MinimumExpanding))
         lay.addWidget(self.__addBtn)
         lay.addWidget(self.__delBtn)
+        lay.addWidget(self.__importBtn)
+        lay.addWidget(self.__exportBtn)
         lay.setAlignment(Qt.AlignmentFlag.AlignRight)
         lay.setContentsMargins(0, 0, 0, 0)
 
@@ -44,7 +54,6 @@ class PropGroupList(QWidget):
 
         self.__propList = QListWidget()
 
-        # TODO abcd
         for group in defaultPropPromptGroupArr:
             id = group[0]
             name = group[1]

@@ -4,13 +4,17 @@ from qtpy.QtCore import Qt
 from qtpy.QtWidgets import QDialog, QVBoxLayout, QLineEdit, QFrame, QPushButton, QHBoxLayout, QWidget
 
 from pyqt_openai.pyqt_openai_data import DB
-from pyqt_openai.res.language_dict import LangClass
+from pyqt_openai.lang.language_dict import LangClass
 
 
-class PromptGroupInputDialog(QDialog):
-    def __init__(self, parent=None):
+class TemplatePromptUnitInputDialog(QDialog):
+    def __init__(self, id, parent=None):
         super().__init__(parent)
+        self.__initVal(id)
         self.__initUi()
+
+    def __initVal(self, id):
+        self.__id = id
 
     def __initUi(self):
         self.setWindowTitle(LangClass.TRANSLATIONS['New Prompt'])
@@ -45,11 +49,11 @@ class PromptGroupInputDialog(QDialog):
 
         self.setLayout(lay)
 
-    def getPromptGroupName(self):
+    def getPromptName(self):
         return self.__newName.text()
 
     def __setAccept(self, text):
         m = re.search('^[a-zA-Z_0-9]+$', text)
-        names = [obj[1] for obj in DB.selectPropPromptGroup()+DB.selectTemplatePromptGroup()]
+        names = [obj[1] for obj in DB.selectTemplatePromptUnit(self.__id)]
         f = (True if m else False) and text not in names
         self.__okBtn.setEnabled(f)

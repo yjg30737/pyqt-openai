@@ -1,6 +1,6 @@
 from qtpy.QtWidgets import QWidget, QLabel, QVBoxLayout, QListWidget, QPushButton, QHBoxLayout, QSpacerItem, QSizePolicy, QAbstractItemView
 
-from pyqt_openai.res.language_dict import LangClass
+from pyqt_openai.lang.language_dict import LangClass
 
 
 class UploadedImageFileWidget(QWidget):

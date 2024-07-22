@@ -3,6 +3,8 @@ import os.path
 
 from qtpy.QtCore import QLocale
 
+from pyqt_openai.constants import DEFAULT_LANGUAGE, LANGUAGE_FILE
+
 
 class LangClass:
     TRANSLATIONS = {}
@@ -17,19 +19,22 @@ class LangClass:
         "Italian": "it_IT",
         "Hindi": "hi_IN",
         "Arabic": "ar_AE",
-        "Japanese": "ja_JP"
+        "Japanese": "ja_JP",
+        "Bengali": "bn_IN",
+        "Urdu": "ur_PK",
+        "Indonesian": "id_ID",
+        "Portuguese": "pt_BR"
     }
 
     @classmethod
     def lang_changed(cls, lang=None):
-
-        with open(os.path.join(os.path.dirname(__file__), 'translations.json'), 'r', encoding='utf-8') as file:
+        with open(os.path.join(os.path.dirname(__file__), LANGUAGE_FILE), 'r', encoding='utf-8') as file:
             translations_data = json.load(file)
 
         if not lang:
             language = QLocale.system().name()
             if language not in translations_data:
-                language = 'en_US'  # Default language
+                language = DEFAULT_LANGUAGE  # Default language
         else:
             language = cls.LANGUAGE_DICT[lang]
 

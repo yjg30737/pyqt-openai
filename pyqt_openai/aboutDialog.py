@@ -1,25 +1,13 @@
 import datetime
 
-from qtpy.QtCore import Qt, QUrl
-from qtpy.QtGui import QPixmap, QDesktopServices
+from qtpy.QtCore import Qt
+from qtpy.QtGui import QPixmap
 from qtpy.QtWidgets import QDialog, QPushButton, QHBoxLayout, QWidget, QVBoxLayout, QLabel
 
-from pyqt_openai.res.language_dict import LangClass
-from pyqt_openai.widgets.svgLabel import SvgLabel
+from pyqt_openai.constants import APP_ICON, LICENSE_URL, CONTACT, GITHUB_URL, DISCORD_URL, APP_TITLE
+from pyqt_openai.lang.language_dict import LangClass
 from pyqt_openai.util.script import get_version
-
-
-class ClickableLabel(SvgLabel):
-    def __init__(self):
-        super().__init__()
-        self.__url = '127.0.0.1'
-
-    def setUrl(self, url):
-        self.__url = url
-
-    def mouseReleaseEvent(self, QMouseEvent):
-        if QMouseEvent.button() == Qt.MouseButtons.LeftButton:
-            QDesktopServices.openUrl(QUrl(self.__url))
+from pyqt_openai.widgets.linkLabel import LinkLabel
 
 
 class AboutDialog(QDialog):
@@ -34,40 +22,39 @@ class AboutDialog(QDialog):
         self.__okBtn = QPushButton(LangClass.TRANSLATIONS['OK'])
         self.__okBtn.clicked.connect(self.accept)
 
-        p = QPixmap('pyqtopenai.png')
+        p = QPixmap(APP_ICON)
         logoLbl = QLabel()
         logoLbl.setPixmap(p)
 
         descWidget1 = QLabel()
         descWidget1.setText(f'''
-        <h1>pyqt-openai</h1>
+        <h1>{APP_TITLE}</h1>
         Software Version {get_version()}<br/><br/>
         © 2023 {datetime.datetime.now().year}. Used under the MIT License.<br/>
         Copyright (c) {datetime.datetime.now().year} yjg30737<br/>
         ''')
 
-        descWidget2 = ClickableLabel()
+        descWidget2 = LinkLabel()
         descWidget2.setText('Read MIT License Full Text')
-        descWidget2.setUrl('https://github.com/yjg30737/pyqt-openai/blob/main/LICENSE')
-        descWidget2.setStyleSheet('QLabel:hover { color: blue }')
+        descWidget2.setUrl(LICENSE_URL)
 
         descWidget3 = QLabel()
         descWidget3.setText(f'''
-        <br/><br/>Contact: yjg30737@gmail.com<br/>
-        <p>{LangClass.TRANSLATIONS['Powered by qtpy']}</p>
+        <br/><br/>{LangClass.TRANSLATIONS['Language']}: {CONTACT}<br/>
+        <p>Powered by qtpy</p>
         ''')
 
         descWidget1.setAlignment(Qt.AlignmentFlag.AlignTop)
         descWidget2.setAlignment(Qt.AlignmentFlag.AlignTop)
         descWidget3.setAlignment(Qt.AlignmentFlag.AlignTop)
 
-        self.__githubLbl = ClickableLabel()
+        self.__githubLbl = LinkLabel()
         self.__githubLbl.setSvgFile('ico/github.svg')
-        self.__githubLbl.setUrl('https://github.com/yjg30737/pyqt-openai')
+        self.__githubLbl.setUrl(GITHUB_URL)
 
-        self.__discordLbl = ClickableLabel()
+        self.__discordLbl = LinkLabel()
         self.__discordLbl.setSvgFile('ico/discord.svg')
-        self.__discordLbl.setUrl('https://discord.gg/cHekprskVE')
+        self.__discordLbl.setUrl(DISCORD_URL)
         self.__discordLbl.setFixedSize(22, 19)
 
         lay = QHBoxLayout()

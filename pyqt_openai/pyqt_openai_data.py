@@ -1,8 +1,9 @@
 import base64
 import os.path
 
-import openai
+import openai, json
 
+from pyqt_openai.constants import AWESOME_CHATGPT_PROMPTS_FILENAME, ALEX_BROGAN_PROMPT_FILENAME
 from pyqt_openai.models import ChatMessageContainer
 from pyqt_openai.sqlite import SqliteDatabase
 from pyqt_openai.util.llamapage_script import GPTLLamaIndexWrapper
@@ -11,9 +12,10 @@ DB = SqliteDatabase()
 
 LLAMAINDEX_WRAPPER = GPTLLamaIndexWrapper()
 
+VERSION = 1.0
 # if openai version is below 1.0, exit the program and suggest to upgrade
-if openai.__version__ < str(1.0):
-    raise Exception('Please upgrade openai package to version 1.0 or higher')
+if openai.__version__ < str(VERSION):
+    raise Exception(f'Please upgrade openai package to version {VERSION} or higher')
 
 from openai import OpenAI
 

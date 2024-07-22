@@ -4,7 +4,7 @@ from qtpy.QtWidgets import QWidget, QDoubleSpinBox, QSpinBox, QFormLayout, QFram
 
 from pyqt_openai.constants import INI_FILE_NAME
 from pyqt_openai.pyqt_openai_data import get_chat_model
-from pyqt_openai.res.language_dict import LangClass
+from pyqt_openai.lang.language_dict import LangClass
 
 
 class ChatPage(QWidget):

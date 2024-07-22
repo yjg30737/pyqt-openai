@@ -1,6 +1,6 @@
 from qtpy.QtWidgets import QListWidget, QWidget, QVBoxLayout, QLabel
 
-from pyqt_openai.res.language_dict import LangClass
+from pyqt_openai.lang.language_dict import LangClass
 
 
 class CommandSuggestionWidget(QWidget):

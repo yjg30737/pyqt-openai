@@ -15,14 +15,14 @@ sys.path.insert(0, project_root)
 sys.path.insert(0, os.getcwd())  # Add the current directory as well
 
 from qtpy.QtCore import Qt, QRegularExpression
-from qtpy.QtGui import QIcon, QRegularExpressionValidator
+from qtpy.QtGui import QRegularExpressionValidator
 from qtpy.QtWidgets import QFrame, QDialog, QComboBox, QLineEdit, QCheckBox, QSizePolicy, \
     QVBoxLayout, QHBoxLayout, QGroupBox, QSplitter, QLabel, QDialogButtonBox, QWidget, QMessageBox
 
 
 from pyqt_openai import constants
 from pyqt_openai.models import SettingsParamsContainer, ImagePromptContainer, ChatThreadContainer
-from pyqt_openai.res.language_dict import LangClass
+from pyqt_openai.lang.language_dict import LangClass
 
 
 class SettingsDialog(QDialog):
@@ -53,7 +53,7 @@ class SettingsDialog(QDialog):
         self.__langCmbBox.setSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.MinimumExpanding)
 
         lay = QHBoxLayout()
-        lay.addWidget(QLabel("Language:"))
+        lay.addWidget(QLabel("Language"))
         lay.addWidget(self.__langCmbBox)
         lay.setContentsMargins(0, 0, 0, 0)
 
@@ -67,7 +67,7 @@ class SettingsDialog(QDialog):
         re = QRegularExpression(constants.DB_NAME_REGEX)
         self.__validator.setRegularExpression(re)
         self.__dbLineEdit.setValidator(self.__validator)
-        dbLayout.addWidget(QLabel("Name of target database (without extension):"))
+        dbLayout.addWidget(QLabel("Name of target database (without extension)"))
         dbLayout.addWidget(self.__dbLineEdit)
 
         # Checkboxes
@@ -75,9 +75,9 @@ class SettingsDialog(QDialog):
         self.__doNotAskAgainCheckBox.setChecked(self.__do_not_ask_again)
         self.__notifyFinishCheckBox = QCheckBox("Notify when finish processing any task (Conversion, etc.)")
         self.__notifyFinishCheckBox.setChecked(self.__notify_finish)
-        self.__showToolbarCheckBox = QCheckBox("Show toolbar")
+        self.__showToolbarCheckBox = QCheckBox("Show Toolbar")
         self.__showToolbarCheckBox.setChecked(self.__show_toolbar)
-        self.__showSecondaryToolBarChkBox = QCheckBox(LangClass.TRANSLATIONS['Show AI Toolbar'])
+        self.__showSecondaryToolBarChkBox = QCheckBox(LangClass.TRANSLATIONS['Show Secondary Toolbar'])
         self.__showSecondaryToolBarChkBox.setChecked(self.__show_secondary_toolbar)
         self.__showThreadToolWidgetChkBox = QCheckBox('Show thread tool widget')
         self.__showThreadToolWidgetChkBox.setChecked(self.__thread_tool_widget)
@@ -103,7 +103,7 @@ class SettingsDialog(QDialog):
         generalGrpBox = QGroupBox('General')
         generalGrpBox.setLayout(lay)
 
-        chatColAllCheckBox = QCheckBox('Check all')
+        chatColAllCheckBox = QCheckBox('Check All')
         self.__chatColCheckBoxListWidget = CheckBoxListWidget()
         for k in ChatThreadContainer.get_keys(excludes=COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE):
             self.__chatColCheckBoxListWidget.addItem(k, checked=k in self.__chat_column_to_show)
@@ -159,7 +159,7 @@ class SettingsDialog(QDialog):
     def __accept(self):
         # If DB file name is empty
         if self.__dbLineEdit.text().strip() == '':
-            QMessageBox.critical(self, 'No.', 'DB filename is empty. Please write something!')
+            QMessageBox.critical(self, 'Error', 'Database name cannot be empty.')
         else:
             self.accept()
 
