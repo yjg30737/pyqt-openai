@@ -1,7 +1,7 @@
 import os
 import sys
 
-from pyqt_openai.constants import COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE, LANGUAGE_DICT
+from pyqt_openai.constants import COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE, LANGUAGE_DICT, DB_NAME_REGEX
 from pyqt_openai.widgets.checkBoxListWidget import CheckBoxListWidget
 
 # Get the absolute path of the current script file
@@ -64,7 +64,7 @@ class SettingsDialog(QDialog):
         dbLayout = QHBoxLayout()
         self.__dbLineEdit = QLineEdit(self.__db)
         self.__validator = QRegularExpressionValidator()
-        re = QRegularExpression(constants.DB_NAME_REGEX)
+        re = QRegularExpression(DB_NAME_REGEX)
         self.__validator.setRegularExpression(re)
         self.__dbLineEdit.setValidator(self.__validator)
         dbLayout.addWidget(QLabel(LangClass.TRANSLATIONS["Name of target database (without extension)"]))
@@ -73,14 +73,14 @@ class SettingsDialog(QDialog):
         # Checkboxes
         self.__doNotAskAgainCheckBox = QCheckBox(f'{LangClass.TRANSLATIONS["Do not ask again when closing"]} ({LangClass.TRANSLATIONS["Always close the application"]})')
         self.__doNotAskAgainCheckBox.setChecked(self.__do_not_ask_again)
-        # TODO LANGUAGE
+
         self.__notifyFinishCheckBox = QCheckBox(LangClass.TRANSLATIONS["Notify when finish processing any task (Conversion, etc.)"])
         self.__notifyFinishCheckBox.setChecked(self.__notify_finish)
         self.__showToolbarCheckBox = QCheckBox(LangClass.TRANSLATIONS["Show Toolbar"])
         self.__showToolbarCheckBox.setChecked(self.__show_toolbar)
         self.__showSecondaryToolBarChkBox = QCheckBox(LangClass.TRANSLATIONS['Show Secondary Toolbar'])
         self.__showSecondaryToolBarChkBox.setChecked(self.__show_secondary_toolbar)
-        self.__showThreadToolWidgetChkBox = QCheckBox(LangClass.TRANSLATIONS['Show thread tool widget'])
+        self.__showThreadToolWidgetChkBox = QCheckBox(LangClass.TRANSLATIONS['Show Find Tool'])
         self.__showThreadToolWidgetChkBox.setChecked(self.__thread_tool_widget)
 
         # Dialog buttons
@@ -147,7 +147,6 @@ class SettingsDialog(QDialog):
         lay = QVBoxLayout()
         lay.addWidget(self.__splitter)
 
-        # TODO LANGUAGE
         columnGrpBox = QGroupBox(LangClass.TRANSLATIONS['Show/hide columns'])
         columnGrpBox.setLayout(lay)
 

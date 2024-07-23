@@ -1,12 +1,12 @@
 import datetime
+import pyqt_openai
 
 from qtpy.QtCore import Qt
 from qtpy.QtGui import QPixmap
 from qtpy.QtWidgets import QDialog, QPushButton, QHBoxLayout, QWidget, QVBoxLayout, QLabel
 
-from pyqt_openai.constants import APP_ICON, LICENSE_URL, CONTACT, GITHUB_URL, DISCORD_URL, APP_TITLE
+from pyqt_openai.constants import APP_ICON, LICENSE_URL, GITHUB_URL, DISCORD_URL, APP_NAME, CONTACT
 from pyqt_openai.lang.translations import LangClass
-from pyqt_openai.util.script import get_version
 from pyqt_openai.widgets.linkLabel import LinkLabel
 
 
@@ -28,8 +28,8 @@ class AboutDialog(QDialog):
 
         descWidget1 = QLabel()
         descWidget1.setText(f'''
-        <h1>{APP_TITLE}</h1>
-        Software Version {get_version()}<br/><br/>
+        <h1>{APP_NAME}</h1>
+        Software Version {pyqt_openai.__version__}<br/><br/>
         © 2023 {datetime.datetime.now().year}. Used under the MIT License.<br/>
         Copyright (c) {datetime.datetime.now().year} yjg30737<br/>
         ''')

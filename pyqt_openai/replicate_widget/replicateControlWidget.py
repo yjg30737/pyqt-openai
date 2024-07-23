@@ -1,14 +1,14 @@
 import os
 
 from qtpy.QtCore import QThread, Signal, QSettings, Qt
-from qtpy.QtWidgets import QLineEdit, QScrollArea, QMessageBox, QWidget, QCheckBox, QSpinBox, QGroupBox, QVBoxLayout, QPushButton, \
-    QComboBox, \
+from qtpy.QtWidgets import QLineEdit, QScrollArea, QMessageBox, QWidget, QCheckBox, QSpinBox, QGroupBox, QVBoxLayout, \
+    QPushButton, \
     QPlainTextEdit, \
     QFormLayout, QLabel, QFrame, QSplitter
 
 from pyqt_openai.constants import INI_FILE_NAME, IMAGE_DEFAULT_SAVE_DIRECTORY
-from pyqt_openai.models import ImagePromptContainer
 from pyqt_openai.lang.translations import LangClass
+from pyqt_openai.models import ImagePromptContainer
 from pyqt_openai.util.replicate_script import ReplicateWrapper
 from pyqt_openai.widgets.findPathWidget import FindPathWidget
 from pyqt_openai.widgets.notifier import NotifierWidget

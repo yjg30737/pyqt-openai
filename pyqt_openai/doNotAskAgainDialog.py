@@ -29,15 +29,12 @@ class DoNotAskAgainDialog(QDialog):
         self.label = QLabel(self.__do_not_ask_again_message)
         self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        # TODO LANGUAGE
         self.yesButton = QPushButton(LangClass.TRANSLATIONS["Yes"])
         self.yesButton.clicked.connect(self.accept)
 
-        # TODO LANGUAGE
         self.noButton = QPushButton(LangClass.TRANSLATIONS["No"])
         self.noButton.clicked.connect(self.reject)
 
-        # TODO LANGUAGE
         self.cancelButton = QPushButton(LangClass.TRANSLATIONS["Cancel"])
         self.cancelButton.clicked.connect(self.__cancel)
 

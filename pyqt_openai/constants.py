@@ -1,9 +1,9 @@
 # APP
-APP_TITLE = 'pyqt-openai'
+APP_NAME = 'pyqt-openai'
 APP_ICON = 'icon.png'
+CONTACT = 'yjg30737@gmail.com'
 APP_INITIAL_WINDOW_SIZE = (1280, 768)
 LICENSE_URL = 'https://github.com/yjg30737/pyqt-openai/blob/main/LICENSE'
-CONTACT = 'yjg30737@gmail.com'
 PAYPAL_URL = 'https://paypal.me/yjg30737'
 BUYMEACOFFEE_URL = 'https://www.buymeacoffee.com/yjg30737'
 GITHUB_URL = 'https://github.com/yjg30737/pyqt-openai'

@@ -9,7 +9,6 @@ class UploadedImageFileWidget(QWidget):
         self.__initUi()
 
     def __initUi(self):
-        # TODO LANGUAGE
         lbl = QLabel(LangClass.TRANSLATIONS['Uploaded Files (Only Images)'])
         self.__deleteBtn = QPushButton(LangClass.TRANSLATIONS['Delete'])
         self.__deleteBtn.clicked.connect(self.__delete)

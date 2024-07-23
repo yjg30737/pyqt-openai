@@ -36,8 +36,7 @@ class Prompt(QWidget):
         self.__json_object = self.__settings_ini.value('json_object', False, type=bool)
 
     def __initUi(self):
-        # prompt control buttons
-        # TODO LANGUAGE
+        # Prompt control buttons
         self.__stopBtn = QPushButton(LangClass.TRANSLATIONS['Stop'])
         self.__stopBtn.clicked.connect(self.onStoppedClicked.emit)
 
@@ -50,11 +49,9 @@ class Prompt(QWidget):
         self.__controlWidgetDuringGeneration = QWidget()
         self.__controlWidgetDuringGeneration.setLayout(lay)
 
-        # TODO LANGUAGE
         self.__continueBtn = QPushButton(LangClass.TRANSLATIONS['Continue'])
         self.__continueBtn.clicked.connect(self.onContinuedClicked.emit)
 
-        # TODO LANGUAGE
         self.__regenerateBtn = QPushButton(LangClass.TRANSLATIONS['Regenerate'])
         self.__regenerateBtn.clicked.connect(self.onRegenerateClicked.emit)
 
@@ -119,7 +116,6 @@ class Prompt(QWidget):
         readingFilesAction = QAction(LangClass.TRANSLATIONS['Upload Files...'], self)
         readingFilesAction.triggered.connect(self.__readingFiles)
 
-        # TODO LANGUAGE
         self.__writeJSONAction = QAction(LangClass.TRANSLATIONS['Write JSON'], self)
         self.__writeJSONAction.toggled.connect(self.__showJSON)
         self.__writeJSONAction.setCheckable(True)

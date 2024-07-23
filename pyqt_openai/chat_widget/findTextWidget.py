@@ -73,7 +73,6 @@ class FindTextWidget(QWidget):
         self.__closeBtn.setShortcut(SHORTCUT_FIND_CLOSE)
         self.__closeBtn.setStyleAndIcon('ico/close.svg')
 
-        # TODO LANGUAGE
         self.__prevBtn.setToolTip(LangClass.TRANSLATIONS['Previous Occurrence'])
         self.__nextBtn.setToolTip(LangClass.TRANSLATIONS['Next Occurrence'])
         self.__caseBtn.setToolTip(LangClass.TRANSLATIONS['Match Case'])

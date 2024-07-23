@@ -34,18 +34,6 @@ def open_directory(path):
     else:
         print("Unsupported operating system.")
 
-def get_version():
-    with open("../setup.py", "r") as f:
-        setup_content = f.read()
-
-    version_match = re.search(r"version=['\"]([^'\"]+)['\"]", setup_content)
-
-    if version_match:
-        version = version_match.group(1)
-    else:
-        raise RuntimeError("Version information not found.")
-    return f'{version}'
-
 def message_list_to_txt(db, thread_id, title, username='User', ai_name='AI'):
     content = ''
     certain_thread_filename_content = db.selectCertainThreadMessagesRaw(thread_id)
