@@ -21,7 +21,8 @@ dependencies = [
     "requests",
     "langchain",
     "pillow",
-    "replicate"
+    "replicate",
+    "toml"
 ]
 
 [project.urls]
