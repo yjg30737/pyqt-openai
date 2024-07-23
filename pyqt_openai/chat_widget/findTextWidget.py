@@ -74,12 +74,12 @@ class FindTextWidget(QWidget):
         self.__closeBtn.setStyleAndIcon('ico/close.svg')
 
         # TODO LANGUAGE
-        self.__prevBtn.setToolTip('Previous Occurrence')
-        self.__nextBtn.setToolTip('Next Occurrence')
-        self.__caseBtn.setToolTip('Match Case')
-        self.__wordBtn.setToolTip('Match Word')
-        self.__regexBtn.setToolTip('Regex')
-        self.__closeBtn.setToolTip('Close')
+        self.__prevBtn.setToolTip(LangClass.TRANSLATIONS['Previous Occurrence'])
+        self.__nextBtn.setToolTip(LangClass.TRANSLATIONS['Next Occurrence'])
+        self.__caseBtn.setToolTip(LangClass.TRANSLATIONS['Match Case'])
+        self.__wordBtn.setToolTip(LangClass.TRANSLATIONS['Match Word'])
+        self.__regexBtn.setToolTip(LangClass.TRANSLATIONS['Regex'])
+        self.__closeBtn.setToolTip(LangClass.TRANSLATIONS['Close'])
 
         lay = QHBoxLayout()
         lay.addWidget(self.__findTextLineEdit)

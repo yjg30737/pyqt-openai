@@ -74,7 +74,7 @@ class SettingsDialog(QDialog):
         self.__doNotAskAgainCheckBox = QCheckBox(f'{LangClass.TRANSLATIONS["Do not ask again when closing"]} ({LangClass.TRANSLATIONS["Always close the application"]})')
         self.__doNotAskAgainCheckBox.setChecked(self.__do_not_ask_again)
         # TODO LANGUAGE
-        self.__notifyFinishCheckBox = QCheckBox("Notify when finish processing any task (Conversion, etc.)")
+        self.__notifyFinishCheckBox = QCheckBox(LangClass.TRANSLATIONS["Notify when finish processing any task (Conversion, etc.)"])
         self.__notifyFinishCheckBox.setChecked(self.__notify_finish)
         self.__showToolbarCheckBox = QCheckBox(LangClass.TRANSLATIONS["Show Toolbar"])
         self.__showToolbarCheckBox.setChecked(self.__show_toolbar)
@@ -148,7 +148,7 @@ class SettingsDialog(QDialog):
         lay.addWidget(self.__splitter)
 
         # TODO LANGUAGE
-        columnGrpBox = QGroupBox('Show/hide columns')
+        columnGrpBox = QGroupBox(LangClass.TRANSLATIONS['Show/hide columns'])
         columnGrpBox.setLayout(lay)
 
         lay = QVBoxLayout()

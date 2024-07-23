@@ -38,7 +38,7 @@ class Prompt(QWidget):
     def __initUi(self):
         # prompt control buttons
         # TODO LANGUAGE
-        self.__stopBtn = QPushButton('Stop')
+        self.__stopBtn = QPushButton(LangClass.TRANSLATIONS['Stop'])
         self.__stopBtn.clicked.connect(self.onStoppedClicked.emit)
 
         lay = QHBoxLayout()
@@ -51,11 +51,11 @@ class Prompt(QWidget):
         self.__controlWidgetDuringGeneration.setLayout(lay)
 
         # TODO LANGUAGE
-        self.__continueBtn = QPushButton('Continue')
+        self.__continueBtn = QPushButton(LangClass.TRANSLATIONS['Continue'])
         self.__continueBtn.clicked.connect(self.onContinuedClicked.emit)
 
         # TODO LANGUAGE
-        self.__regenerateBtn = QPushButton('Regenerate')
+        self.__regenerateBtn = QPushButton(LangClass.TRANSLATIONS['Regenerate'])
         self.__regenerateBtn.clicked.connect(self.onRegenerateClicked.emit)
 
         lay = QHBoxLayout()
@@ -120,7 +120,7 @@ class Prompt(QWidget):
         readingFilesAction.triggered.connect(self.__readingFiles)
 
         # TODO LANGUAGE
-        self.__writeJSONAction = QAction('Write JSON', self)
+        self.__writeJSONAction = QAction(LangClass.TRANSLATIONS['Write JSON'], self)
         self.__writeJSONAction.toggled.connect(self.__showJSON)
         self.__writeJSONAction.setCheckable(True)
         self.__toggleJSONAction(self.__json_object)
