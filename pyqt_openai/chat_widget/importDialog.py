@@ -1,7 +1,7 @@
 from qtpy.QtCore import Qt
 from qtpy.QtWidgets import QButtonGroup, QGroupBox, QRadioButton, QDialogButtonBox, QDialog, QVBoxLayout
 
-from pyqt_openai.lang.language_dict import LangClass
+from pyqt_openai.lang.translations import LangClass
 
 
 class ImportDialog(QDialog):

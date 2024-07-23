@@ -6,7 +6,7 @@ from qtpy.QtCore import Qt, Signal
 from qtpy.QtWidgets import QPushButton, QHBoxLayout, QWidget, QLabel, \
     QFileDialog, QAction, QLineEdit, QMenu
 
-from pyqt_openai.lang.language_dict import LangClass
+from pyqt_openai.lang.translations import LangClass
 
 
 class FindPathLineEdit(QLineEdit):

@@ -1,7 +1,7 @@
 import os
 import sys
 
-from pyqt_openai.constants import COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE
+from pyqt_openai.constants import COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE, LANGUAGE_DICT
 from pyqt_openai.widgets.checkBoxListWidget import CheckBoxListWidget
 
 # Get the absolute path of the current script file
@@ -22,7 +22,7 @@ from qtpy.QtWidgets import QFrame, QDialog, QComboBox, QLineEdit, QCheckBox, QSi
 
 from pyqt_openai import constants
 from pyqt_openai.models import SettingsParamsContainer, ImagePromptContainer, ChatThreadContainer
-from pyqt_openai.lang.language_dict import LangClass
+from pyqt_openai.lang.translations import LangClass
 
 
 class SettingsDialog(QDialog):
@@ -48,7 +48,7 @@ class SettingsDialog(QDialog):
 
         # Language setting
         self.__langCmbBox = QComboBox()
-        self.__langCmbBox.addItems(list(LangClass.LANGUAGE_DICT.keys()))
+        self.__langCmbBox.addItems(list(LANGUAGE_DICT.keys()))
         self.__langCmbBox.setCurrentText(self.__lang)
         self.__langCmbBox.setSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.MinimumExpanding)
 

@@ -11,7 +11,7 @@ from pyqt_openai.constants import INI_FILE_NAME, READ_FILE_EXT, PROMPT_BEGINNING
     PROMPT_END_KEY_NAME, PROMPT_JSON_KEY_NAME, SHORTCUT_PROMPT_BEGINNING, SHORTCUT_PROMPT_ENDING, \
     SHORTCUT_SUPPORT_PROMPT_COMMAND
 from pyqt_openai.pyqt_openai_data import DB
-from pyqt_openai.lang.language_dict import LangClass
+from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.widgets.toolButton import ToolButton
 
 

@@ -1,6 +1,7 @@
 # APP
 APP_TITLE = 'pyqt-openai'
 APP_ICON = 'icon.png'
+APP_INITIAL_WINDOW_SIZE = (1280, 768)
 LICENSE_URL = 'https://github.com/yjg30737/pyqt-openai/blob/main/LICENSE'
 CONTACT = 'yjg30737@gmail.com'
 PAYPAL_URL = 'https://paypal.me/yjg30737'
@@ -10,6 +11,23 @@ DISCORD_URL = 'https://discord.gg/cHekprskVE'
 COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE = ['id']
 DEFAULT_LANGUAGE = 'en_US'
 LANGUAGE_FILE = 'translations.json'
+LANGUAGE_DICT = {
+    "English": "en_US",
+    "Spanish": "es_ES",
+    "Chinese": "zh_CN",
+    "Russian": "ru_RU",
+    "Korean": "ko_KR",
+    "French": "fr_FR",
+    "German": "de_DE",
+    "Italian": "it_IT",
+    "Hindi": "hi_IN",
+    "Arabic": "ar_AE",
+    "Japanese": "ja_JP",
+    "Bengali": "bn_IN",
+    "Urdu": "ur_PK",
+    "Indonesian": "id_ID",
+    "Portuguese": "pt_BR"
+}
 
 ## PROFILE IMAGE & FONT & ICON
 DEFAULT_ICON_SIZE = (24, 24)

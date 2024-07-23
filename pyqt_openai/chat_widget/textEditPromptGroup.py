@@ -6,7 +6,7 @@ from pyqt_openai.chat_widget.textEditPrompt import TextEditPrompt
 from pyqt_openai.constants import PROMPT_BEGINNING_KEY_NAME, PROMPT_MAIN_KEY_NAME, PROMPT_END_KEY_NAME, \
     PROMPT_JSON_KEY_NAME
 from pyqt_openai.chat_widget.jsonTextEdit import JSONEditor
-from pyqt_openai.lang.language_dict import LangClass
+from pyqt_openai.lang.translations import LangClass
 
 
 class TextEditPromptGroup(QWidget):

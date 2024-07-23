@@ -5,7 +5,7 @@ from qtpy.QtGui import QPixmap
 from qtpy.QtWidgets import QDialog, QPushButton, QHBoxLayout, QWidget, QVBoxLayout, QLabel
 
 from pyqt_openai.constants import APP_ICON, LICENSE_URL, CONTACT, GITHUB_URL, DISCORD_URL, APP_TITLE
-from pyqt_openai.lang.language_dict import LangClass
+from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.util.script import get_version
 from pyqt_openai.widgets.linkLabel import LinkLabel
 

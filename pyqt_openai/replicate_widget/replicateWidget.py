@@ -7,7 +7,7 @@ from pyqt_openai.constants import INI_FILE_NAME
 from pyqt_openai.models import ImagePromptContainer
 from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.replicate_widget.replicateControlWidget import ReplicateControlWidget
-from pyqt_openai.lang.language_dict import LangClass
+from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.util.script import get_image_filename_for_saving, open_directory, get_image_prompt_filename_for_saving
 from pyqt_openai.widgets.imageNavWidget import ImageNavWidget
 from pyqt_openai.widgets.linkLabel import LinkLabel
@@ -64,11 +64,11 @@ class ReplicateWidget(QWidget):
         self.__settingBtn.toggled.connect(self.__toggle_setting)
 
         self.__toReplicateLabel = LinkLabel()
-        self.__toReplicateLabel.setText(LangClass.TRANSLATIONS['To Replicate / What is Replicate?'])
+        self.__toReplicateLabel.setText('To Replicate / What is Replicate?')
         self.__toReplicateLabel.setUrl('https://replicate.com/')
 
         self.__howToUseReplicateLabel = LinkLabel()
-        self.__howToUseReplicateLabel.setText(LangClass.TRANSLATIONS['How to use Replicate?'])
+        self.__howToUseReplicateLabel.setText('How to use Replicate?')
         self.__howToUseReplicateLabel.setUrl('https://replicate.com/account/api-tokens')
 
         sep1 = QFrame()

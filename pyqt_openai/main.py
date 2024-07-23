@@ -27,7 +27,7 @@ from qtpy.QtCore import Qt, QCoreApplication, QSettings
 from qtpy.QtSql import QSqlDatabase
 
 from pyqt_openai.models import SettingsParamsContainer, CustomizeParamsContainer
-from pyqt_openai.lang.language_dict import LangClass
+from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.aboutDialog import AboutDialog
 from pyqt_openai.customizeDialog import CustomizeDialog
 from pyqt_openai.widgets.button import Button
@@ -38,13 +38,12 @@ from pyqt_openai.settingsDialog import SettingsDialog
 from pyqt_openai.util.script import get_db_filename, get_font, restart_app, show_message_box
 from pyqt_openai.doNotAskAgainDialog import DoNotAskAgainDialog
 
-os.environ['OPENAI_API_KEY'] = ''
-
 from pyqt_openai.pyqt_openai_data import OPENAI_STRUCT, LLAMAINDEX_WRAPPER
-from pyqt_openai.constants import PAYPAL_URL, BUYMEACOFFEE_URL, INI_FILE_NAME, SHORTCUT_FULL_SCREEN, APP_TITLE
+from pyqt_openai.constants import PAYPAL_URL, BUYMEACOFFEE_URL, INI_FILE_NAME, SHORTCUT_FULL_SCREEN, APP_TITLE, \
+    APP_INITIAL_WINDOW_SIZE
 
 # HighDPI support
-# qt version should be above 5.14
+# Qt version should be above 5.14
 if os.environ['QT_API'] == 'pyqt5':
     QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
     QCoreApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
@@ -94,7 +93,7 @@ class MainWindow(QMainWindow):
             self.__apiCheckPreviewLbl.hide()
 
         self.setCentralWidget(self.__mainWidget)
-        self.resize(1280, 768)
+        self.resize(*APP_INITIAL_WINDOW_SIZE)
 
         self.__refreshColumns()
 
@@ -193,7 +192,7 @@ class MainWindow(QMainWindow):
         self.__apiAction = QWidgetAction(self)
         self.__apiAction.setDefaultWidget(apiWidget)
 
-        self.__settingsAction = QAction('Settings', self)
+        self.__settingsAction = QAction(LangClass.TRANSLATIONS['Settings'], self)
         self.__settingsAction.triggered.connect(self.__showSettingsDialog)
 
     def __fullScreenToggle(self, f):

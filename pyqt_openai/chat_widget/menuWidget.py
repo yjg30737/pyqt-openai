@@ -2,7 +2,7 @@ from qtpy.QtWidgets import QWidget, QVBoxLayout, QLabel
 
 from pyqt_openai.chat_widget.findTextWidget import FindTextWidget
 from pyqt_openai.chat_widget.chatBrowser import ChatBrowser
-from pyqt_openai.lang.language_dict import LangClass
+from pyqt_openai.lang.translations import LangClass
 
 
 class MenuWidget(QWidget):

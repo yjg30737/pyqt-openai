@@ -6,7 +6,7 @@ from qtpy.QtCore import Qt
 from qtpy.QtWidgets import QTableWidgetItem, QLabel, QDialogButtonBox, QCheckBox, QDialog, QVBoxLayout
 
 from pyqt_openai.constants import THREAD_ORDERBY
-from pyqt_openai.lang.language_dict import LangClass
+from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.widgets.checkBoxTableWidget import CheckBoxTableWidget
 
 

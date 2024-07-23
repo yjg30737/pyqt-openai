@@ -7,7 +7,7 @@ from pyqt_openai.constants import IMAGE_TABLE_NAME, INI_FILE_NAME
 from pyqt_openai.dalle_widget.dallEControlWidget import DallEControlWidget
 from pyqt_openai.models import ImagePromptContainer
 from pyqt_openai.pyqt_openai_data import DB
-from pyqt_openai.lang.language_dict import LangClass
+from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.util.script import get_image_filename_for_saving, open_directory, get_image_prompt_filename_for_saving
 from pyqt_openai.widgets.imageNavWidget import ImageNavWidget
 from pyqt_openai.widgets.notifier import NotifierWidget

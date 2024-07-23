@@ -3,7 +3,7 @@ from qtpy.QtSql import QSqlTableModel, QSqlQuery
 from qtpy.QtWidgets import QWidget, QVBoxLayout, QStyledItemDelegate, QTableView, QAbstractItemView, QHBoxLayout, \
     QMessageBox, QLabel
 
-from pyqt_openai.lang.language_dict import LangClass
+from pyqt_openai.lang.translations import LangClass
 # for search feature
 from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.widgets.button import Button

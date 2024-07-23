@@ -11,6 +11,8 @@ from pyqt_openai.models import ChatMessageContainer
 from pyqt_openai.sqlite import SqliteDatabase
 from pyqt_openai.util.llamapage_script import GPTLLamaIndexWrapper
 
+os.environ['OPENAI_API_KEY'] = ''
+
 DB = SqliteDatabase()
 
 LLAMAINDEX_WRAPPER = GPTLLamaIndexWrapper()

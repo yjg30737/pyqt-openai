@@ -4,7 +4,7 @@ from qtpy.QtWidgets import QFrame, QTextBrowser
 from qtpy.QtWidgets import QWidget, QLabel, QVBoxLayout
 
 from pyqt_openai.constants import INI_FILE_NAME
-from pyqt_openai.lang.language_dict import LangClass
+from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.chat_widget.right_sidebar.llama_widget.listWidget import FileListWidget
 
 

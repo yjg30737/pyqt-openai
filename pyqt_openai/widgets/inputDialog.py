@@ -2,7 +2,7 @@ from qtpy.QtWidgets import QDialog, QVBoxLayout, QLineEdit, QFrame, QPushButton,
 from qtpy.QtCore import Qt
 from qtpy.QtGui import QIcon
 
-from pyqt_openai.lang.language_dict import LangClass
+from pyqt_openai.lang.translations import LangClass
 
 
 class InputDialog(QDialog):

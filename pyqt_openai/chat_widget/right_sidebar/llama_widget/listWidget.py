@@ -4,7 +4,7 @@ from qtpy.QtCore import Signal
 from qtpy.QtWidgets import QListWidget, QWidget, QVBoxLayout, QLabel, QHBoxLayout, QSpacerItem, QPushButton, \
     QSizePolicy, QFileDialog, QFrame
 
-from pyqt_openai.lang.language_dict import LangClass
+from pyqt_openai.lang.translations import LangClass
 
 
 class FileListWidget(QWidget):

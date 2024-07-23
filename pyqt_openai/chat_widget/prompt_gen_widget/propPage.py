@@ -6,7 +6,7 @@ from qtpy.QtWidgets import QTableWidget, QSizePolicy, QSpacerItem, QStackedWidge
 from pyqt_openai.chat_widget.prompt_gen_widget.promptGroupInputDialog import PromptGroupInputDialog
 from pyqt_openai.chat_widget.prompt_gen_widget.propPromptUnitInputDialog import PropPromptUnitInputDialog
 from pyqt_openai.pyqt_openai_data import DB
-from pyqt_openai.lang.language_dict import LangClass
+from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.widgets.button import Button
 
 

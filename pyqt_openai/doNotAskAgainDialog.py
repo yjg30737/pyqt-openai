@@ -2,7 +2,7 @@ from qtpy.QtCore import Qt, Signal
 from qtpy.QtWidgets import QDialog, QLabel, QPushButton, QVBoxLayout, QFrame, QHBoxLayout, QWidget, \
     QCheckBox, QSpacerItem, QSizePolicy
 
-from pyqt_openai.lang.language_dict import LangClass
+from pyqt_openai.lang.translations import LangClass
 
 
 class DoNotAskAgainDialog(QDialog):

@@ -5,7 +5,7 @@ from qtpy.QtGui import QPixmap, QColor, QBrush, QLinearGradient
 from qtpy.QtWidgets import QGraphicsScene, QGraphicsPixmapItem, QGraphicsView, QApplication, QWidget, QHBoxLayout, \
     QFileDialog
 
-from pyqt_openai.lang.language_dict import LangClass
+from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.widgets.button import Button
 
 

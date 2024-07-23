@@ -3,7 +3,7 @@ from qtpy.QtWidgets import QMessageBox, QGroupBox, QTableWidgetItem, \
     QLabel, QDialogButtonBox, QCheckBox, QDialog, QVBoxLayout, QSpinBox, QAbstractItemView
 
 from pyqt_openai.constants import THREAD_ORDERBY
-from pyqt_openai.lang.language_dict import LangClass
+from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.util.script import get_conversation_from_chatgpt, get_chatgpt_data
 from pyqt_openai.widgets.checkBoxTableWidget import CheckBoxTableWidget
 from pyqt_openai.widgets.findPathWidget import FindPathWidget

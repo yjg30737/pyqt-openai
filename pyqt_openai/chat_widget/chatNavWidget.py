@@ -10,7 +10,7 @@ from pyqt_openai.chat_widget.chatGPTImportDialog import ChatGPTImportDialog
 from pyqt_openai.constants import THREAD_ORDERBY
 from pyqt_openai.chat_widget.exportDialog import ExportDialog
 from pyqt_openai.chat_widget.importDialog import ImportDialog
-from pyqt_openai.lang.language_dict import LangClass
+from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ChatThreadContainer
 from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.widgets.button import Button

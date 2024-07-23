@@ -7,7 +7,7 @@ from qtpy.QtWidgets import QTextEdit, QMessageBox
 
 from pyqt_openai.constants import FONT_FAMILY_FOR_SOURCE, INDENT_SIZE, DEFAULT_FONT_SIZE
 from pyqt_openai.util.script import get_font
-from pyqt_openai.lang.language_dict import LangClass
+from pyqt_openai.lang.translations import LangClass
 
 
 class JSONEditor(QTextEdit):

@@ -6,7 +6,7 @@ from qtpy.QtWidgets import QSizePolicy, \
     QTextEdit, QHBoxLayout
 
 from pyqt_openai.constants import DEFAULT_FONT_FAMILY
-from pyqt_openai.lang.language_dict import LangClass
+from pyqt_openai.lang.translations import LangClass
 
 
 class SizeWidget(QWidget):
