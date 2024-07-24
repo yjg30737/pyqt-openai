@@ -130,3 +130,20 @@ class CustomizeParamsContainer(Container):
     ai_image: str = DEFAULT_AI_IMAGE_PATH
     font_size: int = DEFAULT_FONT_SIZE
     font_family: str = DEFAULT_FONT_FAMILY
+
+@dataclass
+class PromptGroupContainer(Container):
+    id: str = ""
+    name: str = ""
+    insert_dt: str = ""
+    update_dt: str = ""
+    prompt_type: str = ""
+
+@dataclass
+class PromptEntryContainer(Container):
+    id: str = ""
+    group_id: str = ""
+    name: str = ""
+    content: str = ""
+    insert_dt: str = ""
+    update_dt: str = ""
