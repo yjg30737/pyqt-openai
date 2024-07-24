@@ -14,8 +14,10 @@ from jinja2 import Template
 from qtpy.QtCore import QSettings
 from qtpy.QtWidgets import QMessageBox
 
-from pyqt_openai import INI_FILE_NAME, DB_FILE_NAME, DEFAULT_FONT_SIZE, DEFAULT_FONT_FAMILY, MAIN_INDEX
+from pyqt_openai import INI_FILE_NAME, DB_FILE_NAME, DEFAULT_FONT_SIZE, DEFAULT_FONT_FAMILY, MAIN_INDEX, \
+    PROMPT_NAME_REGEX
 from pyqt_openai.models import ImagePromptContainer
+from pyqt_openai.pyqt_openai_data import DB
 
 
 def get_generic_ext_out_of_qt_ext(text):
@@ -118,11 +120,6 @@ def download_image_as_base64(url: str):
     image_data = response.content
     base64_encoded = base64.b64decode(base64.b64encode(image_data).decode('utf-8'))
     return base64_encoded
-
-def get_db_filename():
-    settings = QSettings(INI_FILE_NAME, QSettings.Format.IniFormat)
-    db_path = settings.value("db", DB_FILE_NAME) + ".db"
-    return db_path
 
 def get_font():
     settings = QSettings(INI_FILE_NAME, QSettings.Format.IniFormat)
@@ -233,3 +230,9 @@ def get_chatgpt_data(conv_arr):
         del conv['mapping']
 
     return conv_arr
+
+def is_prompt_name_valid(text):
+    m = re.search(PROMPT_NAME_REGEX, text)
+    # Check if the prompt group with same name already exists
+    exists_f = True if (True if m else False) and DB.selectCertainPromptGroup(text) else False
+    return exists_f

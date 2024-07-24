@@ -3,8 +3,8 @@ import pyperclip
 from qtpy.QtWidgets import QTextBrowser, QSplitter, QWidget, QLabel, QVBoxLayout, QPushButton, QTabWidget, QScrollArea
 from qtpy.QtCore import Qt
 
-from pyqt_openai.chat_widget.prompt_gen_widget.propPage import PropPage
-from pyqt_openai.chat_widget.prompt_gen_widget.templatePage import TemplatePage
+from pyqt_openai.chat_widget.prompt_gen_widget.formPage import FormPage
+from pyqt_openai.chat_widget.prompt_gen_widget.sentencePage import SentencePage
 from pyqt_openai.lang.translations import LangClass
 
 
@@ -16,19 +16,19 @@ class PromptGeneratorWidget(QScrollArea):
     def __initUi(self):
         promptLbl = QLabel(LangClass.TRANSLATIONS['Prompt'])
 
-        propPage = PropPage()
-        propPage.updated.connect(self.__textChanged)
+        formPage = FormPage()
+        formPage.updated.connect(self.__textChanged)
 
-        templatePage = TemplatePage()
-        templatePage.updated.connect(self.__textChanged)
+        sentencePage = SentencePage()
+        sentencePage.updated.connect(self.__textChanged)
 
         self.__prompt = QTextBrowser()
         self.__prompt.setPlaceholderText(LangClass.TRANSLATIONS['Generated Prompt'])
         self.__prompt.setAcceptRichText(False)
 
         promptTabWidget = QTabWidget()
-        promptTabWidget.addTab(propPage, LangClass.TRANSLATIONS['Property'])
-        promptTabWidget.addTab(templatePage, LangClass.TRANSLATIONS['Template'])
+        promptTabWidget.addTab(formPage, LangClass.TRANSLATIONS['Property'])
+        promptTabWidget.addTab(sentencePage, LangClass.TRANSLATIONS['Template'])
 
         previewLbl = QLabel(LangClass.TRANSLATIONS['Preview'])
 

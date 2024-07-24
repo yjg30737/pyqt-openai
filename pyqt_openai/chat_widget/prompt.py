@@ -166,32 +166,28 @@ class Prompt(QWidget):
         self.updateHeight()
 
     def __getEveryPromptCommands(self):
-        # get prop group
-        p_grp = []
-        for group in DB.selectPropPromptGroup():
-            p_grp_attr = [attr for attr in DB.selectPropPromptAttribute(group[0])]
-            p_grp_value = ''
-            for attr_obj in p_grp_attr:
-                name = attr_obj[2]
-                value = attr_obj[3]
-                if value and value.strip():
-                    p_grp_value += f'{name}: {value}\n'
-            p_grp.append({'name': group[1], 'value': p_grp_value})
+        command_obj_lst = []
+        for group in DB.selectPromptGroup():
+            entries = [attr for attr in DB.selectPromptEntry(group_id=group.id)]
+            if group.prompt_type == 'form':
+                value = ''
+                for entry in entries:
+                    content = entry.content
+                    if content and content.strip():
+                        value += f'{entry.name}: {content}\n'
+                command_obj_lst.append({
+                    'name': group.name,
+                    'value': value
+                })
+            elif group.prompt_type == 'sentence':
+                for entry in entries:
+                    command_obj_lst.append({
+                        'name': f'{entry.name}({group.name})',
+                        'value': entry.content
+                    })
 
-        # get template group
-        t_grp = []
-        for group in DB.selectTemplatePromptGroup():
-            t_grp_attr = [attr for attr in DB.selectTemplatePromptUnit(group[0])]
-            t_grp_value = ''
-            for attr_obj in t_grp_attr:
-                name = attr_obj[2]
-                value = attr_obj[3]
-                t_grp.append({'name': f'{attr_obj[2]}({group[1]})', 'value': value})
-
-        self.__p_grp = p_grp + t_grp
-
-        # TODO will include value as well
-        return [command['name'] for command in self.__p_grp]
+        self.__p_grp = [{'name': obj['name'], 'value': obj['value']} for obj in command_obj_lst]
+        return self.__p_grp
 
     def __updateSuggestions(self):
         w = self.__textEditGroup.getCurrentTextEdit()

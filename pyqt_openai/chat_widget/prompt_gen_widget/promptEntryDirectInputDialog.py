@@ -1,5 +1,3 @@
-import re
-
 from qtpy.QtCore import Qt
 from qtpy.QtWidgets import QDialog, QVBoxLayout, QLineEdit, QFrame, QPushButton, QHBoxLayout, QWidget
 
@@ -7,7 +5,7 @@ from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.lang.translations import LangClass
 
 
-class TemplatePromptUnitInputDialog(QDialog):
+class PromptEntryDirectInputDialog(QDialog):
     def __init__(self, id, parent=None):
         super().__init__(parent)
         self.__initVal(id)
@@ -53,7 +51,7 @@ class TemplatePromptUnitInputDialog(QDialog):
         return self.__newName.text()
 
     def __setAccept(self, text):
-        m = re.search('^[a-zA-Z_0-9]+$', text)
-        names = [obj[1] for obj in DB.selectTemplatePromptUnit(self.__id)]
+        m = text.strip()
+        names = [obj[1] for obj in DB.selectPropPromptAttribute(self.__id)]
         f = (True if m else False) and text not in names
         self.__okBtn.setEnabled(f)

@@ -3,14 +3,14 @@ from qtpy.QtWidgets import QTableWidget, QSizePolicy, QSpacerItem, QStackedWidge
     QAbstractItemView, QTableWidgetItem, QHeaderView, QHBoxLayout, \
     QVBoxLayout, QWidget, QDialog, QListWidget, QListWidgetItem, QSplitter
 
-from pyqt_openai.chat_widget.prompt_gen_widget.promptGroupInputDialog import PromptGroupInputDialog
-from pyqt_openai.chat_widget.prompt_gen_widget.propPromptUnitInputDialog import PropPromptUnitInputDialog
-from pyqt_openai.pyqt_openai_data import DB
+from pyqt_openai.chat_widget.prompt_gen_widget.promptGroupDirectInputDialog import PromptGroupDirectInputDialog
+from pyqt_openai.chat_widget.prompt_gen_widget.promptEntryDirectInputDialog import PromptEntryDirectInputDialog
 from pyqt_openai.lang.translations import LangClass
+from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.widgets.button import Button
 
 
-class PropGroupList(QWidget):
+class FormGroupList(QWidget):
     added = Signal(int)
     deleted = Signal(int)
     currentRowChanged = Signal(int)
@@ -50,57 +50,55 @@ class PropGroupList(QWidget):
         topWidget = QWidget()
         topWidget.setLayout(lay)
 
-        defaultPropPromptGroupArr = DB.selectPropPromptGroup()
+        defaultGroups = DB.selectPromptGroup()
 
-        self.__propList = QListWidget()
+        self.__list = QListWidget()
 
-        for group in defaultPropPromptGroupArr:
-            id = group[0]
-            name = group[1]
-            self.__addGroupItem(id, name)
+        for group in defaultGroups:
+            self.__addGroupItem(group.id, group.name)
 
-        self.__propList.currentRowChanged.connect(self.currentRowChanged)
-        self.__propList.itemChanged.connect(self.__itemChanged)
+        self.__list.currentRowChanged.connect(self.currentRowChanged)
+        self.__list.itemChanged.connect(self.__itemChanged)
 
         lay = QVBoxLayout()
         lay.addWidget(topWidget)
-        lay.addWidget(self.__propList)
+        lay.addWidget(self.__list)
         lay.setContentsMargins(0, 0, 5, 0)
 
         self.setLayout(lay)
 
-        self.__propList.setCurrentRow(0)
+        self.__list.setCurrentRow(0)
 
     def __addGroupItem(self, id, name):
         item = QListWidgetItem()
         item.setFlags(item.flags() | Qt.ItemFlag.ItemIsEditable)
         item.setData(Qt.ItemDataRole.UserRole, id)
         item.setText(name)
-        self.__propList.addItem(item)
-        self.__propList.setCurrentItem(item)
+        self.__list.addItem(item)
+        self.__list.setCurrentItem(item)
         self.added.emit(id)
 
     def __addGroup(self):
-        dialog = PromptGroupInputDialog(self)
+        dialog = PromptGroupDirectInputDialog(self)
         reply = dialog.exec()
         if reply == QDialog.DialogCode.Accepted:
             name = dialog.getPromptGroupName()
-            id = DB.insertPropPromptGroup(name)
+            id = DB.insertPromptGroup(name, prompt_type='form')
             self.__addGroupItem(id, name)
 
     def __deleteGroup(self):
-        i = self.__propList.currentRow()
-        item = self.__propList.takeItem(i)
+        i = self.__list.currentRow()
+        item = self.__list.takeItem(i)
         id = item.data(Qt.ItemDataRole.UserRole)
-        DB.deletePropPromptGroup(id)
+        DB.deletePromptGroup(id)
         self.deleted.emit(i)
 
     def __itemChanged(self, item):
         id = item.data(Qt.ItemDataRole.UserRole)
-        DB.updatePropPromptGroup(id, item.text())
+        DB.updatePromptGroup(id, item.text())
 
 
-class PropTable(QWidget):
+class PromptTable(QWidget):
     """
     benchmarked https://gptforwork.com/tools/prompt-generator
     """
@@ -112,10 +110,10 @@ class PropTable(QWidget):
         self.__initUi()
 
     def __initVal(self, id):
-        self.__id = id
+        self.__group_id = id
 
-        self.__title = DB.selectPropPromptGroupId(self.__id)[1]
-        self.__previousPromptPropArr = DB.selectPropPromptAttribute(self.__id)
+        self.__title = DB.selectCertainPromptGroup(self.__group_id).name
+        self.__entries = DB.selectPromptEntry(self.__group_id)
 
     def __initUi(self):
         self.__addBtn = Button()
@@ -140,27 +138,27 @@ class PropTable(QWidget):
 
         self.__table = QTableWidget()
         self.__table.setColumnCount(2)
-        self.__table.setRowCount(len(self.__previousPromptPropArr))
+        self.__table.setRowCount(len(self.__entries))
         self.__table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
         self.__table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.__table.setHorizontalHeaderLabels([LangClass.TRANSLATIONS['Name'], LangClass.TRANSLATIONS['Value']])
 
-        for i in range(len(self.__previousPromptPropArr)):
-            name = self.__previousPromptPropArr[i][2]
-            value = self.__previousPromptPropArr[i][3]
+        for i in range(len(self.__entries)):
+            name = self.__entries[i].name
+            content = self.__entries[i].content
 
             item1 = QTableWidgetItem(name)
-            item1.setData(Qt.ItemDataRole.UserRole, self.__previousPromptPropArr[i][0])
+            item1.setData(Qt.ItemDataRole.UserRole, self.__entries[i].id)
             item1.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
 
-            item2 = QTableWidgetItem(value)
+            item2 = QTableWidgetItem(content)
             item2.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
 
             self.__table.setItem(i, 0, item1)
             self.__table.setItem(i, 1, item2)
 
-        self.__table.itemChanged.connect(self.__generatePropPrompt)
-        self.__table.itemChanged.connect(self.__saveChangedPropPrompt)
+        self.__table.itemChanged.connect(self.__generatePrompt)
+        self.__table.itemChanged.connect(self.__saveChangedPrompt)
 
         lay = QVBoxLayout()
         lay.addWidget(topWidget)
@@ -178,22 +176,22 @@ class PropTable(QWidget):
                 prompt_text += f'{name}: {value}\n'
         return prompt_text
 
-    def __generatePropPrompt(self, item: QTableWidgetItem):
+    def __generatePrompt(self):
         prompt_text = self.getPromptText()
         self.updated.emit(prompt_text)
 
-    def __saveChangedPropPrompt(self, item: QTableWidgetItem):
+    def __saveChangedPrompt(self, item: QTableWidgetItem):
         name = self.__table.item(item.row(), 0)
         id = name.data(Qt.ItemDataRole.UserRole)
         name = name.text()
-        value = self.__table.item(item.row(), 1).text()
-        DB.updatePropPromptAttribute(self.__id, id, name, value)
+        content = self.__table.item(item.row(), 1).text()
+        DB.updatePromptEntry(id, name, content)
 
     def __add(self):
-        dialog = PropPromptUnitInputDialog(self.__id, self)
+        dialog = PromptEntryDirectInputDialog(self.__group_id, self)
         reply = dialog.exec()
         if reply == QDialog.DialogCode.Accepted:
-            self.__table.itemChanged.disconnect(self.__saveChangedPropPrompt)
+            self.__table.itemChanged.disconnect(self.__saveChangedPrompt)
 
             name = dialog.getPromptName()
             self.__table.setRowCount(self.__table.rowCount()+1)
@@ -206,19 +204,19 @@ class PropTable(QWidget):
             item2.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
             self.__table.setItem(self.__table.rowCount()-1, 1, item2)
 
-            id = DB.insertPropPromptAttribute(self.__id, name)
+            id = DB.insertPromptEntry(self.__group_id, name, '')
             item1.setData(Qt.ItemDataRole.UserRole, id)
 
-            self.__table.itemChanged.connect(self.__saveChangedPropPrompt)
+            self.__table.itemChanged.connect(self.__saveChangedPrompt)
 
     def __delete(self):
         for i in sorted(set([i.row() for i in self.__table.selectedIndexes()]), reverse=True):
             id = self.__table.item(i, 0).data(Qt.ItemDataRole.UserRole)
             self.__table.removeRow(i)
-            DB.deletePropPromptAttribute(self.__id, id)
+            DB.deletePromptEntry(self.__group_id, id)
 
 
-class PropPage(QWidget):
+class FormPage(QWidget):
     updated = Signal(str)
 
     def __init__(self):
@@ -227,20 +225,20 @@ class PropPage(QWidget):
         self.__initUi()
 
     def __initVal(self):
-        self.__previousPropGroups = DB.selectPropPromptGroup()
+        self.__groups = DB.selectPromptGroup(prompt_type='form')
 
     def __initUi(self):
-        leftWidget = PropGroupList()
-        leftWidget.added.connect(self.__propGroupAdded)
-        leftWidget.deleted.connect(self.__propGroupDeleted)
-        leftWidget.currentRowChanged.connect(self.__showProp)
+        leftWidget = FormGroupList()
+        leftWidget.added.connect(self.__added)
+        leftWidget.deleted.connect(self.__deleted)
+        leftWidget.currentRowChanged.connect(self.__showEntries)
 
         self.__rightWidget = QStackedWidget()
 
-        for group in self.__previousPropGroups:
-            propTable = PropTable(id=group[0])
-            propTable.updated.connect(self.updated)
-            self.__rightWidget.addWidget(propTable)
+        for group in self.__groups:
+            promptTable = PromptTable(id=group.id)
+            promptTable.updated.connect(self.updated)
+            self.__rightWidget.addWidget(promptTable)
 
         mainWidget = QSplitter()
         mainWidget.addWidget(leftWidget)
@@ -253,18 +251,18 @@ class PropPage(QWidget):
 
         self.setLayout(lay)
 
-    def __propGroupAdded(self, id):
-        propTable = PropTable(id)
-        propTable.updated.connect(self.updated)
-        self.__rightWidget.addWidget(propTable)
-        self.__rightWidget.setCurrentWidget(propTable)
+    def __added(self, id):
+        promptTable = PromptTable(id)
+        promptTable.updated.connect(self.updated)
+        self.__rightWidget.addWidget(promptTable)
+        self.__rightWidget.setCurrentWidget(promptTable)
 
-    def __propGroupDeleted(self, n):
+    def __deleted(self, n):
         w = self.__rightWidget.widget(n)
         self.__rightWidget.removeWidget(w)
 
-    def __showProp(self, n):
+    def __showEntries(self, n):
         self.__rightWidget.setCurrentIndex(n)
         w = self.__rightWidget.currentWidget()
-        if w and isinstance(w, PropTable):
+        if w and isinstance(w, PromptTable):
             self.updated.emit(w.getPromptText())

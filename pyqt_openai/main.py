@@ -35,8 +35,9 @@ from pyqt_openai.dalle_widget.dallEWidget import DallEWidget
 from pyqt_openai.chat_widget.openAiChatBotWidget import OpenAIChatBotWidget
 from pyqt_openai.replicate_widget.replicateWidget import ReplicateWidget
 from pyqt_openai.settingsDialog import SettingsDialog
-from pyqt_openai.util.script import get_db_filename, get_font, restart_app, show_message_box
+from pyqt_openai.util.script import get_font, restart_app, show_message_box
 from pyqt_openai.doNotAskAgainDialog import DoNotAskAgainDialog
+from pyqt_openai.sqlite import get_db_filename
 
 from pyqt_openai.pyqt_openai_data import OPENAI_STRUCT, LLAMAINDEX_WRAPPER
 from pyqt_openai import PAYPAL_URL, BUYMEACOFFEE_URL, INI_FILE_NAME, SHORTCUT_FULL_SCREEN, \

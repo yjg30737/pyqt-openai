@@ -89,6 +89,7 @@ PROMPT_BEGINNING_KEY_NAME = 'prompt_beginning'
 PROMPT_JSON_KEY_NAME = 'prompt_json'
 PROMPT_MAIN_KEY_NAME = 'prompt_main'
 PROMPT_END_KEY_NAME = 'prompt_ending'
+PROMPT_NAME_REGEX = '^[a-zA-Z_0-9]+$'
 INDENT_SIZE = 4
 
 # DB
@@ -118,13 +119,13 @@ PROPERTY_PROMPT_GROUP_TABLE_NAME_OLD = 'prop_prompt_grp_tb'
 PROPERTY_PROMPT_UNIT_TABLE_NAME_OLD = 'prop_prompt_unit_tb'
 TEMPLATE_PROMPT_GROUP_TABLE_NAME_OLD = 'template_prompt_grp_tb'
 TEMPLATE_PROMPT_TABLE_NAME_OLD = 'template_prompt_tb'
-PROPERTY_PROMPT_UNIT_DEFAULT_VALUE = [{'name': 'Task', 'text': ''},
-                                      {'name': 'Topic', 'text': ''},
-                                      {'name': 'Style', 'text': ''},
-                                      {'name': 'Tone', 'text': ''},
-                                      {'name': 'Audience', 'text': ''},
-                                      {'name': 'Length', 'text': ''},
-                                      {'name': 'Form', 'text': ''}]
+PROPERTY_PROMPT_UNIT_DEFAULT_VALUE = [{'name': 'Task', 'content': ''},
+                                      {'name': 'Topic', 'content': ''},
+                                      {'name': 'Style', 'content': ''},
+                                      {'name': 'Tone', 'content': ''},
+                                      {'name': 'Audience', 'content': ''},
+                                      {'name': 'Length', 'content': ''},
+                                      {'name': 'Form', 'content': ''}]
 
 PROMPT_GROUP_TABLE_NAME = 'prompt_group_tb'
 PROMPT_ENTRY_TABLE_NAME = 'prompt_entry_tb'

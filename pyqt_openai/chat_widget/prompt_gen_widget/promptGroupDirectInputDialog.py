@@ -1,13 +1,11 @@
-import re
-
 from qtpy.QtCore import Qt
 from qtpy.QtWidgets import QDialog, QVBoxLayout, QLineEdit, QFrame, QPushButton, QHBoxLayout, QWidget
 
-from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.lang.translations import LangClass
+from pyqt_openai.util.script import is_prompt_name_valid
 
 
-class PromptGroupInputDialog(QDialog):
+class PromptGroupDirectInputDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.__initUi()
@@ -49,7 +47,5 @@ class PromptGroupInputDialog(QDialog):
         return self.__newName.text()
 
     def __setAccept(self, text):
-        m = re.search('^[a-zA-Z_0-9]+$', text)
-        names = [obj[1] for obj in DB.selectPropPromptGroup()+DB.selectTemplatePromptGroup()]
-        f = (True if m else False) and text not in names
-        self.__okBtn.setEnabled(f)
+        exists_f = is_prompt_name_valid(text)
+        self.__okBtn.setEnabled(exists_f)
