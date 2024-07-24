@@ -1,5 +1,6 @@
 """
 This is the file that contains the database and llama-index instance, OpenAI API related constants.
+Also this checks the version of the OpenAI package and raises an exception if the version is below 1.0.
 """
 
 import base64
@@ -26,8 +27,6 @@ from openai import OpenAI
 
 # initialize
 OPENAI_STRUCT = OpenAI(api_key='')
-
-ROOT_DIR = os.path.dirname(__file__)
 
 # https://platform.openai.com/docs/models/model-endpoint-compatibility
 ENDPOINT_DICT = {

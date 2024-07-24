@@ -14,7 +14,7 @@ from jinja2 import Template
 from qtpy.QtCore import QSettings
 from qtpy.QtWidgets import QMessageBox
 
-from pyqt_openai.constants import INI_FILE_NAME, DB_FILE_NAME, DEFAULT_FONT_SIZE, DEFAULT_FONT_FAMILY, MAIN_INDEX
+from pyqt_openai import INI_FILE_NAME, DB_FILE_NAME, DEFAULT_FONT_SIZE, DEFAULT_FONT_FAMILY, MAIN_INDEX
 from pyqt_openai.models import ImagePromptContainer
 
 

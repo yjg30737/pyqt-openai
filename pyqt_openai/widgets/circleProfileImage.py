@@ -4,7 +4,7 @@ from qtpy.QtCore import Qt
 from qtpy.QtGui import QPixmap, QPainter, QBitmap
 from qtpy.QtWidgets import QLabel
 
-from pyqt_openai.pyqt_openai_data import ROOT_DIR
+from pyqt_openai import SRC_DIR
 
 
 class RoundedImage(QLabel):

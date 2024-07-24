@@ -12,7 +12,7 @@ from qtpy.QtWidgets import QHBoxLayout, QWidget, QSizePolicy, QVBoxLayout, QFram
 
 from pyqt_openai.chat_widget.chatWidget import ChatWidget
 from pyqt_openai.chat_widget.prompt import Prompt
-from pyqt_openai.constants import THREAD_TABLE_NAME, INI_FILE_NAME
+from pyqt_openai import THREAD_TABLE_NAME, INI_FILE_NAME
 from pyqt_openai.models import ChatThreadContainer, ChatMessageContainer
 from pyqt_openai.openAiThread import OpenAIThread, LlamaOpenAIThread
 from pyqt_openai.pyqt_openai_data import DB, get_argument, LLAMAINDEX_WRAPPER

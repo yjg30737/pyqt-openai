@@ -3,7 +3,7 @@ import os.path, posixpath
 from qtpy.QtGui import QColor, QPalette, qGray, QIcon
 from qtpy.QtWidgets import QGraphicsColorizeEffect, QWidget, QApplication, QPushButton
 
-from pyqt_openai.pyqt_openai_data import ROOT_DIR
+from pyqt_openai import SRC_DIR
 
 
 class Button(QPushButton):
@@ -102,7 +102,7 @@ class Button(QPushButton):
         self.setStyleSheet(self.__btn_style)
 
     def setStyleAndIcon(self, icon: str):
-        self.__icon = os.path.join(ROOT_DIR, icon).replace(os.sep, posixpath.sep)
+        self.__icon = os.path.join(SRC_DIR, icon).replace(os.sep, posixpath.sep)
         self.__styleInit()
         self.setIcon(QIcon(self.__icon))
 

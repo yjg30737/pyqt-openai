@@ -4,7 +4,7 @@ from qtpy.QtCore import Qt, QSettings
 
 from pyqt_openai.chat_widget.chatBrowser import ChatBrowser
 from pyqt_openai.chat_widget.menuWidget import MenuWidget
-from pyqt_openai.constants import INI_FILE_NAME
+from pyqt_openai import INI_FILE_NAME
 from pyqt_openai.lang.translations import LangClass
 
 

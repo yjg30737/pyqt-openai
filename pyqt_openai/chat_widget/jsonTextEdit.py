@@ -5,7 +5,7 @@ from qtpy.QtCore import Qt, QTimer
 from qtpy.QtGui import QFont, QTextCursor, QTextCharFormat, QColor
 from qtpy.QtWidgets import QTextEdit, QMessageBox
 
-from pyqt_openai.constants import FONT_FAMILY_FOR_SOURCE, INDENT_SIZE, DEFAULT_FONT_SIZE
+from pyqt_openai import FONT_FAMILY_FOR_SOURCE, INDENT_SIZE, DEFAULT_FONT_SIZE
 from pyqt_openai.util.script import get_font
 from pyqt_openai.lang.translations import LangClass
 

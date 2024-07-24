@@ -5,7 +5,7 @@ from qtpy.QtWidgets import QLabel, QMessageBox, QWidget, QVBoxLayout, QApplicati
     QTextBrowser, QAbstractScrollArea
 
 from pyqt_openai.chat_widget.messageResultDialog import MessageResultDialog
-from pyqt_openai.constants import DEFAULT_ICON_SIZE
+from pyqt_openai import DEFAULT_ICON_SIZE
 from pyqt_openai.models import ChatMessageContainer
 from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.widgets.button import Button

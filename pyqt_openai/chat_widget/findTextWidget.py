@@ -5,7 +5,7 @@ from qtpy.QtWidgets import QWidget, QLabel, \
     QHBoxLayout, QGridLayout, QLineEdit, QMessageBox
 
 from pyqt_openai.chat_widget.chatBrowser import ChatBrowser
-from pyqt_openai.constants import SHORTCUT_FIND_PREV, SHORTCUT_FIND_NEXT, SHORTCUT_GENERAL_ACTION, SHORTCUT_FIND_CLOSE
+from pyqt_openai import SHORTCUT_FIND_PREV, SHORTCUT_FIND_NEXT, SHORTCUT_GENERAL_ACTION, SHORTCUT_FIND_CLOSE
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.widgets.button import Button
 

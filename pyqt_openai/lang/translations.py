@@ -3,7 +3,7 @@ import os.path
 
 from qtpy.QtCore import QLocale
 
-from pyqt_openai.constants import DEFAULT_LANGUAGE, LANGUAGE_FILE, LANGUAGE_DICT
+from pyqt_openai import DEFAULT_LANGUAGE, LANGUAGE_FILE, LANGUAGE_DICT
 
 
 class WordsDict(dict):

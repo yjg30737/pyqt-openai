@@ -3,7 +3,7 @@ import os
 from qtpy.QtCore import Qt, QSettings
 from qtpy.QtWidgets import QHBoxLayout, QVBoxLayout, QFrame, QWidget, QSplitter
 
-from pyqt_openai.constants import INI_FILE_NAME
+from pyqt_openai import INI_FILE_NAME
 from pyqt_openai.models import ImagePromptContainer
 from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.replicate_widget.replicateControlWidget import ReplicateControlWidget

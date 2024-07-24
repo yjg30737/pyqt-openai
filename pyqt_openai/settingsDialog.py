@@ -1,7 +1,7 @@
 import os
 import sys
 
-from pyqt_openai.constants import COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE, LANGUAGE_DICT, DB_NAME_REGEX
+from pyqt_openai import COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE, LANGUAGE_DICT, DB_NAME_REGEX
 from pyqt_openai.widgets.checkBoxListWidget import CheckBoxListWidget
 
 # Get the absolute path of the current script file
@@ -19,8 +19,6 @@ from qtpy.QtGui import QRegularExpressionValidator
 from qtpy.QtWidgets import QFrame, QDialog, QComboBox, QLineEdit, QCheckBox, QSizePolicy, \
     QVBoxLayout, QHBoxLayout, QGroupBox, QSplitter, QLabel, QDialogButtonBox, QWidget, QMessageBox
 
-
-from pyqt_openai import constants
 from pyqt_openai.models import SettingsParamsContainer, ImagePromptContainer, ChatThreadContainer
 from pyqt_openai.lang.translations import LangClass
 

@@ -1,6 +1,6 @@
 from llama_index.core import VectorStoreIndex, SimpleDirectoryReader
 
-from pyqt_openai.constants import LLAMA_INDEX_DEFAULT_READ_DIRECTORY
+from pyqt_openai import LLAMA_INDEX_DEFAULT_READ_DIRECTORY
 
 
 class GPTLLamaIndexWrapper:
