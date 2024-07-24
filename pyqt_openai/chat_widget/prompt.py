@@ -7,7 +7,7 @@ from qtpy.QtWidgets import QVBoxLayout, QAction, QPushButton, QFileDialog, QTool
 from pyqt_openai.chat_widget.commandSuggestionWidget import CommandSuggestionWidget
 from pyqt_openai.chat_widget.textEditPromptGroup import TextEditPromptGroup
 from pyqt_openai.chat_widget.uploadedImageFileWidget import UploadedImageFileWidget
-from pyqt_openai.constants import INI_FILE_NAME, READ_FILE_EXT, PROMPT_BEGINNING_KEY_NAME, \
+from pyqt_openai import INI_FILE_NAME, READ_FILE_EXT, PROMPT_BEGINNING_KEY_NAME, \
     PROMPT_END_KEY_NAME, PROMPT_JSON_KEY_NAME, SHORTCUT_PROMPT_BEGINNING, SHORTCUT_PROMPT_ENDING, \
     SHORTCUT_SUPPORT_PROMPT_COMMAND
 from pyqt_openai.pyqt_openai_data import DB

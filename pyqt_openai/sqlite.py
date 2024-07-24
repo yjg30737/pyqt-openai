@@ -3,22 +3,21 @@ from datetime import datetime
 import sqlite3
 from typing import List
 
-from pyqt_openai.constants import THREAD_TABLE_NAME, THREAD_TRIGGER_NAME, THREAD_TABLE_NAME_OLD, \
+from pyqt_openai import AWESOME_CHATGPT_PROMPTS, ALEX_BROGAN_PROMPT, THREAD_TABLE_NAME, THREAD_TRIGGER_NAME, \
+    THREAD_TABLE_NAME_OLD, \
     THREAD_TRIGGER_NAME_OLD, MESSAGE_TABLE_NAME_OLD, MESSAGE_TABLE_NAME, THREAD_MESSAGE_INSERTED_TR_NAME, \
     THREAD_MESSAGE_UPDATED_TR_NAME, THREAD_MESSAGE_DELETED_TR_NAME, THREAD_MESSAGE_INSERTED_TR_NAME_OLD, \
     THREAD_MESSAGE_UPDATED_TR_NAME_OLD, THREAD_MESSAGE_DELETED_TR_NAME_OLD, IMAGE_TABLE_NAME, \
     PROPERTY_PROMPT_UNIT_TABLE_NAME, PROPERTY_PROMPT_GROUP_TABLE_NAME, TEMPLATE_PROMPT_GROUP_TABLE_NAME, \
     TEMPLATE_PROMPT_TABLE_NAME, PROPERTY_PROMPT_UNIT_DEFAULT_VALUE
 from pyqt_openai.models import ImagePromptContainer, ChatMessageContainer
-from pyqt_openai.variables import AWESOME_CHATGPT_PROMPTS, ALEX_BROGAN_PROMPT
 from pyqt_openai.util.script import get_db_filename
 
 
 class SqliteDatabase:
     """
-    functions which only meant to be used frequently are defined.
-
-    if there is no functions you want to use, use ``getCursor`` instead
+    Functions which only meant to be used frequently are defined.
+    If there is no functions you want to use, use ``getCursor`` instead.
     """
     def __init__(self, db_filename=get_db_filename()):
         super().__init__()

@@ -6,7 +6,7 @@ from qtpy.QtWidgets import QLineEdit, QScrollArea, QMessageBox, QWidget, QCheckB
     QPlainTextEdit, \
     QFormLayout, QLabel, QFrame, QSplitter
 
-from pyqt_openai.constants import INI_FILE_NAME, IMAGE_DEFAULT_SAVE_DIRECTORY
+from pyqt_openai import INI_FILE_NAME, IMAGE_DEFAULT_SAVE_DIRECTORY
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ImagePromptContainer
 from pyqt_openai.util.replicate_script import ReplicateWrapper

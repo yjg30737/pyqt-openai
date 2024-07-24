@@ -7,7 +7,7 @@ from qtpy.QtWidgets import QWidget, QVBoxLayout, QMessageBox, QPushButton, QStyl
 
 # for search feature
 from pyqt_openai.chat_widget.chatGPTImportDialog import ChatGPTImportDialog
-from pyqt_openai.constants import THREAD_ORDERBY
+from pyqt_openai import THREAD_ORDERBY
 from pyqt_openai.chat_widget.exportDialog import ExportDialog
 from pyqt_openai.chat_widget.importDialog import ImportDialog
 from pyqt_openai.lang.translations import LangClass

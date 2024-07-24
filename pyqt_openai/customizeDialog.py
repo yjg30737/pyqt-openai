@@ -3,7 +3,7 @@ from qtpy.QtGui import QFont
 from qtpy.QtWidgets import QDialog, QFrame, QPushButton, QHBoxLayout, QVBoxLayout, QWidget, QFormLayout, QSplitter, \
     QSizePolicy
 
-from pyqt_openai.constants import IMAGE_FILE_EXT, DEFAULT_ICON_SIZE
+from pyqt_openai import IMAGE_FILE_EXT, DEFAULT_ICON_SIZE
 from pyqt_openai.models import CustomizeParamsContainer
 from pyqt_openai.fontWidget import FontWidget
 from pyqt_openai.lang.translations import LangClass

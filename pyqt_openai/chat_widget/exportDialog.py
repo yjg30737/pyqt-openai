@@ -5,7 +5,7 @@ This dialog is for exporting conversation threads selected by the user from the 
 from qtpy.QtCore import Qt
 from qtpy.QtWidgets import QTableWidgetItem, QLabel, QDialogButtonBox, QCheckBox, QDialog, QVBoxLayout
 
-from pyqt_openai.constants import THREAD_ORDERBY
+from pyqt_openai import THREAD_ORDERBY
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.widgets.checkBoxTableWidget import CheckBoxTableWidget
 

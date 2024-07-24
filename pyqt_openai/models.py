@@ -1,7 +1,7 @@
 from typing import List
 from dataclasses import dataclass, fields, field
 
-from pyqt_openai.constants import DB_FILE_NAME, DEFAULT_FONT_SIZE, DEFAULT_FONT_FAMILY, DEFAULT_USER_IMAGE_PATH, \
+from pyqt_openai import DB_FILE_NAME, DEFAULT_FONT_SIZE, DEFAULT_FONT_FAMILY, DEFAULT_USER_IMAGE_PATH, \
     DEFAULT_AI_IMAGE_PATH
 from pyqt_openai.lang.translations import LangClass
 

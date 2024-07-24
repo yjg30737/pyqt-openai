@@ -1,7 +1,7 @@
 import os
 import sys
 
-from pyqt_openai.constants import COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE, LANGUAGE_DICT, DB_NAME_REGEX
+from pyqt_openai import COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE, LANGUAGE_DICT, DB_NAME_REGEX
 from pyqt_openai.widgets.checkBoxListWidget import CheckBoxListWidget
 
 # Get the absolute path of the current script file

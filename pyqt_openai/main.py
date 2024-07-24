@@ -39,7 +39,7 @@ from pyqt_openai.util.script import get_db_filename, get_font, restart_app, show
 from pyqt_openai.doNotAskAgainDialog import DoNotAskAgainDialog
 
 from pyqt_openai.pyqt_openai_data import OPENAI_STRUCT, LLAMAINDEX_WRAPPER
-from pyqt_openai.constants import PAYPAL_URL, BUYMEACOFFEE_URL, INI_FILE_NAME, SHORTCUT_FULL_SCREEN, \
+from pyqt_openai import PAYPAL_URL, BUYMEACOFFEE_URL, INI_FILE_NAME, SHORTCUT_FULL_SCREEN, \
     APP_INITIAL_WINDOW_SIZE, APP_NAME
 
 # HighDPI support
