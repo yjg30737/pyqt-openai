@@ -1,3 +1,7 @@
+"""
+This file is used to store the data classes that are used throughout the application.
+"""
+
 from typing import List
 from dataclasses import dataclass, fields, field
 

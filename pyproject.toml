@@ -21,8 +21,19 @@ dependencies = [
     "requests",
     "langchain",
     "pillow",
-    "replicate"
+    "replicate",
+    "toml"
 ]
+keywords = ['openai', 'pyqt', 'pyqt5', 'pyqt6', 'pyside6', 'chatbot', 'gpt', 'replicate']
+
+# TODO testing each version
+requires-python = ">= 3.9"
+# 3.9
+# 3.10
+# 3.11
+# 3.12
+
+# TODO add classifiers
 
 [project.urls]
 homepage = "https://github.com/yjg30737/pyqt-openai.git"
@@ -67,3 +78,6 @@ pyqt_openai = [
     "ico/fullscreen.svg",
     "ico/export.svg"
 ]
+
+[project.gui-scripts]
+pyqt-openai = "pyqt_openai.main:main"

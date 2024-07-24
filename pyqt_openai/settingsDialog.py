@@ -19,8 +19,6 @@ from qtpy.QtGui import QRegularExpressionValidator
 from qtpy.QtWidgets import QFrame, QDialog, QComboBox, QLineEdit, QCheckBox, QSizePolicy, \
     QVBoxLayout, QHBoxLayout, QGroupBox, QSplitter, QLabel, QDialogButtonBox, QWidget, QMessageBox
 
-
-from pyqt_openai import constants
 from pyqt_openai.models import SettingsParamsContainer, ImagePromptContainer, ChatThreadContainer
 from pyqt_openai.lang.translations import LangClass
 
