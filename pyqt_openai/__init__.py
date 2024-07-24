@@ -2,10 +2,15 @@
 This file is used to store the constants and the global variables that are used throughout the application.
 """
 
+import json
+from pathlib import Path
 
 import toml
 
-SETUP_FILENAME = '../pyproject.toml'
+# Load the pyproject.toml file
+SRC_DIR = Path(__file__).resolve().parent
+ROOT_DIR = SRC_DIR.parent
+SETUP_FILENAME = ROOT_DIR / "pyproject.toml"
 
 with open(SETUP_FILENAME, "r") as file:
     pyproject_data = toml.load(file)
@@ -19,6 +24,7 @@ __author__ = pyproject_data["project"]["authors"][0]['name']
 # Constants
 # ----------------------------
 # APP
+
 APP_NAME = 'pyqt-openai'
 APP_ICON = 'icon.png'
 CONTACT = 'yjg30737@gmail.com'
@@ -125,8 +131,6 @@ PROPERTY_PROMPT_UNIT_DEFAULT_VALUE = [{'name': 'Task', 'text': ''},
 # DEFAULT JSON FILENAME FOR PROMPT
 AWESOME_CHATGPT_PROMPTS_FILENAME = 'prompt_res/awesome_chatgpt_prompts.json'
 ALEX_BROGAN_PROMPT_FILENAME = 'prompt_res/alex_brogan.json'
-
-import json
 
 # Load the default prompt
 AWESOME_CHATGPT_PROMPTS = json.load(open(AWESOME_CHATGPT_PROMPTS_FILENAME))

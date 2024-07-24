@@ -28,8 +28,6 @@ from openai import OpenAI
 # initialize
 OPENAI_STRUCT = OpenAI(api_key='')
 
-ROOT_DIR = os.path.dirname(__file__)
-
 # https://platform.openai.com/docs/models/model-endpoint-compatibility
 ENDPOINT_DICT = {
     '/v1/chat/completions': ['gpt-4o', 'gpt-4o-mini', 'gpt-4-turbo',

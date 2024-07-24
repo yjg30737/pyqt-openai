@@ -4,7 +4,8 @@ from qtpy.QtGui import QPainter
 from qtpy.QtSvg import QSvgRenderer
 from qtpy.QtWidgets import QLabel
 
-from pyqt_openai.pyqt_openai_data import ROOT_DIR
+from pyqt_openai import SRC_DIR
+
 
 class SvgLabel(QLabel):
     def __init__(self):
@@ -18,7 +19,7 @@ class SvgLabel(QLabel):
         return super().paintEvent(e)
 
     def setSvgFile(self, filename: str):
-        filename = os.path.join(ROOT_DIR, filename)
+        filename = os.path.join(SRC_DIR, filename)
         self.__renderer = QSvgRenderer(filename)
         self.resize(self.__renderer.defaultSize())
         length = max(self.sizeHint().width(), self.sizeHint().height())

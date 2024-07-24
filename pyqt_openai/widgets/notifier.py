@@ -6,7 +6,8 @@ from qtpy.QtGui import QFont, QIcon
 from qtpy.QtWidgets import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QSizePolicy, QPushButton, \
     QApplication
 
-from pyqt_openai.pyqt_openai_data import ROOT_DIR
+from pyqt_openai import SRC_DIR
+
 
 class NotifierWidget(QWidget):
     doubleClicked = Signal()
@@ -26,7 +27,7 @@ class NotifierWidget(QWidget):
 
         closeBtn = QPushButton()
         closeBtn.clicked.connect(self.close)
-        close_icon_path = os.path.join(ROOT_DIR, 'ico/close.svg').replace(os.sep, posixpath.sep)
+        close_icon_path = os.path.join(SRC_DIR, 'ico/close.svg').replace(os.sep, posixpath.sep)
         closeBtn.setIcon(QIcon(close_icon_path))
 
         lay = QHBoxLayout()
