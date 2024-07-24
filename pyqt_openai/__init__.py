@@ -24,10 +24,9 @@ __author__ = pyproject_data["project"]["authors"][0]['name']
 # Constants
 # ----------------------------
 # APP
-
-APP_NAME = 'pyqt-openai'
+APP_NAME = pyproject_data["project"]["name"]
+CONTACT = pyproject_data["project"]["authors"][0]['email']
 APP_ICON = 'icon.png'
-CONTACT = 'yjg30737@gmail.com'
 APP_INITIAL_WINDOW_SIZE = (1280, 768)
 LICENSE_URL = 'https://github.com/yjg30737/pyqt-openai/blob/main/LICENSE'
 PAYPAL_URL = 'https://paypal.me/yjg30737'
@@ -93,7 +92,6 @@ PROMPT_END_KEY_NAME = 'prompt_ending'
 INDENT_SIZE = 4
 
 # DB
-
 DB_NAME_REGEX = '[a-zA-Z0-9]{1,20}'
 
 THREAD_TABLE_NAME_OLD = 'conv_tb'
