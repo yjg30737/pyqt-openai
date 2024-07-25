@@ -76,7 +76,7 @@ class Prompt(QWidget):
 
         # set command suggestion
         self.__textEditGroup.onUpdateSuggestion.connect(self.__updateSuggestions)
-        self.__textEditGroup.onSendKeySignalToSuggestion.connect(self.__sendKeysignalToSuggestion)
+        self.__textEditGroup.onSendKeySignalToSuggestion.connect(self.__sendKeySignalToSuggestion)
 
         self.__suggestion_list.itemClicked.connect(self.executeCommand)
 
@@ -165,7 +165,7 @@ class Prompt(QWidget):
 
         self.updateHeight()
 
-    def __getEveryPromptCommands(self):
+    def __setEveryPromptCommands(self):
         command_obj_lst = []
         for group in DB.selectPromptGroup():
             entries = [attr for attr in DB.selectPromptEntry(group_id=group.id)]
@@ -185,8 +185,11 @@ class Prompt(QWidget):
                         'name': f'{entry.name}({group.name})',
                         'value': entry.content
                     })
-
         self.__p_grp = [{'name': obj['name'], 'value': obj['value']} for obj in command_obj_lst]
+
+    def __getEveryPromptCommands(self, get_name_only=False):
+        if get_name_only:
+            return [obj['name'] for obj in self.__p_grp]
         return self.__p_grp
 
     def __updateSuggestions(self):
@@ -202,9 +205,10 @@ class Prompt(QWidget):
                 w.setCommandSuggestionEnabled(starts_with_f)
                 if starts_with_f:
                     command_word = input_text_chunk[1:]
-
-                    # Example: Add some dummy command suggestions
-                    commands = self.__getEveryPromptCommands()
+                    # Set every prompt commands first
+                    self.__setEveryPromptCommands()
+                    # Get the commands
+                    commands = self.__getEveryPromptCommands(get_name_only=True)
                     filtered_commands = commands
                     if command_word:
                         filtered_commands = [command for command in commands if command_word.lower() in command.lower()]
@@ -218,7 +222,7 @@ class Prompt(QWidget):
                         self.__suggestion_list.addItems(filtered_commands)
                         self.__suggestion_list.setCurrentRow(0)
 
-    def __sendKeysignalToSuggestion(self, key):
+    def __sendKeySignalToSuggestion(self, key):
         if key == 'up':
             self.__suggestion_list.setCurrentRow(max(0, self.__suggestion_list.currentRow() - 1))
         elif key == 'down':

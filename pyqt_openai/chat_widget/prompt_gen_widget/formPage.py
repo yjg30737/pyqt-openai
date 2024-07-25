@@ -50,11 +50,11 @@ class FormGroupList(QWidget):
         topWidget = QWidget()
         topWidget.setLayout(lay)
 
-        defaultGroups = DB.selectPromptGroup()
+        groups = DB.selectPromptGroup(prompt_type='form')
 
         self.__list = QListWidget()
 
-        for group in defaultGroups:
+        for group in groups:
             self.__addGroupItem(group.id, group.name)
 
         self.__list.currentRowChanged.connect(self.currentRowChanged)

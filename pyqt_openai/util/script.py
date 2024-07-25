@@ -231,8 +231,24 @@ def get_chatgpt_data(conv_arr):
 
     return conv_arr
 
-def is_prompt_name_valid(text):
+def is_prompt_group_name_valid(text):
+    """
+    Check if the prompt group name is valid or not and exists in the database
+    :param text: The text to check
+    """
     m = re.search(PROMPT_NAME_REGEX, text)
     # Check if the prompt group with same name already exists
-    exists_f = True if (True if m else False) and DB.selectCertainPromptGroup(text) else False
+    exists_f = True if (True if m else False) and DB.selectCertainPromptGroup(name=text) else False
     return exists_f
+
+def is_prompt_entry_name_valid(group_id, text):
+    """
+    Check if the prompt entry name is valid or not and exists in the database
+    :param group_id: The group id to check
+    :param text: The text to check
+    """
+    m = re.search(PROMPT_NAME_REGEX, text)
+    # Check if the prompt entry with same name already exists
+    exists_f = True if (True if m else False) and DB.selectPromptEntry(group_id=group_id, name=text) else False
+    return exists_f
+

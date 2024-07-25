@@ -3,6 +3,7 @@ This file is used to store the constants and the global variables that are used 
 """
 
 import json
+import os
 from pathlib import Path
 
 import toml
@@ -135,8 +136,10 @@ AWESOME_CHATGPT_PROMPTS_FILENAME = 'prompt_res/awesome_chatgpt_prompts.json'
 ALEX_BROGAN_PROMPT_FILENAME = 'prompt_res/alex_brogan.json'
 
 # Load the default prompt
-AWESOME_CHATGPT_PROMPTS = json.load(open(AWESOME_CHATGPT_PROMPTS_FILENAME))
-ALEX_BROGAN_PROMPT = json.load(open(ALEX_BROGAN_PROMPT_FILENAME))
+if os.path.exists(AWESOME_CHATGPT_PROMPTS_FILENAME):
+    AWESOME_CHATGPT_PROMPTS = json.load(open(AWESOME_CHATGPT_PROMPTS_FILENAME))
+if os.path.exists(ALEX_BROGAN_PROMPT_FILENAME):
+    ALEX_BROGAN_PROMPT = json.load(open(ALEX_BROGAN_PROMPT_FILENAME))
 
 # Update the __all__ list with the PEP8 standard dunder names
 __all__ = ['__version__',

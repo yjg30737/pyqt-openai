@@ -1,8 +1,8 @@
 from qtpy.QtCore import Qt
-from qtpy.QtWidgets import QDialog, QVBoxLayout, QLineEdit, QFrame, QPushButton, QHBoxLayout, QWidget
+from qtpy.QtWidgets import QDialog, QVBoxLayout, QMessageBox, QLineEdit, QFrame, QPushButton, QHBoxLayout, QWidget
 
 from pyqt_openai.lang.translations import LangClass
-from pyqt_openai.util.script import is_prompt_name_valid
+from pyqt_openai.util.script import is_prompt_group_name_valid
 
 
 class PromptGroupDirectInputDialog(QDialog):
@@ -14,15 +14,16 @@ class PromptGroupDirectInputDialog(QDialog):
         self.setWindowTitle(LangClass.TRANSLATIONS['New Prompt'])
         self.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.WindowCloseButtonHint)
 
-        self.__newName = QLineEdit()
-        self.__newName.textChanged.connect(self.__setAccept)
+        self.__name = QLineEdit()
+        self.__name.setPlaceholderText(LangClass.TRANSLATIONS['Name'])
+        self.__name.textChanged.connect(lambda x: self.__okBtn.setEnabled(x.strip() != ''))
 
         sep = QFrame()
         sep.setFrameShape(QFrame.Shape.HLine)
         sep.setFrameShadow(QFrame.Shadow.Sunken)
 
         self.__okBtn = QPushButton(LangClass.TRANSLATIONS['OK'])
-        self.__okBtn.clicked.connect(self.accept)
+        self.__okBtn.clicked.connect(self.__accept)
 
         cancelBtn = QPushButton(LangClass.TRANSLATIONS['Cancel'])
         cancelBtn.clicked.connect(self.close)
@@ -37,15 +38,21 @@ class PromptGroupDirectInputDialog(QDialog):
         okCancelWidget.setLayout(lay)
 
         lay = QVBoxLayout()
-        lay.addWidget(self.__newName)
+        lay.addWidget(self.__name)
         lay.addWidget(sep)
         lay.addWidget(okCancelWidget)
 
         self.setLayout(lay)
 
     def getPromptGroupName(self):
-        return self.__newName.text()
+        return self.__name.text()
 
-    def __setAccept(self, text):
-        exists_f = is_prompt_name_valid(text)
-        self.__okBtn.setEnabled(exists_f)
+    def __accept(self):
+        exists_f = is_prompt_group_name_valid(self.__name.text())
+        if exists_f:
+            self.__name.setFocus()
+            QMessageBox.warning(self, LangClass.TRANSLATIONS['Warning'], LangClass.TRANSLATIONS['Prompt name already exists.'])
+            return
+        else:
+            self.accept()
+
