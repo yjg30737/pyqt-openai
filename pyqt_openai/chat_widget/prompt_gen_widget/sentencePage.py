@@ -39,7 +39,7 @@ class SentenceGroupList(QWidget):
         self.__exportBtn.setToolTip(LangClass.TRANSLATIONS['Export'])
 
         lay = QHBoxLayout()
-        lay.addWidget(QLabel(LangClass.TRANSLATIONS['Template Group']))
+        lay.addWidget(QLabel(LangClass.TRANSLATIONS['Sentence Group']))
         lay.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.Policy.MinimumExpanding))
         lay.addWidget(self.__addBtn)
         lay.addWidget(self.__delBtn)

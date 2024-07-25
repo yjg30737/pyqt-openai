@@ -83,6 +83,7 @@ DB_FILE_NAME = 'conv'
 ## EXTENSIONS
 IMAGE_FILE_EXT = 'Image File (*.jpg *.png)'
 TEXT_FILE_EXT = 'Text File (*.txt)'
+JSON_FILE_EXT = 'JSON Files (*.json)'
 READ_FILE_EXT = f'{TEXT_FILE_EXT};;{IMAGE_FILE_EXT}'
 
 ## PROMPT
@@ -134,6 +135,17 @@ PROMPT_ENTRY_TABLE_NAME = 'prompt_entry_tb'
 # DEFAULT JSON FILENAME FOR PROMPT
 AWESOME_CHATGPT_PROMPTS_FILENAME = 'prompt_res/awesome_chatgpt_prompts.json'
 ALEX_BROGAN_PROMPT_FILENAME = 'prompt_res/alex_brogan.json'
+
+FORM_PROMPT_GROUP_SAMPLE = PROPERTY_PROMPT_UNIT_DEFAULT_VALUE
+SENTENCE_PROMPT_GROUP_SAMPLE = {
+    "name": "Sample Prompt Group",
+    "data": [
+        {
+            "name": "Sample Prompt 1",
+            "content": "Identify the 20% of [topic or skill] that will yield 80% of the desired results and provide a focused learning plan to master it."
+        }
+    ]
+}
 
 # Load the default prompt
 if os.path.exists(AWESOME_CHATGPT_PROMPTS_FILENAME):

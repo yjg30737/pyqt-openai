@@ -32,13 +32,15 @@ class FormGroupList(QWidget):
         self.__importBtn = Button()
         self.__importBtn.setStyleAndIcon('ico/import.svg')
         self.__importBtn.setToolTip(LangClass.TRANSLATIONS['Import'])
+        self.__importBtn.clicked.connect(self.__import)
 
         self.__exportBtn = Button()
         self.__exportBtn.setStyleAndIcon('ico/export.svg')
         self.__exportBtn.setToolTip(LangClass.TRANSLATIONS['Export'])
+        self.__exportBtn.clicked.connect(self.__export)
 
         lay = QHBoxLayout()
-        lay.addWidget(QLabel(LangClass.TRANSLATIONS['Property Group']))
+        lay.addWidget(QLabel(LangClass.TRANSLATIONS['Form Group']))
         lay.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.Policy.MinimumExpanding))
         lay.addWidget(self.__addBtn)
         lay.addWidget(self.__delBtn)
@@ -92,6 +94,29 @@ class FormGroupList(QWidget):
         id = item.data(Qt.ItemDataRole.UserRole)
         DB.deletePromptGroup(id)
         self.deleted.emit(i)
+
+    def __import(self):
+        try:
+            data = []
+            with open(filename, 'r') as f:
+                data = json.load(f)
+
+            # Import thread
+            for thread in data:
+                cur_id = DB.insertThread(thread['name'])
+                messages = thread['messages']
+                # Import message
+                for message in messages:
+                    message['thread_id'] = cur_id
+                    container = ChatMessageContainer(**message)
+                    DB.insertMessage(container)
+            self.__chatNavWidget.refreshData()
+        except Exception as e:
+            QMessageBox.critical(self, LangClass.TRANSLATIONS["Error"], LangClass.TRANSLATIONS['Check whether the file is a valid JSON file for importing.'])
+
+    def __export(self):
+        pass
+
 
     def __itemChanged(self, item):
         id = item.data(Qt.ItemDataRole.UserRole)
