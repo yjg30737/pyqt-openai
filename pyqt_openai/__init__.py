@@ -136,22 +136,42 @@ PROMPT_ENTRY_TABLE_NAME = 'prompt_entry_tb'
 AWESOME_CHATGPT_PROMPTS_FILENAME = 'prompt_res/awesome_chatgpt_prompts.json'
 ALEX_BROGAN_PROMPT_FILENAME = 'prompt_res/alex_brogan.json'
 
-FORM_PROMPT_GROUP_SAMPLE = PROPERTY_PROMPT_UNIT_DEFAULT_VALUE
-SENTENCE_PROMPT_GROUP_SAMPLE = {
-    "name": "Sample Prompt Group",
-    "data": [
-        {
-            "name": "Sample Prompt 1",
-            "content": "Identify the 20% of [topic or skill] that will yield 80% of the desired results and provide a focused learning plan to master it."
-        }
-    ]
-}
+FORM_PROMPT_GROUP_SAMPLE = json.dumps(PROPERTY_PROMPT_UNIT_DEFAULT_VALUE, indent=4)
+
+SENTENCE_PROMPT_GROUP_SAMPLE = '''[
+    {
+        "name": "alex_brogan",
+        "data": [
+            {
+                "name": "sample_1",
+                "content": "Identify the 20% of [topic or skill] that will yield 80% of the desired results and provide a focused learning plan to master it."
+            },
+            {
+                "name": "sample_2",
+                "content": "Explain [topic or skill] in the simplest terms possible as if teaching it to a complete beginner. Identify gaps in my understanding and suggest resources to fill them."
+            }
+        ]
+    },
+    {
+        "name": "awesome_chatGPT_prompts",
+        "data": [
+            {
+                "name": "linux_terminal",
+                "content": "I want you to act as a linux terminal. I will type commands and you will reply with what the terminal should show. I want you to only reply with the terminal output inside one unique code block, and nothing else. do not write explanations. do not type commands unless I instruct you to do so. when i need to tell you something in english, i will do so by putting text inside curly brackets {like this}. my first command is pwd"
+            },
+            {
+                "name": "english_translator_and_improver",
+                "content": "I want you to act as an English translator, spelling corrector and improver. I will speak to you in any language and you will detect the language, translate it and answer in the corrected and improved version of my text, in English. I want you to replace my simplified A0-level words and sentences with more beautiful and elegant, upper level English words and sentences. Keep the meaning same, but make them more literary. I want you to only reply the correction, the improvements and nothing else, do not write explanations. My first sentence is \"istanbulu cok seviyom burada olmak cok guzel\""
+            },
+        ]
+    }
+]'''
 
 # Load the default prompt
 if os.path.exists(AWESOME_CHATGPT_PROMPTS_FILENAME):
-    AWESOME_CHATGPT_PROMPTS = json.load(open(AWESOME_CHATGPT_PROMPTS_FILENAME))
+    AWESOME_CHATGPT_PROMPTS = json.load(open(AWESOME_CHATGPT_PROMPTS_FILENAME))[0]
 if os.path.exists(ALEX_BROGAN_PROMPT_FILENAME):
-    ALEX_BROGAN_PROMPT = json.load(open(ALEX_BROGAN_PROMPT_FILENAME))
+    ALEX_BROGAN_PROMPT = json.load(open(ALEX_BROGAN_PROMPT_FILENAME))[0]
 
 # Update the __all__ list with the PEP8 standard dunder names
 __all__ = ['__version__',

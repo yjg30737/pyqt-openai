@@ -27,9 +27,6 @@ class SentenceGroupList(QWidget):
         self.__addBtn.setStyleAndIcon('ico/add.svg')
         self.__delBtn.setStyleAndIcon('ico/delete.svg')
 
-        self.__addBtn.clicked.connect(self.__addGroup)
-        self.__delBtn.clicked.connect(self.__deleteGroup)
-
         self.__importBtn = Button()
         self.__importBtn.setStyleAndIcon('ico/import.svg')
         self.__importBtn.setToolTip(LangClass.TRANSLATIONS['Import'])
@@ -37,6 +34,11 @@ class SentenceGroupList(QWidget):
         self.__exportBtn = Button()
         self.__exportBtn.setStyleAndIcon('ico/export.svg')
         self.__exportBtn.setToolTip(LangClass.TRANSLATIONS['Export'])
+
+        self.__addBtn.clicked.connect(self.__add)
+        self.__delBtn.clicked.connect(self.__delete)
+        self.__importBtn.clicked.connect(self.__import)
+        self.__exportBtn.clicked.connect(self.__export)
 
         lay = QHBoxLayout()
         lay.addWidget(QLabel(LangClass.TRANSLATIONS['Sentence Group']))
@@ -85,7 +87,7 @@ class SentenceGroupList(QWidget):
 
         self.__delBtn.setEnabled(True)
 
-    def __addGroup(self):
+    def __add(self):
         dialog = PromptGroupDirectInputDialog(self)
         reply = dialog.exec()
         if reply == QDialog.DialogCode.Accepted:
@@ -93,7 +95,7 @@ class SentenceGroupList(QWidget):
             id = DB.insertPromptGroup(name, prompt_type='sentence')
             self.__addGroupItem(id, name)
 
-    def __deleteGroup(self):
+    def __delete(self):
         i = self.__list.currentRow()
         item = self.__list.takeItem(i)
         id = item.data(Qt.ItemDataRole.UserRole)
@@ -103,6 +105,12 @@ class SentenceGroupList(QWidget):
         groups = DB.selectPromptGroup(prompt_type='sentence')
         if len(groups) <= 0:
             self.__delBtn.setEnabled(False)
+
+    def __import(self):
+        pass
+
+    def __export(self):
+        pass
 
     def __itemChanged(self, item):
         id = item.data(Qt.ItemDataRole.UserRole)

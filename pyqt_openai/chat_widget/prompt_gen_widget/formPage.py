@@ -1,5 +1,5 @@
 from qtpy.QtCore import Signal, Qt
-from qtpy.QtWidgets import QTableWidget, QSizePolicy, QSpacerItem, QStackedWidget, QLabel, \
+from qtpy.QtWidgets import QTableWidget, QMessageBox, QSizePolicy, QSpacerItem, QStackedWidget, QLabel, \
     QAbstractItemView, QTableWidgetItem, QHeaderView, QHBoxLayout, \
     QVBoxLayout, QWidget, QDialog, QListWidget, QListWidgetItem, QSplitter
 
@@ -26,8 +26,8 @@ class FormGroupList(QWidget):
         self.__addBtn.setStyleAndIcon('ico/add.svg')
         self.__delBtn.setStyleAndIcon('ico/delete.svg')
 
-        self.__addBtn.clicked.connect(self.__addGroup)
-        self.__delBtn.clicked.connect(self.__deleteGroup)
+        self.__addBtn.clicked.connect(self.__add)
+        self.__delBtn.clicked.connect(self.__delete)
 
         self.__importBtn = Button()
         self.__importBtn.setStyleAndIcon('ico/import.svg')
@@ -80,7 +80,7 @@ class FormGroupList(QWidget):
         self.__list.setCurrentItem(item)
         self.added.emit(id)
 
-    def __addGroup(self):
+    def __add(self):
         dialog = PromptGroupDirectInputDialog(self)
         reply = dialog.exec()
         if reply == QDialog.DialogCode.Accepted:
@@ -88,7 +88,7 @@ class FormGroupList(QWidget):
             id = DB.insertPromptGroup(name, prompt_type='form')
             self.__addGroupItem(id, name)
 
-    def __deleteGroup(self):
+    def __delete(self):
         i = self.__list.currentRow()
         item = self.__list.takeItem(i)
         id = item.data(Qt.ItemDataRole.UserRole)
@@ -97,26 +97,12 @@ class FormGroupList(QWidget):
 
     def __import(self):
         try:
-            data = []
-            with open(filename, 'r') as f:
-                data = json.load(f)
-
-            # Import thread
-            for thread in data:
-                cur_id = DB.insertThread(thread['name'])
-                messages = thread['messages']
-                # Import message
-                for message in messages:
-                    message['thread_id'] = cur_id
-                    container = ChatMessageContainer(**message)
-                    DB.insertMessage(container)
-            self.__chatNavWidget.refreshData()
+            print('__import')
         except Exception as e:
-            QMessageBox.critical(self, LangClass.TRANSLATIONS["Error"], LangClass.TRANSLATIONS['Check whether the file is a valid JSON file for importing.'])
+            print(e)
 
     def __export(self):
-        pass
-
+        print('__export')
 
     def __itemChanged(self, item):
         id = item.data(Qt.ItemDataRole.UserRole)
