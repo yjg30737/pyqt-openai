@@ -1,12 +1,18 @@
-from qtpy.QtCore import Signal, Qt
-from qtpy.QtWidgets import QLabel, QSpacerItem, QListWidget, QListWidgetItem, QSizePolicy, QSplitter
-from qtpy.QtWidgets import QWidget, QDialog, QTableWidget, QVBoxLayout, QHBoxLayout, QHeaderView, QTableWidgetItem, \
-    QAbstractItemView
+import json
+import os
 
+from qtpy.QtCore import Signal, Qt
+from qtpy.QtWidgets import QWidget, QDialog, QTableWidget, QVBoxLayout, QHBoxLayout, QHeaderView, QTableWidgetItem, \
+    QAbstractItemView, QFileDialog, QLabel, QSpacerItem, QListWidget, QListWidgetItem, QSizePolicy, QSplitter, QMessageBox
+
+from pyqt_openai import JSON_FILE_EXT
 from pyqt_openai.chat_widget.prompt_gen_widget.promptGroupDirectInputDialog import PromptGroupDirectInputDialog
 from pyqt_openai.chat_widget.prompt_gen_widget.promptEntryDirectInputDialog import PromptEntryDirectInputDialog
+from pyqt_openai.chat_widget.prompt_gen_widget.promptGroupExportDialog import PromptGroupExportDialog
+from pyqt_openai.chat_widget.prompt_gen_widget.promptGroupImportDialog import PromptGroupImportDialog
 from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.lang.translations import LangClass
+from pyqt_openai.util.script import open_directory
 from pyqt_openai.widgets.button import Button
 
 
@@ -107,10 +113,48 @@ class SentenceGroupList(QWidget):
             self.__delBtn.setEnabled(False)
 
     def __import(self):
-        pass
+        dialog = PromptGroupImportDialog()
+        reply = dialog.exec()
+        if reply == QDialog.DialogCode.Accepted:
+            # Get the data
+            result = dialog.getSelected()
+            # Save the data
+            for group in result:
+                id = DB.insertPromptGroup(group['name'], prompt_type='sentence')
+                for entry in group['data']:
+                    DB.insertPromptEntry(id, entry['name'], entry['content'])
+                name = group['name']
+                self.__addGroupItem(id, name)
 
     def __export(self):
-        pass
+        try:
+            # Get the file
+            file_data = QFileDialog.getSaveFileName(self, LangClass.TRANSLATIONS['Save'], os.path.expanduser('~'), JSON_FILE_EXT)
+            if file_data[0]:
+                filename = file_data[0]
+                # Get the data
+                data = []
+                for group in DB.selectPromptGroup(prompt_type='sentence'):
+                    group_obj = {
+                        'name': group.name,
+                        'data': []
+                    }
+                    for entry in DB.selectPromptEntry(group.id):
+                        group_obj['data'].append({
+                            'name': entry.name,
+                            'content': entry.content
+                        })
+                    data.append(group_obj)
+                dialog = PromptGroupExportDialog(data)
+                reply = dialog.exec()
+                if reply == QDialog.DialogCode.Accepted:
+                    # Save the data
+                    with open(filename, 'w') as f:
+                        json.dump(data, f, indent=4)
+                    open_directory(os.path.dirname(filename))
+        except Exception as e:
+            QMessageBox.critical(self, LangClass.TRANSLATIONS['Error'], str(e))
+            print(e)
 
     def __itemChanged(self, item):
         id = item.data(Qt.ItemDataRole.UserRole)
@@ -162,7 +206,7 @@ class PromptTable(QWidget):
         self.__table = QTableWidget()
         self.__table.setColumnCount(2)
         self.__table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
-        self.__table.setHorizontalHeaderLabels([LangClass.TRANSLATIONS['Act'], LangClass.TRANSLATIONS['Prompt']])
+        self.__table.setHorizontalHeaderLabels([LangClass.TRANSLATIONS['Name'], LangClass.TRANSLATIONS['Value']])
         self.__table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
         self.__table.currentItemChanged.connect(self.__rowChanged)
         self.__table.itemChanged.connect(self.__saveChangedPrompt)

@@ -7,7 +7,7 @@ from qtpy.QtWidgets import QWidget, QVBoxLayout, QMessageBox, QPushButton, QStyl
 
 # for search feature
 from pyqt_openai.chat_widget.chatGPTImportDialog import ChatGPTImportDialog
-from pyqt_openai import THREAD_ORDERBY
+from pyqt_openai import THREAD_ORDERBY, JSON_FILE_EXT
 from pyqt_openai.chat_widget.exportDialog import ExportDialog
 from pyqt_openai.chat_widget.importDialog import ImportDialog
 from pyqt_openai.lang.translations import LangClass
@@ -82,24 +82,28 @@ class ChatNavWidget(QWidget):
         self.__importBtn = Button()
         self.__saveBtn = Button()
         self.__clearBtn = Button()
+        self.__refreshBtn = Button()
 
         self.__addBtn.setStyleAndIcon('ico/add.svg')
         self.__delBtn.setStyleAndIcon('ico/delete.svg')
         self.__importBtn.setStyleAndIcon('ico/import.svg')
         self.__saveBtn.setStyleAndIcon('ico/save.svg')
         self.__clearBtn.setStyleAndIcon('ico/close.svg')
+        self.__refreshBtn.setStyleAndIcon('ico/refresh.svg')
 
         self.__addBtn.setToolTip(LangClass.TRANSLATIONS['Add'])
         self.__delBtn.setToolTip(LangClass.TRANSLATIONS['Delete'])
         self.__importBtn.setToolTip(LangClass.TRANSLATIONS['Import'])
         self.__saveBtn.setToolTip(LangClass.TRANSLATIONS['Save'])
-        self.__delBtn.setToolTip(LangClass.TRANSLATIONS['Remove All'])
+        self.__clearBtn.setToolTip(LangClass.TRANSLATIONS['Remove All'])
+        self.__refreshBtn.setToolTip(LangClass.TRANSLATIONS['Refresh'])
 
         self.__addBtn.clicked.connect(self.add)
         self.__delBtn.clicked.connect(self.__delete)
         self.__importBtn.clicked.connect(self.__import)
         self.__saveBtn.clicked.connect(self.__export)
         self.__clearBtn.clicked.connect(self.__clear)
+        self.__refreshBtn.clicked.connect(self.__refresh)
 
         lay = QHBoxLayout()
         lay.addWidget(imageGenerationHistoryLbl)
@@ -109,6 +113,7 @@ class ChatNavWidget(QWidget):
         lay.addWidget(self.__clearBtn)
         lay.addWidget(self.__importBtn)
         lay.addWidget(self.__saveBtn)
+        lay.addWidget(self.__refreshBtn)
         lay.setContentsMargins(0, 0, 0, 0)
 
         menuSubWidget1 = QWidget()
@@ -201,7 +206,7 @@ class ChatNavWidget(QWidget):
         if reply == QDialog.Accepted:
             import_type = dialog.getImportType()
             if import_type == LangClass.TRANSLATIONS['General']:
-                filename = QFileDialog.getOpenFileName(self, LangClass.TRANSLATIONS['Import'], '', 'JSON files (*.json)')
+                filename = QFileDialog.getOpenFileName(self, LangClass.TRANSLATIONS['Import'], '', JSON_FILE_EXT)
                 if filename:
                     filename = filename[0]
                     if filename:
@@ -273,6 +278,9 @@ class ChatNavWidget(QWidget):
             DB.deleteThread()
             self.__model.select()
             self.cleared.emit()
+
+    def __refresh(self):
+        self.__model.select()
 
     def __search(self, search_text):
         # title

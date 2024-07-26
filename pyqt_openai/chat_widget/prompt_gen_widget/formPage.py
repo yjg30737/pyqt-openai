@@ -1,12 +1,18 @@
+import json, os
+
 from qtpy.QtCore import Signal, Qt
-from qtpy.QtWidgets import QTableWidget, QMessageBox, QSizePolicy, QSpacerItem, QStackedWidget, QLabel, \
+from qtpy.QtWidgets import QFileDialog, QTableWidget, QMessageBox, QSizePolicy, QSpacerItem, QStackedWidget, QLabel, \
     QAbstractItemView, QTableWidgetItem, QHeaderView, QHBoxLayout, \
     QVBoxLayout, QWidget, QDialog, QListWidget, QListWidgetItem, QSplitter
 
+from pyqt_openai import JSON_FILE_EXT
 from pyqt_openai.chat_widget.prompt_gen_widget.promptGroupDirectInputDialog import PromptGroupDirectInputDialog
 from pyqt_openai.chat_widget.prompt_gen_widget.promptEntryDirectInputDialog import PromptEntryDirectInputDialog
+from pyqt_openai.chat_widget.prompt_gen_widget.promptGroupExportDialog import PromptGroupExportDialog
+from pyqt_openai.chat_widget.prompt_gen_widget.promptGroupImportDialog import PromptGroupImportDialog
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.pyqt_openai_data import DB
+from pyqt_openai.util.script import open_directory
 from pyqt_openai.widgets.button import Button
 
 
@@ -96,13 +102,48 @@ class FormGroupList(QWidget):
         self.deleted.emit(i)
 
     def __import(self):
-        try:
-            print('__import')
-        except Exception as e:
-            print(e)
+        dialog = PromptGroupImportDialog()
+        reply = dialog.exec()
+        if reply == QDialog.DialogCode.Accepted:
+            # Get the data
+            result = dialog.getSelected()
+            # Save the data
+            for group in result:
+                id = DB.insertPromptGroup(group['name'], prompt_type='form')
+                for entry in group['data']:
+                    DB.insertPromptEntry(id, entry['name'], entry['content'])
+                name = group['name']
+                self.__addGroupItem(id, name)
 
     def __export(self):
-        print('__export')
+        try:
+            # Get the file
+            file_data = QFileDialog.getSaveFileName(self, LangClass.TRANSLATIONS['Save'], os.path.expanduser('~'), JSON_FILE_EXT)
+            if file_data[0]:
+                filename = file_data[0]
+                # Get the data
+                data = []
+                for group in DB.selectPromptGroup(prompt_type='form'):
+                    group_obj = {
+                        'name': group.name,
+                        'data': []
+                    }
+                    for entry in DB.selectPromptEntry(group.id):
+                        group_obj['data'].append({
+                            'name': entry.name,
+                            'content': entry.content
+                        })
+                    data.append(group_obj)
+                dialog = PromptGroupExportDialog(data)
+                reply = dialog.exec()
+                if reply == QDialog.DialogCode.Accepted:
+                    # Save the data
+                    with open(filename, 'w') as f:
+                        json.dump(data, f, indent=4)
+                    open_directory(os.path.dirname(filename))
+        except Exception as e:
+            QMessageBox.critical(self, LangClass.TRANSLATIONS['Error'], str(e))
+            print(e)
 
     def __itemChanged(self, item):
         id = item.data(Qt.ItemDataRole.UserRole)

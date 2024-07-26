@@ -2,7 +2,7 @@ from qtpy.QtCore import Qt
 from qtpy.QtWidgets import QMessageBox, QGroupBox, QTableWidgetItem, \
     QLabel, QDialogButtonBox, QCheckBox, QDialog, QVBoxLayout, QSpinBox, QAbstractItemView
 
-from pyqt_openai import THREAD_ORDERBY
+from pyqt_openai import THREAD_ORDERBY, JSON_FILE_EXT
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.util.script import get_conversation_from_chatgpt, get_chatgpt_data
 from pyqt_openai.widgets.checkBoxTableWidget import CheckBoxTableWidget
@@ -28,7 +28,7 @@ class ChatGPTImportDialog(QDialog):
         findPathWidget = FindPathWidget()
         findPathWidget.added.connect(self.__setPath)
         findPathWidget.getLineEdit().setPlaceholderText(LangClass.TRANSLATIONS['Select a ChatGPT JSON file'])
-        findPathWidget.setExtOfFiles('JSON Files (*.json)')
+        findPathWidget.setExtOfFiles(JSON_FILE_EXT)
 
         self.__chkBoxMostRecent = QCheckBox(LangClass.TRANSLATIONS['Get most recent'])
 

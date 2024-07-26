@@ -12,7 +12,7 @@ from qtpy.QtWidgets import QHBoxLayout, QWidget, QSizePolicy, QVBoxLayout, QFram
 
 from pyqt_openai.chat_widget.chatWidget import ChatWidget
 from pyqt_openai.chat_widget.prompt import Prompt
-from pyqt_openai import THREAD_TABLE_NAME, INI_FILE_NAME
+from pyqt_openai import THREAD_TABLE_NAME, INI_FILE_NAME, JSON_FILE_EXT
 from pyqt_openai.models import ChatThreadContainer, ChatMessageContainer
 from pyqt_openai.openAiThread import OpenAIThread, LlamaOpenAIThread
 from pyqt_openai.pyqt_openai_data import DB, get_argument, LLAMAINDEX_WRAPPER
@@ -150,7 +150,7 @@ class OpenAIChatBotWidget(QWidget):
         self.__rightSideBar.setOrientation(Qt.Orientation.Vertical)
         self.__rightSideBar.addWidget(self.__aiPlaygroundWidget)
         self.__rightSideBar.addWidget(self.__promptGeneratorWidget)
-        self.__rightSideBar.setSizes([600, 400])
+        self.__rightSideBar.setSizes([450, 550])
         self.__rightSideBar.setChildrenCollapsible(False)
         self.__rightSideBar.setHandleWidth(2)
         self.__rightSideBar.setStyleSheet(
@@ -389,7 +389,7 @@ class OpenAIChatBotWidget(QWidget):
 
             # Import thread
             for thread in data:
-                cur_id = DB.insertThread(thread['name'])
+                cur_id = DB.insertThread(thread['name'], thread['insert_dt'], thread['update_dt'])
                 messages = thread['messages']
                 # Import message
                 for message in messages:
@@ -416,7 +416,7 @@ class OpenAIChatBotWidget(QWidget):
             QMessageBox.critical(self, LangClass.TRANSLATIONS["Error"], LangClass.TRANSLATIONS['Check whether the file is a valid JSON file for importing.'])
 
     def __exportChat(self, ids):
-        file_data = QFileDialog.getSaveFileName(self, LangClass.TRANSLATIONS['Save'], os.path.expanduser('~'), 'JSON file (*.json);;txt files Compressed File (*.zip);;html files Compressed File (*.zip)')
+        file_data = QFileDialog.getSaveFileName(self, LangClass.TRANSLATIONS['Save'], os.path.expanduser('~'), f'{JSON_FILE_EXT};;txt files Compressed File (*.zip);;html files Compressed File (*.zip)')
         if file_data[0]:
             filename = file_data[0]
             ext = os.path.splitext(filename)[-1] or get_generic_ext_out_of_qt_ext(file_data[1])

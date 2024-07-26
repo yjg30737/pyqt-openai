@@ -195,7 +195,7 @@ def get_chatgpt_data(conv_arr):
 
                 # print(f'content: {content}')
                 if role == 'user':
-                    content_parts = '\n'.join(content['parts'])
+                    content_parts = '\n'.join([str(c) for c in content['parts']])
                     obj['content'] = content_parts
                     conv['messages'].append(obj)
                 else:
@@ -252,62 +252,41 @@ def is_prompt_entry_name_valid(group_id, text):
     exists_f = True if (True if m else False) and DB.selectPromptEntry(group_id=group_id, name=text) else False
     return exists_f
 
-def validate_prompt_group_json(json_data, prompt_type):
-    if prompt_type == 'form':
-        # Check if json_data is a list
-        if not isinstance(json_data, list):
+def validate_prompt_group_json(json_data):
+    # Check if json_data is a list
+    if not isinstance(json_data, list):
+        return False
+
+    # Iterate through each item in the list
+    for item in json_data:
+        # Check if item is a dictionary
+        if not isinstance(item, dict):
             return False
 
-        # Iterate through each item in the list
-        for item in json_data:
-            # Check if item is a dictionary
-            if not isinstance(item, dict):
-                return False
-
-            # Check if 'name' and 'content' keys exist in the dictionary
-            if 'name' not in item or 'content' not in item:
-                return False
-
-            # Check if 'name' is not empty
-            if not item['name']:
-                return False
-    elif prompt_type == 'sentence':
-        # Check if json_data is a list
-        if not isinstance(json_data, list):
+        # Check if 'name' and 'data' keys exist in the dictionary
+        if 'name' not in item or 'data' not in item:
             return False
 
-        # Iterate through each item in the list
-        for item in json_data:
-            # Check if item is a dictionary
-            if not isinstance(item, dict):
+        # Check if 'name' is not empty
+        if not item['name']:
+            return False
+
+        # Check if 'data' is a list
+        if not isinstance(item['data'], list):
+            return False
+
+        # Iterate through each data item in 'data' list
+        for data_item in item['data']:
+            # Check if data_item is a dictionary
+            if not isinstance(data_item, dict):
                 return False
 
-            # Check if 'name' and 'data' keys exist in the dictionary
-            if 'name' not in item or 'data' not in item:
+            # Check if 'name' and 'content' keys exist in data_item
+            if 'name' not in data_item or 'content' not in data_item:
                 return False
 
-            # Check if 'name' is not empty
-            if not item['name']:
+            # Check if 'name' in data_item is not empty
+            if not data_item['name']:
                 return False
-
-            # Check if 'data' is a list
-            if not isinstance(item['data'], list):
-                return False
-
-            # Iterate through each data item in 'data' list
-            for data_item in item['data']:
-                # Check if data_item is a dictionary
-                if not isinstance(data_item, dict):
-                    return False
-
-                # Check if 'name' and 'content' keys exist in data_item
-                if 'name' not in data_item or 'content' not in data_item:
-                    return False
-
-                # Check if 'name' in data_item is not empty
-                if not data_item['name']:
-                    return False
-    else:
-        raise ValueError('Invalid prompt type')
 
     return True

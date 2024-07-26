@@ -69,7 +69,7 @@ class SqliteDatabase:
             else:
                 self.__c.execute(f'''CREATE TABLE {PROMPT_GROUP_TABLE_NAME}
                                      (id INTEGER PRIMARY KEY,
-                                      name VARCHAR(255),
+                                      name VARCHAR(255) UNIQUE,
                                       prompt_type VARCHAR(255),
                                       update_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
                                       insert_dt DATETIME DEFAULT CURRENT_TIMESTAMP)''')
@@ -304,7 +304,6 @@ class SqliteDatabase:
 
     def selectTemplatePromptUnit(self, id):
         try:
-            # TODO make every select statement check if it exists
             self.__c.execute(
                 f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{TEMPLATE_PROMPT_TABLE_NAME_OLD}{id}'")
             if self.__c.fetchone()[0] == 1:
@@ -403,10 +402,20 @@ class SqliteDatabase:
             print(f"An error occurred: {e}")
             raise
 
-    def insertThread(self, name):
+    def insertThread(self, name, insert_dt=None, update_dt=None):
         try:
+            query = f'INSERT INTO {THREAD_TABLE_NAME} (name) VALUES (?)'
+            params = (name,)
+
+            if insert_dt:
+                query = f'INSERT INTO {THREAD_TABLE_NAME} (name, insert_dt) VALUES (?, ?)'
+                params = (name, insert_dt)
+            if update_dt:
+                query = f'INSERT INTO {THREAD_TABLE_NAME} (name, insert_dt, update_dt) VALUES (?, ?, ?)'
+                params = (name, insert_dt, update_dt)
+
             # Insert a row into the table
-            self.__c.execute(f'INSERT INTO {THREAD_TABLE_NAME} (name) VALUES (?)', (name,))
+            self.__c.execute(query, params)
             new_id = self.__c.lastrowid
             # Commit the transaction
             self.__conn.commit()

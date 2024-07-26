@@ -1,12 +1,14 @@
 import json
 
-from PyQt5.QtWidgets import QPushButton
 from qtpy.QtCore import Qt
-from qtpy.QtWidgets import QApplication, QDialogButtonBox, QMessageBox, QDialog, QLabel, QVBoxLayout, QFrame
+from qtpy.QtWidgets import QPushButton, QApplication, QDialogButtonBox, QMessageBox, QDialog, QVBoxLayout, QFrame, \
+    QTableWidget, QSplitter, \
+    QWidget, QLabel, QAbstractItemView, QTableWidgetItem, QCheckBox
 
 from pyqt_openai import JSON_FILE_EXT, SENTENCE_PROMPT_GROUP_SAMPLE, FORM_PROMPT_GROUP_SAMPLE
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.util.script import validate_prompt_group_json
+from pyqt_openai.widgets.checkBoxListWidget import CheckBoxListWidget
 from pyqt_openai.widgets.findPathWidget import FindPathWidget
 from pyqt_openai.widgets.jsonEditor import JSONEditor
 
@@ -39,8 +41,45 @@ class PromptGroupImportDialog(QDialog):
         sep.setFrameShape(QFrame.HLine)
         sep.setFrameShadow(QFrame.Sunken)
 
+        allCheckBox = QCheckBox(LangClass.TRANSLATIONS['Select All'])
+        self.__listWidget = CheckBoxListWidget()
+        self.__listWidget.checkedSignal.connect(self.__toggledBtn)
+        self.__listWidget.currentRowChanged.connect(lambda x: self.__showEntries(x))
+        allCheckBox.stateChanged.connect(self.__listWidget.toggleState)
+
+        lay = QVBoxLayout()
+        lay.addWidget(QLabel(LangClass.TRANSLATIONS['Prompt Group']))
+        lay.addWidget(allCheckBox)
+        lay.addWidget(self.__listWidget)
+
+        leftWidget = QWidget()
+        leftWidget.setLayout(lay)
+
+        self.__tableWidget = QTableWidget()
+        self.__tableWidget.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
+        self.__tableWidget.setColumnCount(2)
+        self.__tableWidget.setHorizontalHeaderLabels([LangClass.TRANSLATIONS['Name'], LangClass.TRANSLATIONS['Value']])
+        self.__tableWidget.setColumnWidth(0, 200)
+        self.__tableWidget.setColumnWidth(1, 400)
+
+        lay = QVBoxLayout()
+        lay.addWidget(QLabel(LangClass.TRANSLATIONS['Prompt Entry']))
+        lay.addWidget(self.__tableWidget)
+
+        rightWidget = QWidget()
+        rightWidget.setLayout(lay)
+
+        splitter = QSplitter()
+        splitter.addWidget(leftWidget)
+        splitter.addWidget(rightWidget)
+        splitter.setHandleWidth(1)
+        splitter.setChildrenCollapsible(False)
+        splitter.setSizes([400, 600])
+        splitter.setStyleSheet(
+            "QSplitterHandle {background-color: lightgray;}")
+
         self.__buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
-        self.__buttonBox.accepted.connect(self.__accept)
+        self.__buttonBox.accepted.connect(self.accept)
         self.__buttonBox.rejected.connect(self.reject)
         self.__buttonBox.button(QDialogButtonBox.StandardButton.Ok).setEnabled(False)
 
@@ -48,36 +87,76 @@ class PromptGroupImportDialog(QDialog):
         lay.addWidget(findPathWidget)
         lay.addWidget(sep)
         lay.addWidget(btn)
+        lay.addWidget(splitter)
         lay.addWidget(self.__buttonBox)
 
         self.setLayout(lay)
 
         self.setMinimumSize(600, 350)
 
-    def __accept(self, path):
-        print(path)
+        self.__buttonBox.button(QDialogButtonBox.Ok).setEnabled(False)
+
+    def __toggledBtn(self):
+        self.__buttonBox.button(QDialogButtonBox.Ok).setEnabled(len(self.__listWidget.getCheckedRows()) > 0)
 
     def __showJsonSample(self):
         self.__jsonSample.setText(FORM_PROMPT_GROUP_SAMPLE if self.__promptType == 'form' else SENTENCE_PROMPT_GROUP_SAMPLE)
         self.__jsonSample.setReadOnly(True)
         self.__jsonSample.setMinimumSize(600, 350)
-        self.__jsonSample.show()
         self.__jsonSample.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.__jsonSample.setWindowTitle(LangClass.TRANSLATIONS['JSON Sample'])
+        self.__jsonSample.show()
+
+    def __refreshTable(self):
+        self.__tableWidget.clearContents()
+        self.__tableWidget.setRowCount(0)
+
+    def __setEntries(self, data):
+        for d in data:
+            name = d['name']
+            content = d['content']
+            self.__tableWidget.setRowCount(self.__tableWidget.rowCount() + 1)
+            self.__tableWidget.setItem(self.__tableWidget.rowCount() - 1, 0, QTableWidgetItem(name))
+            self.__tableWidget.setItem(self.__tableWidget.rowCount() - 1, 1, QTableWidgetItem(content))
+
+    def __setPrompt(self, json_data):
+        self.__listWidget.clear()
+
+        self.__refreshTable()
+        for prompt in json_data:
+            name = prompt['name']
+            data = prompt['data']
+            self.__listWidget.addItem(name)
+            self.__setEntries(data)
+
+        self.__listWidget.item(0).setSelected(True)
+        self.__data = json_data
 
     def __validateFile(self, path):
         self.__path = path
-        json_data = json.load(open(path))
-        if validate_prompt_group_json(json_data, self.__promptType):
+        data = json.load(open(path))
+        if validate_prompt_group_json(data):
             self.__buttonBox.button(QDialogButtonBox.StandardButton.Ok).setEnabled(True)
+            self.__setPrompt(json_data=data)
         else:
             QMessageBox.critical(self, LangClass.TRANSLATIONS["Error"], LangClass.TRANSLATIONS['Check whether the file is a valid JSON file for importing.'])
+
+    def __showEntries(self, r_idx):
+        name = self.__listWidget.item(r_idx).text()
+        self.__refreshTable()
+        data = [d for d in self.__data if d['name'] == name][0]['data']
+        self.__setEntries(data)
+
+    def getSelected(self):
+        names = [self.__listWidget.item(r).text() for r in self.__listWidget.getCheckedRows()]
+        result = [d for d in self.__data if d['name'] in names]
+        return result
 
 
 if __name__ == "__main__":
     import sys
 
     app = QApplication(sys.argv)
-    w = PromptGroupImportDialog(prompt_type='sentence')
+    w = PromptGroupImportDialog(prompt_type='form')
     w.show()
     sys.exit(app.exec())

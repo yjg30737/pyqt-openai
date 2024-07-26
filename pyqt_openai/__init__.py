@@ -83,7 +83,7 @@ DB_FILE_NAME = 'conv'
 ## EXTENSIONS
 IMAGE_FILE_EXT = 'Image File (*.jpg *.png)'
 TEXT_FILE_EXT = 'Text File (*.txt)'
-JSON_FILE_EXT = 'JSON Files (*.json)'
+JSON_FILE_EXT = 'JSON File (*.json)'
 READ_FILE_EXT = f'{TEXT_FILE_EXT};;{IMAGE_FILE_EXT}'
 
 ## PROMPT
@@ -136,7 +136,12 @@ PROMPT_ENTRY_TABLE_NAME = 'prompt_entry_tb'
 AWESOME_CHATGPT_PROMPTS_FILENAME = 'prompt_res/awesome_chatgpt_prompts.json'
 ALEX_BROGAN_PROMPT_FILENAME = 'prompt_res/alex_brogan.json'
 
-FORM_PROMPT_GROUP_SAMPLE = json.dumps(PROPERTY_PROMPT_UNIT_DEFAULT_VALUE, indent=4)
+FORM_PROMPT_GROUP_SAMPLE = json.dumps([
+    {
+        "name": 'Default',
+        "data": PROPERTY_PROMPT_UNIT_DEFAULT_VALUE
+    }
+], indent=4)
 
 SENTENCE_PROMPT_GROUP_SAMPLE = '''[
     {

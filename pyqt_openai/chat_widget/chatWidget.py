@@ -46,7 +46,6 @@ class ChatWidget(QWidget):
 
         chatWidget = QWidget()
         chatWidget.setLayout(lay)
-        chatWidget.setMinimumWidth(600)
 
         self.__mainWidget = QStackedWidget()
         self.__mainWidget.addWidget(self.__homeWidget)

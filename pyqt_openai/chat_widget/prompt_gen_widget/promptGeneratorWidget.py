@@ -27,8 +27,8 @@ class PromptGeneratorWidget(QScrollArea):
         self.__prompt.setAcceptRichText(False)
 
         promptTabWidget = QTabWidget()
-        promptTabWidget.addTab(formPage, LangClass.TRANSLATIONS['Property'])
-        promptTabWidget.addTab(sentencePage, LangClass.TRANSLATIONS['Template'])
+        promptTabWidget.addTab(formPage, LangClass.TRANSLATIONS['Form'])
+        promptTabWidget.addTab(sentencePage, LangClass.TRANSLATIONS['Sentence'])
 
         previewLbl = QLabel(LangClass.TRANSLATIONS['Preview'])
 
