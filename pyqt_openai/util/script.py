@@ -1,15 +1,14 @@
 import base64
+import json
 import os
 import random
 import re
 import string
 import sys
 import zipfile
-
 from datetime import datetime
 from pathlib import Path
 
-import pandas
 import requests
 from jinja2 import Template
 from qtpy.QtCore import QSettings
@@ -149,8 +148,13 @@ def show_message_box(title, text):
     result = msg_box.exec()
     return result
 
+def get_conversation(filename):
+    with open(filename, 'r') as f:
+        data = json.load(f)
+    return data
+
 def get_conversation_from_chatgpt(filename, most_recent_n:int = None):
-    conversations_df = pandas.read_json(filename)
+    conversations_df = json.load(open(filename, 'r'))
     conv_arr = []
     count = conversations_df.shape[0] if most_recent_n is None else most_recent_n
     for i in range(count):

@@ -1,6 +1,5 @@
-from PyQt5.QtWidgets import QPlainTextEdit
 from qtpy.QtCore import Qt
-from qtpy.QtWidgets import QDialog, QVBoxLayout, QLineEdit, QFrame, QPushButton, QHBoxLayout, QWidget, QMessageBox
+from qtpy.QtWidgets import QDialog, QVBoxLayout, QPlainTextEdit, QLineEdit, QFrame, QPushButton, QHBoxLayout, QWidget, QMessageBox
 
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.util.script import is_prompt_entry_name_valid
