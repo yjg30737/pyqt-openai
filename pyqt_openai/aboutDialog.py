@@ -49,11 +49,11 @@ class AboutDialog(QDialog):
         descWidget3.setAlignment(Qt.AlignmentFlag.AlignTop)
 
         self.__githubLbl = LinkLabel()
-        self.__githubLbl.setSvgFile('ico/github.svg')
+        self.__githubLbl.setSvgFile(pyqt_openai.ICON_GITHUB)
         self.__githubLbl.setUrl(GITHUB_URL)
 
         self.__discordLbl = LinkLabel()
-        self.__discordLbl.setSvgFile('ico/discord.svg')
+        self.__discordLbl.setSvgFile(pyqt_openai.ICON_DISCORD)
         self.__discordLbl.setUrl(DISCORD_URL)
         self.__discordLbl.setFixedSize(22, 19)
 

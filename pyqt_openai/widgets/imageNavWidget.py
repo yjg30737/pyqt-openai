@@ -3,8 +3,8 @@ from qtpy.QtSql import QSqlTableModel, QSqlQuery
 from qtpy.QtWidgets import QWidget, QVBoxLayout, QStyledItemDelegate, QTableView, QAbstractItemView, QHBoxLayout, \
     QMessageBox, QLabel
 
+from pyqt_openai import ICON_DELETE, ICON_CLOSE
 from pyqt_openai.lang.translations import LangClass
-# for search feature
 from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.widgets.button import Button
 from pyqt_openai.widgets.searchBar import SearchBar
@@ -66,12 +66,12 @@ class ImageNavWidget(QWidget):
         self.__searchBar.searched.connect(self.__showResult)
 
         self.__delBtn = Button()
-        self.__delBtn.setStyleAndIcon('ico/delete.svg')
+        self.__delBtn.setStyleAndIcon(ICON_DELETE)
         self.__delBtn.clicked.connect(self.__delete)
         self.__delBtn.setToolTip(LangClass.TRANSLATIONS['Delete Certain Row'])
 
         self.__clearBtn = Button()
-        self.__clearBtn.setStyleAndIcon('ico/close.svg')
+        self.__clearBtn.setStyleAndIcon(ICON_CLOSE)
         self.__clearBtn.clicked.connect(self.__clear)
         self.__delBtn.setToolTip(LangClass.TRANSLATIONS['Remove All'])
 

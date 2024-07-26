@@ -1,7 +1,7 @@
 import json
 
 from qtpy.QtCore import Qt
-from qtpy.QtWidgets import QPushButton, QApplication, QDialogButtonBox, QMessageBox, QDialog, QVBoxLayout, QFrame, \
+from qtpy.QtWidgets import QPushButton, QDialogButtonBox, QMessageBox, QDialog, QVBoxLayout, QFrame, \
     QTableWidget, QSplitter, \
     QWidget, QLabel, QAbstractItemView, QTableWidgetItem, QCheckBox
 
@@ -75,8 +75,7 @@ class PromptGroupImportDialog(QDialog):
         splitter.setHandleWidth(1)
         splitter.setChildrenCollapsible(False)
         splitter.setSizes([400, 600])
-        splitter.setStyleSheet(
-            "QSplitterHandle {background-color: lightgray;}")
+        splitter.setStyleSheet("QSplitterHandle {background-color: lightgray;}")
 
         self.__buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         self.__buttonBox.accepted.connect(self.accept)
@@ -151,12 +150,3 @@ class PromptGroupImportDialog(QDialog):
         names = [self.__listWidget.item(r).text() for r in self.__listWidget.getCheckedRows()]
         result = [d for d in self.__data if d['name'] in names]
         return result
-
-
-if __name__ == "__main__":
-    import sys
-
-    app = QApplication(sys.argv)
-    w = PromptGroupImportDialog(prompt_type='form')
-    w.show()
-    sys.exit(app.exec())

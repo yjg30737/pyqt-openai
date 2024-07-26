@@ -1,6 +1,5 @@
 from qtpy.QtCore import Signal, Qt
 from qtpy.QtGui import QFontDatabase, QFont
-from qtpy.QtWidgets import QGroupBox, QCheckBox, QGridLayout
 from qtpy.QtWidgets import QListWidget, QWidget, QVBoxLayout, QLabel, QLineEdit, QListWidgetItem
 from qtpy.QtWidgets import QSizePolicy, \
     QTextEdit, QHBoxLayout

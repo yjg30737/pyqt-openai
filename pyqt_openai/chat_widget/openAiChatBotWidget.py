@@ -12,7 +12,7 @@ from qtpy.QtWidgets import QHBoxLayout, QWidget, QSizePolicy, QVBoxLayout, QFram
 
 from pyqt_openai.chat_widget.chatWidget import ChatWidget
 from pyqt_openai.chat_widget.prompt import Prompt
-from pyqt_openai import THREAD_TABLE_NAME, INI_FILE_NAME, JSON_FILE_EXT
+from pyqt_openai import THREAD_TABLE_NAME, INI_FILE_NAME, JSON_FILE_EXT, ICON_SIDEBAR, ICON_SETTING, ICON_PROMPT
 from pyqt_openai.models import ChatThreadContainer, ChatMessageContainer
 from pyqt_openai.openAiThread import OpenAIThread, LlamaOpenAIThread
 from pyqt_openai.pyqt_openai_data import DB, get_argument, LLAMAINDEX_WRAPPER
@@ -70,21 +70,21 @@ class OpenAIChatBotWidget(QWidget):
         self.__promptGeneratorWidget = PromptGeneratorWidget()
 
         self.__sideBarBtn = Button()
-        self.__sideBarBtn.setStyleAndIcon('ico/sidebar.svg')
+        self.__sideBarBtn.setStyleAndIcon(ICON_SIDEBAR)
         self.__sideBarBtn.setCheckable(True)
         self.__sideBarBtn.setToolTip(LangClass.TRANSLATIONS['Chat List'])
         self.__sideBarBtn.setChecked(self.__show_chat_list)
         self.__sideBarBtn.toggled.connect(self.__toggle_sidebar)
 
         self.__settingBtn = Button()
-        self.__settingBtn.setStyleAndIcon('ico/setting.svg')
+        self.__settingBtn.setStyleAndIcon(ICON_SETTING)
         self.__settingBtn.setToolTip(LangClass.TRANSLATIONS['Chat Settings'])
         self.__settingBtn.setCheckable(True)
         self.__settingBtn.setChecked(self.__show_setting)
         self.__settingBtn.toggled.connect(self.__toggle_setting)
 
         self.__promptBtn = Button()
-        self.__promptBtn.setStyleAndIcon('ico/prompt.svg')
+        self.__promptBtn.setStyleAndIcon(ICON_PROMPT)
         self.__promptBtn.setToolTip(LangClass.TRANSLATIONS['Prompt Generator'])
         self.__promptBtn.setCheckable(True)
         self.__promptBtn.setChecked(self.__show_prompt)

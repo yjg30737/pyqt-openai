@@ -5,7 +5,7 @@ from qtpy.QtCore import Signal, Qt
 from qtpy.QtWidgets import QWidget, QDialog, QTableWidget, QVBoxLayout, QHBoxLayout, QHeaderView, QTableWidgetItem, \
     QAbstractItemView, QFileDialog, QLabel, QSpacerItem, QListWidget, QListWidgetItem, QSizePolicy, QSplitter, QMessageBox
 
-from pyqt_openai import JSON_FILE_EXT
+from pyqt_openai import JSON_FILE_EXT, ICON_ADD, ICON_DELETE, ICON_IMPORT, ICON_EXPORT
 from pyqt_openai.chat_widget.prompt_gen_widget.promptGroupDirectInputDialog import PromptGroupDirectInputDialog
 from pyqt_openai.chat_widget.prompt_gen_widget.promptEntryDirectInputDialog import PromptEntryDirectInputDialog
 from pyqt_openai.chat_widget.prompt_gen_widget.promptGroupExportDialog import PromptGroupExportDialog
@@ -30,15 +30,15 @@ class SentenceGroupList(QWidget):
         self.__addBtn = Button()
         self.__delBtn = Button()
 
-        self.__addBtn.setStyleAndIcon('ico/add.svg')
-        self.__delBtn.setStyleAndIcon('ico/delete.svg')
+        self.__addBtn.setStyleAndIcon(ICON_ADD)
+        self.__delBtn.setStyleAndIcon(ICON_DELETE)
 
         self.__importBtn = Button()
-        self.__importBtn.setStyleAndIcon('ico/import.svg')
+        self.__importBtn.setStyleAndIcon(ICON_IMPORT)
         self.__importBtn.setToolTip(LangClass.TRANSLATIONS['Import'])
 
         self.__exportBtn = Button()
-        self.__exportBtn.setStyleAndIcon('ico/export.svg')
+        self.__exportBtn.setStyleAndIcon(ICON_EXPORT)
         self.__exportBtn.setToolTip(LangClass.TRANSLATIONS['Export'])
 
         self.__addBtn.clicked.connect(self.__add)
@@ -184,8 +184,8 @@ class PromptTable(QWidget):
         self.__addBtn = Button()
         self.__delBtn = Button()
 
-        self.__addBtn.setStyleAndIcon('ico/add.svg')
-        self.__delBtn.setStyleAndIcon('ico/delete.svg')
+        self.__addBtn.setStyleAndIcon(ICON_ADD)
+        self.__delBtn.setStyleAndIcon(ICON_DELETE)
 
         self.__addBtn.clicked.connect(self.__add)
         self.__delBtn.clicked.connect(self.__delete)

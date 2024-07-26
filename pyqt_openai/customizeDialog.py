@@ -4,9 +4,9 @@ from qtpy.QtWidgets import QDialog, QFrame, QPushButton, QHBoxLayout, QVBoxLayou
     QSizePolicy
 
 from pyqt_openai import IMAGE_FILE_EXT, DEFAULT_ICON_SIZE
-from pyqt_openai.models import CustomizeParamsContainer
 from pyqt_openai.fontWidget import FontWidget
 from pyqt_openai.lang.translations import LangClass
+from pyqt_openai.models import CustomizeParamsContainer
 from pyqt_openai.widgets.circleProfileImage import RoundedImage
 from pyqt_openai.widgets.findPathWidget import FindPathWidget
 from pyqt_openai.widgets.normalImageView import NormalImageView
@@ -91,8 +91,7 @@ class CustomizeDialog(QDialog):
         self.__splitter.setHandleWidth(1)
         self.__splitter.setChildrenCollapsible(False)
         self.__splitter.setSizes([500, 500])
-        self.__splitter.setStyleSheet(
-            "QSplitterHandle {background-color: lightgray;}")
+        self.__splitter.setStyleSheet("QSplitterHandle {background-color: lightgray;}")
         self.__splitter.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
 
         sep = QFrame()

@@ -138,8 +138,7 @@ class SettingsDialog(QDialog):
         self.__splitter.setHandleWidth(1)
         self.__splitter.setChildrenCollapsible(False)
         self.__splitter.setSizes([500, 500])
-        self.__splitter.setStyleSheet(
-            "QSplitterHandle {background-color: lightgray;}")
+        self.__splitter.setStyleSheet("QSplitterHandle {background-color: lightgray;}")
         self.__splitter.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
 
         lay = QVBoxLayout()

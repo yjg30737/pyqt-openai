@@ -1,10 +1,6 @@
-import posixpath
-
 from qtpy.QtCore import Qt
 from qtpy.QtGui import QPixmap, QPainter, QBitmap
 from qtpy.QtWidgets import QLabel
-
-from pyqt_openai import SRC_DIR
 
 
 class RoundedImage(QLabel):

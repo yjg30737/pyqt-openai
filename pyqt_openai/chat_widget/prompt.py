@@ -9,7 +9,7 @@ from pyqt_openai.chat_widget.textEditPromptGroup import TextEditPromptGroup
 from pyqt_openai.chat_widget.uploadedImageFileWidget import UploadedImageFileWidget
 from pyqt_openai import INI_FILE_NAME, READ_FILE_EXT, PROMPT_BEGINNING_KEY_NAME, \
     PROMPT_END_KEY_NAME, PROMPT_JSON_KEY_NAME, SHORTCUT_PROMPT_BEGINNING, SHORTCUT_PROMPT_ENDING, \
-    SHORTCUT_SUPPORT_PROMPT_COMMAND
+    SHORTCUT_SUPPORT_PROMPT_COMMAND, ICON_VERTICAL_THREE_DOTS
 from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.widgets.toolButton import ToolButton
@@ -91,7 +91,7 @@ class Prompt(QWidget):
         leftWidget.setLayout(lay)
 
         settingsBtn = ToolButton()
-        settingsBtn.setStyleAndIcon('ico/vertical_three_dots.svg')
+        settingsBtn.setStyleAndIcon(ICON_VERTICAL_THREE_DOTS)
         settingsBtn.setToolTip(LangClass.TRANSLATIONS['Prompt Settings'])
 
         # Create the menu

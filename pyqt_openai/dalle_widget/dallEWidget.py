@@ -3,7 +3,7 @@ import os
 from qtpy.QtCore import Qt, QSettings
 from qtpy.QtWidgets import QHBoxLayout, QVBoxLayout, QFrame, QWidget, QSplitter
 
-from pyqt_openai import IMAGE_TABLE_NAME, INI_FILE_NAME
+from pyqt_openai import IMAGE_TABLE_NAME, INI_FILE_NAME, ICON_HISTORY, ICON_SETTING
 from pyqt_openai.dalle_widget.dallEControlWidget import DallEControlWidget
 from pyqt_openai.models import ImagePromptContainer
 from pyqt_openai.pyqt_openai_data import DB
@@ -50,14 +50,14 @@ class DallEWidget(QWidget):
         self.__rightSideBarWidget.submitDallEAllComplete.connect(self.__imageGenerationAllComplete)
 
         self.__historyBtn = Button()
-        self.__historyBtn.setStyleAndIcon('ico/history.svg')
+        self.__historyBtn.setStyleAndIcon(ICON_HISTORY)
         self.__historyBtn.setCheckable(True)
         self.__historyBtn.setToolTip(LangClass.TRANSLATIONS['History'])
         self.__historyBtn.setChecked(self.__show_history)
         self.__historyBtn.toggled.connect(self.__toggle_history)
 
         self.__settingBtn = Button()
-        self.__settingBtn.setStyleAndIcon('ico/setting.svg')
+        self.__settingBtn.setStyleAndIcon(ICON_SETTING)
         self.__settingBtn.setCheckable(True)
         self.__settingBtn.setToolTip(LangClass.TRANSLATIONS['Settings'])
         self.__settingBtn.setChecked(self.__show_setting)

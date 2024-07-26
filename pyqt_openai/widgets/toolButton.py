@@ -27,17 +27,15 @@ class ToolButton(QToolButton):
             self.__baseWidget.installEventFilter(self)
             self.__initColorByBaseWidget()
         else:
-            self.__hover_color = '#DDDDDD'
-            self.__pressed_color = '#FFFFFF'
-            self.__checked_color = '#CCCCCC'
-            self.__text_color = '#AAAAAA'
+            self.__hover_color = '#A2D0DD'
+            self.__pressed_color = '#B3E0FF'
+            self.__checked_color = '#B3E0FF'
 
     def __initColorByBaseWidget(self):
         self.__base_color = self.__baseWidget.palette().color(QPalette.ColorRole.Base)
         self.__hover_color = self.__getHoverColor(self.__base_color)
         self.__pressed_color = self.__getPressedColor(self.__base_color)
         self.__checked_color = self.__getPressedColor(self.__base_color)
-        self.__text_color = self.__getButtonTextColor(self.__base_color)
 
     def __getColorByFactor(self, base_color, factor):
         r, g, b = base_color.red(), base_color.green(), base_color.blue()
@@ -82,7 +80,6 @@ class ToolButton(QToolButton):
         background-color: {self.__background_color};
         border-radius: {self.__border_radius};
         padding: {self.__padding};
-        color: {self.__text_color};
         }}
         QAbstractButton:hover
         {{

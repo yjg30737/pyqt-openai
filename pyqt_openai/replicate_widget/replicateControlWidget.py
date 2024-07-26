@@ -201,8 +201,7 @@ class ReplicateControlWidget(QScrollArea):
         splitter.setOrientation(Qt.Orientation.Vertical)
         splitter.setChildrenCollapsible(False)
         splitter.setSizes([500, 500])
-        splitter.setStyleSheet(
-            "QSplitterHandle {background-color: lightgray;}")
+        splitter.setStyleSheet("QSplitterHandle {background-color: lightgray;}")
 
         lay = QVBoxLayout()
         lay.addWidget(splitter)

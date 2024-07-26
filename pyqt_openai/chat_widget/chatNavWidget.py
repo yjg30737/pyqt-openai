@@ -7,7 +7,8 @@ from qtpy.QtWidgets import QWidget, QVBoxLayout, QMessageBox, QPushButton, QStyl
 
 # for search feature
 from pyqt_openai.chat_widget.chatGPTImportDialog import ChatGPTImportDialog
-from pyqt_openai import THREAD_ORDERBY, JSON_FILE_EXT
+from pyqt_openai import THREAD_ORDERBY, JSON_FILE_EXT, ICON_ADD, ICON_DELETE, ICON_IMPORT, ICON_SAVE, ICON_CLOSE, \
+    ICON_REFRESH
 from pyqt_openai.chat_widget.exportDialog import ExportDialog
 from pyqt_openai.chat_widget.importDialog import ImportDialog
 from pyqt_openai.lang.translations import LangClass
@@ -84,12 +85,12 @@ class ChatNavWidget(QWidget):
         self.__clearBtn = Button()
         self.__refreshBtn = Button()
 
-        self.__addBtn.setStyleAndIcon('ico/add.svg')
-        self.__delBtn.setStyleAndIcon('ico/delete.svg')
-        self.__importBtn.setStyleAndIcon('ico/import.svg')
-        self.__saveBtn.setStyleAndIcon('ico/save.svg')
-        self.__clearBtn.setStyleAndIcon('ico/close.svg')
-        self.__refreshBtn.setStyleAndIcon('ico/refresh.svg')
+        self.__addBtn.setStyleAndIcon(ICON_ADD)
+        self.__delBtn.setStyleAndIcon(ICON_DELETE)
+        self.__importBtn.setStyleAndIcon(ICON_IMPORT)
+        self.__saveBtn.setStyleAndIcon(ICON_SAVE)
+        self.__clearBtn.setStyleAndIcon(ICON_CLOSE)
+        self.__refreshBtn.setStyleAndIcon(ICON_REFRESH)
 
         self.__addBtn.setToolTip(LangClass.TRANSLATIONS['Add'])
         self.__delBtn.setToolTip(LangClass.TRANSLATIONS['Delete'])

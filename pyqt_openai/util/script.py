@@ -5,6 +5,7 @@ import re
 import string
 import sys
 import zipfile
+
 from datetime import datetime
 from pathlib import Path
 
@@ -14,7 +15,7 @@ from jinja2 import Template
 from qtpy.QtCore import QSettings
 from qtpy.QtWidgets import QMessageBox
 
-from pyqt_openai import INI_FILE_NAME, DB_FILE_NAME, DEFAULT_FONT_SIZE, DEFAULT_FONT_FAMILY, MAIN_INDEX, \
+from pyqt_openai import INI_FILE_NAME, DEFAULT_FONT_SIZE, DEFAULT_FONT_FAMILY, MAIN_INDEX, \
     PROMPT_NAME_REGEX
 from pyqt_openai.models import ImagePromptContainer
 from pyqt_openai.pyqt_openai_data import DB
@@ -290,3 +291,24 @@ def validate_prompt_group_json(json_data):
                 return False
 
     return True
+
+# Get current theme
+# import platform
+#
+#
+# def get_current_theme():
+#     if platform.system() == "Windows":
+#         import winreg
+#         try:
+#             registry = winreg.ConnectRegistry(None, winreg.HKEY_CURRENT_USER)
+#             key = winreg.OpenKey(registry, r"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize")
+#
+#             value, _ = winreg.QueryValueEx(key, 'AppsUseLightTheme')
+#
+#             return value
+#
+#         except Exception as e:
+#             print(f"An error occurred: {e}")
+#             return None
+#     else:
+#         return None

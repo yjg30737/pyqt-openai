@@ -17,7 +17,7 @@ sys.path.insert(0, os.getcwd())  # Add the current directory as well
 # os.environ['QT_API'] = 'pyside6'
 
 # for testing pyqt6
-# os.environ['QT_API'] = 'pyqt6'
+os.environ['QT_API'] = 'pyqt6'
 
 from qtpy.QtGui import QGuiApplication, QFont, QIcon, QColor
 from qtpy.QtWidgets import QMainWindow, QToolBar, QHBoxLayout, QDialog, QLineEdit, QPushButton, QWidgetAction, QSpinBox, QLabel, QWidget, QApplication, \
@@ -41,7 +41,7 @@ from pyqt_openai.sqlite import get_db_filename
 
 from pyqt_openai.pyqt_openai_data import OPENAI_STRUCT, LLAMAINDEX_WRAPPER
 from pyqt_openai import PAYPAL_URL, BUYMEACOFFEE_URL, INI_FILE_NAME, SHORTCUT_FULL_SCREEN, \
-    APP_INITIAL_WINDOW_SIZE, APP_NAME
+    APP_INITIAL_WINDOW_SIZE, APP_NAME, APP_ICON, ICON_STACKONTOP, ICON_CUSTOMIZE, ICON_FULLSCREEN, ICON_CLOSE
 
 # HighDPI support
 # Qt version should be above 5.14
@@ -124,7 +124,7 @@ class MainWindow(QMainWindow):
 
         self.__stackAction = QWidgetAction(self)
         self.__stackBtn = Button()
-        self.__stackBtn.setStyleAndIcon('ico/stackontop.svg')
+        self.__stackBtn.setStyleAndIcon(ICON_STACKONTOP)
         self.__stackBtn.setCheckable(True)
         self.__stackBtn.toggled.connect(self.__stackToggle)
         self.__stackAction.setDefaultWidget(self.__stackBtn)
@@ -132,7 +132,7 @@ class MainWindow(QMainWindow):
 
         self.__customizeAction = QWidgetAction(self)
         self.__customizeBtn = Button()
-        self.__customizeBtn.setStyleAndIcon('ico/customize.svg')
+        self.__customizeBtn.setStyleAndIcon(ICON_CUSTOMIZE)
         self.__customizeBtn.clicked.connect(self.__executeCustomizeDialog)
         self.__customizeAction.setDefaultWidget(self.__customizeBtn)
         self.__customizeBtn.setToolTip(LangClass.TRANSLATIONS['Customize'])
@@ -147,7 +147,7 @@ class MainWindow(QMainWindow):
 
         self.__fullScreenAction = QWidgetAction(self)
         self.__fullScreenBtn = Button()
-        self.__fullScreenBtn.setStyleAndIcon('ico/fullscreen.svg')
+        self.__fullScreenBtn.setStyleAndIcon(ICON_FULLSCREEN)
         self.__fullScreenBtn.setCheckable(True)
         self.__fullScreenBtn.toggled.connect(self.__fullScreenToggle)
         self.__fullScreenAction.setDefaultWidget(self.__fullScreenBtn)
@@ -237,14 +237,14 @@ class MainWindow(QMainWindow):
         app = QApplication.instance()
 
         action = QAction("Quit", self)
-        action.setIcon(QIcon('ico/close.svg'))
+        action.setIcon(QIcon(ICON_CLOSE))
 
         action.triggered.connect(app.quit)
 
         menu.addAction(action)
 
         tray_icon = QSystemTrayIcon(app)
-        tray_icon.setIcon(QIcon('ico/openai.svg'))
+        tray_icon.setIcon(QIcon(APP_ICON))
         tray_icon.activated.connect(self.__activated)
 
         tray_icon.setContextMenu(menu)
@@ -487,7 +487,7 @@ class App(QApplication):
 
 def main():
     app = App(sys.argv)
-    QApplication.setWindowIcon(QIcon('ico/openai.svg'))
+    app.setWindowIcon(QIcon(APP_ICON))
     w = MainWindow()
     w.show()
     sys.exit(app.exec())

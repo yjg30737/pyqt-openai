@@ -55,10 +55,43 @@ LANGUAGE_DICT = {
     "Portuguese": "pt_BR"
 }
 
-## PROFILE IMAGE & FONT & ICON
+## ICONS
+ICON_ADD = 'ico/add.svg'
+ICON_CASE = 'ico/case.svg'
+ICON_CLOSE = 'ico/close.svg'
+ICON_COPY = 'ico/copy.svg'
+ICON_CUSTOMIZE = 'ico/customize.svg'
+ICON_DELETE = 'ico/delete.svg'
+ICON_DISCORD = 'ico/discord.svg'
+ICON_EXPORT = 'ico/export.svg'
+ICON_FAVORITE_NO = 'ico/favorite_no.svg'
+ICON_FAVORITE_YES = 'ico/favorite_yes.svg'
+ICON_FULLSCREEN = 'ico/fullscreen.svg'
+ICON_GITHUB = 'ico/github.svg'
+ICON_HELP = 'ico/help.svg'
+ICON_HISTORY = 'ico/history.svg'
+ICON_IMPORT = 'ico/import.svg'
+ICON_INFO = 'ico/info.svg'
+ICON_NEXT = 'ico/next.svg'
+ICON_OPENAI = 'ico/openai.png'
+ICON_PREV = 'ico/prev.svg'
+ICON_PROMPT = 'ico/prompt.svg'
+ICON_QUESTION = 'ico/question.svg'
+ICON_REFRESH = 'ico/refresh.svg'
+ICON_REGEX = 'ico/regex.svg'
+ICON_SAVE = 'ico/save.svg'
+ICON_SEARCH = 'ico/search.svg'
+ICON_SETTING = 'ico/setting.svg'
+ICON_SIDEBAR = 'ico/sidebar.svg'
+ICON_STACKONTOP = 'ico/stackontop.svg'
+ICON_USER = 'ico/user.png'
+ICON_VERTICAL_THREE_DOTS = 'ico/vertical_three_dots.svg'
+ICON_WORD = 'ico/word.svg'
+
+## CUSTOMIZE
 DEFAULT_ICON_SIZE = (24, 24)
-DEFAULT_USER_IMAGE_PATH = 'ico/user.png'
-DEFAULT_AI_IMAGE_PATH = 'ico/openai.png'
+DEFAULT_USER_IMAGE_PATH = ICON_USER
+DEFAULT_AI_IMAGE_PATH = ICON_OPENAI
 DEFAULT_FONT_SIZE = 12
 DEFAULT_FONT_FAMILY = 'Arial'
 FONT_FAMILY_FOR_SOURCE = 'Courier'
