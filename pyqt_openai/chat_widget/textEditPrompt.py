@@ -5,7 +5,6 @@ from qtpy.QtWidgets import QTextEdit
 class TextEditPrompt(QTextEdit):
     returnPressed = Signal()
     sendSuggestionWidget = Signal(str)
-    moveCursor = Signal(str)
 
     def __init__(self):
         super().__init__()
@@ -33,13 +32,6 @@ class TextEditPrompt(QTextEdit):
                 self.sendSuggestionWidget.emit('up')
             elif e.key() == Qt.Key.Key_Down:
                 self.sendSuggestionWidget.emit('down')
-        else:
-            # Move cursor up and down when the input field is empty
-            if e.key() == Qt.Key.Key_Up and self.toPlainText().strip() == '':
-                self.moveCursor.emit('up')
-            elif e.key() == Qt.Key.Key_Down and self.toPlainText().strip() == '':
-                self.moveCursor.emit('down')
-
         if (e.key() == Qt.Key.Key_Return or e.key() == Qt.Key.Key_Enter) and self.__executeEnabled:
             if e.modifiers() == Qt.KeyboardModifier.ShiftModifier:
                 return super().keyPressEvent(e)

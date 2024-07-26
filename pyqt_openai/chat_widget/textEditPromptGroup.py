@@ -43,7 +43,6 @@ class TextEditPromptGroup(QWidget):
             w.textChanged.connect(self.onUpdateSuggestion)
             w.textChanged.connect(self.textChanged)
             if isinstance(w, TextEditPrompt):
-                w.moveCursor.connect(self.__moveCursor)
                 w.sendSuggestionWidget.connect(self.onSendKeySignalToSuggestion)
             lay.addWidget(w)
         lay.setContentsMargins(0, 0, 0, 0)
@@ -54,46 +53,6 @@ class TextEditPromptGroup(QWidget):
         self.setVisibleTo(PROMPT_BEGINNING_KEY_NAME, False)
         self.setVisibleTo(PROMPT_JSON_KEY_NAME, False)
         self.setVisibleTo(PROMPT_END_KEY_NAME, False)
-
-    def __moveCursor(self, direction):
-        sender = self.sender()
-        if sender not in self.__textGroup.values():
-            return
-
-        if sender == self.__beginningTextEdit:
-            self.__handleBeginningTextEdit(direction)
-        elif sender == self.__textEdit:
-            self.__handleMainTextEdit(direction)
-        elif sender == self.__jsonTextEdit:
-            self.__handleJsonTextEdit(direction)
-        elif sender == self.__endingTextEdit:
-            self.__handleEndingTextEdit(direction)
-
-    def __handleBeginningTextEdit(self, direction):
-        if direction == 'down':
-            self.__textEdit.setFocus()
-
-    def __handleMainTextEdit(self, direction):
-        if direction == 'up':
-            self.__beginningTextEdit.setFocus()
-        elif direction == 'down':
-            if self.__jsonTextEdit.isVisible():
-                self.__jsonTextEdit.setFocus()
-            else:
-                self.__endingTextEdit.setFocus()
-
-    def __handleJsonTextEdit(self, direction):
-        if direction == 'up':
-            self.__textEdit.setFocus()
-        elif direction == 'down':
-            self.__endingTextEdit.setFocus()
-
-    def __handleEndingTextEdit(self, direction):
-        if direction == 'up':
-            if self.__jsonTextEdit.isVisible():
-                self.__jsonTextEdit.setFocus()
-            else:
-                self.__textEdit.setFocus()
 
     def executeCommand(self, item, grp):
         command_key = item.text()
