@@ -64,18 +64,19 @@ class JSONEditor(QTextEdit):
             yield match.span()
 
     def keyPressEvent(self, event):
+        cursor = self.textCursor()
         if event.key() == Qt.Key.Key_BraceLeft:
             super().keyPressEvent(event)
             self.insertPlainText('}')
-            self.moveCursor(QTextCursor.PreviousCharacter)
+            cursor.movePosition(QTextCursor.PreviousCharacter)
         elif event.key() == Qt.Key.Key_QuoteDbl:
             super().keyPressEvent(event)
             self.insertPlainText('"')
-            self.moveCursor(QTextCursor.PreviousCharacter)
+            cursor.movePosition(QTextCursor.PreviousCharacter)
         elif event.key() == Qt.Key.Key_BracketLeft:
             super().keyPressEvent(event)
             self.insertPlainText(']')
-            self.moveCursor(QTextCursor.PreviousCharacter)
+            cursor.movePosition(QTextCursor.PreviousCharacter)
         elif event.key() == Qt.Key.Key_Tab and not event.modifiers() & Qt.KeyboardModifier.ShiftModifier:
             cursor = self.textCursor()
             if cursor.hasSelection():
