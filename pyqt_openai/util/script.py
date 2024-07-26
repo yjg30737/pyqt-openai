@@ -292,23 +292,17 @@ def validate_prompt_group_json(json_data):
 
     return True
 
-# Get current theme
-# import platform
-#
-#
-# def get_current_theme():
-#     if platform.system() == "Windows":
-#         import winreg
-#         try:
-#             registry = winreg.ConnectRegistry(None, winreg.HKEY_CURRENT_USER)
-#             key = winreg.OpenKey(registry, r"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize")
-#
-#             value, _ = winreg.QueryValueEx(key, 'AppsUseLightTheme')
-#
-#             return value
-#
-#         except Exception as e:
-#             print(f"An error occurred: {e}")
-#             return None
-#     else:
-#         return None
+def get_prompt_data(prompt_type='form'):
+    data = []
+    for group in DB.selectPromptGroup(prompt_type=prompt_type):
+        group_obj = {
+            'name': group.name,
+            'data': []
+        }
+        for entry in DB.selectPromptEntry(group.id):
+            group_obj['data'].append({
+                'name': entry.name,
+                'content': entry.content
+            })
+        data.append(group_obj)
+    return data

@@ -12,7 +12,7 @@ from pyqt_openai.chat_widget.prompt_gen_widget.promptGroupExportDialog import Pr
 from pyqt_openai.chat_widget.prompt_gen_widget.promptGroupImportDialog import PromptGroupImportDialog
 from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.lang.translations import LangClass
-from pyqt_openai.util.script import open_directory
+from pyqt_openai.util.script import open_directory, get_prompt_data
 from pyqt_openai.widgets.button import Button
 
 
@@ -133,21 +133,11 @@ class SentenceGroupList(QWidget):
             if file_data[0]:
                 filename = file_data[0]
                 # Get the data
-                data = []
-                for group in DB.selectPromptGroup(prompt_type='sentence'):
-                    group_obj = {
-                        'name': group.name,
-                        'data': []
-                    }
-                    for entry in DB.selectPromptEntry(group.id):
-                        group_obj['data'].append({
-                            'name': entry.name,
-                            'content': entry.content
-                        })
-                    data.append(group_obj)
+                data = get_prompt_data('sentence')
                 dialog = PromptGroupExportDialog(data)
                 reply = dialog.exec()
                 if reply == QDialog.DialogCode.Accepted:
+                    data = dialog.getSelected()
                     # Save the data
                     with open(filename, 'w') as f:
                         json.dump(data, f, indent=4)

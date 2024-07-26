@@ -14,15 +14,14 @@ class NotifierWidget(QWidget):
 
     def __init__(self, informative_text='', detailed_text=''):
         super().__init__()
-        self.__timerVal = 5000
+        self.__timerVal = 10000
         self.__initUi(informative_text, detailed_text)
 
     def __initUi(self, informative_text='', detailed_text=''):
-        self.setFixedSize(250, 150)
+        self.setFixedSize(400, 300)
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowStaysOnTopHint | Qt.WindowType.SubWindow)
 
         self.__informativeTextLabel = QLabel(informative_text) if informative_text else QLabel('Informative')
-        self.__informativeTextLabel.setFont(QFont('Arial', 15, QFont.Weight.Bold))
         self.__detailedTextLabel = QLabel(detailed_text) if detailed_text else QLabel('Detailed')
 
         closeBtn = QPushButton()
