@@ -183,7 +183,7 @@ def get_chatgpt_data(conv_arr):
 
                 # print(f'content: {content}')
                 if role == 'user':
-                    content_parts = '\n'.join(content['parts'])
+                    content_parts = '\n'.join([str(c) for c in content['parts']])
                     obj['content'] = content_parts
                     conv['messages'].append(obj)
                 else:
