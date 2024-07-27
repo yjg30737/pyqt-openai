@@ -120,7 +120,6 @@ class OpenAIChatBotWidget(QWidget):
         self.__chatNavWidget.clicked.connect(self.__showChat)
         self.__chatNavWidget.cleared.connect(self.__clearChat)
         self.__chatNavWidget.onImport.connect(self.__importChat)
-        self.__chatNavWidget.onChatGPTImport.connect(self.__chatGPTImport)
         self.__chatNavWidget.onExport.connect(self.__exportChat)
         self.__chatNavWidget.onFavoriteClicked.connect(self.__showFavorite)
 
@@ -381,30 +380,11 @@ class OpenAIChatBotWidget(QWidget):
         self.__lineEdit.setFocus()
         self.__chatNavWidget.add(called_from_parent=True)
 
-    def __importChat(self, filename):
+    def __importChat(self, data):
         try:
-            data = []
-            with open(filename, 'r') as f:
-                data = json.load(f)
-
             # Import thread
             for thread in data:
                 cur_id = DB.insertThread(thread['name'], thread['insert_dt'], thread['update_dt'])
-                messages = thread['messages']
-                # Import message
-                for message in messages:
-                    message['thread_id'] = cur_id
-                    container = ChatMessageContainer(**message)
-                    DB.insertMessage(container)
-            self.__chatNavWidget.refreshData()
-        except Exception as e:
-            QMessageBox.critical(self, LangClass.TRANSLATIONS["Error"], LangClass.TRANSLATIONS['Check whether the file is a valid JSON file for importing.'])
-
-    def __chatGPTImport(self, data):
-        try:
-            # Import thread
-            for thread in data:
-                cur_id = DB.insertThread(thread['name'])
                 messages = thread['messages']
                 # Import message
                 for message in messages:

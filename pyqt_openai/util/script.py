@@ -148,43 +148,32 @@ def show_message_box(title, text):
     result = msg_box.exec()
     return result
 
-def get_conversation(filename):
-    with open(filename, 'r') as f:
-        data = json.load(f)
-    return data
-
-def get_conversation_from_chatgpt(filename, most_recent_n:int = None):
-    conversations_df = json.load(open(filename, 'r'))
+def get_chatgpt_data_for_preview(filename, most_recent_n:int = None):
+    data = json.load(open(filename, 'r'))
     conv_arr = []
-    count = conversations_df.shape[0] if most_recent_n is None else most_recent_n
+    count = len(data) if most_recent_n is None else most_recent_n
     for i in range(count):
-        conv = conversations_df.iloc[i]
+        conv = data[i]
         conv_dict = {}
-        name = conv.title
-        insert_dt = str(conv.create_time).split('.')[0]
-        update_dt = str(conv.update_time).split('.')[0]
-        conv_dict['id'] = conv.id
+        name = conv['title']
+        insert_dt = datetime.fromtimestamp(conv['create_time']).strftime('%Y-%m-%d %H:%M:%S') if conv['create_time'] else None
+        update_dt = datetime.fromtimestamp(conv['update_time']).strftime('%Y-%m-%d %H:%M:%S') if conv['update_time'] else None
+        conv_dict['id'] = conv['id']
         conv_dict['name'] = name
         conv_dict['insert_dt'] = insert_dt
         conv_dict['update_dt'] = update_dt
-        conv_dict['mapping'] = conv.mapping
+        conv_dict['mapping'] = conv['mapping']
         conv_arr.append(conv_dict)
     return {
         'columns': ['id', 'name', 'insert_dt', 'update_dt'],
         'data': conv_arr
     }
 
-def get_chatgpt_data(conv_arr):
+def get_chatgpt_data_for_import(conv_arr):
     for conv in conv_arr:
-        # role
-        # content
-        # insert_dt
-        # update_dt
-        # model
         conv['messages'] = []
         for k, v in conv['mapping'].items():
             obj = {}
-            # We need the create_time, update_time, role, content_type, and content
             message = v['message']
             if message:
                 metadata = message['metadata']
@@ -198,14 +187,12 @@ def get_chatgpt_data(conv_arr):
                 obj['insert_dt'] = create_time
                 obj['update_dt'] = update_time
 
-                # print(f'content: {content}')
                 if role == 'user':
                     content_parts = '\n'.join([str(c) for c in content['parts']])
                     obj['content'] = content_parts
                     conv['messages'].append(obj)
                 else:
                     if role == 'tool':
-                        # Tool is used for the internal use of the system of OpenAI
                         pass
                     elif role == 'assistant':
                         model_slug = metadata.get('model_slug', None)

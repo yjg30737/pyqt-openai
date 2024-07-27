@@ -3,12 +3,11 @@ from qtpy.QtSql import QSqlTableModel, QSqlQuery
 from qtpy.QtWidgets import QWidget, QVBoxLayout, QMessageBox, QPushButton, QStyledItemDelegate, QTableView, \
     QAbstractItemView, \
     QHBoxLayout, \
-    QLabel, QSpacerItem, QSizePolicy, QFileDialog, QComboBox, QDialog
+    QLabel, QSpacerItem, QSizePolicy, QComboBox, QDialog
 
-# for search feature
-from pyqt_openai.chat_widget.chatGPTImportDialog import ChatGPTImportDialog
-from pyqt_openai import THREAD_ORDERBY, JSON_FILE_EXT, ICON_ADD, ICON_DELETE, ICON_IMPORT, ICON_SAVE, ICON_CLOSE, \
+from pyqt_openai import THREAD_ORDERBY, ICON_ADD, ICON_DELETE, ICON_IMPORT, ICON_SAVE, ICON_CLOSE, \
     ICON_REFRESH
+from pyqt_openai.chat_widget.chatImportDialog import ChatImportDialog
 from pyqt_openai.chat_widget.exportDialog import ExportDialog
 from pyqt_openai.chat_widget.importDialog import ImportDialog
 from pyqt_openai.lang.translations import LangClass
@@ -60,9 +59,8 @@ class ChatNavWidget(QWidget):
     added = Signal()
     clicked = Signal(int, str)
     cleared = Signal()
-    onImport = Signal(str)
+    onImport = Signal(list)
     onExport = Signal(list)
-    onChatGPTImport = Signal(list)
     onFavoriteClicked = Signal(bool)
 
     def __init__(self, columns, table_nm):
@@ -206,18 +204,11 @@ class ChatNavWidget(QWidget):
         reply = dialog.exec()
         if reply == QDialog.Accepted:
             import_type = dialog.getImportType()
-            if import_type == LangClass.TRANSLATIONS['General']:
-                filename = QFileDialog.getOpenFileName(self, LangClass.TRANSLATIONS['Import'], '', JSON_FILE_EXT)
-                if filename:
-                    filename = filename[0]
-                    if filename:
-                        self.onImport.emit(filename)
-            else:
-                chatgptDialog = ChatGPTImportDialog()
-                reply = chatgptDialog.exec()
-                if reply == QDialog.Accepted:
-                    data = chatgptDialog.getData()
-                    self.onChatGPTImport.emit(data)
+            chatImportDialog = ChatImportDialog(import_type=import_type)
+            reply = chatImportDialog.exec()
+            if reply == QDialog.Accepted:
+                data = chatImportDialog.getData()
+                self.onImport.emit(data)
 
     def __export(self):
         columns = ChatThreadContainer.get_keys()

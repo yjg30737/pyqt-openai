@@ -30,7 +30,7 @@ class PromptGroupImportDialog(QDialog):
         findPathWidget = FindPathWidget()
         findPathWidget.setExtOfFiles(JSON_FILE_EXT)
         findPathWidget.getLineEdit().setPlaceholderText(LangClass.TRANSLATIONS["Select a json file to import"])
-        findPathWidget.added.connect(self.__validateFile)
+        findPathWidget.added.connect(self.__setPath)
 
         btn = QPushButton(LangClass.TRANSLATIONS['What is the right form of json?'])
         btn.clicked.connect(self.__showJsonSample)
@@ -43,7 +43,7 @@ class PromptGroupImportDialog(QDialog):
 
         allCheckBox = QCheckBox(LangClass.TRANSLATIONS['Select All'])
         self.__listWidget = CheckBoxListWidget()
-        self.__listWidget.checkedSignal.connect(self.__toggledBtn)
+        self.__listWidget.checkedSignal.connect(self.__toggleBtn)
         self.__listWidget.currentRowChanged.connect(lambda x: self.__showEntries(x))
         allCheckBox.stateChanged.connect(self.__listWidget.toggleState)
 
@@ -95,7 +95,7 @@ class PromptGroupImportDialog(QDialog):
 
         self.__buttonBox.button(QDialogButtonBox.Ok).setEnabled(False)
 
-    def __toggledBtn(self):
+    def __toggleBtn(self):
         self.__buttonBox.button(QDialogButtonBox.Ok).setEnabled(len(self.__listWidget.getCheckedRows()) > 0)
 
     def __showJsonSample(self):
@@ -131,7 +131,7 @@ class PromptGroupImportDialog(QDialog):
         self.__listWidget.item(0).setSelected(True)
         self.__data = json_data
 
-    def __validateFile(self, path):
+    def __setPath(self, path):
         self.__path = path
         data = json.load(open(path))
         if validate_prompt_group_json(data):

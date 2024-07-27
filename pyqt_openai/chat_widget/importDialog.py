@@ -47,8 +47,8 @@ class ImportDialog(QDialog):
     def getImportType(self):
         selected_button_id = self.__buttonGroup.checkedId()
         if selected_button_id == 1:
-            return LangClass.TRANSLATIONS['General']
+            return 'general'
         elif selected_button_id == 2:
-            return LangClass.TRANSLATIONS['ChatGPT']
+            return 'chatgpt'
         else:
             return None
