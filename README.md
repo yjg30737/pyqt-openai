@@ -118,6 +118,7 @@ Also you can submit a pull request if you want to update any words naturally by 
 * langchain - for connecting llama-index with gpt
 * pillow - for preventing ModuleNotFoundError from llama-index
 * replicate - for supporting Replicate
+* toml - For reading pyproject.toml below 3.11
 
 You can install these requirements with only one line command "pip install -r requirements.txt". Just see "How to Install" section below.
 
