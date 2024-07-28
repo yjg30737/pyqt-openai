@@ -3,10 +3,11 @@ import os
 from qtpy.QtCore import Qt, QSettings
 from qtpy.QtWidgets import QHBoxLayout, QVBoxLayout, QFrame, QWidget, QSplitter
 
+from pyqt_openai import INI_FILE_NAME, ICON_HISTORY, ICON_SETTING
 from pyqt_openai.models import ImagePromptContainer
 from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.replicate_widget.replicateControlWidget import ReplicateControlWidget
-from pyqt_openai.res.language_dict import LangClass
+from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.util.script import get_image_filename_for_saving, open_directory, get_image_prompt_filename_for_saving
 from pyqt_openai.widgets.imageNavWidget import ImageNavWidget
 from pyqt_openai.widgets.linkLabel import LinkLabel
@@ -24,7 +25,7 @@ class ReplicateWidget(QWidget):
 
     def __initVal(self):
         # ini
-        self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.Format.IniFormat)
+        self.__settings_ini = QSettings(INI_FILE_NAME, QSettings.Format.IniFormat)
 
         self.__settings_ini.beginGroup('REPLICATE')
 
@@ -49,21 +50,26 @@ class ReplicateWidget(QWidget):
         self.__rightSideBarWidget.submitReplicateAllComplete.connect(self.__imageGenerationAllComplete)
 
         self.__historyBtn = Button()
-        self.__historyBtn.setStyleAndIcon('ico/history.svg')
+        self.__historyBtn.setStyleAndIcon(ICON_HISTORY)
         self.__historyBtn.setCheckable(True)
-        self.__historyBtn.setToolTip('History')
+        self.__historyBtn.setToolTip(LangClass.TRANSLATIONS['History'])
         self.__historyBtn.setChecked(self.__show_history)
         self.__historyBtn.toggled.connect(self.__toggle_history)
 
         self.__settingBtn = Button()
-        self.__settingBtn.setStyleAndIcon('ico/setting.svg')
+        self.__settingBtn.setStyleAndIcon(ICON_SETTING)
         self.__settingBtn.setCheckable(True)
-        self.__settingBtn.setToolTip('Settings')
+        self.__settingBtn.setToolTip(LangClass.TRANSLATIONS['Settings'])
         self.__settingBtn.setChecked(self.__show_setting)
         self.__settingBtn.toggled.connect(self.__toggle_setting)
 
-        self.__toReplicateLabel = LinkLabel('To Replicate / What is Replicate?', 'https://replicate.com/')
-        self.__howToUseReplicateLabel = LinkLabel('Get Replicate API Token (Need to sign in first)', 'https://replicate.com/account/api-tokens')
+        self.__toReplicateLabel = LinkLabel()
+        self.__toReplicateLabel.setText('To Replicate / What is Replicate?')
+        self.__toReplicateLabel.setUrl('https://replicate.com/')
+
+        self.__howToUseReplicateLabel = LinkLabel()
+        self.__howToUseReplicateLabel.setText('How to use Replicate?')
+        self.__howToUseReplicateLabel.setUrl('https://replicate.com/account/api-tokens')
 
         sep1 = QFrame()
         sep1.setFrameShape(QFrame.Shape.VLine)
@@ -149,7 +155,7 @@ class ReplicateWidget(QWidget):
     def __imageGenerationAllComplete(self):
         if not self.isVisible():
             if self.__settings_ini.value('notify_finish', type=bool):
-                self.__notifierWidget = NotifierWidget(informative_text=LangClass.TRANSLATIONS['Response 👌'], detailed_text = 'Image Generation complete.')
+                self.__notifierWidget = NotifierWidget(informative_text=LangClass.TRANSLATIONS['Response 👌'], detailed_text = LangClass.TRANSLATIONS['Image Generation complete.'])
                 self.__notifierWidget.show()
                 self.__notifierWidget.doubleClicked.connect(self.window().show)
 

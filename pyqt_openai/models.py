@@ -1,7 +1,13 @@
+"""
+This file is used to store the data classes that are used throughout the application.
+"""
+
 from typing import List
 from dataclasses import dataclass, fields, field
 
-from pyqt_openai.res.language_dict import LangClass
+from pyqt_openai import DB_FILE_NAME, DEFAULT_FONT_SIZE, DEFAULT_FONT_FAMILY, DEFAULT_USER_IMAGE_PATH, \
+    DEFAULT_AI_IMAGE_PATH
+from pyqt_openai.lang.translations import LangClass
 
 
 @dataclass
@@ -108,7 +114,7 @@ class ImagePromptContainer(Container):
 @dataclass
 class SettingsParamsContainer(Container):
     lang: str = LangClass.lang_changed()
-    db: str = 'conv'
+    db: str = DB_FILE_NAME
     do_not_ask_again: bool = False
     notify_finish: bool = True
     show_toolbar: bool = True
@@ -116,3 +122,28 @@ class SettingsParamsContainer(Container):
     thread_tool_widget: bool = True
     chat_column_to_show: List[str] = field(default_factory=ChatThreadContainer.get_keys)
     image_column_to_show: List[str] = field(default_factory=ImagePromptContainer.get_keys)
+
+@dataclass
+class CustomizeParamsContainer(Container):
+    background_image: str = ''
+    user_image: str = DEFAULT_USER_IMAGE_PATH
+    ai_image: str = DEFAULT_AI_IMAGE_PATH
+    font_size: int = DEFAULT_FONT_SIZE
+    font_family: str = DEFAULT_FONT_FAMILY
+
+@dataclass
+class PromptGroupContainer(Container):
+    id: str = ""
+    name: str = ""
+    insert_dt: str = ""
+    update_dt: str = ""
+    prompt_type: str = ""
+
+@dataclass
+class PromptEntryContainer(Container):
+    id: str = ""
+    group_id: str = ""
+    name: str = ""
+    content: str = ""
+    insert_dt: str = ""
+    update_dt: str = ""

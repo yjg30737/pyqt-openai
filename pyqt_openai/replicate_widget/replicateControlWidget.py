@@ -1,13 +1,14 @@
 import os
 
 from qtpy.QtCore import QThread, Signal, QSettings, Qt
-from qtpy.QtWidgets import QLineEdit, QScrollArea, QMessageBox, QWidget, QCheckBox, QSpinBox, QGroupBox, QVBoxLayout, QPushButton, \
-    QComboBox, \
+from qtpy.QtWidgets import QLineEdit, QScrollArea, QMessageBox, QWidget, QCheckBox, QSpinBox, QGroupBox, QVBoxLayout, \
+    QPushButton, \
     QPlainTextEdit, \
     QFormLayout, QLabel, QFrame, QSplitter
 
+from pyqt_openai import INI_FILE_NAME, IMAGE_DEFAULT_SAVE_DIRECTORY
+from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ImagePromptContainer
-from pyqt_openai.res.language_dict import LangClass
 from pyqt_openai.util.replicate_script import ReplicateWrapper
 from pyqt_openai.widgets.findPathWidget import FindPathWidget
 from pyqt_openai.widgets.notifier import NotifierWidget
@@ -52,9 +53,9 @@ class ReplicateControlWidget(QScrollArea):
         self.__initUi()
 
     def __initVal(self):
-        default_directory = 'image_result'
+        default_directory = IMAGE_DEFAULT_SAVE_DIRECTORY
 
-        self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.Format.IniFormat)
+        self.__settings_ini = QSettings(INI_FILE_NAME, QSettings.Format.IniFormat)
         self.__settings_ini.beginGroup('REPLICATE')
         if not self.__settings_ini.contains('REPLICATE_API_TOKEN'):
             self.__settings_ini.setValue('REPLICATE_API_TOKEN', '')
@@ -92,14 +93,13 @@ class ReplicateControlWidget(QScrollArea):
         self.__continue_generation = self.__settings_ini.value('continue_generation', type=bool)
         self.__number_of_images_to_create = self.__settings_ini.value('number_of_images_to_create', type=int)
         self.__save_prompt_as_text = self.__settings_ini.value('save_prompt_as_text', type=bool)
-        self.__show_prompt_on_image = self.__settings_ini.value('show_prompt_on_image', type=bool)
 
         self.__wrapper = ReplicateWrapper(self.__api_key)
         self.__settings_ini.endGroup()
 
     def __initUi(self):
         self.__apiKeyLineEdit = QLineEdit()
-        self.__apiKeyLineEdit.setPlaceholderText('Enter Replicate API Key...')
+        self.__apiKeyLineEdit.setPlaceholderText(LangClass.TRANSLATIONS['Enter Replicate API Key...'])
         self.__apiKeyLineEdit.setText(self.__api_key)
         self.__apiKeyLineEdit.setEchoMode(QLineEdit.EchoMode.Password)
         self.__apiKeyLineEdit.textChanged.connect(self.__replicateChanged)
@@ -109,16 +109,16 @@ class ReplicateControlWidget(QScrollArea):
         # generic settings
         self.__findPathWidget = FindPathWidget()
         self.__findPathWidget.setAsDirectory(True)
-        self.__findPathWidget.getLineEdit().setPlaceholderText('Choose Directory to Save...')
+        self.__findPathWidget.getLineEdit().setPlaceholderText(LangClass.TRANSLATIONS['Choose Directory to Save...'])
         self.__findPathWidget.getLineEdit().setText(self.__directory)
         self.__findPathWidget.added.connect(self.__setSaveDirectory)
 
-        self.__saveChkBox = QCheckBox('Save After Submit')
+        self.__saveChkBox = QCheckBox(LangClass.TRANSLATIONS['Save After Submit'])
         self.__saveChkBox.setChecked(True)
         self.__saveChkBox.toggled.connect(self.__saveChkBoxToggled)
         self.__saveChkBox.setChecked(self.__is_save)
 
-        self.__continueGenerationChkBox = QCheckBox('Continue Image Generation')
+        self.__continueGenerationChkBox = QCheckBox(LangClass.TRANSLATIONS['Continue Image Generation'])
         self.__continueGenerationChkBox.setChecked(True)
         self.__continueGenerationChkBox.toggled.connect(self.__continueGenerationChkBoxToggled)
         self.__continueGenerationChkBox.setChecked(self.__continue_generation)
@@ -143,18 +143,13 @@ class ReplicateControlWidget(QScrollArea):
         self.__numberOfImagesToCreateSpinBox.setValue(self.__number_of_images_to_create)
         self.__numberOfImagesToCreateSpinBox.valueChanged.connect(self.__numberOfImagesToCreateSpinBoxValueChanged)
 
-        self.__savePromptAsTextChkBox = QCheckBox('Save Prompt as Text')
+        self.__savePromptAsTextChkBox = QCheckBox(LangClass.TRANSLATIONS['Save Prompt as Text'])
         self.__savePromptAsTextChkBox.setChecked(True)
         self.__savePromptAsTextChkBox.toggled.connect(self.__savePromptAsTextChkBoxToggled)
         self.__savePromptAsTextChkBox.setChecked(self.__save_prompt_as_text)
 
-        self.__showPromptOnImageChkBox = QCheckBox('Show Prompt on Image (Working)')
-        self.__showPromptOnImageChkBox.setChecked(True)
-        self.__showPromptOnImageChkBox.toggled.connect(self.__showPromptOnImageChkBoxToggled)
-        self.__showPromptOnImageChkBox.setChecked(self.__show_prompt_on_image)
-
         self.__generalGrpBox = QGroupBox()
-        self.__generalGrpBox.setTitle('General')
+        self.__generalGrpBox.setTitle(LangClass.TRANSLATIONS['General'])
 
         lay = QVBoxLayout()
         lay.addWidget(self.__apiKeyLineEdit)
@@ -163,7 +158,6 @@ class ReplicateControlWidget(QScrollArea):
         lay.addWidget(self.__continueGenerationChkBox)
         lay.addWidget(self.__numberOfImagesToCreateSpinBox)
         lay.addWidget(self.__savePromptAsTextChkBox)
-        lay.addWidget(self.__showPromptOnImageChkBox)
         self.__generalGrpBox.setLayout(lay)
 
         self.__promptWidget = QPlainTextEdit()
@@ -178,25 +172,25 @@ class ReplicateControlWidget(QScrollArea):
         self.__submitBtn = QPushButton(LangClass.TRANSLATIONS['Submit'])
         self.__submitBtn.clicked.connect(self.__submit)
 
-        self.__stopGeneratingImageBtn = QPushButton('Stop Generating Image')
+        self.__stopGeneratingImageBtn = QPushButton(LangClass.TRANSLATIONS['Stop Generating Image'])
         self.__stopGeneratingImageBtn.clicked.connect(self.__stopGeneratingImage)
         self.__stopGeneratingImageBtn.setEnabled(False)
 
         paramGrpBox = QGroupBox()
-        paramGrpBox.setTitle('Parameters')
+        paramGrpBox.setTitle(LangClass.TRANSLATIONS['Parameters'])
 
         lay = QVBoxLayout()
         lay.addWidget(QLabel(LangClass.TRANSLATIONS['Prompt']))
         lay.addWidget(self.__promptWidget)
-        lay.addWidget(QLabel('Negative Prompt'))
+        lay.addWidget(QLabel(LangClass.TRANSLATIONS['Negative Prompt']))
         lay.addWidget(self.__negativePromptWidget)
         promptWidget = QWidget()
         promptWidget.setLayout(lay)
 
         lay = QFormLayout()
-        lay.addRow('Model', self.__modelTextEdit)
-        lay.addRow('Width', self.__widthSpinBox)
-        lay.addRow('Height', self.__heightSpinBox)
+        lay.addRow(LangClass.TRANSLATIONS['Model'], self.__modelTextEdit)
+        lay.addRow(LangClass.TRANSLATIONS['Width'], self.__widthSpinBox)
+        lay.addRow(LangClass.TRANSLATIONS['Height'], self.__heightSpinBox)
         otherParamWidget = QWidget()
         otherParamWidget.setLayout(lay)
 
@@ -207,8 +201,7 @@ class ReplicateControlWidget(QScrollArea):
         splitter.setOrientation(Qt.Orientation.Vertical)
         splitter.setChildrenCollapsible(False)
         splitter.setSizes([500, 500])
-        splitter.setStyleSheet(
-            "QSplitterHandle {background-color: lightgray;}")
+        splitter.setStyleSheet("QSplitterHandle {background-color: lightgray;}")
 
         lay = QVBoxLayout()
         lay.addWidget(splitter)
@@ -290,12 +283,6 @@ class ReplicateControlWidget(QScrollArea):
         self.__settings_ini.beginGroup('REPLICATE')
         self.__settings_ini.setValue('save_prompt_as_text', self.__save_prompt_as_text)
         self.__settings_ini.endGroup()
-        
-    def __showPromptOnImageChkBoxToggled(self, f):
-        self.__show_prompt_on_image = f
-        self.__settings_ini.beginGroup('REPLICATE')
-        self.__settings_ini.setValue('show_prompt_on_image', self.__show_prompt_on_image)
-        self.__settings_ini.endGroup()
 
     def __submit(self):
         arg = {
@@ -350,11 +337,8 @@ class ReplicateControlWidget(QScrollArea):
         return {
             'prompt': self.__promptWidget.toPlainText(),
             'negative_prompt': self.__negativePromptWidget.toPlainText(),
-            # 'n': self.__n,
             'width': self.__width,
             'height': self.__height,
-            # 'quality': self.__quality,
-            # 'style': self.__style
         }
 
     def getSavePromptAsText(self):

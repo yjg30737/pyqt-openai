@@ -6,7 +6,7 @@ from qtpy.QtCore import Qt, Signal
 from qtpy.QtWidgets import QPushButton, QHBoxLayout, QWidget, QLabel, \
     QFileDialog, QAction, QLineEdit, QMenu
 
-from pyqt_openai.res.language_dict import LangClass
+from pyqt_openai.lang.translations import LangClass
 
 
 class FindPathLineEdit(QLineEdit):
@@ -103,14 +103,14 @@ class FindPathWidget(QWidget):
 
     def __find(self):
         if self.isForDirectory():
-            filename = QFileDialog.getExistingDirectory(self, 'Open Directory', os.path.expanduser('~'), QFileDialog.Option.ShowDirsOnly)
+            filename = QFileDialog.getExistingDirectory(self, LangClass.TRANSLATIONS['Open Directory'], os.path.expanduser('~'), QFileDialog.Option.ShowDirsOnly)
             if filename:
                 pass
             else:
                 return
         else:
             str_exp_files_to_open = self.__ext_of_files if self.__ext_of_files else 'All Files (*.*)'
-            filename = QFileDialog.getOpenFileName(self, 'Find', os.path.expanduser('~'), str_exp_files_to_open)
+            filename = QFileDialog.getOpenFileName(self, LangClass.TRANSLATIONS['Find'], os.path.expanduser('~'), str_exp_files_to_open)
             if filename[0]:
                 filename = filename[0]
             else:

@@ -1,0 +1,83 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pyqt-openai"
+version = "0.7.8"
+description = "PyQt/PySide(Python cross-platform GUI toolkit) OpenAI Chatbot"
+authors = [{ name = "Jung Gyu Yoon", email = "yjg30737@gmail.com" }]
+license = { text = "MIT" }
+readme = "README.md"
+dependencies = [
+    "PyQt5 >= 5.14",
+    "PyQt6",
+    "qtpy",
+    "aiohttp",
+    "openai",
+    "pyperclip",
+    "jinja2",
+    "llama-index",
+    "requests",
+    "langchain",
+    "pillow",
+    "replicate",
+    "toml"
+]
+keywords = ['openai', 'pyqt', 'pyqt5', 'pyqt6', 'pyside6', 'chatbot', 'gpt', 'replicate']
+
+# TODO testing each version
+requires-python = ">= 3.9"
+# 3.9
+# 3.10
+# 3.11
+# 3.12
+
+# TODO add classifiers
+
+[project.urls]
+homepage = "https://github.com/yjg30737/pyqt-openai.git"
+
+[tool.setuptools]
+packages = [
+    { include = "pyqt_openai" }
+]
+
+[tool.setuptools.package-data]
+pyqt_openai = [
+    "ico/add.svg",
+    "ico/case.svg",
+    "ico/close.svg",
+    "ico/copy.svg",
+    "ico/customize.svg",
+    "ico/delete.svg",
+    "ico/discord.svg",
+    "ico/export.svg",
+    "ico/favorite_no.svg",
+    "ico/favorite_yes.svg",
+    "ico/fullscreen.svg",
+    "ico/github.svg",
+    "ico/history.svg",
+    "ico/import.svg",
+    "ico/info.svg",
+    "ico/next.svg",
+    "ico/openai.png",
+    "ico/openai.svg",
+    "ico/prev.svg",
+    "ico/prompt.svg",
+    "ico/question.svg",
+    "ico/refresh.svg",
+    "ico/regex.svg",
+    "ico/save.svg",
+    "ico/search.svg",
+    "ico/setting.svg",
+    "ico/sidebar.svg",
+    "ico/stackontop.svg",
+    "ico/user.png",
+    "ico/user.svg",
+    "ico/vertical_three_dots.svg",
+    "ico/word.svg"
+]
+
+[project.gui-scripts]
+pyqt-openai = "pyqt_openai.main:main"

@@ -1,14 +1,16 @@
 from qtpy.QtCore import Qt, Signal
-from qtpy.QtWidgets import QDialog, QLabel, QPushButton, QVBoxLayout, QApplication, QFrame, QHBoxLayout, QWidget, \
-QCheckBox, QSpacerItem, QSizePolicy
+from qtpy.QtWidgets import QDialog, QLabel, QPushButton, QVBoxLayout, QFrame, QHBoxLayout, QWidget, \
+    QCheckBox, QSpacerItem, QSizePolicy
+
+from pyqt_openai.lang.translations import LangClass
 
 
 class DoNotAskAgainDialog(QDialog):
     doNotAskAgainChanged = Signal(bool)
 
     def __init__(self, do_not_ask_again: bool = False,
-                 do_not_ask_again_message: str = "Would you like to exit the application? If you won\'t, it will be running in the background.",
-                do_not_ask_again_checkbox_message: str = 'Do not ask again'):
+                 do_not_ask_again_message: str = LangClass.TRANSLATIONS["Would you like to exit the application? If you won't, it will be running in the background."],
+                do_not_ask_again_checkbox_message: str = LangClass.TRANSLATIONS['Do not ask again']):
         super().__init__()
         self.__initVal(do_not_ask_again, do_not_ask_again_message, do_not_ask_again_checkbox_message)
         self.__initUi()
@@ -20,20 +22,20 @@ class DoNotAskAgainDialog(QDialog):
         self.__do_not_ask_again_checkbox_message = do_not_ask_again_checkbox_message
 
     def __initUi(self):
-        self.setWindowTitle("Exit")
+        self.setWindowTitle(LangClass.TRANSLATIONS["Exit"])
         self.setModal(True)
         self.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.WindowCloseButtonHint)
 
         self.label = QLabel(self.__do_not_ask_again_message)
         self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.yesButton = QPushButton("Yes")
+        self.yesButton = QPushButton(LangClass.TRANSLATIONS["Yes"])
         self.yesButton.clicked.connect(self.accept)
 
-        self.noButton = QPushButton("No")
+        self.noButton = QPushButton(LangClass.TRANSLATIONS["No"])
         self.noButton.clicked.connect(self.reject)
 
-        self.cancelButton = QPushButton("Cancel")
+        self.cancelButton = QPushButton(LangClass.TRANSLATIONS["Cancel"])
         self.cancelButton.clicked.connect(self.__cancel)
 
         self.doNotAskAgainCheckBox = QCheckBox(self.__do_not_ask_again_checkbox_message)
@@ -72,12 +74,3 @@ class DoNotAskAgainDialog(QDialog):
 
     def isCancel(self):
         return self.__is_cancel
-
-
-if __name__ == "__main__":
-    import sys
-
-    app = QApplication(sys.argv)
-    w = DoNotAskAgainDialog()
-    w.show()
-    sys.exit(app.exec())

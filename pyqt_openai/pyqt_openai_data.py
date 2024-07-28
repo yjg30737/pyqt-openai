@@ -1,29 +1,32 @@
+"""
+This is the file that contains the database and llama-index instance, OpenAI API related constants.
+Also this checks the version of the OpenAI package and raises an exception if the version is below 1.0.
+"""
+
 import base64
-import json
 import os.path
 
 import openai
-import requests
-from openai.types.chat import ChatCompletion
 
 from pyqt_openai.models import ChatMessageContainer
 from pyqt_openai.sqlite import SqliteDatabase
 from pyqt_openai.util.llamapage_script import GPTLLamaIndexWrapper
 
+os.environ['OPENAI_API_KEY'] = ''
+
 DB = SqliteDatabase()
 
 LLAMAINDEX_WRAPPER = GPTLLamaIndexWrapper()
 
+MIN_VERSION = 1.0
 # if openai version is below 1.0, exit the program and suggest to upgrade
-if openai.__version__ < str(1.0):
-    raise Exception('Please upgrade openai package to version 1.0 or higher')
+if openai.__version__ < str(MIN_VERSION):
+    raise Exception(f'Please upgrade openai package to version {MIN_VERSION} or higher')
 
 from openai import OpenAI
 
 # initialize
 OPENAI_STRUCT = OpenAI(api_key='')
-
-ROOT_DIR = os.path.dirname(__file__)
 
 # https://platform.openai.com/docs/models/model-endpoint-compatibility
 ENDPOINT_DICT = {
@@ -66,9 +69,11 @@ def get_message_obj(role, content):
     return {"role": role, "content": content}
 
 def get_argument(model, system, messages, cur_text, temperature, top_p, frequency_penalty, presence_penalty, stream,
-                 use_max_tokens, max_tokens,
-                 images,
-                 is_llama_available=False):
+                     use_max_tokens, max_tokens,
+                     images,
+                     is_llama_available=False, is_json_response_available=False,
+                     json_content=None
+                 ):
     system_obj = get_message_obj("system", system)
     messages = [system_obj] + messages
 
@@ -82,6 +87,10 @@ def get_argument(model, system, messages, cur_text, temperature, top_p, frequenc
         'presence_penalty': presence_penalty,
         'stream': stream,
     }
+    if is_json_response_available:
+        openai_arg['response_format'] = {"type": 'json_object'}
+        cur_text += f' JSON {json_content}'
+
     # If there is at least one image, it should add
     if len(images) > 0:
         multiple_images_content = []

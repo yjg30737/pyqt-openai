@@ -1,0 +1,47 @@
+[
+    {
+        "name": "alex_brogan",
+        "data": [
+            {
+                "name": "sample_1",
+                "content": "Identify the 20% of [topic or skill] that will yield 80% of the desired results and provide a focused learning plan to master it."
+            },
+            {
+                "name": "sample_2",
+                "content": "Explain [topic or skill] in the simplest terms possible as if teaching it to a complete beginner. Identify gaps in my understanding and suggest resources to fill them."
+            },
+            {
+                "name": "sample_3",
+                "content": "Create a study plan that mixes different topics or skills within [subject area] to help me develop a more robust understanding and facilitate connections between them."
+            },
+            {
+                "name": "sample_4",
+                "content": "Design a spaced repetition schedule for me to effectively review [topic or skill] over time, ensuring better retention and recall."
+            },
+            {
+                "name": "sample_5",
+                "content": "Help me create mental models or analogies to better understand and remember key concepts in [topic or skill]."
+            },
+            {
+                "name": "sample_6",
+                "content": "Suggest various learning resources (e.g., videos, books, podcasts, interactive exercises) for [topic or skill] that cater to different learning styles."
+            },
+            {
+                "name": "sample_7",
+                "content": "Provide me with a series of challenging questions or problems related to [topic or skill] to test my understanding and improve long-term retention."
+            },
+            {
+                "name": "sample_8",
+                "content": "Transform key concepts or lessons from [topic or skill] into engaging stories or narratives to help me better remember and understand the material."
+            },
+            {
+                "name": "sample_9",
+                "content": "Design a deliberate practice routine for [topic or skill], focusing on my weaknesses and providing regular feedback for improvement."
+            },
+            {
+                "name": "sample_10",
+                "content": "Guide me through a visualization exercise to help me internalize [topic or skill] and imagine myself succesfully applying it in real-life situations."
+            }
+        ]
+    }
+]

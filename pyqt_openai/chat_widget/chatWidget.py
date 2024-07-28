@@ -4,7 +4,8 @@ from qtpy.QtCore import Qt, QSettings
 
 from pyqt_openai.chat_widget.chatBrowser import ChatBrowser
 from pyqt_openai.chat_widget.menuWidget import MenuWidget
-from pyqt_openai.res.language_dict import LangClass
+from pyqt_openai import INI_FILE_NAME, ICON_USER, ICON_OPENAI
+from pyqt_openai.lang.translations import LangClass
 
 
 class ChatWidget(QWidget):
@@ -14,14 +15,14 @@ class ChatWidget(QWidget):
         self.__initUi()
 
     def __initVal(self):
-        self.__settings_ini = QSettings('pyqt_openai.ini', QSettings.Format.IniFormat)
+        self.__settings_ini = QSettings(INI_FILE_NAME, QSettings.Format.IniFormat)
 
         if not self.__settings_ini.contains('background_image'):
             self.__settings_ini.setValue('background_image', '')
         if not self.__settings_ini.contains('user_image'):
-            self.__settings_ini.setValue('user_image', 'ico/user.png')
+            self.__settings_ini.setValue('user_image', ICON_USER)
         if not self.__settings_ini.contains('ai_image'):
-            self.__settings_ini.setValue('ai_image', 'ico/openai.png')
+            self.__settings_ini.setValue('ai_image', ICON_OPENAI)
 
         self.__background_image = self.__settings_ini.value('background_image', type=str)
         self.__user_image = self.__settings_ini.value('user_image', type=str)
@@ -45,7 +46,6 @@ class ChatWidget(QWidget):
 
         chatWidget = QWidget()
         chatWidget.setLayout(lay)
-        chatWidget.setMinimumWidth(600)
 
         self.__mainWidget = QStackedWidget()
         self.__mainWidget.addWidget(self.__homeWidget)
