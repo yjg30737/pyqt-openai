@@ -3,8 +3,6 @@
   <img src="https://user-images.githubusercontent.com/55078043/229002952-9afe57de-b0b6-400f-9628-b8e0044d3f7b.png" width="150px" height="150px"><br/><br/>
   
   [![](https://dcbadge.vercel.app/api/server/cHekprskVE)](https://discord.gg/cHekprskVE)
-  
-  [![](https://img.shields.io/badge/한국어-readme-green)](https://github.com/yjg30737/pyqt-openai/blob/main/README.kr.md)
 
 </div>
 
@@ -62,11 +60,13 @@ And if you would like to support this project, you can click the button below to
   * Import conversations from pyqt-openai, GPT
   * Rename conversation
   * "Favorite" feature
+  * Support JSON mode
   * everything above is saved in an SQLite database file named conv.db. (File's name can be changed by yourself)
 * Support controlling parameters(temperature, top_p, etc) just like openai playground
 * Able to see the reason why stream is finished
 * Support token count (only for non-streaming response)
-* Support <b>prompt generator</b> (manageable, autosaved in database) 
+* Support <b>prompt generator</b> (manageable, autosaved in database)
+  * Support import & export prompt group as JSON
 * Support <b>slash commands</b>
 * Support beginning and ending part of the prompt
 * You can <b>run this in background</b> application
@@ -77,11 +77,12 @@ And if you would like to support this project, you can click the button below to
   * Support continue generation
   * Notification when task completes
 * You can copy and download the image directly as well. just hover the mouse cursor over the image.
-* You can <b>fine-tune</b> openai with llama-index.
+* You can <b>fine-tune</b> openai with llama-index and use it (support streaming response)
 * Support text(*.txt), image(*.png, *.jpg) file uploading
 * Support searching title and content in the conversation
 * Support "find text" feature (match word, case-sensitive, regex, etc.)
-* Support customizing feature (homepage, user and AI profile image)
+* Support customizing feature (homepage, user and AI profile image, font settings)
+* Support light/dark theme based on your system settings (Above Qt6 only)
 * Full screen feature
 
 ## Supported Languages
@@ -96,8 +97,14 @@ And if you would like to support this project, you can click the button below to
 * Hindi
 * Arabic
 * Japanese
+* Bengali
+* Urdu
+* Indonesian
+* Portuguese
 
 If you have any additional languages you would like to add, please feel free to make a request by mail, issue, discord, etc at any time.
+
+Also you can submit a pull request if you want to update any words naturally by modify "translations.json" in "lang" directory.
 
 ## Requirements
 * qtpy - the package allowing you to write code that works with both PyQt5, PyQt6, PySide6
