@@ -1,10 +1,10 @@
 import json
 
 from qtpy.QtCore import Qt
-from qtpy.QtWidgets import QAbstractItemView, QSpinBox, QTableWidgetItem, QMessageBox, QGroupBox, QLabel, QDialogButtonBox, \
+from qtpy.QtWidgets import QWidget, QAbstractItemView, QSpinBox, QTableWidgetItem, QMessageBox, QGroupBox, QLabel, QDialogButtonBox, \
     QCheckBox, QDialog, QVBoxLayout
 
-from pyqt_openai import JSON_FILE_EXT, THREAD_ORDERBY
+from pyqt_openai import JSON_FILE_EXT, THREAD_ORDERBY, CHATGPT_IMPORT_MANUAL_LINK_1, CHATGPT_IMPORT_MANUAL_LINK_2
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.util.script import get_chatgpt_data_for_import, get_chatgpt_data_for_preview
 from pyqt_openai.widgets.checkBoxTableWidget import CheckBoxTableWidget
@@ -70,16 +70,39 @@ class ChatImportDialog(QDialog):
         self.__buttonBox.rejected.connect(self.reject)
         self.__buttonBox.button(QDialogButtonBox.Ok).setEnabled(False)
 
+        manual_lbl = QLabel(LangClass.TRANSLATIONS['You can import a JSON file created through the export feature.'])
+        lay = QVBoxLayout()
+        lay.addWidget(manual_lbl)
+
+        if self.__import_type == 'chatgpt':
+            manual_lbl.setText(LangClass.TRANSLATIONS['You can import "conversation.json" in zip file exported form ChatGPT.'])
+            subManualGrpBox = QGroupBox(LangClass.TRANSLATIONS['How to import your ChatGPT data'])
+            manual_link_1 = QLabel(f'<a href="{CHATGPT_IMPORT_MANUAL_LINK_1}">Step 1</a>')
+            manual_link_1.setOpenExternalLinks(True)
+            manual_link_2 = QLabel(f'<a href="{CHATGPT_IMPORT_MANUAL_LINK_2}">Step 2</a>')
+            manual_link_2.setOpenExternalLinks(True)
+            _lay = QVBoxLayout()
+            _lay.addWidget(manual_link_1)
+            _lay.addWidget(manual_link_2)
+            subManualGrpBox.setLayout(_lay)
+            lay.addWidget(subManualGrpBox)
+
+        manualWidget = QWidget()
+        manualWidget.setLayout(lay)
+
         lay = QVBoxLayout()
         lay.addWidget(findPathWidget)
         lay.addWidget(importOptionsGrpBox)
-        lay.addWidget(QLabel(LangClass.TRANSLATIONS['You can import a JSON file created through the export feature.']))
+        lay.addWidget(manualWidget)
         lay.addWidget(self.__dataGrpBox)
         lay.addWidget(self.__buttonBox)
 
         self.setLayout(lay)
 
         self.resize(800, 600)
+
+        self.__checkBoxTableWidget.checkedSignal.connect(self.__toggleBtn)
+        self.__allCheckBox.stateChanged.connect(self.__toggleBtn)
 
     def __toggleBtn(self):
         self.__buttonBox.button(QDialogButtonBox.Ok).setEnabled(len(self.__checkBoxTableWidget.getCheckedRows()) > 0)

@@ -194,7 +194,7 @@ class SqliteDatabase:
 
     def updatePromptGroup(self, id, name):
         try:
-            self.__c.execute(f'UPDATE {PROMPT_GROUP_TABLE_NAME} SET name=? WHERE id={id}', (name))
+            self.__c.execute(f'UPDATE {PROMPT_GROUP_TABLE_NAME} SET name=? WHERE id={id}', (name,))
             self.__conn.commit()
         except sqlite3.Error as e:
             print(f"An error occurred: {e}")
@@ -202,6 +202,7 @@ class SqliteDatabase:
 
     def deletePromptGroup(self, id=None):
         try:
+            print(id)
             query = f'DELETE FROM {PROMPT_GROUP_TABLE_NAME}'
             if id:
                 query += f' WHERE id = {id}'
@@ -226,7 +227,7 @@ class SqliteDatabase:
                                     content TEXT NOT NULL,
                                     insert_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
                                     update_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
-                                    FOREIGN KEY (group_id) REFERENCES {PROMPT_GROUP_TABLE_NAME}
+                                    FOREIGN KEY (group_id) REFERENCES {PROMPT_GROUP_TABLE_NAME}(id)
                                     ON DELETE CASCADE)
                 ''')
                 self.__conn.commit()
@@ -582,7 +583,7 @@ class SqliteDatabase:
                               update_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
                               insert_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
                               favorite_set_date DATETIME,
-                              FOREIGN KEY (thread_id) REFERENCES {THREAD_TABLE_NAME}
+                              FOREIGN KEY (thread_id) REFERENCES {THREAD_TABLE_NAME}(id)
                               ON DELETE CASCADE)''')
 
                 # Will remove after v1.0.0
@@ -776,25 +777,3 @@ class SqliteDatabase:
     def __exit__(self, exc_type, exc_val, exc_tb):
         # Close the connection
         self.__conn.close()
-
-#
-# db = SqliteDatabase()
-# command_obj_lst = []
-# for group in db.selectPromptGroup():
-#     entries = [attr for attr in db.selectPromptEntry(group_id=group.id)]
-#     if group.prompt_type == 'form':
-#         command_obj = {'name': group.name, 'value': ''}
-#         for entry in entries:
-#             content = entry.content
-#             if content and content.strip():
-#                 command_obj['value'] += f'{entry.name}: {content}\n'
-#         command_obj_lst.append(command_obj)
-#     elif group.prompt_type == 'sentence':
-#         command_obj = {'name': '', 'value': ''}
-#         for entry in entries:
-#             command_obj_lst.append({
-#                 'name': f'{entry.name}({group.name})',
-#                 'value': entry.content
-#             })
-#
-# print([obj['name'] for obj in command_obj_lst])

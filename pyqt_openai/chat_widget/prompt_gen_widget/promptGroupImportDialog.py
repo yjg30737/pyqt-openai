@@ -7,7 +7,7 @@ from qtpy.QtWidgets import QPushButton, QDialogButtonBox, QMessageBox, QDialog, 
 
 from pyqt_openai import JSON_FILE_EXT, SENTENCE_PROMPT_GROUP_SAMPLE, FORM_PROMPT_GROUP_SAMPLE
 from pyqt_openai.lang.translations import LangClass
-from pyqt_openai.util.script import validate_prompt_group_json
+from pyqt_openai.util.script import validate_prompt_group_json, is_prompt_group_name_valid
 from pyqt_openai.widgets.checkBoxListWidget import CheckBoxListWidget
 from pyqt_openai.widgets.findPathWidget import FindPathWidget
 from pyqt_openai.widgets.jsonEditor import JSONEditor
@@ -78,7 +78,7 @@ class PromptGroupImportDialog(QDialog):
         splitter.setStyleSheet("QSplitterHandle {background-color: lightgray;}")
 
         self.__buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
-        self.__buttonBox.accepted.connect(self.accept)
+        self.__buttonBox.accepted.connect(self.__accept)
         self.__buttonBox.rejected.connect(self.reject)
         self.__buttonBox.button(QDialogButtonBox.StandardButton.Ok).setEnabled(False)
 
@@ -146,7 +146,20 @@ class PromptGroupImportDialog(QDialog):
         data = [d for d in self.__data if d['name'] == name][0]['data']
         self.__setEntries(data)
 
-    def getSelected(self):
+    def __accept(self):
         names = [self.__listWidget.item(r).text() for r in self.__listWidget.getCheckedRows()]
-        result = [d for d in self.__data if d['name'] in names]
-        return result
+        new_names = list(filter(lambda x: is_prompt_group_name_valid(x), names))
+        names_exist = list(filter(lambda x: x not in new_names, names))
+        if names_exist:
+            reply = QMessageBox.warning(self, LangClass.TRANSLATIONS['Warning'],
+                                f"{LangClass.TRANSLATIONS['Following prompt names already exists. Would you like to import the rest?']}"
+                                f"\n{', '.join(names_exist)}")
+            if reply == QMessageBox.StandardButton.Yes:
+                pass
+            else:
+                self.reject()
+        self.__data = [d for d in self.__data if d['name'] in new_names]
+        self.accept()
+
+    def getSelected(self):
+        return self.__data

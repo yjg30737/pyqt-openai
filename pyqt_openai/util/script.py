@@ -230,8 +230,9 @@ def is_prompt_group_name_valid(text):
     """
     m = re.search(PROMPT_NAME_REGEX, text)
     # Check if the prompt group with same name already exists
-    exists_f = True if (True if m else False) and DB.selectCertainPromptGroup(name=text) else False
-    return exists_f
+    if DB.selectCertainPromptGroup(name=text):
+        return False
+    return True if m else False
 
 def is_prompt_entry_name_valid(group_id, text):
     """

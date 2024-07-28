@@ -48,11 +48,11 @@ class PromptGroupDirectInputDialog(QDialog):
         return self.__name.text()
 
     def __accept(self):
-        exists_f = is_prompt_group_name_valid(self.__name.text())
-        if exists_f:
+        f = is_prompt_group_name_valid(self.__name.text())
+        if f:
+            self.accept()
+        else:
             self.__name.setFocus()
             QMessageBox.warning(self, LangClass.TRANSLATIONS['Warning'], LangClass.TRANSLATIONS['Prompt name already exists.'])
             return
-        else:
-            self.accept()
 
