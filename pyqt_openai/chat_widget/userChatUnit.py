@@ -3,7 +3,7 @@ from qtpy.QtGui import QPalette
 from qtpy.QtCore import Qt
 from qtpy.QtWidgets import QSpacerItem, QSizePolicy, QWidget, QVBoxLayout, QHBoxLayout, QLabel
 
-from pyqt_openai.constants import DEFAULT_ICON_SIZE
+from pyqt_openai import DEFAULT_ICON_SIZE
 from pyqt_openai.widgets.button import Button
 
 from pyqt_openai.widgets.circleProfileImage import RoundedImage

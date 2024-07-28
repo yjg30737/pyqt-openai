@@ -1,6 +1,7 @@
 from qtpy.QtCore import Qt
 from qtpy.QtWidgets import QDialog, QFormLayout, QLabel, QFrame, QPushButton
 
+from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ChatMessageContainer
 
 
@@ -14,7 +15,7 @@ class MessageResultDialog(QDialog):
         self.__result_info = result_info
 
     def __initUi(self):
-        self.setWindowTitle('Message Result')
+        self.setWindowTitle(LangClass.TRANSLATIONS['Message Result'])
         self.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.WindowCloseButtonHint)
 
         lbls = []

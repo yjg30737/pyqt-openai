@@ -1,6 +1,6 @@
 from qtpy.QtWidgets import QWidget, QLabel, QVBoxLayout, QListWidget, QPushButton, QHBoxLayout, QSpacerItem, QSizePolicy, QAbstractItemView
 
-from pyqt_openai.res.language_dict import LangClass
+from pyqt_openai.lang.translations import LangClass
 
 
 class UploadedImageFileWidget(QWidget):
@@ -9,7 +9,7 @@ class UploadedImageFileWidget(QWidget):
         self.__initUi()
 
     def __initUi(self):
-        lbl = QLabel('Uploaded Files (Only Images)')
+        lbl = QLabel(LangClass.TRANSLATIONS['Uploaded Files (Only Images)'])
         self.__deleteBtn = QPushButton(LangClass.TRANSLATIONS['Delete'])
         self.__deleteBtn.clicked.connect(self.__delete)
 

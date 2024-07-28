@@ -1,6 +1,8 @@
 from qtpy.QtWidgets import QWidget, QLineEdit, QGridLayout, QLabel, \
     QHBoxLayout, QApplication, QSizePolicy
 from qtpy.QtCore import Signal
+
+from pyqt_openai import ICON_SEARCH
 from pyqt_openai.widgets.svgLabel import SvgLabel
 
 
@@ -67,7 +69,7 @@ class SearchBar(QWidget):
         self.__label.setVisible(visibility)
 
     def __setStyle(self):
-        self.__searchIconLbl.setSvgFile('ico/search.svg')
+        self.__searchIconLbl.setSvgFile(ICON_SEARCH)
         self.setStyleSheet(
             f'''
             QLineEdit

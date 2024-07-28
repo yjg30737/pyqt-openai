@@ -5,7 +5,8 @@ from qtpy.QtGui import QPixmap, QColor, QBrush, QLinearGradient
 from qtpy.QtWidgets import QGraphicsScene, QGraphicsPixmapItem, QGraphicsView, QApplication, QWidget, QHBoxLayout, \
     QFileDialog
 
-from pyqt_openai.res.language_dict import LangClass
+from pyqt_openai import ICON_SAVE, ICON_ADD, ICON_DELETE
+from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.widgets.button import Button
 
 
@@ -48,17 +49,17 @@ class ThumbnailView(QGraphicsView):
 
         # download the image
         saveBtn = Button()
-        saveBtn.setStyleAndIcon('ico/save.svg')
+        saveBtn.setStyleAndIcon(ICON_SAVE)
         saveBtn.clicked.connect(self.__save)
 
         # zoom in
         zoomInBtn = Button()
-        zoomInBtn.setStyleAndIcon('ico/add.svg')
+        zoomInBtn.setStyleAndIcon(ICON_ADD)
         zoomInBtn.clicked.connect(self.__zoomIn)
 
         # zoom out
         zoomOutBtn = Button()
-        zoomOutBtn.setStyleAndIcon('ico/delete.svg')
+        zoomOutBtn.setStyleAndIcon(ICON_DELETE)
         zoomOutBtn.clicked.connect(self.__zoomOut)
 
         lay = QHBoxLayout()

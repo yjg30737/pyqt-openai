@@ -17,6 +17,7 @@ class TextEditPrompt(QTextEdit):
 
     def __initUi(self):
         self.setStyleSheet('QTextEdit { border: 1px solid #AAA; } ')
+        self.setAcceptRichText(False)
 
     def setExecuteEnabled(self, f):
         self.__executeEnabled = f
@@ -25,12 +26,12 @@ class TextEditPrompt(QTextEdit):
         self.__commandSuggestionEnabled = f
 
     def keyPressEvent(self, e):
+        # Send key events to the suggestion widget if enabled
         if self.__commandSuggestionEnabled:
             if e.key() == Qt.Key.Key_Up:
                 self.sendSuggestionWidget.emit('up')
             elif e.key() == Qt.Key.Key_Down:
                 self.sendSuggestionWidget.emit('down')
-
         if (e.key() == Qt.Key.Key_Return or e.key() == Qt.Key.Key_Enter) and self.__executeEnabled:
             if e.modifiers() == Qt.KeyboardModifier.ShiftModifier:
                 return super().keyPressEvent(e)

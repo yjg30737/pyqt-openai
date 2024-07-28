@@ -1,14 +1,17 @@
 import os
 from pathlib import Path
 
-from qtpy.QtCore import Qt, Signal
+from qtpy.QtCore import Qt, Signal, QSettings
 from qtpy.QtWidgets import QVBoxLayout, QAction, QPushButton, QFileDialog, QToolButton, QMenu, QWidget, QHBoxLayout
 
+from pyqt_openai.chat_widget.commandSuggestionWidget import CommandSuggestionWidget
 from pyqt_openai.chat_widget.textEditPromptGroup import TextEditPromptGroup
 from pyqt_openai.chat_widget.uploadedImageFileWidget import UploadedImageFileWidget
-from pyqt_openai.commandSuggestionWidget import CommandSuggestionWidget
+from pyqt_openai import INI_FILE_NAME, READ_FILE_EXT, PROMPT_BEGINNING_KEY_NAME, \
+    PROMPT_END_KEY_NAME, PROMPT_JSON_KEY_NAME, SHORTCUT_PROMPT_BEGINNING, SHORTCUT_PROMPT_ENDING, \
+    SHORTCUT_SUPPORT_PROMPT_COMMAND, ICON_VERTICAL_THREE_DOTS
 from pyqt_openai.pyqt_openai_data import DB
-from pyqt_openai.res.language_dict import LangClass
+from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.widgets.toolButton import ToolButton
 
 
@@ -29,9 +32,12 @@ class Prompt(QWidget):
         # False by default
         self.__commandEnabled = False
 
+        self.__settings_ini = QSettings(INI_FILE_NAME, QSettings.Format.IniFormat)
+        self.__json_object = self.__settings_ini.value('json_object', False, type=bool)
+
     def __initUi(self):
-        # prompt control buttons
-        self.__stopBtn = QPushButton('Stop')
+        # Prompt control buttons
+        self.__stopBtn = QPushButton(LangClass.TRANSLATIONS['Stop'])
         self.__stopBtn.clicked.connect(self.onStoppedClicked.emit)
 
         lay = QHBoxLayout()
@@ -43,10 +49,10 @@ class Prompt(QWidget):
         self.__controlWidgetDuringGeneration = QWidget()
         self.__controlWidgetDuringGeneration.setLayout(lay)
 
-        self.__continueBtn = QPushButton('Continue')
+        self.__continueBtn = QPushButton(LangClass.TRANSLATIONS['Continue'])
         self.__continueBtn.clicked.connect(self.onContinuedClicked.emit)
 
-        self.__regenerateBtn = QPushButton('Regenerate')
+        self.__regenerateBtn = QPushButton(LangClass.TRANSLATIONS['Regenerate'])
         self.__regenerateBtn.clicked.connect(self.onRegenerateClicked.emit)
 
         lay = QHBoxLayout()
@@ -70,7 +76,7 @@ class Prompt(QWidget):
 
         # set command suggestion
         self.__textEditGroup.onUpdateSuggestion.connect(self.__updateSuggestions)
-        self.__textEditGroup.onSendKeySignalToSuggestion.connect(self.__sendKeysignalToSuggestion)
+        self.__textEditGroup.onSendKeySignalToSuggestion.connect(self.__sendKeySignalToSuggestion)
 
         self.__suggestion_list.itemClicked.connect(self.executeCommand)
 
@@ -85,7 +91,7 @@ class Prompt(QWidget):
         leftWidget.setLayout(lay)
 
         settingsBtn = ToolButton()
-        settingsBtn.setStyleAndIcon('ico/vertical_three_dots.svg')
+        settingsBtn.setStyleAndIcon(ICON_VERTICAL_THREE_DOTS)
         settingsBtn.setToolTip(LangClass.TRANSLATIONS['Prompt Settings'])
 
         # Create the menu
@@ -93,27 +99,33 @@ class Prompt(QWidget):
 
         # Create the actions
         beginningAction = QAction(LangClass.TRANSLATIONS['Show Beginning'], self)
-        beginningAction.setShortcut('Ctrl+B')
+        beginningAction.setShortcut(SHORTCUT_PROMPT_BEGINNING)
         beginningAction.setCheckable(True)
         beginningAction.toggled.connect(self.__showBeginning)
 
         endingAction = QAction(LangClass.TRANSLATIONS['Show Ending'], self)
-        endingAction.setShortcut('Ctrl+E')
+        endingAction.setShortcut(SHORTCUT_PROMPT_ENDING)
         endingAction.setCheckable(True)
         endingAction.toggled.connect(self.__showEnding)
 
         supportPromptCommandAction = QAction(LangClass.TRANSLATIONS['Support Prompt Command'], self)
-        supportPromptCommandAction.setShortcut('Ctrl+Shift+P')
+        supportPromptCommandAction.setShortcut(SHORTCUT_SUPPORT_PROMPT_COMMAND)
         supportPromptCommandAction.setCheckable(True)
         supportPromptCommandAction.toggled.connect(self.__supportPromptCommand)
 
         readingFilesAction = QAction(LangClass.TRANSLATIONS['Upload Files...'], self)
         readingFilesAction.triggered.connect(self.__readingFiles)
 
+        self.__writeJSONAction = QAction(LangClass.TRANSLATIONS['Write JSON'], self)
+        self.__writeJSONAction.toggled.connect(self.__showJSON)
+        self.__writeJSONAction.setCheckable(True)
+        self.__toggleJSONAction(self.__json_object)
+
         # Add the actions to the menu
         menu.addAction(beginningAction)
         menu.addAction(endingAction)
         menu.addAction(supportPromptCommandAction)
+        menu.addAction(self.__writeJSONAction)
         menu.addAction(readingFilesAction)
 
         # Connect the button to the menu
@@ -153,33 +165,32 @@ class Prompt(QWidget):
 
         self.updateHeight()
 
-    def __getEveryPromptCommands(self):
-        # get prop group
-        p_grp = []
-        for group in DB.selectPropPromptGroup():
-            p_grp_attr = [attr for attr in DB.selectPropPromptAttribute(group[0])]
-            p_grp_value = ''
-            for attr_obj in p_grp_attr:
-                name = attr_obj[2]
-                value = attr_obj[3]
-                if value and value.strip():
-                    p_grp_value += f'{name}: {value}\n'
-            p_grp.append({'name': group[1], 'value': p_grp_value})
+    def __setEveryPromptCommands(self):
+        command_obj_lst = []
+        for group in DB.selectPromptGroup():
+            entries = [attr for attr in DB.selectPromptEntry(group_id=group.id)]
+            if group.prompt_type == 'form':
+                value = ''
+                for entry in entries:
+                    content = entry.content
+                    if content and content.strip():
+                        value += f'{entry.name}: {content}\n'
+                command_obj_lst.append({
+                    'name': group.name,
+                    'value': value
+                })
+            elif group.prompt_type == 'sentence':
+                for entry in entries:
+                    command_obj_lst.append({
+                        'name': f'{entry.name}({group.name})',
+                        'value': entry.content
+                    })
+        self.__p_grp = [{'name': obj['name'], 'value': obj['value']} for obj in command_obj_lst]
 
-        # get template group
-        t_grp = []
-        for group in DB.selectTemplatePromptGroup():
-            t_grp_attr = [attr for attr in DB.selectTemplatePromptUnit(group[0])]
-            t_grp_value = ''
-            for attr_obj in t_grp_attr:
-                name = attr_obj[2]
-                value = attr_obj[3]
-                t_grp.append({'name': f'{attr_obj[2]}({group[1]})', 'value': value})
-
-        self.__p_grp = p_grp + t_grp
-
-        # TODO will include value as well
-        return [command['name'] for command in self.__p_grp]
+    def __getEveryPromptCommands(self, get_name_only=False):
+        if get_name_only:
+            return [obj['name'] for obj in self.__p_grp]
+        return self.__p_grp
 
     def __updateSuggestions(self):
         w = self.__textEditGroup.getCurrentTextEdit()
@@ -194,9 +205,10 @@ class Prompt(QWidget):
                 w.setCommandSuggestionEnabled(starts_with_f)
                 if starts_with_f:
                     command_word = input_text_chunk[1:]
-
-                    # Example: Add some dummy command suggestions
-                    commands = self.__getEveryPromptCommands()
+                    # Set every prompt commands first
+                    self.__setEveryPromptCommands()
+                    # Get the commands
+                    commands = self.__getEveryPromptCommands(get_name_only=True)
                     filtered_commands = commands
                     if command_word:
                         filtered_commands = [command for command in commands if command_word.lower() in command.lower()]
@@ -210,7 +222,7 @@ class Prompt(QWidget):
                         self.__suggestion_list.addItems(filtered_commands)
                         self.__suggestion_list.setCurrentRow(0)
 
-    def __sendKeysignalToSuggestion(self, key):
+    def __sendKeySignalToSuggestion(self, key):
         if key == 'up':
             self.__suggestion_list.setCurrentRow(max(0, self.__suggestion_list.currentRow() - 1))
         elif key == 'down':
@@ -234,24 +246,27 @@ class Prompt(QWidget):
         # Set the maximum height of the widget - should fit the device screen
         self.setMaximumHeight(overallHeight + self.__suggestionWidget.height() + self.__uploadedImageFileWidget.height() + 100)
 
-    def getTextEdit(self):
-        return self.__textEditGroup.getGroup()[1]
+    def getMainPromptInput(self):
+        return self.__textEditGroup.getMainTextEdit()
 
     def getContent(self):
         return self.__textEditGroup.getContent()
 
+    def getJSONContent(self):
+        return self.__textEditGroup.getJSONContent()
+
     def __showBeginning(self, f):
-        self.__textEditGroup.getGroup()[0].setVisible(f)
+        self.__textEditGroup.setVisibleTo(PROMPT_BEGINNING_KEY_NAME, f)
 
     def __showEnding(self, f):
-        self.__textEditGroup.getGroup()[-1].setVisible(f)
+        self.__textEditGroup.setVisibleTo(PROMPT_END_KEY_NAME, f)
 
     def __supportPromptCommand(self, f):
         self.__commandEnabled = f
         self.__textEditGroup.setCommandEnabled(f)
 
     def __readingFiles(self):
-        filenames = QFileDialog.getOpenFileNames(self, 'Find', os.path.expanduser('~'), 'Text Files (*.txt);;Image Files (*.jpg, *.png)')
+        filenames = QFileDialog.getOpenFileNames(self, LangClass.TRANSLATIONS['Find'], os.path.expanduser('~'), READ_FILE_EXT)
         if filenames[0]:
             filenames = filenames[0]
             cur_file_extension = Path(filenames[0]).suffix
@@ -268,7 +283,7 @@ class Prompt(QWidget):
                     source_context += f'=== {base_filename} end ==='
                     source_context += '\n'*2
                 prompt_context = f'== Source Start ==\n{source_context}== Source End =='
-                self.__textEditGroup.getGroup()[1].setText(prompt_context)
+                self.__textEditGroup.getMainTextEdit().setText(prompt_context)
             # Image
             elif cur_file_extension in ['.jpg', '.png']:
                 self.__uploadedImageFileWidget.addFiles(filenames)
@@ -279,3 +294,17 @@ class Prompt(QWidget):
     def resetUploadImageFileWidget(self):
         self.__uploadedImageFileWidget.setVisible(False)
         self.__uploadedImageFileWidget.clear()
+
+    def __toggleJSONAction(self, f):
+        self.__writeJSONAction.setEnabled(f)
+        self.__writeJSONAction.setChecked(f)
+
+    def toggleJSON(self, f):
+        self.__toggleJSONAction(f)
+        self.__showJSON(f)
+        self.__textEditGroup.getGroup()[PROMPT_JSON_KEY_NAME].clear()
+
+    def __showJSON(self, f):
+        self.__json_object = f
+        self.__textEditGroup.setVisibleTo(PROMPT_JSON_KEY_NAME, f)
+

@@ -1,8 +1,7 @@
-from qtpy.QtWidgets import QDialog, QVBoxLayout, QLineEdit, QFrame, QPushButton, QHBoxLayout, QWidget
 from qtpy.QtCore import Qt
-from qtpy.QtGui import QIcon
+from qtpy.QtWidgets import QDialog, QVBoxLayout, QLineEdit, QFrame, QPushButton, QHBoxLayout, QWidget
 
-from pyqt_openai.res.language_dict import LangClass
+from pyqt_openai.lang.translations import LangClass
 
 
 class InputDialog(QDialog):

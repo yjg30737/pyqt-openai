@@ -1,4 +1,5 @@
 import openai
+from llama_index.core.base.response.schema import StreamingResponse
 from qtpy.QtCore import QThread, Signal
 
 from pyqt_openai.models import ChatMessageContainer
@@ -58,7 +59,7 @@ class OpenAIThread(QThread):
 
 class LlamaOpenAIThread(QThread):
     replyGenerated = Signal(str, bool, ChatMessageContainer)
-    streamFinished = Signal(dict)
+    streamFinished = Signal(ChatMessageContainer)
 
     def __init__(self, llama_idx_instance, openai_arg, query_text, info: ChatMessageContainer, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -74,18 +75,19 @@ class LlamaOpenAIThread(QThread):
 
     def run(self):
         try:
-            self.__info.content = self.__llama_idx_instance.get_response(self.__query_text)
-            # f = isinstance(resp, StreamingResponse)
-            # if f:
-            #     for response_text in resp.response_gen:
-            #         if self.__stop_streaming:
-            #             break
-            #         else:
-            #             self.__info['finish_reason'] = 'stopped by user'
-            #             self.replyGenerated.emit(response_text, False, f, self.__info)
-            #     self.streamFinished.emit(self.__info)
-            # else:
-            self.replyGenerated.emit(self.__info.content, False, self.__info)
+            resp = self.__llama_idx_instance.get_response(self.__query_text)
+            f = isinstance(resp, StreamingResponse)
+            if f:
+                for response_text in resp.response_gen:
+                    if self.__stop_streaming:
+                        self.__info.finish_reason = 'stopped by user'
+                        break
+                    else:
+                        self.replyGenerated.emit(response_text, True, self.__info)
+                self.streamFinished.emit(self.__info)
+            else:
+                self.__info.content = resp.response
+                self.replyGenerated.emit(self.__info.content, False, self.__info)
         except Exception as e:
             self.__info.finish_reason = 'Error'
             self.replyGenerated.emit(f'<p style="color:red">{e}</p>', False, self.__info)

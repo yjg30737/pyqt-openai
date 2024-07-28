@@ -3,7 +3,7 @@ import os.path, posixpath
 from qtpy.QtGui import QColor, QPalette, qGray, QIcon
 from qtpy.QtWidgets import QGraphicsColorizeEffect, QWidget, QApplication, QPushButton
 
-from pyqt_openai.pyqt_openai_data import ROOT_DIR
+from pyqt_openai import SRC_DIR
 
 
 class Button(QPushButton):
@@ -27,17 +27,15 @@ class Button(QPushButton):
             self.__baseWidget.installEventFilter(self)
             self.__initColorByBaseWidget()
         else:
-            self.__hover_color = '#DDDDDD'
-            self.__pressed_color = '#FFFFFF'
-            self.__checked_color = '#CCCCCC'
-            self.__text_color = '#AAAAAA'
+            self.__hover_color = '#A2D0DD'
+            self.__pressed_color = '#B3E0FF'
+            self.__checked_color = '#B3E0FF'
 
     def __initColorByBaseWidget(self):
         self.__base_color = self.__baseWidget.palette().color(QPalette.ColorRole.Base)
         self.__hover_color = self.__getHoverColor(self.__base_color)
         self.__pressed_color = self.__getPressedColor(self.__base_color)
         self.__checked_color = self.__getPressedColor(self.__base_color)
-        self.__text_color = self.__getButtonTextColor(self.__base_color)
 
     def __getColorByFactor(self, base_color, factor):
         r, g, b = base_color.red(), base_color.green(), base_color.blue()
@@ -82,7 +80,6 @@ class Button(QPushButton):
         background-color: {self.__background_color};
         border-radius: {self.__border_radius};
         padding: {self.__padding};
-        color: {self.__text_color};
         }}
         QAbstractButton:hover
         {{
@@ -102,7 +99,7 @@ class Button(QPushButton):
         self.setStyleSheet(self.__btn_style)
 
     def setStyleAndIcon(self, icon: str):
-        self.__icon = os.path.join(ROOT_DIR, icon).replace(os.sep, posixpath.sep)
+        self.__icon = os.path.join(SRC_DIR, icon).replace(os.sep, posixpath.sep)
         self.__styleInit()
         self.setIcon(QIcon(self.__icon))
 

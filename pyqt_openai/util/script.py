@@ -1,21 +1,23 @@
+import base64
+import json
 import os
 import random
 import re
 import string
 import sys
 import zipfile
-import requests
-import base64
-import pandas
 from datetime import datetime
-
 from pathlib import Path
 
+import requests
 from jinja2 import Template
-
 from qtpy.QtCore import QSettings
+from qtpy.QtWidgets import QMessageBox
 
+from pyqt_openai import INI_FILE_NAME, DEFAULT_FONT_SIZE, DEFAULT_FONT_FAMILY, MAIN_INDEX, \
+    PROMPT_NAME_REGEX
 from pyqt_openai.models import ImagePromptContainer
+from pyqt_openai.pyqt_openai_data import DB
 
 
 def get_generic_ext_out_of_qt_ext(text):
@@ -33,18 +35,6 @@ def open_directory(path):
         os.system('xdg-open "{}"'.format(path))
     else:
         print("Unsupported operating system.")
-
-def get_version():
-    with open("../setup.py", "r") as f:
-        setup_content = f.read()
-
-    version_match = re.search(r"version=['\"]([^'\"]+)['\"]", setup_content)
-
-    if version_match:
-        version = version_match.group(1)
-    else:
-        raise RuntimeError("Version information not found.")
-    return f'{version}'
 
 def message_list_to_txt(db, thread_id, title, username='User', ai_name='AI'):
     content = ''
@@ -131,43 +121,59 @@ def download_image_as_base64(url: str):
     base64_encoded = base64.b64decode(base64.b64encode(image_data).decode('utf-8'))
     return base64_encoded
 
-def get_db_filename():
-    settings = QSettings("pyqt_openai.ini", QSettings.Format.IniFormat)
-    db_path = settings.value("db", "conv") + ".db"
-    return db_path
+def get_font():
+    settings = QSettings(INI_FILE_NAME, QSettings.Format.IniFormat)
+    font_family = settings.value("font_family", DEFAULT_FONT_FAMILY, type=str)
+    font_size = settings.value("font_size", DEFAULT_FONT_SIZE, type=int)
+    return {
+        'font_family': font_family,
+        'font_size': font_size
+    }
 
-def get_conversation_from_chatgpt(filename, most_recent_n:int = None):
-    conversations_df = pandas.read_json(filename)
+def restart_app(settings=None):
+    if settings:
+        # Save before restart
+        settings.sync()
+    # Define the arguments to be passed to the executable
+    args = [sys.executable, MAIN_INDEX]
+    # Call os.execv() to execute the new process
+    os.execv(sys.executable, args)
+
+def show_message_box(title, text):
+    msg_box = QMessageBox()
+    msg_box.setWindowTitle(title)
+    msg_box.setText(text)
+    msg_box.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+    msg_box.setDefaultButton(QMessageBox.StandardButton.Yes)
+    result = msg_box.exec()
+    return result
+
+def get_chatgpt_data_for_preview(filename, most_recent_n:int = None):
+    data = json.load(open(filename, 'r'))
     conv_arr = []
-    count = conversations_df.shape[0] if most_recent_n is None else most_recent_n
+    count = len(data) if most_recent_n is None else most_recent_n
     for i in range(count):
-        conv = conversations_df.iloc[i]
+        conv = data[i]
         conv_dict = {}
-        name = conv.title
-        insert_dt = str(conv.create_time).split('.')[0]
-        update_dt = str(conv.update_time).split('.')[0]
-        conv_dict['id'] = conv.id
+        name = conv['title']
+        insert_dt = datetime.fromtimestamp(conv['create_time']).strftime('%Y-%m-%d %H:%M:%S') if conv['create_time'] else None
+        update_dt = datetime.fromtimestamp(conv['update_time']).strftime('%Y-%m-%d %H:%M:%S') if conv['update_time'] else None
+        conv_dict['id'] = conv['id']
         conv_dict['name'] = name
         conv_dict['insert_dt'] = insert_dt
         conv_dict['update_dt'] = update_dt
-        conv_dict['mapping'] = conv.mapping
+        conv_dict['mapping'] = conv['mapping']
         conv_arr.append(conv_dict)
     return {
         'columns': ['id', 'name', 'insert_dt', 'update_dt'],
         'data': conv_arr
     }
 
-def get_chatgpt_data(conv_arr):
+def get_chatgpt_data_for_import(conv_arr):
     for conv in conv_arr:
-        # role
-        # content
-        # insert_dt
-        # update_dt
-        # model
         conv['messages'] = []
         for k, v in conv['mapping'].items():
             obj = {}
-            # We need the create_time, update_time, role, content_type, and content
             message = v['message']
             if message:
                 metadata = message['metadata']
@@ -181,14 +187,12 @@ def get_chatgpt_data(conv_arr):
                 obj['insert_dt'] = create_time
                 obj['update_dt'] = update_time
 
-                # print(f'content: {content}')
                 if role == 'user':
                     content_parts = '\n'.join([str(c) for c in content['parts']])
                     obj['content'] = content_parts
                     conv['messages'].append(obj)
                 else:
                     if role == 'tool':
-                        # Tool is used for the internal use of the system of OpenAI
                         pass
                     elif role == 'assistant':
                         model_slug = metadata.get('model_slug', None)
@@ -218,3 +222,79 @@ def get_chatgpt_data(conv_arr):
         del conv['mapping']
 
     return conv_arr
+
+def is_prompt_group_name_valid(text):
+    """
+    Check if the prompt group name is valid or not and exists in the database
+    :param text: The text to check
+    """
+    m = re.search(PROMPT_NAME_REGEX, text)
+    # Check if the prompt group with same name already exists
+    if DB.selectCertainPromptGroup(name=text):
+        return False
+    return True if m else False
+
+def is_prompt_entry_name_valid(group_id, text):
+    """
+    Check if the prompt entry name is valid or not and exists in the database
+    :param group_id: The group id to check
+    :param text: The text to check
+    """
+    m = re.search(PROMPT_NAME_REGEX, text)
+    # Check if the prompt entry with same name already exists
+    exists_f = True if (True if m else False) and DB.selectPromptEntry(group_id=group_id, name=text) else False
+    return exists_f
+
+def validate_prompt_group_json(json_data):
+    # Check if json_data is a list
+    if not isinstance(json_data, list):
+        return False
+
+    # Iterate through each item in the list
+    for item in json_data:
+        # Check if item is a dictionary
+        if not isinstance(item, dict):
+            return False
+
+        # Check if 'name' and 'data' keys exist in the dictionary
+        if 'name' not in item or 'data' not in item:
+            return False
+
+        # Check if 'name' is not empty
+        if not item['name']:
+            return False
+
+        # Check if 'data' is a list
+        if not isinstance(item['data'], list):
+            return False
+
+        # Iterate through each data item in 'data' list
+        for data_item in item['data']:
+            # Check if data_item is a dictionary
+            if not isinstance(data_item, dict):
+                return False
+
+            # Check if 'name' and 'content' keys exist in data_item
+            if 'name' not in data_item or 'content' not in data_item:
+                return False
+
+            # Check if 'name' in data_item is not empty
+            if not data_item['name']:
+                return False
+
+    return True
+
+def get_prompt_data(prompt_type='form'):
+    data = []
+    for group in DB.selectPromptGroup(prompt_type=prompt_type):
+        group_obj = {
+            'name': group.name,
+            'data': []
+        }
+        for entry in DB.selectPromptEntry(group.id):
+            group_obj['data'].append({
+                'name': entry.name,
+                'content': entry.content
+            })
+        data.append(group_obj)
+    return data

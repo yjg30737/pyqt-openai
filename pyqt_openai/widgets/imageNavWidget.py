@@ -3,7 +3,8 @@ from qtpy.QtSql import QSqlTableModel, QSqlQuery
 from qtpy.QtWidgets import QWidget, QVBoxLayout, QStyledItemDelegate, QTableView, QAbstractItemView, QHBoxLayout, \
     QMessageBox, QLabel
 
-# for search feature
+from pyqt_openai import ICON_DELETE, ICON_CLOSE
+from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.widgets.button import Button
 from pyqt_openai.widgets.searchBar import SearchBar
@@ -58,21 +59,21 @@ class ImageNavWidget(QWidget):
 
     def __initUi(self):
         imageGenerationHistoryLbl = QLabel()
-        imageGenerationHistoryLbl.setText('History')
+        imageGenerationHistoryLbl.setText(LangClass.TRANSLATIONS['History'])
 
         self.__searchBar = SearchBar()
-        self.__searchBar.setPlaceHolder('Search...')
+        self.__searchBar.setPlaceHolder(LangClass.TRANSLATIONS['Search...'])
         self.__searchBar.searched.connect(self.__showResult)
 
         self.__delBtn = Button()
-        self.__delBtn.setStyleAndIcon('ico/delete.svg')
+        self.__delBtn.setStyleAndIcon(ICON_DELETE)
         self.__delBtn.clicked.connect(self.__delete)
-        self.__delBtn.setToolTip('Delete Certain Row')
+        self.__delBtn.setToolTip(LangClass.TRANSLATIONS['Delete Certain Row'])
 
         self.__clearBtn = Button()
-        self.__clearBtn.setStyleAndIcon('ico/close.svg')
+        self.__clearBtn.setStyleAndIcon(ICON_CLOSE)
         self.__clearBtn.clicked.connect(self.__clear)
-        self.__delBtn.setToolTip('Remove All')
+        self.__delBtn.setToolTip(LangClass.TRANSLATIONS['Remove All'])
 
         lay = QHBoxLayout()
         lay.addWidget(self.__searchBar)
@@ -152,12 +153,12 @@ class ImageNavWidget(QWidget):
         data = DB.selectCertainImage(cur_id)['data']
         if data:
             if isinstance(data, str):
-                QMessageBox.critical(self, 'Error', f'Image URL can\'t be seen after v0.2.51, Now it is replaced with b64_json.')
+                QMessageBox.critical(self, LangClass.TRANSLATIONS['Error'], LangClass.TRANSLATIONS['Image URL can\'t be seen after v0.2.51, Now it is replaced with b64_json.'])
             else:
                 data = QByteArray(data).data()
                 self.getContent.emit(data)
         else:
-            QMessageBox.critical(self, 'Error', 'No image data is found. Maybe you are using really old version.')
+            QMessageBox.critical(self, LangClass.TRANSLATIONS['Error'], LangClass.TRANSLATIONS['No image data is found. Maybe you are using really old version.'])
 
     def __showResult(self, text):
         # index -1 will be read from all columns
