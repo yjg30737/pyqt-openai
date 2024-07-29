@@ -53,42 +53,7 @@ homepage = "https://github.com/yjg30737/pyqt-openai.git"
 
 [tool.setuptools]
 packages = ["pyqt_openai"]
-
-[tool.setuptools.package-data]
-pyqt_openai = [
-    "ico/add.svg",
-    "ico/case.svg",
-    "ico/close.svg",
-    "ico/copy.svg",
-    "ico/customize.svg",
-    "ico/delete.svg",
-    "ico/discord.svg",
-    "ico/export.svg",
-    "ico/favorite_no.svg",
-    "ico/favorite_yes.svg",
-    "ico/fullscreen.svg",
-    "ico/github.svg",
-    "ico/history.svg",
-    "ico/import.svg",
-    "ico/info.svg",
-    "ico/next.svg",
-    "ico/openai.png",
-    "ico/openai.svg",
-    "ico/prev.svg",
-    "ico/prompt.svg",
-    "ico/question.svg",
-    "ico/refresh.svg",
-    "ico/regex.svg",
-    "ico/save.svg",
-    "ico/search.svg",
-    "ico/setting.svg",
-    "ico/sidebar.svg",
-    "ico/stackontop.svg",
-    "ico/user.png",
-    "ico/user.svg",
-    "ico/vertical_three_dots.svg",
-    "ico/word.svg"
-]
+include_package_data = true
 
 [project.gui-scripts]
 pyqt-openai = "pyqt_openai.main:main"

@@ -55,6 +55,8 @@ LANGUAGE_DICT = {
     "Indonesian": "id_ID",
     "Portuguese": "pt_BR"
 }
+MESSAGE_MAXIMUM_HEIGHT = 400
+MESSAGE_ADDITIONAL_HEIGHT = 40
 
 ## ICONS
 ICON_ADD = 'ico/add.svg'

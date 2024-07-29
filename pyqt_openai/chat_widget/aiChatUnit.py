@@ -1,10 +1,12 @@
 import pyperclip
+
 from qtpy.QtCore import Qt
 from qtpy.QtGui import QPalette
-from qtpy.QtWidgets import QLabel, QWidget, QVBoxLayout, QApplication, QHBoxLayout, QSpacerItem, QSizePolicy, \
+from qtpy.QtWidgets import QLabel, QWidget, QVBoxLayout, QHBoxLayout, QSpacerItem, QSizePolicy, \
     QTextBrowser, QAbstractScrollArea
 
-from pyqt_openai import DEFAULT_ICON_SIZE, ICON_FAVORITE_NO, ICON_INFO, ICON_COPY, ICON_FAVORITE_YES
+from pyqt_openai import DEFAULT_ICON_SIZE, ICON_FAVORITE_NO, ICON_INFO, ICON_COPY, ICON_FAVORITE_YES, \
+    MESSAGE_MAXIMUM_HEIGHT, MESSAGE_ADDITIONAL_HEIGHT
 from pyqt_openai.chat_widget.messageResultDialog import MessageResultDialog
 from pyqt_openai.models import ChatMessageContainer
 from pyqt_openai.pyqt_openai_data import DB
@@ -27,7 +29,7 @@ class SourceBrowser(QWidget):
         self.__langLbl.setFont(fnt)
 
         copyBtn = Button()
-        copyBtn.setStyleAndIcon('ico/copy.svg')
+        copyBtn.setStyleAndIcon(ICON_COPY)
         copyBtn.clicked.connect(self.__copy)
 
         lay.addWidget(self.__langLbl)
@@ -77,7 +79,6 @@ class AIChatUnit(QWidget):
         self.__result_info = ''
 
     def __initUi(self):
-        # common
         menuWidget = QWidget()
         lay = QHBoxLayout()
 
@@ -93,7 +94,6 @@ class AIChatUnit(QWidget):
         self.__infoBtn.setStyleAndIcon(ICON_INFO)
         self.__infoBtn.clicked.connect(self.__showInfo)
 
-        # SvgButton is supposed to be used like "copyBtn = SvgButton(self)" but it makes GUI broken so i won't give "self" argument to SvgButton
         self.__copyBtn = Button()
         self.__copyBtn.setStyleAndIcon(ICON_COPY)
         self.__copyBtn.clicked.connect(self.__copy)
@@ -148,8 +148,8 @@ class AIChatUnit(QWidget):
         for i in range(lay.count()):
             if lay.itemAt(i) and lay.itemAt(i).widget():
                 widget = lay.itemAt(i).widget()
-                if isinstance(widget, QLabel):
-                    text += widget.text()
+                if isinstance(widget, QTextBrowser):
+                    text += widget.toPlainText()
                 elif isinstance(widget, SourceBrowser):
                     text += f'```{widget.getLangName()}\n{widget.getText()}```'
 
@@ -163,7 +163,7 @@ class AIChatUnit(QWidget):
         for i in range(lay.count()):
             if lay.itemAt(i) and lay.itemAt(i).widget():
                 widget = lay.itemAt(i).widget()
-                if isinstance(widget, QLabel):
+                if isinstance(widget, QTextBrowser):
                     widget.setAlignment(a0)
 
     def disableGUIDuringGenerateResponse(self):
@@ -179,10 +179,11 @@ class AIChatUnit(QWidget):
         self.__favorite(True if arg.favorite else False, insert_f=False)
 
     def setText(self, text: str):
-        self.__lbl = QLabel(text)
+        self.__lbl = QTextBrowser()
+        self.__lbl.setMarkdown(text)
+        self.__lbl.setMinimumHeight(400)
 
         self.__lbl.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        self.__lbl.setWordWrap(True)
         self.__lbl.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
         self.__lbl.setOpenExternalLinks(True)
         self.__lbl.setBackgroundRole(QPalette.ColorRole.AlternateBase)
@@ -235,16 +236,25 @@ class AIChatUnit(QWidget):
         #         """
         #         browser.setText(lexer, html_code)
         #         self.__mainWidget.layout().addWidget(browser)
+        # Adjust the size of the QTextBrowser
+        self.adjustBrowserHeight()
+
+    def adjustBrowserHeight(self):
+        document_height = self.__lbl.document().size().height() + MESSAGE_ADDITIONAL_HEIGHT
+        max_height = MESSAGE_MAXIMUM_HEIGHT
+
+        if document_height < max_height:
+            self.__lbl.setMinimumHeight(int(document_height))
+        else:
+            self.__lbl.setMinimumHeight(int(max_height))
 
     def toPlainText(self):
         return self.__plain_text
 
     def addText(self, text: str):
         unit = self.__mainWidget.layout().itemAt(self.__mainWidget.layout().count()-1).widget()
-        if isinstance(unit, QLabel):
-            unit.setText(unit.text()+text)
-        elif isinstance(unit, QTextBrowser):
-            unit.append(text)
+        if isinstance(unit, QTextBrowser):
+            unit.setText(unit.toPlainText()+text)
 
     def getIcon(self):
         return self.__icon.getImage()

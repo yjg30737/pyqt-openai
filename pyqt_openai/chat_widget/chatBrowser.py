@@ -105,9 +105,9 @@ class ChatBrowser(QScrollArea):
 
                     # Form message object for each label
                     if isinstance(widget, AIChatUnit):
-                        all_text_lst.append(get_message_obj("assistant", widget.text()))
+                        all_text_lst.append(get_message_obj("assistant", widget.toPlainText()))
                     elif isinstance(widget, UserChatUnit):
-                        all_text_lst.append(get_message_obj("user", widget.text()))
+                        all_text_lst.append(get_message_obj("user", widget.toPlainText()))
 
         return all_text_lst
 
