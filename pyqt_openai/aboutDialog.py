@@ -30,8 +30,8 @@ class AboutDialog(QDialog):
         descWidget1.setText(f'''
         <h1>{APP_NAME}</h1>
         Software Version {pyqt_openai.__version__}<br/><br/>
-        © 2023 {datetime.datetime.now().year}. Used under the MIT License.<br/>
-        Copyright (c) {datetime.datetime.now().year} yjg30737<br/>
+        © 2023 {datetime.datetime.now().year}. Used under the {pyqt_openai.LICENSE} License.<br/>
+        Copyright (c) {datetime.datetime.now().year} {pyqt_openai.__author__}<br/>
         ''')
 
         descWidget2 = LinkLabel()
