@@ -1,6 +1,5 @@
 import os
 import sys
-import webbrowser
 
 import requests
 
@@ -35,12 +34,12 @@ from pyqt_openai.dalle_widget.dallEWidget import DallEWidget
 from pyqt_openai.chat_widget.openAiChatBotWidget import OpenAIChatBotWidget
 from pyqt_openai.replicate_widget.replicateWidget import ReplicateWidget
 from pyqt_openai.settingsDialog import SettingsDialog
-from pyqt_openai.util.script import get_font, restart_app, show_message_box
+from pyqt_openai.util.script import get_font, restart_app, show_message_box, goPayPal, goBuyMeCoffee
 from pyqt_openai.doNotAskAgainDialog import DoNotAskAgainDialog
 from pyqt_openai.sqlite import get_db_filename
 
 from pyqt_openai.pyqt_openai_data import OPENAI_STRUCT, LLAMAINDEX_WRAPPER
-from pyqt_openai import PAYPAL_URL, BUYMEACOFFEE_URL, INI_FILE_NAME, SHORTCUT_FULL_SCREEN, \
+from pyqt_openai import INI_FILE_NAME, SHORTCUT_FULL_SCREEN, \
     APP_INITIAL_WINDOW_SIZE, APP_NAME, APP_ICON, ICON_STACKONTOP, ICON_CUSTOMIZE, ICON_FULLSCREEN, ICON_CLOSE
 
 # HighDPI support
@@ -109,10 +108,10 @@ class MainWindow(QMainWindow):
         self.__aboutAction.triggered.connect(self.__showAboutDialog)
 
         self.__paypalAction = QAction('Paypal', self)
-        self.__paypalAction.triggered.connect(self.__paypal)
+        self.__paypalAction.triggered.connect(goPayPal)
 
         self.__buyMeCoffeeAction = QAction('Buy me a coffee!', self)
-        self.__buyMeCoffeeAction.triggered.connect(self.__buyMeCoffee)
+        self.__buyMeCoffeeAction.triggered.connect(goBuyMeCoffee)
 
         # toolbar action
         self.__chooseAiAction = QWidgetAction(self)
@@ -327,12 +326,6 @@ class MainWindow(QMainWindow):
     def __showAboutDialog(self):
         aboutDialog = AboutDialog()
         aboutDialog.exec()
-
-    def __paypal(self):
-        webbrowser.open(PAYPAL_URL)
-
-    def __buyMeCoffee(self):
-        webbrowser.open(BUYMEACOFFEE_URL)
 
     def __stackToggle(self, f):
         if f:

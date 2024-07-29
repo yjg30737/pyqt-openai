@@ -5,6 +5,7 @@ import random
 import re
 import string
 import sys
+import webbrowser
 import zipfile
 from datetime import datetime
 from pathlib import Path
@@ -15,7 +16,7 @@ from qtpy.QtCore import QSettings
 from qtpy.QtWidgets import QMessageBox
 
 from pyqt_openai import INI_FILE_NAME, DEFAULT_FONT_SIZE, DEFAULT_FONT_FAMILY, MAIN_INDEX, \
-    PROMPT_NAME_REGEX
+    PROMPT_NAME_REGEX, PAYPAL_URL, BUYMEACOFFEE_URL
 from pyqt_openai.models import ImagePromptContainer
 from pyqt_openai.pyqt_openai_data import DB
 
@@ -298,3 +299,9 @@ def get_prompt_data(prompt_type='form'):
             })
         data.append(group_obj)
     return data
+
+def goPayPal():
+    webbrowser.open(PAYPAL_URL)
+
+def goBuyMeCoffee():
+    webbrowser.open(BUYMEACOFFEE_URL)
