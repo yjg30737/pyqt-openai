@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pyqt-openai"
-version = "0.7.8"
+version = "0.8.0"
 description = "PyQt/PySide(Python cross-platform GUI toolkit) OpenAI Chatbot"
 authors = [{ name = "Jung Gyu Yoon", email = "yjg30737@gmail.com" }]
 license = { text = "MIT" }
