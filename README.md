@@ -6,25 +6,29 @@
 
 </div>
 
-PyQt/PySide(Python cross-platform GUI toolkit) OpenAI Chatbot which supports more than 8 languages (you can see the list below)
+![image](https://github.com/user-attachments/assets/f5281b7e-1414-4335-adb4-a92928cd609e)
 
-<b>This supports Windows, MacOS, Linux.</b>
+## Multi-purpose Text & Image Generation Desktop Commercial Chatbot (supporting various models including GPT)
 
-You can use OpenAI models(GPT4o, GPT4o-mini, DALL-E, etc.), Replicate image generation models with PyQt.
+This application is developed using PyQt.
 
-The major advantage of this package is that you don't need to know other language aside from Python.
+It supports Windows, macOS, and Linux.
 
-If you want to study openai with Python-only good old desktop software, this is for you.
+It uses SQLite as a database.
 
-This is using <b>sqlite</b> as a database.
+You can use OpenAI models (GPT-4, GPT-4 Mini, DALL-E, etc.) and Replicate image generation models with PyQt.
 
-You can select the model and change each parameters of openai from the right side bar.
+The major advantage of this package is that you don't need to know any language aside from Python.
 
-Also you can combine openai with llama-index feature to make GPT model answer your question based on information you had provided!
+If you want to study OpenAI with Python-only in a good old desktop software environment, this is for you.
 
-If you have any questions or you want to make AI related software with PyQt or PySide, feel free to join Discord server of pyqt-openai.
+You can select the model and adjust each parameter of OpenAI from the right sidebar.
 
-And if you would like to support this project, you can click the button below to make a donation. Your contribution will greatly assist various projects, including this one!
+Additionally, you can combine OpenAI with the Llama-Index feature to make the GPT model answer your questions based on the information you have provided!
+
+If you have any questions or if you want to develop AI-related software with PyQt or PySide, feel free to join the Discord server!
+
+If you would like to support this project, please click the button below to make a donation. Your contribution will greatly assist various projects, including this one!
 
 <a href="https://www.buymeacoffee.com/yjg30737" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
 <a href="https://paypal.me/yjg30737">
@@ -39,51 +43,39 @@ And if you would like to support this project, you can click the button below to
   * [Overview](#overview)
   * [Conversation](#conversation)
   * [Prompt Generator](#prompt-generator)
-  * [Use GPT Vision](#use-gpt-vision)
-  * [Image Generation](#image-generation)
 * [How to Install](#how-to-install)
 * [Troubleshooting](#troubleshooting)
 * [Contact](#contact)
 * [Note](#note)
-* [LICENSE](#license)
 * [Disclaimer](#disclaimer)
 
 ## Feature
 * Basically this is <b>desktop application version of ChatGPT</b> with image generation tool. 
-  * Text streaming (enable by default, you can disable it)
-  * AI remembers past conversation
-  * Support copy button
-  * Able to stop response in the middle of text generation
 * <b>Conversation(=Thread) management</b>
   * Add & delete conversations
-  * Export conversations - JSON file, text files compressed file, html files compressed file (both are zip)
-  * Import conversations from pyqt-openai, GPT
-  * Rename conversation
+  * Export & Import conversations (including import from ChatGPT)
   * "Favorite" feature
   * Support JSON mode
-  * everything above is saved in an SQLite database file named conv.db. (File's name can be changed by yourself)
-* Support controlling parameters(temperature, top_p, etc) just like openai playground
-* Able to see the reason why stream is finished
+  * Everything above is saved in an SQLite database file named conv.db. (File's name can be changed by yourself)
+* Support text(*.txt), image(*.png, *.jpg) file uploading
+* Support controlling parameters(temperature, top_p, etc)
+* You can see the reason why stream is finished.
 * Support token count (only for non-streaming response)
 * Support <b>prompt generator</b> (manageable, autosaved in database)
   * Support import & export prompt group as JSON
+* Full screen feature
 * Support <b>slash commands</b>
 * Support beginning and ending part of the prompt
-* You can <b>run this in background</b> application
-  * notification will pop up when response is generated
+* You can <b>run this in background</b>
+  * Notification will pop up when response is generated
 * You can make window stack on top or control its transparency
 * Image generation (DALL-E3 from openai, a bunch of image models in Replicate)
   * Support saving generated image to local
   * Support continue generation
   * Notification when task completes
-* You can copy and download the image directly as well. just hover the mouse cursor over the image.
-* You can <b>fine-tune</b> openai with llama-index and use it (support streaming response)
-* Support text(*.txt), image(*.png, *.jpg) file uploading
-* Support searching title and content in the conversation
-* Support "find text" feature (match word, case-sensitive, regex, etc.)
+* Support llamaindex
 * Support customizing feature (homepage, user and AI profile image, font settings)
 * Support light/dark theme based on your system settings (Above Qt6 only)
-* Full screen feature
 
 ## Supported Languages
 * English
@@ -193,37 +185,20 @@ In this preview, i pressed the keyboard shortcut of each actions(show beginning,
 
 I made the command suggestion GUI resemble the Discord command autocomplete popup, with which a lot of people have become accustomed.
 
-### Use GPT Vision
-#### How to Use it
-1. Select "gpt-4-vision-preview"
-
-![image](https://github.com/yjg30737/pyqt-openai/assets/55078043/1d1ce632-3078-4cb7-863e-fc447b146f8a)
-
-2. Select image files from local with clicking "Upload Files"
-
-![image](https://github.com/yjg30737/pyqt-openai/assets/55078043/aef216d5-9b7c-4f22-9bc3-88c90f4d9e73)
-
-3. Ask something about images
-
-![image](https://github.com/yjg30737/pyqt-openai/assets/55078043/3ef4f091-9f5f-46b3-a160-be35215977c7)
-
-
-### Image Generation
-
-![image](https://github.com/yjg30737/pyqt-openai/assets/55078043/7f240ab3-f4d7-4d8b-b1c8-cb269f25e05b)
-
 ## How to Install
 1. git clone ~
 2. cd pyqt-openai
 3. pip install -r requirements.txt --upgrade
 4. cd pyqt_openai
 5. You should put your api key in the line edit. You can get it in <a href="https://platform.openai.com/account/api-keys">official site</a> of openai. Sign up and log in before you get it.
-
-Be sure, this is a very important API key that belongs to you only, so you should remember it and keep it secure.
-
 6. python main.py
 
-If installation doesn't work, you can contact me with bring up new issue in issue tab or check the troubleshooting below even it is only about very specific error.
+## Install with pyproject.toml 
+1. git clone ~
+2. Run shell as Administrator
+3. cd pyqt-openai
+4. pip install .
+5. pyqt-openai
 
 ### Note
 If you use Linux and see this error:
@@ -243,24 +218,8 @@ sudo apt-get install libxcb-xinerama0
 
 Please check that the path does not contain any other invalid languages.
 
-### subprocess-exited-with-error
-If you see this error while installing the openai package
-```
-subprocess-exited-with-error
-```
-download the package itself from <a href="https://pypi.org/project/openai/#files">pypi</a>. 
-
-Unzip it, access the package directory, type 
-```
-python setup.py install
-```
-
-That will install the openai.
-
-Note: I don't know this can happen in newer version of openai as well, so tell me if you know about something
-
 ### qtpy.QtBindingsNotFoundError: No Qt bindings could be found
-first, do this:
+First, do this:
 ```
 pip uninstall -r requirements.txt
 ```
@@ -272,34 +231,6 @@ then it will work :)
 
 ## Contact
 You can join pyqt-openai's <a href="https://discord.gg/cHekprskVE">Discord Server</a> to have a conversation about it or AI-related stuff 🙂
-
-## Note
-I recommend to install sqlite management software. It's not necessary to run this app (obviously), but it's good practice to manage database about conversation history with AI and to know how this works.
-
-## LICENSE
-```
-MIT License
-
-Copyright (c) 2023-2024 Jung Gyu Yoon
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-```
 
 ## Disclaimer
 
