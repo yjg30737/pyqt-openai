@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "pyqt-openai"
 version = "0.8.0"
-description = "PyQt/PySide(Python cross-platform GUI toolkit) OpenAI Chatbot"
+description = "PyQt/PySide multipurpose chatbot that user can use GPT, other AI models altogether"
 authors = [{ name = "Jung Gyu Yoon", email = "yjg30737@gmail.com" }]
 license = { text = "MIT" }
 readme = "README.md"
@@ -26,22 +26,33 @@ dependencies = [
 ]
 keywords = ['openai', 'pyqt', 'pyqt5', 'pyqt6', 'pyside6', 'chatbot', 'gpt', 'replicate']
 
-# TODO testing each version
 requires-python = ">= 3.9"
 # 3.9
 # 3.10
 # 3.11
 # 3.12
 
-# TODO add classifiers
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Libraries",
+    "License :: OSI Approved :: MIT License",  # Just an example, use your actual license
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Framework :: PyQt",
+    "Topic :: Software Development :: Libraries :: Application Frameworks",
+    "Topic :: Software Development :: User Interfaces"
+]
 
 [project.urls]
 homepage = "https://github.com/yjg30737/pyqt-openai.git"
 
 [tool.setuptools]
-packages = [
-    { include = "pyqt_openai" }
-]
+packages = ["pyqt_openai"]
 
 [tool.setuptools.package-data]
 pyqt_openai = [
