@@ -56,12 +56,15 @@ def get_model_endpoint(model):
 def get_chat_model():
     return ENDPOINT_DICT['/v1/chat/completions']
 
-def get_image_url_from_local(image_path):
-    # # Function to encode the image
-    def encode_image(image_path):
-        return base64.b64encode(image_path).decode('utf-8')
+def get_image_url_from_local(image):
+    """
+    Image is bytes, this function converts it to base64 and returns the image url
+    """
+    # Function to encode the image
+    def encode_image(image):
+        return base64.b64encode(image).decode('utf-8')
 
-    base64_image = encode_image(image_path)
+    base64_image = encode_image(image)
     return f'data:image/jpeg;base64,{base64_image}'
 
 def get_message_obj(role, content):

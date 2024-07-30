@@ -5,6 +5,7 @@ from qtpy.QtGui import QPixmap
 from qtpy.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QHBoxLayout, QSpacerItem, QSizePolicy, \
     QScrollArea
 
+from pyqt_openai import PROMPT_IMAGE_SCALE
 from pyqt_openai.lang.translations import LangClass
 
 
@@ -76,7 +77,7 @@ class UploadedImageFileWidget(QWidget):
         lbl.installEventFilter(self)
         pixmap = QPixmap()
         pixmap.loadFromData(image_buffer)
-        pixmap = pixmap.scaled(200, 200)
+        pixmap = pixmap.scaled(*PROMPT_IMAGE_SCALE)
         lbl.setPixmap(pixmap)
         lay.addWidget(lbl)
         self.__toggle(True)
