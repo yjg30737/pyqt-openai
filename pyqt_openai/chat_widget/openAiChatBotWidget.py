@@ -13,7 +13,7 @@ from qtpy.QtWidgets import QHBoxLayout, QWidget, QSizePolicy, QVBoxLayout, QFram
 from pyqt_openai.chat_widget.chatWidget import ChatWidget
 from pyqt_openai.chat_widget.prompt import Prompt
 from pyqt_openai import THREAD_TABLE_NAME, INI_FILE_NAME, JSON_FILE_EXT, ICON_SIDEBAR, ICON_SETTING, ICON_PROMPT, \
-    FILE_NAME_LENGTH
+    FILE_NAME_LENGTH, MAXIMUM_MESSAGES_IN_PARAMETER
 from pyqt_openai.models import ChatThreadContainer, ChatMessageContainer
 from pyqt_openai.openAiThread import OpenAIThread, LlamaOpenAIThread
 from pyqt_openai.pyqt_openai_data import DB, get_argument, LLAMAINDEX_WRAPPER
@@ -45,6 +45,8 @@ class OpenAIChatBotWidget(QWidget):
         self.__show_chat_list = self.__settings_ini.value('show_chat_list', type=bool)
         self.__show_setting = self.__settings_ini.value('show_setting', type=bool)
         self.__show_prompt = self.__settings_ini.value('show_prompt', type=bool)
+
+        self.__maximum_messages_in_parameter = self.__settings_ini.value('maximum_messages_in_parameter', MAXIMUM_MESSAGES_IN_PARAMETER, type=int)
 
         self.__is_showing_favorite = False
 
@@ -239,9 +241,9 @@ class OpenAIChatBotWidget(QWidget):
             use_llama_index = self.__settings_ini.value('use_llama_index', type=bool)
 
             # Get image files
-            images = self.__prompt.getUploadedImageFiles()
+            images = self.__prompt.getImageBuffers()
 
-            messages = self.__browser.getMessages()
+            messages = self.__browser.getMessages(self.__maximum_messages_in_parameter)
 
             cur_text = self.__prompt.getContent()
 

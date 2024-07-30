@@ -77,6 +77,7 @@ class Prompt(QWidget):
         # set command suggestion
         self.__textEditGroup.onUpdateSuggestion.connect(self.__updateSuggestions)
         self.__textEditGroup.onSendKeySignalToSuggestion.connect(self.__sendKeySignalToSuggestion)
+        self.__textEditGroup.onPasteFile.connect(self.__uploadedImageFileWidget.addImageBuffer)
 
         self.__suggestion_list.itemClicked.connect(self.executeCommand)
 
@@ -288,8 +289,8 @@ class Prompt(QWidget):
             elif cur_file_extension in ['.jpg', '.png']:
                 self.__uploadedImageFileWidget.addFiles(filenames)
 
-    def getUploadedImageFiles(self):
-        return self.__uploadedImageFileWidget.getFiles()
+    def getImageBuffers(self):
+        return self.__uploadedImageFileWidget.getImageBuffers()
 
     def resetUploadImageFileWidget(self):
         self.__uploadedImageFileWidget.setVisible(False)

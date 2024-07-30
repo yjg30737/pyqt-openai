@@ -122,7 +122,6 @@ class SettingsParamsContainer(Container):
     thread_tool_widget: bool = True
     chat_column_to_show: List[str] = field(default_factory=ChatThreadContainer.get_keys)
     image_column_to_show: List[str] = field(default_factory=ImagePromptContainer.get_keys)
-    message_maximum_height: int = MESSAGE_MAXIMUM_HEIGHT
     maximum_messages_in_parameter: int = MAXIMUM_MESSAGES_IN_PARAMETER
 
 @dataclass

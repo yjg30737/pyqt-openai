@@ -1,6 +1,6 @@
-from qtpy.QtCore import Signal
-from qtpy.QtGui import QTextCursor
-from qtpy.QtWidgets import QVBoxLayout, QWidget
+from qtpy.QtCore import Signal, QBuffer, QByteArray
+from qtpy.QtGui import QTextCursor, QKeySequence
+from qtpy.QtWidgets import QVBoxLayout, QWidget, QApplication
 
 from pyqt_openai import PROMPT_BEGINNING_KEY_NAME, PROMPT_MAIN_KEY_NAME, PROMPT_END_KEY_NAME, \
     PROMPT_JSON_KEY_NAME
@@ -13,6 +13,7 @@ class TextEditPromptGroup(QWidget):
     textChanged = Signal()
     onUpdateSuggestion = Signal()
     onSendKeySignalToSuggestion = Signal(str)
+    onPasteFile = Signal(QByteArray)
 
     def __init__(self):
         super().__init__()
@@ -53,6 +54,8 @@ class TextEditPromptGroup(QWidget):
         self.setVisibleTo(PROMPT_BEGINNING_KEY_NAME, False)
         self.setVisibleTo(PROMPT_JSON_KEY_NAME, False)
         self.setVisibleTo(PROMPT_END_KEY_NAME, False)
+
+        self.__textGroup[PROMPT_MAIN_KEY_NAME].installEventFilter(self)
 
     def executeCommand(self, item, grp):
         command_key = item.text()
@@ -126,3 +129,44 @@ class TextEditPromptGroup(QWidget):
         """
         return self.__textGroup
 
+    def eventFilter(self, source, event):
+        if event.type() == 6:  # QEvent.KeyPress
+            if event.matches(QKeySequence.Paste):
+                self.handlePaste()
+                return True
+        return super().eventFilter(source, event)
+
+    def handlePaste(self):
+        clipboard = QApplication.clipboard()
+        mime_data = clipboard.mimeData()
+
+        if mime_data.hasImage():
+            image = clipboard.image()
+
+            # Save image to a memory buffer
+            buffer = QBuffer()
+            buffer.open(QBuffer.ReadWrite)
+            image.save(buffer, "PNG")
+            buffer.seek(0)
+            image_data = buffer.data()
+            buffer.close()
+
+            # Emit the image data
+            self.onPasteFile.emit(image_data)
+        else:
+            self.__textEdit.paste()
+#
+# chat_widget\openAiChatBotWidget.py:32: RuntimeWarning: Invalid return value in function 'QWidget.eventFilter', expected bool, got NoneType.
+#   self.__initUi()
+# main.py:490: RuntimeWarning: Invalid return value in function 'QWidget.eventFilter', expected bool, got NoneType.
+#   main()
+# chat_widget\uploadedImageFileWidget.py:43: RuntimeWarning: Invalid return value in function 'QWidget.eventFilter', expected bool, got NoneType.
+#   self.__toggle()
+# main.py:486: RuntimeWarning: Invalid return value in function 'QWidget.eventFilter', expected bool, got NoneType.
+#   sys.exit(app.exec())
+# chat_widget\openAiChatBotWidget.py:344: RuntimeWarning: Invalid return value in function 'QWidget.eventFilter', expected bool, got NoneType.
+#   self.__prompt.activateDuringGeneratingWidget(not f)
+# chat_widget\textEditPromptGroup.py:135: RuntimeWarning: Invalid return value in function 'QWidget.eventFilter', expected bool, got NoneType.
+#   self.handlePaste()
+# chat_widget\prompt.py:246: RuntimeWarning: Invalid return value in function 'QWidget.eventFilter', expected bool, got NoneType.
+#   overallHeight = self.__textEditGroup.adjustHeight()

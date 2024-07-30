@@ -1,69 +1,15 @@
 import pyperclip
 from qtpy.QtCore import Qt
 from qtpy.QtGui import QPalette
-from qtpy.QtWidgets import QLabel, QWidget, QVBoxLayout, QHBoxLayout, QSpacerItem, QSizePolicy, \
-    QAbstractScrollArea
+from qtpy.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QSpacerItem, QSizePolicy
 
-from pyqt_openai import DEFAULT_ICON_SIZE, ICON_FAVORITE_NO, ICON_INFO, ICON_COPY, ICON_FAVORITE_YES, \
-    MESSAGE_MAXIMUM_HEIGHT
+from pyqt_openai import DEFAULT_ICON_SIZE, ICON_FAVORITE_NO, ICON_INFO, ICON_COPY, ICON_FAVORITE_YES
 from pyqt_openai.chat_widget.messageResultDialog import MessageResultDialog
 from pyqt_openai.chat_widget.messageTextBrowser import MessageTextBrowser
 from pyqt_openai.models import ChatMessageContainer
 from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.widgets.button import Button
 from pyqt_openai.widgets.circleProfileImage import RoundedImage
-
-
-class SourceBrowser(QWidget):
-    def __init__(self):
-        super().__init__()
-        self.__initUi()
-
-    def __initUi(self):
-        menuWidget = QWidget()
-        lay = QHBoxLayout()
-
-        self.__langLbl = QLabel()
-        fnt = self.__langLbl.font()
-        fnt.setBold(True)
-        self.__langLbl.setFont(fnt)
-
-        copyBtn = Button()
-        copyBtn.setStyleAndIcon(ICON_COPY)
-        copyBtn.clicked.connect(self.__copy)
-
-        lay.addWidget(self.__langLbl)
-        lay.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.Policy.MinimumExpanding))
-        lay.addWidget(copyBtn)
-        lay.setAlignment(Qt.AlignmentFlag.AlignRight)
-        lay.setContentsMargins(2, 2, 2, 2)
-        lay.setSpacing(1)
-
-        menuWidget.setLayout(lay)
-        menuWidget.setMaximumHeight(menuWidget.sizeHint().height())
-        menuWidget.setBackgroundRole(QPalette.ColorRole.Midlight)
-
-        self.__browser = MessageTextBrowser()
-        lay = QVBoxLayout()
-        lay.addWidget(menuWidget)
-        lay.addWidget(self.__browser)
-        lay.setContentsMargins(5, 3, 5, 3)
-        lay.setSpacing(0)
-        self.setLayout(lay)
-
-    def setText(self, lexer, text):
-        self.__langLbl.setText(lexer.name)
-        self.__browser.setText(text)
-        self.__browser.setSizeAdjustPolicy(QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
-
-    def getText(self):
-        return self.__browser.toPlainText()
-
-    def getLangName(self):
-        return self.__langLbl.text().lower()
-
-    def __copy(self):
-        pyperclip.copy(self.__browser.toPlainText())
 
 
 class AIChatUnit(QWidget):
@@ -148,8 +94,6 @@ class AIChatUnit(QWidget):
                 widget = lay.itemAt(i).widget()
                 if isinstance(widget, MessageTextBrowser):
                     text += widget.toPlainText()
-                elif isinstance(widget, SourceBrowser):
-                    text += f'```{widget.getLangName()}\n{widget.getText()}```'
 
         return text
 
@@ -183,69 +127,12 @@ class AIChatUnit(QWidget):
     def setText(self, text: str):
         self.__lbl = MessageTextBrowser()
         self.__lbl.setMarkdown(text)
-        self.__lbl.setMinimumHeight(MESSAGE_MAXIMUM_HEIGHT)
 
         self.__lbl.setAlignment(Qt.AlignmentFlag.AlignLeft)
         self.__lbl.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
         self.__lbl.setOpenExternalLinks(True)
 
-        # current_style = self.__lbl.styleSheet()
-        #
-        # new_style = 'border: 0; background: transparent; padding: 6px;'
-        #
-        # combined_style = current_style + new_style
-        #
-        # self.__lbl.setStyleSheet(combined_style)
-
         self.__mainWidget.layout().addWidget(self.__lbl)
-
-        # old code
-        # chunks = text.split('```')
-        # for i in range(len(chunks)):
-        #     if i % 2 == 0:
-        #         lbl = QLabel(chunks[i])
-        #
-        #         lbl.setAlignment(Qt.AlignLeft)
-        #         lbl.setWordWrap(True)
-        #         lbl.setTextInteractionFlags(Qt.TextSelectableByMouse)
-        #         lbl.setOpenExternalLinks(True)
-        #
-        #         self.__mainWidget.layout().addWidget(lbl)
-        #     else:
-        #         browser = SourceBrowser()
-        #
-        #         lang_name = ''
-        #         lang_text = ''
-        #
-        #         m = re.search('([\S]+)\n*(.+)', chunks[i], re.DOTALL)
-        #         if m:
-        #             lang_name = m.group(1)
-        #             lang_text = m.group(2)
-        #         try:
-        #             lexer = get_lexer_by_name(lang_name)
-        #         except Exception as e:
-        #             lexer = get_lexer_by_name('Text')
-        #
-        #         # get the guessed language based on given code
-        #         formatter = HtmlFormatter(style='colorful')
-        #
-        #         css_styles = formatter.get_style_defs('.highlight')
-        #
-        #         html_code = f"""
-        #         <html>
-        #             <head>
-        #                 <style>
-        #                     {css_styles}
-        #                 </style>
-        #             </head>
-        #             <body>
-        #                 {highlight(lang_text, lexer, formatter)}
-        #             </body>
-        #         </html>
-        #         """
-        #         browser.setText(lexer, html_code)
-        #         self.__mainWidget.layout().addWidget(browser)
-        # Adjust the size of the TransparentTextBrowser
         self.__lbl.adjustBrowserHeight()
 
     def toPlainText(self):
@@ -262,79 +149,3 @@ class AIChatUnit(QWidget):
 
     def setIcon(self, filename):
         self.__icon.setImage(filename)
-
-# if __name__ == "__main__":
-#     import sys
-#
-#     app = QApplication(sys.argv)
-#     w = AIChatUnit()
-#     w.setText(
-#         '''
-#         of course, i can help you!
-#         ```python
-#         class ChatUnit(QWidget):
-#     def __init__(self, user_f=False, parent=None):
-#         super().__init__(parent)
-#         self.__initUi(user_f)
-#
-#     def __initUi(self, user_f):
-#         # common
-#         menuWidget = QWidget()
-#         lay = QHBoxLayout()
-#
-#         # SvgButton is supposed to be used like "copyBtn = SvgButton(self)" but it makes GUI broken so i won't give "self" argument to SvgButton
-#         copyBtn = SvgButton()
-#         copyBtn.setIcon('ico/copy.svg')
-#         copyBtn.clicked.connect(self.__copy)
-#
-#         lay.addWidget(copyBtn)
-#         lay.setAlignment(Qt.AlignRight)
-#         lay.setContentsMargins(2, 2, 2, 2)
-#         lay.setSpacing(1)
-#
-#         # if chat unit generated by user
-#         if user_f:
-#             pass
-#         # generated by AI
-#         else:
-#             pass
-#
-#         menuWidget.setLayout(lay)
-#         menuWidget.setMaximumHeight(menuWidget.sizeHint().height())
-#         menuWidget.setStyleSheet('QWidget { background-color: #BBB }')
-#
-#         self.__lbl = QLabel()
-#         self.__lbl.setStyleSheet('QLabel { padding: 1rem }')
-#
-#         lay = QVBoxLayout()
-#         lay.addWidget(menuWidget)
-#         lay.addWidget(self.__lbl)
-#         lay.setSpacing(0)
-#         lay.setContentsMargins(0, 0, 0, 0)
-#
-#         self.setLayout(lay)
-#
-#     def __copy(self):
-#         pyperclip.copy(self.__lbl.text())
-#
-#     def getLabel(self) -> QLabel:
-#         return self.__lbl
-#
-#     def text(self):
-#         return self.__lbl.text()
-#
-#     def alignment(self):
-#         return self.__lbl.alignment()
-#
-#     def setAlignment(self, a0):
-#         self.__lbl.setAlignment(a0)
-#
-#     def setText(self, text: str):
-#         return self.__lbl.setText(text)
-#         ```
-#         thanks, bye
-#         '''
-#
-#     )
-#     w.show()
-#     sys.exit(app.exec())

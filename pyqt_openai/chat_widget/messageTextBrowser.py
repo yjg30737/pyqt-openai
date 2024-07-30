@@ -7,6 +7,9 @@ from pyqt_openai import MESSAGE_ADDITIONAL_HEIGHT, MESSAGE_MAXIMUM_HEIGHT, MESSA
 class MessageTextBrowser(QTextBrowser):
     def __init__(self):
         super().__init__()
+        self.__initUi()
+
+    def __initUi(self):
         # Transparent background
         palette = self.palette()
         palette.setColor(QPalette.Base, QColor(0, 0, 0, 0))

@@ -40,7 +40,6 @@ class SettingsDialog(QDialog):
         self.__thread_tool_widget = args.thread_tool_widget
         self.__chat_column_to_show = args.chat_column_to_show
         self.__image_column_to_show = args.image_column_to_show
-        self.__message_maximum_height = args.message_maximum_height
         self.__maximum_messages_in_parameter = args.maximum_messages_in_parameter
 
     def __initUi(self):
@@ -105,18 +104,12 @@ class SettingsDialog(QDialog):
         self.__showThreadToolWidgetChkBox = QCheckBox()
         self.__showThreadToolWidgetChkBox.setChecked(self.__thread_tool_widget)
 
-        self.__messageMaximumHeightSpinBox = QSpinBox()
-        self.__messageMaximumHeightSpinBox.setRange(*MESSAGE_MAXIMUM_HEIGHT_RANGE)
-        self.__messageMaximumHeightSpinBox.setSingleStep(10)
-        self.__messageMaximumHeightSpinBox.setValue(self.__message_maximum_height)
-
         self.__maximumMessagesInParameterSpinBox = QSpinBox()
         self.__maximumMessagesInParameterSpinBox.setRange(*MAXIMUM_MESSAGES_IN_PARAMETER_RANGE)
         self.__maximumMessagesInParameterSpinBox.setValue(self.__maximum_messages_in_parameter)
 
         lay = QFormLayout()
         lay.addRow(LangClass.TRANSLATIONS['Show Find Tool'], self.__showThreadToolWidgetChkBox)
-        lay.addRow(LangClass.TRANSLATIONS['Maximum Height of Message'], self.__messageMaximumHeightSpinBox)
         lay.addRow(LangClass.TRANSLATIONS['Maximum Messages in Parameter'], self.__maximumMessagesInParameterSpinBox)
 
         chatBrowserGrpBox = QGroupBox(LangClass.TRANSLATIONS['Chat Browser'])
@@ -193,6 +186,5 @@ class SettingsDialog(QDialog):
             thread_tool_widget=self.__showThreadToolWidgetChkBox.isChecked(),
             chat_column_to_show=COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE+self.__chatColCheckBoxListWidget.getCheckedItemsText(),
             image_column_to_show=COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE+self.__imageColCheckBoxListWidget.getCheckedItemsText(),
-            message_maximum_height=self.__messageMaximumHeightSpinBox.value(),
             maximum_messages_in_parameter=self.__maximumMessagesInParameterSpinBox.value()
         )
