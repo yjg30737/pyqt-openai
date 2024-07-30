@@ -58,7 +58,7 @@ class ChatBrowser(QScrollArea):
 
     def __showConvResultInfo(self, unit, arg: ChatMessageContainer):
         if isinstance(unit, AIChatUnit):
-            unit.showConvResultInfo(arg)
+            unit.afterResponse(arg)
 
     def streamFinished(self, arg: ChatMessageContainer):
         unit = self.__getLastUnit()
@@ -82,7 +82,7 @@ class ChatBrowser(QScrollArea):
                 unit = self.__getLastUnit()
                 if isinstance(unit, AIChatUnit):
                     # TODO 2023-11-10
-                    unit.disableGUIDuringGenerateResponse()
+                    unit.toggleGUI(False)
                     unit.addText(text)
                     return
             chatUnit.setText(text)

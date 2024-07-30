@@ -1,11 +1,11 @@
 import pyperclip
-from qtpy.QtGui import QPalette
 from qtpy.QtCore import Qt
-from qtpy.QtWidgets import QTextBrowser, QSpacerItem, QSizePolicy, QWidget, QVBoxLayout, QHBoxLayout, QLabel
+from qtpy.QtGui import QPalette
+from qtpy.QtWidgets import QTextBrowser, QSpacerItem, QSizePolicy, QWidget, QVBoxLayout, QHBoxLayout
 
 from pyqt_openai import DEFAULT_ICON_SIZE, ICON_COPY, MESSAGE_MAXIMUM_HEIGHT, MESSAGE_ADDITIONAL_HEIGHT
+from pyqt_openai.chat_widget.messageTextBrowser import MessageTextBrowser
 from pyqt_openai.widgets.button import Button
-
 from pyqt_openai.widgets.circleProfileImage import RoundedImage
 
 
@@ -39,8 +39,7 @@ class UserChatUnit(QWidget):
         menuWidget.setLayout(lay)
         menuWidget.setMaximumHeight(menuWidget.sizeHint().height())
 
-        self.__lbl = QTextBrowser()
-        self.__lbl.setStyleSheet('QTextBrowser { padding: 6px }')
+        self.__lbl = MessageTextBrowser()
 
         self.__lbl.setAlignment(Qt.AlignmentFlag.AlignLeft)
         self.__lbl.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
@@ -57,16 +56,7 @@ class UserChatUnit(QWidget):
         self.setBackgroundRole(QPalette.ColorRole.Base)
         self.setAutoFillBackground(True)
 
-        self.adjustBrowserHeight()
-
-    def adjustBrowserHeight(self):
-        document_height = self.__lbl.document().size().height() + MESSAGE_ADDITIONAL_HEIGHT
-        max_height = MESSAGE_MAXIMUM_HEIGHT
-
-        if document_height < max_height:
-            self.__lbl.setMinimumHeight(int(document_height))
-        else:
-            self.__lbl.setMinimumHeight(int(max_height))
+        self.__lbl.adjustBrowserHeight()
 
     def __copy(self):
         pyperclip.copy(self.text())

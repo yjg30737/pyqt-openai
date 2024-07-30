@@ -293,9 +293,16 @@ class MainWindow(QMainWindow):
         else:
             self.__settings_struct.setValue('API_KEY', '')
 
+        import time
+
+        bef = time.time()
+
         # Set llama index directory if it exists
-        if self.__settings_struct.contains('llama_index_directory'):
+        if self.__settings_struct.contains('llama_index_directory') and self.__settings_struct.value('use_llama_index', False, type=bool):
             LLAMAINDEX_WRAPPER.set_directory(self.__settings_struct.value('llama_index_directory'))
+
+        aft = time.time()
+        print(f"Time taken to set llama index directory: {aft - bef}")
 
     def __setAIEnabled(self, f):
         self.__openAiChatBotWidget.setAIEnabled(f)

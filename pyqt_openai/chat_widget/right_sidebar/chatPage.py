@@ -3,7 +3,7 @@ from qtpy.QtWidgets import QWidget, QDoubleSpinBox, QSpinBox, QFormLayout, QFram
     QLabel, QVBoxLayout, QCheckBox, QPushButton
 
 from pyqt_openai import INI_FILE_NAME
-from pyqt_openai.pyqt_openai_data import get_chat_model
+from pyqt_openai.pyqt_openai_data import get_chat_model, LLAMAINDEX_WRAPPER
 from pyqt_openai.lang.translations import LangClass
 
 
@@ -181,6 +181,11 @@ class ChatPage(QWidget):
     def __use_llama_indexChecked(self, f):
         self.__use_llama_index = f
         self.__settings_ini.setValue('use_llama_index', f)
+        if f:
+            # Set llama index directory if it exists
+            if self.__settings_ini.contains('llama_index_directory') and self.__settings_ini.value(
+                    'use_llama_index', False, type=bool):
+                LLAMAINDEX_WRAPPER.set_directory(self.__settings_ini.value('llama_index_directory'))
         self.onToggleLlama.emit(f)
 
     def __useMaxChecked(self, f):

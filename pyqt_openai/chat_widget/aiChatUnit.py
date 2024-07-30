@@ -1,13 +1,13 @@
 import pyperclip
-
 from qtpy.QtCore import Qt
 from qtpy.QtGui import QPalette
 from qtpy.QtWidgets import QLabel, QWidget, QVBoxLayout, QHBoxLayout, QSpacerItem, QSizePolicy, \
-    QTextBrowser, QAbstractScrollArea
+    QAbstractScrollArea
 
 from pyqt_openai import DEFAULT_ICON_SIZE, ICON_FAVORITE_NO, ICON_INFO, ICON_COPY, ICON_FAVORITE_YES, \
     MESSAGE_MAXIMUM_HEIGHT, MESSAGE_ADDITIONAL_HEIGHT
 from pyqt_openai.chat_widget.messageResultDialog import MessageResultDialog
+from pyqt_openai.chat_widget.messageTextBrowser import MessageTextBrowser
 from pyqt_openai.models import ChatMessageContainer
 from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.widgets.button import Button
@@ -43,7 +43,7 @@ class SourceBrowser(QWidget):
         menuWidget.setMaximumHeight(menuWidget.sizeHint().height())
         menuWidget.setBackgroundRole(QPalette.ColorRole.Midlight)
 
-        self.__browser = QTextBrowser()
+        self.__browser = MessageTextBrowser()
         lay = QVBoxLayout()
         lay.addWidget(menuWidget)
         lay.addWidget(self.__browser)
@@ -148,7 +148,7 @@ class AIChatUnit(QWidget):
         for i in range(lay.count()):
             if lay.itemAt(i) and lay.itemAt(i).widget():
                 widget = lay.itemAt(i).widget()
-                if isinstance(widget, QTextBrowser):
+                if isinstance(widget, MessageTextBrowser):
                     text += widget.toPlainText()
                 elif isinstance(widget, SourceBrowser):
                     text += f'```{widget.getLangName()}\n{widget.getText()}```'
@@ -163,30 +163,42 @@ class AIChatUnit(QWidget):
         for i in range(lay.count()):
             if lay.itemAt(i) and lay.itemAt(i).widget():
                 widget = lay.itemAt(i).widget()
-                if isinstance(widget, QTextBrowser):
+                if isinstance(widget, MessageTextBrowser):
                     widget.setAlignment(a0)
 
-    def disableGUIDuringGenerateResponse(self):
-        self.__favoriteBtn.setEnabled(False)
-        self.__copyBtn.setEnabled(False)
-        self.__infoBtn.setEnabled(False)
+    def toggleGUI(self, f: bool):
+        self.__favoriteBtn.setEnabled(f)
+        self.__copyBtn.setEnabled(f)
+        self.__infoBtn.setEnabled(f)
 
-    def showConvResultInfo(self, arg: ChatMessageContainer):
-        self.__favoriteBtn.setEnabled(True)
-        self.__copyBtn.setEnabled(True)
-        self.__infoBtn.setEnabled(True)
+    def __showConvResultInfo(self, arg: ChatMessageContainer):
         self.__result_info = arg
         self.__favorite(True if arg.favorite else False, insert_f=False)
 
+    def afterResponse(self, arg: ChatMessageContainer):
+        self.toggleGUI(True)
+        self.__showConvResultInfo(arg)
+        if isinstance(self.__lbl, MessageTextBrowser):
+            self.__lbl.setMarkdown(arg.content)
+            self.__lbl.adjustBrowserHeight()
+            self.__lbl.verticalScrollBar().setSliderPosition(self.__lbl.verticalScrollBar().maximum())
+
     def setText(self, text: str):
-        self.__lbl = QTextBrowser()
+        self.__lbl = MessageTextBrowser()
         self.__lbl.setMarkdown(text)
-        self.__lbl.setMinimumHeight(400)
+        self.__lbl.setMinimumHeight(MESSAGE_MAXIMUM_HEIGHT)
 
         self.__lbl.setAlignment(Qt.AlignmentFlag.AlignLeft)
         self.__lbl.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
         self.__lbl.setOpenExternalLinks(True)
-        self.__lbl.setBackgroundRole(QPalette.ColorRole.AlternateBase)
+
+        # current_style = self.__lbl.styleSheet()
+        #
+        # new_style = 'border: 0; background: transparent; padding: 6px;'
+        #
+        # combined_style = current_style + new_style
+        #
+        # self.__lbl.setStyleSheet(combined_style)
 
         self.__mainWidget.layout().addWidget(self.__lbl)
 
@@ -236,25 +248,19 @@ class AIChatUnit(QWidget):
         #         """
         #         browser.setText(lexer, html_code)
         #         self.__mainWidget.layout().addWidget(browser)
-        # Adjust the size of the QTextBrowser
-        self.adjustBrowserHeight()
-
-    def adjustBrowserHeight(self):
-        document_height = self.__lbl.document().size().height() + MESSAGE_ADDITIONAL_HEIGHT
-        max_height = MESSAGE_MAXIMUM_HEIGHT
-
-        if document_height < max_height:
-            self.__lbl.setMinimumHeight(int(document_height))
-        else:
-            self.__lbl.setMinimumHeight(int(max_height))
+        # Adjust the size of the TransparentTextBrowser
+        self.__lbl.adjustBrowserHeight()
 
     def toPlainText(self):
         return self.__plain_text
 
     def addText(self, text: str):
         unit = self.__mainWidget.layout().itemAt(self.__mainWidget.layout().count()-1).widget()
-        if isinstance(unit, QTextBrowser):
+        if isinstance(unit, MessageTextBrowser):
             unit.setText(unit.toPlainText()+text)
+            unit.adjustBrowserHeight()
+            # Move scrollbar to the bottom
+            unit.verticalScrollBar().setSliderPosition(unit.verticalScrollBar().maximum())
 
     def getIcon(self):
         return self.__icon.getImage()
