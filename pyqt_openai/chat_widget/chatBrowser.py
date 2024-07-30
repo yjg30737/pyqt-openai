@@ -96,18 +96,11 @@ class ChatBrowser(QScrollArea):
         return super().event(e)
 
     def getMessages(self):
-        all_text_lst = []
-        lay = self.widget().layout()
-        if lay:
-            for i in range(lay.count()):
-                if lay.itemAt(i) and lay.itemAt(i).widget():
-                    widget = lay.itemAt(i).widget()
-
-                    # Form message object for each label
-                    if isinstance(widget, AIChatUnit):
-                        all_text_lst.append(get_message_obj("assistant", widget.toPlainText()))
-                    elif isinstance(widget, UserChatUnit):
-                        all_text_lst.append(get_message_obj("user", widget.toPlainText()))
+        messages = DB.selectCertainThreadMessages(self.__cur_id)
+        all_text_lst = [{
+            'role': message.role,
+            'content': message.content
+        } for message in messages]
 
         return all_text_lst
 
@@ -136,6 +129,9 @@ class ChatBrowser(QScrollArea):
             return ''
 
     def clear(self):
+        """
+        This method is used to clear the chat widget, not the database.
+        """
         lay = self.widget().layout()
         if lay:
             for i in range(lay.count()-1, -1, -1):
@@ -146,6 +142,9 @@ class ChatBrowser(QScrollArea):
 
     def setCurId(self, id):
         self.__cur_id = id
+
+    def getCurId(self):
+        return self.__cur_id
 
     def resetChatWidget(self, id):
         self.clear()

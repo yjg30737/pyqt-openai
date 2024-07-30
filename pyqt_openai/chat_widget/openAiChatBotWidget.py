@@ -12,7 +12,8 @@ from qtpy.QtWidgets import QHBoxLayout, QWidget, QSizePolicy, QVBoxLayout, QFram
 
 from pyqt_openai.chat_widget.chatWidget import ChatWidget
 from pyqt_openai.chat_widget.prompt import Prompt
-from pyqt_openai import THREAD_TABLE_NAME, INI_FILE_NAME, JSON_FILE_EXT, ICON_SIDEBAR, ICON_SETTING, ICON_PROMPT
+from pyqt_openai import THREAD_TABLE_NAME, INI_FILE_NAME, JSON_FILE_EXT, ICON_SIDEBAR, ICON_SETTING, ICON_PROMPT, \
+    FILE_NAME_LENGTH
 from pyqt_openai.models import ChatThreadContainer, ChatMessageContainer
 from pyqt_openai.openAiThread import OpenAIThread, LlamaOpenAIThread
 from pyqt_openai.pyqt_openai_data import DB, get_argument, LLAMAINDEX_WRAPPER
@@ -406,17 +407,13 @@ class OpenAIChatBotWidget(QWidget):
                 for id in ids:
                     row_info = DB.selectThread(id)
                     # Limit the title length to file name length
-                    title = row_info['name'][:32]
+                    title = row_info['name'][:FILE_NAME_LENGTH]
                     txt_filename = f'{title}_{id}{ext_dict[compressed_file_type]["ext"]}'
                     txt_content = ext_dict[compressed_file_type]['func'](DB, id, title)
                     add_file_to_zip(txt_content, txt_filename, os.path.splitext(filename)[0] + '.zip')
             elif ext == '.json':
                 DB.export(ids, filename)
             open_directory(os.path.dirname(filename))
-
-    # def __updateMessage(self, arg: ChatMessageContainer):
-    #     if arg.content:
-    #         DB.insertMessage(arg)
 
     def setColumns(self, columns):
         self.__chatNavWidget.setColumns(columns)
@@ -429,10 +426,5 @@ class OpenAIChatBotWidget(QWidget):
             else:
                 lst = [ChatMessageContainer(**dict(c)) for c in lst]
                 self.__browser.replaceThreadForFavorite(lst)
-                # self.__browser.show()
-    #             self.__browser.setWindowTitle('Favorite')
-    #             self.__browser.setWindowModality(Qt.WindowModality.ApplicationModal)
-    #     else:
-    #         self.__browser.messageUpdated.connect(self.__updateMessage)
         self.__prompt.setEnabled(not f)
         self.__is_showing_favorite = f

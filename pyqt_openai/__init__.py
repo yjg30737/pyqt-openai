@@ -116,6 +116,7 @@ IMAGE_DEFAULT_SAVE_DIRECTORY = 'image_result'
 LLAMA_INDEX_DEFAULT_READ_DIRECTORY = './example'
 INI_FILE_NAME = 'pyqt_openai.ini'
 DB_FILE_NAME = 'conv'
+FILE_NAME_LENGTH = 32
 
 ## EXTENSIONS
 IMAGE_FILE_EXT = 'Image File (*.jpg *.png)'

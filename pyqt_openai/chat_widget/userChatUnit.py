@@ -1,9 +1,9 @@
 import pyperclip
 from qtpy.QtCore import Qt
 from qtpy.QtGui import QPalette
-from qtpy.QtWidgets import QTextBrowser, QSpacerItem, QSizePolicy, QWidget, QVBoxLayout, QHBoxLayout
+from qtpy.QtWidgets import QSpacerItem, QSizePolicy, QWidget, QVBoxLayout, QHBoxLayout
 
-from pyqt_openai import DEFAULT_ICON_SIZE, ICON_COPY, MESSAGE_MAXIMUM_HEIGHT, MESSAGE_ADDITIONAL_HEIGHT
+from pyqt_openai import DEFAULT_ICON_SIZE, ICON_COPY
 from pyqt_openai.chat_widget.messageTextBrowser import MessageTextBrowser
 from pyqt_openai.widgets.button import Button
 from pyqt_openai.widgets.circleProfileImage import RoundedImage
@@ -12,12 +12,7 @@ from pyqt_openai.widgets.circleProfileImage import RoundedImage
 class UserChatUnit(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.__initVal()
         self.__initUi()
-
-    def __initVal(self):
-        self.__plain_text = ''
-        self.__find_f = False
 
     def __initUi(self):
         menuWidget = QWidget()
@@ -59,17 +54,14 @@ class UserChatUnit(QWidget):
         self.__lbl.adjustBrowserHeight()
 
     def __copy(self):
-        pyperclip.copy(self.text())
+        pyperclip.copy(self.toPlainText())
 
     def setText(self, text):
         self.__lbl.setText(text)
         self.__lbl.adjustBrowserHeight()
 
-    def text(self):
-        return self.__lbl.toPlainText()
-
     def toPlainText(self):
-        return self.__plain_text
+        return self.__lbl.toPlainText()
 
     def getIcon(self):
         return self.__icon.getImage()

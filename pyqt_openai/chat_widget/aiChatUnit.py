@@ -5,7 +5,7 @@ from qtpy.QtWidgets import QLabel, QWidget, QVBoxLayout, QHBoxLayout, QSpacerIte
     QAbstractScrollArea
 
 from pyqt_openai import DEFAULT_ICON_SIZE, ICON_FAVORITE_NO, ICON_INFO, ICON_COPY, ICON_FAVORITE_YES, \
-    MESSAGE_MAXIMUM_HEIGHT, MESSAGE_ADDITIONAL_HEIGHT
+    MESSAGE_MAXIMUM_HEIGHT
 from pyqt_openai.chat_widget.messageResultDialog import MessageResultDialog
 from pyqt_openai.chat_widget.messageTextBrowser import MessageTextBrowser
 from pyqt_openai.models import ChatMessageContainer
@@ -74,8 +74,6 @@ class AIChatUnit(QWidget):
 
     def __initVal(self):
         self.__lbl = ''
-        self.__plain_text = ''
-        self.__find_f = False
         self.__result_info = ''
 
     def __initUi(self):
@@ -251,7 +249,7 @@ class AIChatUnit(QWidget):
         self.__lbl.adjustBrowserHeight()
 
     def toPlainText(self):
-        return self.__plain_text
+        return self.__lbl.toPlainText()
 
     def addText(self, text: str):
         unit = self.__mainWidget.layout().itemAt(self.__mainWidget.layout().count()-1).widget()
