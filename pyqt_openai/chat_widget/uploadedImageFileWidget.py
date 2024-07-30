@@ -51,13 +51,12 @@ class UploadedImageFileWidget(QWidget):
 
         self.setLayout(lay)
 
-        self.__toggle()
+        self.__toggle(False)
         self.__imageArea.setWidgetResizable(True)
 
         self.__manualLbl.setVisible(False)
 
-    def __toggle(self):
-        f = self.__imageArea.widget().layout().count() > 0
+    def __toggle(self, f):
         self.__activateDeleteBtn.setEnabled(f)
         self.setVisible(f)
 
@@ -68,10 +67,10 @@ class UploadedImageFileWidget(QWidget):
                 buffer.open(QBuffer.OpenModeFlag.ReadWrite)
                 buffer.write(open(filename, 'rb').read())
                 buffer = buffer.data()
-                self.addImageBuffer(buffer, is_called_from_current_file=True)
-        self.__toggle()
+                self.addImageBuffer(buffer)
+        self.__toggle(True)
 
-    def addImageBuffer(self, image_buffer: QByteArray, is_called_from_current_file=False):
+    def addImageBuffer(self, image_buffer: QByteArray):
         lay = self.__imageArea.widget().layout()
         lbl = QLabel()
         lbl.installEventFilter(self)
@@ -80,8 +79,7 @@ class UploadedImageFileWidget(QWidget):
         pixmap = pixmap.scaled(200, 200)
         lbl.setPixmap(pixmap)
         lay.addWidget(lbl)
-        if not is_called_from_current_file:
-            self.__toggle()
+        self.__toggle(True)
 
     def getImageBuffers(self):
         lay = self.__imageArea.widget().layout()
@@ -119,7 +117,7 @@ class UploadedImageFileWidget(QWidget):
         lay = self.__imageArea.widget().layout()
         for i in range(lay.count()):
             lay.itemAt(i).widget().deleteLater()
-        self.__toggle()
+        self.__toggle(False)
 
     def eventFilter(self, obj, event):
         if isinstance(obj, QLabel):

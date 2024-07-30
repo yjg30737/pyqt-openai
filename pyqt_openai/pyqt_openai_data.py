@@ -58,12 +58,11 @@ def get_chat_model():
 
 def get_image_url_from_local(image_path):
     # # Function to encode the image
-    # def encode_image(image_path):
-    #     with open(image_path, "rb") as image_file:
-    #       return base64.b64encode(image_file.read()).decode('utf-8')
-    #
-    # base64_image = encode_image(image_path)
-    return f'data:image/jpeg;base64,{image_path}'
+    def encode_image(image_path):
+        return base64.b64encode(image_path).decode('utf-8')
+
+    base64_image = encode_image(image_path)
+    return f'data:image/jpeg;base64,{base64_image}'
 
 def get_message_obj(role, content):
     return {"role": role, "content": content}

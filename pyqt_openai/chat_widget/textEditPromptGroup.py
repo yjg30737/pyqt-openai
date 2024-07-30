@@ -146,7 +146,17 @@ class TextEditPromptGroup(QWidget):
             # Save image to a memory buffer
             buffer = QBuffer()
             buffer.open(QBuffer.ReadWrite)
-            image.save(buffer, "PNG")
+
+            # Try saving the image as PNG first
+            if not image.save(buffer, 'PNG'):
+                # If PNG fails, try saving as JPG
+                if not image.save(buffer, 'JPG'):
+                    # Both formats failed
+                    buffer.close()
+                    return
+                else:
+                    image_format = 'JPG'
+
             buffer.seek(0)
             image_data = buffer.data()
             buffer.close()
