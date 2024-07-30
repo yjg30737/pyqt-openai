@@ -4,10 +4,11 @@ from typing import List
 from qtpy.QtCore import Qt, Signal
 from qtpy.QtWidgets import QScrollArea, QVBoxLayout, QWidget, QLabel
 
+from pyqt_openai import MAXIMUM_MESSAGES_IN_PARAMETER
 from pyqt_openai.chat_widget.aiChatUnit import AIChatUnit
 from pyqt_openai.chat_widget.userChatUnit import UserChatUnit
 from pyqt_openai.models import ChatMessageContainer
-from pyqt_openai.pyqt_openai_data import get_message_obj, DB
+from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.util.script import is_valid_regex
 
 
@@ -95,12 +96,13 @@ class ChatBrowser(QScrollArea):
             self.verticalScrollBar().setSliderPosition(self.verticalScrollBar().maximum())
         return super().event(e)
 
-    def getMessages(self):
+    def getMessages(self, limit=MAXIMUM_MESSAGES_IN_PARAMETER):
         messages = DB.selectCertainThreadMessages(self.__cur_id)
         all_text_lst = [{
             'role': message.role,
             'content': message.content
         } for message in messages]
+        all_text_lst = all_text_lst[-limit:]
 
         return all_text_lst
 

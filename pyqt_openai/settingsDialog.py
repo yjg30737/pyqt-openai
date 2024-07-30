@@ -1,7 +1,8 @@
 import os
 import sys
 
-from pyqt_openai import COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE, LANGUAGE_DICT, DB_NAME_REGEX
+from pyqt_openai import COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE, LANGUAGE_DICT, DB_NAME_REGEX, MESSAGE_MAXIMUM_HEIGHT_RANGE, \
+    MAXIMUM_MESSAGES_IN_PARAMETER_RANGE
 from pyqt_openai.widgets.checkBoxListWidget import CheckBoxListWidget
 
 # Get the absolute path of the current script file
@@ -16,8 +17,8 @@ sys.path.insert(0, os.getcwd())  # Add the current directory as well
 
 from qtpy.QtCore import Qt, QRegularExpression
 from qtpy.QtGui import QRegularExpressionValidator
-from qtpy.QtWidgets import QFrame, QDialog, QComboBox, QLineEdit, QCheckBox, QSizePolicy, \
-    QVBoxLayout, QHBoxLayout, QGroupBox, QSplitter, QLabel, QDialogButtonBox, QWidget, QMessageBox
+from qtpy.QtWidgets import QFrame, QDialog, QComboBox, QFormLayout, QLineEdit, QCheckBox, QSizePolicy, \
+    QVBoxLayout, QHBoxLayout, QGroupBox, QSplitter, QLabel, QDialogButtonBox, QWidget, QMessageBox, QSpinBox
 
 from pyqt_openai.models import SettingsParamsContainer, ImagePromptContainer, ChatThreadContainer
 from pyqt_openai.lang.translations import LangClass
@@ -39,6 +40,8 @@ class SettingsDialog(QDialog):
         self.__thread_tool_widget = args.thread_tool_widget
         self.__chat_column_to_show = args.chat_column_to_show
         self.__image_column_to_show = args.image_column_to_show
+        self.__message_maximum_height = args.message_maximum_height
+        self.__maximum_messages_in_parameter = args.maximum_messages_in_parameter
 
     def __initUi(self):
         self.setWindowTitle(LangClass.TRANSLATIONS["Settings"])
@@ -78,8 +81,6 @@ class SettingsDialog(QDialog):
         self.__showToolbarCheckBox.setChecked(self.__show_toolbar)
         self.__showSecondaryToolBarChkBox = QCheckBox(LangClass.TRANSLATIONS['Show Secondary Toolbar'])
         self.__showSecondaryToolBarChkBox.setChecked(self.__show_secondary_toolbar)
-        self.__showThreadToolWidgetChkBox = QCheckBox(LangClass.TRANSLATIONS['Show Find Tool'])
-        self.__showThreadToolWidgetChkBox.setChecked(self.__thread_tool_widget)
 
         # Dialog buttons
         buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
@@ -97,10 +98,29 @@ class SettingsDialog(QDialog):
         lay.addWidget(self.__notifyFinishCheckBox)
         lay.addWidget(self.__showToolbarCheckBox)
         lay.addWidget(self.__showSecondaryToolBarChkBox)
-        lay.addWidget(self.__showThreadToolWidgetChkBox)
 
         generalGrpBox = QGroupBox(LangClass.TRANSLATIONS['General'])
         generalGrpBox.setLayout(lay)
+
+        self.__showThreadToolWidgetChkBox = QCheckBox()
+        self.__showThreadToolWidgetChkBox.setChecked(self.__thread_tool_widget)
+
+        self.__messageMaximumHeightSpinBox = QSpinBox()
+        self.__messageMaximumHeightSpinBox.setRange(*MESSAGE_MAXIMUM_HEIGHT_RANGE)
+        self.__messageMaximumHeightSpinBox.setSingleStep(10)
+        self.__messageMaximumHeightSpinBox.setValue(self.__message_maximum_height)
+
+        self.__maximumMessagesInParameterSpinBox = QSpinBox()
+        self.__maximumMessagesInParameterSpinBox.setRange(*MAXIMUM_MESSAGES_IN_PARAMETER_RANGE)
+        self.__maximumMessagesInParameterSpinBox.setValue(self.__maximum_messages_in_parameter)
+
+        lay = QFormLayout()
+        lay.addRow(LangClass.TRANSLATIONS['Show Find Tool'], self.__showThreadToolWidgetChkBox)
+        lay.addRow(LangClass.TRANSLATIONS['Maximum Height of Message'], self.__messageMaximumHeightSpinBox)
+        lay.addRow(LangClass.TRANSLATIONS['Maximum Messages in Parameter'], self.__maximumMessagesInParameterSpinBox)
+
+        chatBrowserGrpBox = QGroupBox(LangClass.TRANSLATIONS['Chat Browser'])
+        chatBrowserGrpBox.setLayout(lay)
 
         chatColAllCheckBox = QCheckBox(LangClass.TRANSLATIONS['Check All'])
         self.__chatColCheckBoxListWidget = CheckBoxListWidget()
@@ -149,6 +169,7 @@ class SettingsDialog(QDialog):
 
         lay = QVBoxLayout()
         lay.addWidget(generalGrpBox)
+        lay.addWidget(chatBrowserGrpBox)
         lay.addWidget(columnGrpBox)
         lay.addWidget(buttonBox)
 
@@ -171,5 +192,7 @@ class SettingsDialog(QDialog):
             show_secondary_toolbar=self.__showSecondaryToolBarChkBox.isChecked(),
             thread_tool_widget=self.__showThreadToolWidgetChkBox.isChecked(),
             chat_column_to_show=COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE+self.__chatColCheckBoxListWidget.getCheckedItemsText(),
-            image_column_to_show=COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE+self.__imageColCheckBoxListWidget.getCheckedItemsText()
+            image_column_to_show=COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE+self.__imageColCheckBoxListWidget.getCheckedItemsText(),
+            message_maximum_height=self.__messageMaximumHeightSpinBox.value(),
+            maximum_messages_in_parameter=self.__maximumMessagesInParameterSpinBox.value()
         )

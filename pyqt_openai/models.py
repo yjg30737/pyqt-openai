@@ -6,7 +6,7 @@ from typing import List
 from dataclasses import dataclass, fields, field
 
 from pyqt_openai import DB_FILE_NAME, DEFAULT_FONT_SIZE, DEFAULT_FONT_FAMILY, DEFAULT_USER_IMAGE_PATH, \
-    DEFAULT_AI_IMAGE_PATH
+    DEFAULT_AI_IMAGE_PATH, MESSAGE_MAXIMUM_HEIGHT, MAXIMUM_MESSAGES_IN_PARAMETER
 from pyqt_openai.lang.translations import LangClass
 
 
@@ -122,6 +122,8 @@ class SettingsParamsContainer(Container):
     thread_tool_widget: bool = True
     chat_column_to_show: List[str] = field(default_factory=ChatThreadContainer.get_keys)
     image_column_to_show: List[str] = field(default_factory=ImagePromptContainer.get_keys)
+    message_maximum_height: int = MESSAGE_MAXIMUM_HEIGHT
+    maximum_messages_in_parameter: int = MAXIMUM_MESSAGES_IN_PARAMETER
 
 @dataclass
 class CustomizeParamsContainer(Container):
