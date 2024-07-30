@@ -63,6 +63,7 @@ class UserChatUnit(QWidget):
 
     def setText(self, text):
         self.__lbl.setText(text)
+        self.__lbl.adjustBrowserHeight()
 
     def text(self):
         return self.__lbl.toPlainText()

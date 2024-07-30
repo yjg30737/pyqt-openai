@@ -181,7 +181,6 @@ class AIChatUnit(QWidget):
         if isinstance(self.__lbl, MessageTextBrowser):
             self.__lbl.setMarkdown(arg.content)
             self.__lbl.adjustBrowserHeight()
-            self.__lbl.verticalScrollBar().setSliderPosition(self.__lbl.verticalScrollBar().maximum())
 
     def setText(self, text: str):
         self.__lbl = MessageTextBrowser()
@@ -259,8 +258,6 @@ class AIChatUnit(QWidget):
         if isinstance(unit, MessageTextBrowser):
             unit.setText(unit.toPlainText()+text)
             unit.adjustBrowserHeight()
-            # Move scrollbar to the bottom
-            unit.verticalScrollBar().setSliderPosition(unit.verticalScrollBar().maximum())
 
     def getIcon(self):
         return self.__icon.getImage()

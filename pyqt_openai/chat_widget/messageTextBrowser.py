@@ -28,3 +28,4 @@ class MessageTextBrowser(QTextBrowser):
             self.setMinimumHeight(int(document_height))
         else:
             self.setMinimumHeight(int(max_height))
+        self.verticalScrollBar().setSliderPosition(self.verticalScrollBar().maximum())
