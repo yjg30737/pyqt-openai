@@ -36,14 +36,13 @@ classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "Topic :: Software Development :: Libraries",
-    "License :: OSI Approved :: MIT License",  # Just an example, use your actual license
+    "License :: OSI Approved :: MIT License",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
-    "Framework :: PyQt",
     "Topic :: Software Development :: Libraries :: Application Frameworks",
     "Topic :: Software Development :: User Interfaces"
 ]

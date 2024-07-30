@@ -68,3 +68,6 @@ class UserChatUnit(QWidget):
 
     def setIcon(self, filename):
         self.__icon.setImage(filename)
+
+    def getLbl(self):
+        return self.__lbl

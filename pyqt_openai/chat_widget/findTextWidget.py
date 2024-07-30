@@ -121,9 +121,8 @@ class FindTextWidget(QWidget):
         f1 = text.strip() != ''
         self.__cur_idx = 0
         self.__cur_text = text
-        if f1:
-            self.__findInit(text)
-        else:
+        self.__findInit(text)
+        if not f1:
             self.__selections = []
             self.__btnToggled(False)
         self.__setCount()

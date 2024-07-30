@@ -13,7 +13,7 @@ from qtpy.QtWidgets import QHBoxLayout, QWidget, QSizePolicy, QVBoxLayout, QFram
 from pyqt_openai.chat_widget.chatWidget import ChatWidget
 from pyqt_openai.chat_widget.prompt import Prompt
 from pyqt_openai import THREAD_TABLE_NAME, INI_FILE_NAME, JSON_FILE_EXT, ICON_SIDEBAR, ICON_SETTING, ICON_PROMPT, \
-    FILE_NAME_LENGTH, MAXIMUM_MESSAGES_IN_PARAMETER
+    FILE_NAME_LENGTH, MAXIMUM_MESSAGES_IN_PARAMETER, SHORTCUT_FIND
 from pyqt_openai.models import ChatThreadContainer, ChatMessageContainer
 from pyqt_openai.openAiThread import OpenAIThread, LlamaOpenAIThread
 from pyqt_openai.pyqt_openai_data import DB, get_argument, LLAMAINDEX_WRAPPER
@@ -101,6 +101,7 @@ class OpenAIChatBotWidget(QWidget):
         toggleFindToolButton.setCheckable(True)
         toggleFindToolButton.setChecked(True)
         toggleFindToolButton.toggled.connect(self.__chatWidget.toggleMenuWidget)
+        toggleFindToolButton.setShortcut(SHORTCUT_FIND)
 
         lay = QHBoxLayout()
         lay.addWidget(self.__sideBarBtn)

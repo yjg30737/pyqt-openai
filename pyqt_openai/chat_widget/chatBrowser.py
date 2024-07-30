@@ -1,6 +1,7 @@
 import re
 from typing import List
 
+from qtpy.QtGui import QTextCharFormat, QColor, QTextCursor
 from qtpy.QtCore import Qt, Signal
 from qtpy.QtWidgets import QScrollArea, QVBoxLayout, QWidget, QLabel
 
@@ -172,10 +173,43 @@ class ChatBrowser(QScrollArea):
         # 1 is continue 0 is not continue
         return 1
 
+    def clear_formatting(self, label):
+        cursor = label.textCursor()
+        cursor.select(QTextCursor.Document)
+        format = QTextCharFormat()
+        cursor.setCharFormat(format)
+
+    def highlight_text(self, label, pattern, case_sensitive, word_only):
+        self.clear_formatting(label)  # Clear any previous formatting
+
+        cursor = label.textCursor()
+        format = QTextCharFormat()
+        format.setBackground(QColor("yellow"))
+        format.setForeground(QColor("blue"))
+
+        # Ensure we start from the beginning
+        cursor.setPosition(0)
+
+        # Create regex pattern for word-only search if needed
+        if word_only:
+            pattern = r'\b' + re.escape(pattern) + r'\b'
+
+        # Find and highlight all occurrences of the pattern
+        regex_flags = 0 if case_sensitive else re.IGNORECASE
+        regex = re.compile(pattern, regex_flags)
+        text = label.toPlainText()
+
+        for match in regex.finditer(text):
+            start, end = match.span()
+            cursor.setPosition(start)
+            cursor.setPosition(end, QTextCursor.KeepAnchor)
+            cursor.setCharFormat(format)
+
     def setCurrentLabelIncludingTextBySliderPosition(self, text, case_sensitive=False, word_only=False, is_regex=False):
         labels = self.__getEveryLabels()
-        label_info = [{'class':label, 'text':label.text(), 'pos':label.y()} for label in labels]
+        label_info = [{'class':label.getLbl(), 'text':label.toPlainText(), 'pos':label.y()} for label in labels]
         res_lbl = []
+
         for _ in label_info:
             pattern = text
             if is_regex:
@@ -184,13 +218,16 @@ class ChatBrowser(QScrollArea):
                         result = re.search(pattern, _['text'], re.IGNORECASE)
                         if result:
                             res_lbl.append(_)
+                            self.highlight_text(_['class'], pattern, case_sensitive, word_only)
                     else:
                         result = re.search(pattern, _['text'])
                         if result:
                             res_lbl.append(_)
+                            self.highlight_text(_['class'], pattern, case_sensitive, word_only)
                 else:
                     if _['text'].find(text) != -1:
                         res_lbl.append(_)
+                        self.highlight_text(_['class'], pattern, case_sensitive, word_only)
             else:
                 if case_sensitive:
                     if word_only:
@@ -198,20 +235,24 @@ class ChatBrowser(QScrollArea):
                         result = re.search(pattern, _['text'])
                         if result:
                             res_lbl.append(_)
+                            self.highlight_text(_['class'], pattern, case_sensitive, word_only)
                     else:
                         if _['text'].find(text) != -1:
                             res_lbl.append(_)
+                            self.highlight_text(_['class'], pattern, case_sensitive, word_only)
                 else:
                     if word_only:
                         pattern = r'\b' + re.escape(text) + r'\b'
                         result = re.search(pattern, _['text'], re.IGNORECASE)
                         if result:
                             res_lbl.append(_)
+                            self.highlight_text(_['class'], pattern, case_sensitive, word_only)
                     else:
                         pattern = re.escape(text)
                         result = re.search(pattern, _['text'], re.IGNORECASE)
                         if result:
                             res_lbl.append(_)
+                            self.highlight_text(_['class'], pattern, case_sensitive, word_only)
 
         return res_lbl
 
