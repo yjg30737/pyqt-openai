@@ -1,6 +1,6 @@
 import os
 
-from qtpy.QtCore import Signal, Qt
+from qtpy.QtCore import Signal, Qt, QThread
 from qtpy.QtGui import QFontDatabase, QFont
 from qtpy.QtWidgets import QListWidget, QWidget, QVBoxLayout, QLabel, QLineEdit, QListWidgetItem
 from qtpy.QtWidgets import QSizePolicy, \
@@ -9,6 +9,24 @@ from qtpy.QtWidgets import QSizePolicy, \
 from pyqt_openai import DEFAULT_FONT_FAMILY
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.util.script import isUsingPyQt5
+
+
+class FontLoaderThread(QThread):
+    fonts_loaded = Signal(list)
+    afterFinished = Signal(QFont)
+
+    def __init__(self, font: QFont):
+        super().__init__()
+        self.font = font
+
+    def run(self):
+        if isUsingPyQt5():
+            fd = QFontDatabase()
+            fm = fd.families(QFontDatabase.Any)
+        else:
+            fm = QFontDatabase.families(QFontDatabase.Any)
+        self.fonts_loaded.emit(fm)
+        self.afterFinished.emit(self.font)
 
 
 class SizeWidget(QWidget):
@@ -59,12 +77,11 @@ class SizeWidget(QWidget):
             pass
         else:
             font_name = 'Arial'
-        style_name = style_name[0]
         if isUsingPyQt5():
             fd = QFontDatabase()
-            sizes = fd.pointSizes(font_name, style_name)
+            sizes = fd.pointSizes(font_name)
         else:
-            sizes = QFontDatabase.pointSizes(font_name, style_name)
+            sizes = QFontDatabase.pointSizes(font_name)
         sizes = list(map(str, sizes))
         self.__sizeListWidget.addItems(sizes)
 
@@ -140,17 +157,18 @@ class FontItemWidget(QWidget):
         self.setLayout(lay)
 
     def __initFonts(self, font: QFont):
-        self.__initFontsList()
-        self.setCurrentFont(font=font)
+        self.loader_thread = FontLoaderThread(font)
+        self.loader_thread.fonts_loaded.connect(self.__onFontsLoaded)
+        self.loader_thread.start()
+        self.loader_thread.afterFinished.connect(self.setCurrentFont)
 
-    def __initFontsList(self):
-        if isUsingPyQt5():
-            fd = QFontDatabase()
-            fm = fd.families(QFontDatabase.Any)
-        else:
-            fm = QFontDatabase.families(QFontDatabase.Any)
+    def __onFontsLoaded(self, fm):
         self.__font_families.extend(fm)
-        self.__fontListWidget.addItems(fm)
+        # Set each item to each font family
+        for f in fm:
+            item = QListWidgetItem(f)
+            item.setFont(QFont(f))
+            self.__fontListWidget.addItem(item)
 
     def setCurrentFont(self, font: QFont):
         items = self.__fontListWidget.findItems(font.family(), Qt.MatchFlag.MatchFixedString)

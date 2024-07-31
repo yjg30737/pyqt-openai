@@ -16,7 +16,7 @@ sys.path.insert(0, os.getcwd())  # Add the current directory as well
 # os.environ['QT_API'] = 'pyside6'
 
 # for testing pyqt6
-# os.environ['QT_API'] = 'pyqt6'
+os.environ['QT_API'] = 'pyqt6'
 
 from qtpy.QtGui import QGuiApplication, QFont, QIcon, QColor
 from qtpy.QtWidgets import QMainWindow, QToolBar, QHBoxLayout, QDialog, QLineEdit, QPushButton, QWidgetAction, QSpinBox, QLabel, QWidget, QApplication, \
@@ -387,10 +387,11 @@ class MainWindow(QMainWindow):
                     self.__mainWidget.currentWidget().showThreadToolWidget(container.thread_tool_widget)
             # If properties that require a restart are changed
             if container.lang != self.__lang or container.show_as_markdown != prev_show_as_markdown:
-                change_list = [
-                    LangClass.TRANSLATIONS["Language"],
-                    LangClass.TRANSLATIONS["Show as Markdown"],
-                ]
+                change_list = []
+                if container.lang != self.__lang:
+                    change_list.append(LangClass.TRANSLATIONS["Language"])
+                if container.show_as_markdown != prev_show_as_markdown:
+                    change_list.append(LangClass.TRANSLATIONS["Show as Markdown"])
                 result = show_message_box_after_change_to_restart(change_list)
                 if result == QMessageBox.StandardButton.Yes:
                     restart_app(settings=self.__settings_struct)
@@ -470,6 +471,9 @@ class App(QApplication):
         self.__imageDb.open()
 
     def __initGlobal(self):
+        """
+        This function initializes the global variables including the settings file.
+        """
         self.__settings_ini = QSettings(INI_FILE_NAME, QSettings.Format.IniFormat)
         self.show_as_markdown = self.__settings_ini.value('show_as_markdown', True, type=bool)
 
