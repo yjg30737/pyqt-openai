@@ -25,6 +25,9 @@ class TextEditPrompt(QTextEdit):
     def setCommandSuggestionEnabled(self, f):
         self.__commandSuggestionEnabled = f
 
+    def sendMessage(self):
+        self.returnPressed.emit()
+
     def keyPressEvent(self, e):
         # Send key events to the suggestion widget if enabled
         if self.__commandSuggestionEnabled:
@@ -39,6 +42,6 @@ class TextEditPrompt(QTextEdit):
                 if self.__commandSuggestionEnabled:
                     self.sendSuggestionWidget.emit('enter')
                 else:
-                    self.returnPressed.emit()
+                    self.sendMessage()
         else:
             return super().keyPressEvent(e)

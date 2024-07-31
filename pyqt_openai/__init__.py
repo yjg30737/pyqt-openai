@@ -98,6 +98,7 @@ ICON_STACKONTOP = 'ico/stackontop.svg'
 ICON_USER = 'ico/user.png'
 ICON_VERTICAL_THREE_DOTS = 'ico/vertical_three_dots.svg'
 ICON_WORD = 'ico/word.svg'
+ICON_SEND = 'ico/send.svg'
 
 ## CUSTOMIZE
 DEFAULT_ICON_SIZE = (24, 24)
