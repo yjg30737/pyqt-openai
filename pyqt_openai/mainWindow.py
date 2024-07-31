@@ -388,7 +388,8 @@ class MainWindow(QMainWindow):
     def __refreshColumns(self):
         self.__openAiChatBotWidget.setColumns(self.__settingsParamContainer.chat_column_to_show)
         image_column_to_show = self.__settingsParamContainer.image_column_to_show
-        image_column_to_show.remove('data')
+        if image_column_to_show.__contains__('data'):
+            image_column_to_show.remove('data')
         self.__dallEWidget.setColumns(self.__settingsParamContainer.image_column_to_show)
         self.__replicateWidget.setColumns(self.__settingsParamContainer.image_column_to_show)
 

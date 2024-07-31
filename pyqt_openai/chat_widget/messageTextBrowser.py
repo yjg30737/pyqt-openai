@@ -1,3 +1,4 @@
+import json
 from qtpy.QtGui import QPalette, QColor
 from qtpy.QtWidgets import QTextBrowser
 
@@ -22,6 +23,14 @@ class MessageTextBrowser(QTextBrowser):
         self.document().setDocumentMargin(MESSAGE_PADDING)
 
         self.setContentsMargins(0, 0, 0, 0)
+
+    def setJson(self, json_str):
+        try:
+            json_data = json.loads(json_str)
+            pretty_json = json.dumps(json_data, indent=4)
+            self.setPlainText(pretty_json)
+        except json.JSONDecodeError as e:
+            self.setPlainText(f"Error decoding JSON: {e}")
 
     def adjustBrowserHeight(self):
         document_height = self.document().size().height() + MESSAGE_ADDITIONAL_HEIGHT

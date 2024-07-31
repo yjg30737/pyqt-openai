@@ -268,9 +268,11 @@ class Prompt(QWidget):
 
     def __showBeginning(self, f):
         self.__textEditGroup.setVisibleTo(PROMPT_BEGINNING_KEY_NAME, f)
+        self.__textEditGroup.getGroup()[PROMPT_BEGINNING_KEY_NAME].setFocus()
 
     def __showEnding(self, f):
         self.__textEditGroup.setVisibleTo(PROMPT_END_KEY_NAME, f)
+        self.__textEditGroup.getGroup()[PROMPT_END_KEY_NAME].setFocus()
 
     def __supportPromptCommand(self, f):
         self.__commandEnabled = f

@@ -173,14 +173,14 @@ class ChatBrowser(QScrollArea):
         # 1 is continue 0 is not continue
         return 1
 
-    def clear_formatting(self, label):
+    def clearFormatting(self, label):
         cursor = label.textCursor()
         cursor.select(QTextCursor.Document)
         format = QTextCharFormat()
         cursor.setCharFormat(format)
 
-    def highlight_text(self, label, pattern, case_sensitive, word_only):
-        self.clear_formatting(label)  # Clear any previous formatting
+    def highlightText(self, label, pattern, case_sensitive, word_only):
+        self.clearFormatting(label)  # Clear any previous formatting
 
         cursor = label.textCursor()
         format = QTextCharFormat()
@@ -218,16 +218,16 @@ class ChatBrowser(QScrollArea):
                         result = re.search(pattern, _['text'], re.IGNORECASE)
                         if result:
                             res_lbl.append(_)
-                            self.highlight_text(_['class'], pattern, case_sensitive, word_only)
+                            self.highlightText(_['class'], pattern, case_sensitive, word_only)
                     else:
                         result = re.search(pattern, _['text'])
                         if result:
                             res_lbl.append(_)
-                            self.highlight_text(_['class'], pattern, case_sensitive, word_only)
+                            self.highlightText(_['class'], pattern, case_sensitive, word_only)
                 else:
                     if _['text'].find(text) != -1:
                         res_lbl.append(_)
-                        self.highlight_text(_['class'], pattern, case_sensitive, word_only)
+                        self.highlightText(_['class'], pattern, case_sensitive, word_only)
             else:
                 if case_sensitive:
                     if word_only:
@@ -235,24 +235,24 @@ class ChatBrowser(QScrollArea):
                         result = re.search(pattern, _['text'])
                         if result:
                             res_lbl.append(_)
-                            self.highlight_text(_['class'], pattern, case_sensitive, word_only)
+                            self.highlightText(_['class'], pattern, case_sensitive, word_only)
                     else:
                         if _['text'].find(text) != -1:
                             res_lbl.append(_)
-                            self.highlight_text(_['class'], pattern, case_sensitive, word_only)
+                            self.highlightText(_['class'], pattern, case_sensitive, word_only)
                 else:
                     if word_only:
                         pattern = r'\b' + re.escape(text) + r'\b'
                         result = re.search(pattern, _['text'], re.IGNORECASE)
                         if result:
                             res_lbl.append(_)
-                            self.highlight_text(_['class'], pattern, case_sensitive, word_only)
+                            self.highlightText(_['class'], pattern, case_sensitive, word_only)
                     else:
                         pattern = re.escape(text)
                         result = re.search(pattern, _['text'], re.IGNORECASE)
                         if result:
                             res_lbl.append(_)
-                            self.highlight_text(_['class'], pattern, case_sensitive, word_only)
+                            self.highlightText(_['class'], pattern, case_sensitive, word_only)
 
         return res_lbl
 

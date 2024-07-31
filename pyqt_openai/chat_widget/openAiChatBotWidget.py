@@ -278,6 +278,7 @@ class OpenAIChatBotWidget(QWidget):
                     QMessageBox.critical(self, LangClass.TRANSLATIONS["Error"], f'{LangClass.TRANSLATIONS["JSON content is not valid. Please check the JSON content field."]}\n\n{e}')
                     return
 
+            # Get parameters for OpenAI
             openai_param = get_argument(model, system, messages, cur_text, temperature, top_p, frequency_penalty, presence_penalty, stream,
                                       use_max_tokens, max_tokens,
                                       images,
@@ -287,6 +288,7 @@ class OpenAIChatBotWidget(QWidget):
             if self.__chatWidget.isNew():
                 self.__addThread()
 
+            # Additional information of user's input
             additional_info = {
                 'role': 'user',
                 'content': cur_text,
@@ -295,10 +297,13 @@ class OpenAIChatBotWidget(QWidget):
                 'prompt_tokens': '',
                 'completion_tokens': '',
                 'total_tokens': '',
+
+                'is_json_response_available': is_json_response_available,
             }
 
             container_param = {k: v for k, v in {**openai_param, **additional_info}.items() if k in ChatMessageContainer.get_keys()}
-            # Conversation result information after response
+
+            # Create a container for the user's input and output from the chatbot
             container = ChatMessageContainer(**container_param)
 
             # For make chatbot continue to respond

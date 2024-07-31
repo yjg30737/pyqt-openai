@@ -123,10 +123,13 @@ class AIChatUnit(QWidget):
         self.toggleGUI(True)
         self.__showConvResultInfo(arg)
         if isinstance(self.__lbl, MessageTextBrowser):
-            if self.__show_markdown:
-                self.__lbl.setMarkdown(arg.content)
+            if arg.is_json_response_available:
+                self.__lbl.setJson(arg.content)
             else:
-                self.__lbl.setText(arg.content)
+                if self.__show_markdown:
+                    self.__lbl.setMarkdown(arg.content)
+                else:
+                    self.__lbl.setText(arg.content)
             self.__lbl.adjustBrowserHeight()
 
     def setText(self, text: str):

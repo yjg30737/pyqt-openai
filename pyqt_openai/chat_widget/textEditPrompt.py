@@ -16,7 +16,6 @@ class TextEditPrompt(QTextEdit):
         self.__executeEnabled = True
 
     def __initUi(self):
-        self.setStyleSheet('QTextEdit { border: 1px solid #AAA; } ')
         self.setAcceptRichText(False)
 
     def setExecuteEnabled(self, f):
