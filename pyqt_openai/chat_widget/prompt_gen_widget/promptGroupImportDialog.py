@@ -7,7 +7,7 @@ from qtpy.QtWidgets import QPushButton, QDialogButtonBox, QMessageBox, QDialog, 
 
 from pyqt_openai import JSON_FILE_EXT, SENTENCE_PROMPT_GROUP_SAMPLE, FORM_PROMPT_GROUP_SAMPLE
 from pyqt_openai.lang.translations import LangClass
-from pyqt_openai.util.script import validate_prompt_group_json, is_prompt_group_name_valid
+from pyqt_openai.util.script import validate_prompt_group_json, is_prompt_group_name_valid, showJsonSample
 from pyqt_openai.widgets.checkBoxListWidget import CheckBoxListWidget
 from pyqt_openai.widgets.findPathWidget import FindPathWidget
 from pyqt_openai.widgets.jsonEditor import JSONEditor
@@ -35,7 +35,7 @@ class PromptGroupImportDialog(QDialog):
         btn = QPushButton(LangClass.TRANSLATIONS['What is the right form of json?'])
         btn.clicked.connect(self.__showJsonSample)
 
-        self.__jsonSample = JSONEditor()
+        self.__jsonSampleWidget = JSONEditor()
 
         sep = QFrame()
         sep.setFrameShape(QFrame.HLine)
@@ -99,14 +99,8 @@ class PromptGroupImportDialog(QDialog):
         self.__buttonBox.button(QDialogButtonBox.Ok).setEnabled(len(self.__listWidget.getCheckedRows()) > 0)
 
     def __showJsonSample(self):
-        self.__jsonSample.setText(FORM_PROMPT_GROUP_SAMPLE if self.__promptType == 'form' else SENTENCE_PROMPT_GROUP_SAMPLE)
-        self.__jsonSample.setReadOnly(True)
-        self.__jsonSample.setMinimumSize(600, 350)
-        self.__jsonSample.setWindowModality(Qt.WindowModality.ApplicationModal)
-        self.__jsonSample.setWindowTitle(LangClass.TRANSLATIONS['JSON Sample'])
-        self.__jsonSample.setWindowModality(Qt.WindowModality.ApplicationModal)
-        self.__jsonSample.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.WindowCloseButtonHint | Qt.WindowType.WindowStaysOnTopHint)
-        self.__jsonSample.show()
+        json_sample = FORM_PROMPT_GROUP_SAMPLE if self.__promptType == 'form' else SENTENCE_PROMPT_GROUP_SAMPLE
+        showJsonSample(self.__jsonSampleWidget, json_sample)
 
     def __refreshTable(self):
         self.__tableWidget.clearContents()

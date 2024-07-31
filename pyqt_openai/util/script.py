@@ -1,3 +1,10 @@
+"""
+This file includes utility functions that are used in various parts of the application.
+Mostly, these functions are used to perform common tasks such as opening a directory, generating random strings, etc.
+Some of the functions are used to set PyQt settings, restart the application, show message boxes, etc.
+"""
+
+
 import base64
 import json
 import os
@@ -12,7 +19,7 @@ from pathlib import Path
 
 import requests
 from jinja2 import Template
-from qtpy.QtCore import QSettings
+from qtpy.QtCore import QSettings, Qt
 from qtpy.QtWidgets import QMessageBox
 
 from pyqt_openai import INI_FILE_NAME, DEFAULT_FONT_SIZE, DEFAULT_FONT_FAMILY, MAIN_INDEX, \
@@ -315,3 +322,14 @@ def goBuyMeCoffee():
 
 def isUsingPyQt5():
     return os.environ['QT_API'] == 'pyqt5'
+
+def showJsonSample(json_sample_widget, json_sample):
+    json_sample_widget.setText(json_sample)
+    json_sample_widget.setReadOnly(True)
+    json_sample_widget.setMinimumSize(600, 350)
+    json_sample_widget.setWindowModality(Qt.WindowModality.ApplicationModal)
+    json_sample_widget.setWindowTitle(LangClass.TRANSLATIONS['JSON Sample'])
+    json_sample_widget.setWindowModality(Qt.WindowModality.ApplicationModal)
+    json_sample_widget.setWindowFlags(
+        Qt.WindowType.Window | Qt.WindowType.WindowCloseButtonHint | Qt.WindowType.WindowStaysOnTopHint)
+    json_sample_widget.show()

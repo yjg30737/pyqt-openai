@@ -2,20 +2,17 @@ import json
 import re
 
 from qtpy.QtCore import Qt, QTimer
-from qtpy.QtGui import QFont, QTextCursor, QTextCharFormat, QColor
+from qtpy.QtGui import QTextCursor, QTextCharFormat, QColor
 from qtpy.QtWidgets import QTextEdit, QMessageBox
 
-from pyqt_openai import FONT_FAMILY_FOR_SOURCE, INDENT_SIZE, DEFAULT_FONT_SIZE
-from pyqt_openai.util.script import get_font
+from pyqt_openai import INDENT_SIZE
 from pyqt_openai.lang.translations import LangClass
 
 
 class JSONEditor(QTextEdit):
     def __init__(self, parent=None):
         super().__init__(parent)
-        font = get_font()
-        font_size = font.get('font_size', DEFAULT_FONT_SIZE)
-        font = QFont(FONT_FAMILY_FOR_SOURCE, font_size)
+        font = self.font()
 
         self.setFont(font)
         self.setPlaceholderText(LangClass.TRANSLATIONS["Enter JSON data here..."])
