@@ -2,7 +2,7 @@ from qtpy.QtCore import Qt, Signal, QSettings
 from qtpy.QtWidgets import QWidget, QDoubleSpinBox, QSpinBox, QFormLayout, QFrame, QSizePolicy, QComboBox, QTextEdit, \
     QLabel, QVBoxLayout, QCheckBox, QPushButton
 
-from pyqt_openai import INI_FILE_NAME
+from pyqt_openai import INI_FILE_NAME, SHORTCUT_JSON_MODE
 from pyqt_openai.pyqt_openai_data import get_chat_model, LLAMAINDEX_WRAPPER
 from pyqt_openai.lang.translations import LangClass
 
@@ -117,6 +117,7 @@ class ChatPage(QWidget):
         jsonChkBox.toggled.connect(self.__jsonObjectChecked)
 
         jsonChkBox.setText(LangClass.TRANSLATIONS['Enable JSON mode'])
+        jsonChkBox.setShortcut(SHORTCUT_JSON_MODE)
         jsonChkBox.setToolTip(LangClass.TRANSLATIONS['When enabled, you can send a JSON object to the API and the response will be in JSON format. Otherwise, it will be in plain text.'])
 
         llamaChkBox = QCheckBox()

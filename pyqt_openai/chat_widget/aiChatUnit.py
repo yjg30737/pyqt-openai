@@ -1,7 +1,7 @@
 import pyperclip
 from qtpy.QtCore import Qt
 from qtpy.QtGui import QPalette
-from qtpy.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QSpacerItem, QSizePolicy
+from qtpy.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QSpacerItem, QSizePolicy
 
 from pyqt_openai import DEFAULT_ICON_SIZE, ICON_FAVORITE_NO, ICON_INFO, ICON_COPY, ICON_FAVORITE_YES
 from pyqt_openai.chat_widget.messageResultDialog import MessageResultDialog
@@ -21,6 +21,8 @@ class AIChatUnit(QWidget):
     def __initVal(self):
         self.__lbl = ''
         self.__result_info = ''
+        app = QApplication.instance()
+        self.__show_markdown = app.show_as_markdown
 
     def __initUi(self):
         menuWidget = QWidget()
@@ -121,12 +123,18 @@ class AIChatUnit(QWidget):
         self.toggleGUI(True)
         self.__showConvResultInfo(arg)
         if isinstance(self.__lbl, MessageTextBrowser):
-            self.__lbl.setMarkdown(arg.content)
+            if self.__show_markdown:
+                self.__lbl.setMarkdown(arg.content)
+            else:
+                self.__lbl.setText(arg.content)
             self.__lbl.adjustBrowserHeight()
 
     def setText(self, text: str):
         self.__lbl = MessageTextBrowser()
-        self.__lbl.setMarkdown(text)
+        if self.__show_markdown:
+            self.__lbl.setMarkdown(text)
+        else:
+            self.__lbl.setText(text)
 
         self.__lbl.setAlignment(Qt.AlignmentFlag.AlignLeft)
         self.__lbl.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)

@@ -17,6 +17,7 @@ from qtpy.QtWidgets import QMessageBox
 
 from pyqt_openai import INI_FILE_NAME, DEFAULT_FONT_SIZE, DEFAULT_FONT_FAMILY, MAIN_INDEX, \
     PROMPT_NAME_REGEX, PAYPAL_URL, BUYMEACOFFEE_URL
+from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ImagePromptContainer
 from pyqt_openai.pyqt_openai_data import DB
 
@@ -140,7 +141,13 @@ def restart_app(settings=None):
     # Call os.execv() to execute the new process
     os.execv(sys.executable, args)
 
-def show_message_box(title, text):
+def show_message_box_after_change_to_restart(change_list):
+    title = LangClass.TRANSLATIONS['Application Restart Required']
+    text = LangClass.TRANSLATIONS[
+        'The program needs to be restarted because of following changes']
+    text += '\n\n' + '\n'.join(change_list) + '\n\n'
+    text += LangClass.TRANSLATIONS['Would you like to restart it?']
+
     msg_box = QMessageBox()
     msg_box.setWindowTitle(title)
     msg_box.setText(text)
@@ -305,3 +312,6 @@ def goPayPal():
 
 def goBuyMeCoffee():
     webbrowser.open(BUYMEACOFFEE_URL)
+
+def isUsingPyQt5():
+    return os.environ['QT_API'] == 'pyqt5'

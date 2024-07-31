@@ -16,7 +16,7 @@ sys.path.insert(0, os.getcwd())  # Add the current directory as well
 # os.environ['QT_API'] = 'pyside6'
 
 # for testing pyqt6
-os.environ['QT_API'] = 'pyqt6'
+# os.environ['QT_API'] = 'pyqt6'
 
 from qtpy.QtGui import QGuiApplication, QFont, QIcon, QColor
 from qtpy.QtWidgets import QMainWindow, QToolBar, QHBoxLayout, QDialog, QLineEdit, QPushButton, QWidgetAction, QSpinBox, QLabel, QWidget, QApplication, \
@@ -34,7 +34,7 @@ from pyqt_openai.dalle_widget.dallEWidget import DallEWidget
 from pyqt_openai.chat_widget.openAiChatBotWidget import OpenAIChatBotWidget
 from pyqt_openai.replicate_widget.replicateWidget import ReplicateWidget
 from pyqt_openai.settingsDialog import SettingsDialog
-from pyqt_openai.util.script import get_font, restart_app, show_message_box, goPayPal, goBuyMeCoffee
+from pyqt_openai.util.script import get_font, restart_app, show_message_box_after_change_to_restart, goPayPal, goBuyMeCoffee, isUsingPyQt5
 from pyqt_openai.doNotAskAgainDialog import DoNotAskAgainDialog
 from pyqt_openai.sqlite import get_db_filename
 
@@ -44,7 +44,7 @@ from pyqt_openai import INI_FILE_NAME, SHORTCUT_FULL_SCREEN, \
 
 # HighDPI support
 # Qt version should be above 5.14
-if os.environ['QT_API'] == 'pyqt5':
+if isUsingPyQt5():
     QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
     QCoreApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
     QGuiApplication.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
@@ -200,14 +200,6 @@ class MainWindow(QMainWindow):
             self.showFullScreen()
         else:
             self.showNormal()
-
-    def __langChanged(self, lang):
-        title = LangClass.TRANSLATIONS['Language Change']
-        text = LangClass.TRANSLATIONS['When changing the language, the program needs to be restarted. Would you like to restart it?']
-        result = show_message_box(title, text)
-        if result == QMessageBox.StandardButton.Yes:
-            self.__settings_struct.setValue('lang', lang)
-            restart_app(settings=self.__settings_struct)
 
     def __setMenuBar(self):
         menubar = self.menuBar()
@@ -373,6 +365,7 @@ class MainWindow(QMainWindow):
             prev_show_toolbar = self.__settings_struct.value('show_toolbar', type=bool)
             prev_show_secondary_toolbar = self.__settings_struct.value('show_secondary_toolbar', type=bool)
             prev_thread_tool_widget = self.__settings_struct.value('thread_tool_widget', type=bool)
+            prev_show_as_markdown = self.__settings_struct.value('show_as_markdown', type=bool)
 
             for k, v in container.get_items():
                 self.__settings_struct.setValue(k, v)
@@ -392,10 +385,15 @@ class MainWindow(QMainWindow):
             if container.thread_tool_widget != prev_thread_tool_widget:
                 if isinstance(self.__mainWidget.currentWidget(), OpenAIChatBotWidget):
                     self.__mainWidget.currentWidget().showThreadToolWidget(container.thread_tool_widget)
-            # If language is changed
-            if container.lang != self.__lang:
-                self.__lang = LangClass.lang_changed(container.lang)
-                self.__langChanged(container.lang)
+            # If properties that require a restart are changed
+            if container.lang != self.__lang or container.show_as_markdown != prev_show_as_markdown:
+                change_list = [
+                    LangClass.TRANSLATIONS["Language"],
+                    LangClass.TRANSLATIONS["Show as Markdown"],
+                ]
+                result = show_message_box_after_change_to_restart(change_list)
+                if result == QMessageBox.StandardButton.Yes:
+                    restart_app(settings=self.__settings_struct)
 
         elif isinstance(container, CustomizeParamsContainer):
             prev_font_family = self.__settings_struct.value('font_family')
@@ -405,10 +403,10 @@ class MainWindow(QMainWindow):
                 self.__settings_struct.setValue(k, v)
 
             if container.font_family != prev_font_family or container.font_size != prev_font_size:
-                title = LangClass.TRANSLATIONS['Font Change']
-                text = LangClass.TRANSLATIONS['To apply the changed font, you need to restart the program. Would you like to restart it?']
-
-                result = show_message_box(title, text)
+                change_list = [
+                    LangClass.TRANSLATIONS["Font Change"],
+                ]
+                result = show_message_box_after_change_to_restart(change_list)
                 if result == QMessageBox.StandardButton.Yes:
                     restart_app(settings=self.__settings_struct)
 
@@ -458,10 +456,10 @@ class MainWindow(QMainWindow):
 
 # Application
 class App(QApplication):
-
     def __init__(self, *args):
         super().__init__(*args)
         self.setQuitOnLastWindowClosed(False)
+        self.__initGlobal()
         self.__initQSqlDb()
         self.__initFont()
 
@@ -470,6 +468,10 @@ class App(QApplication):
         self.__imageDb = QSqlDatabase.addDatabase('QSQLITE')  # Replace with your database type
         self.__imageDb.setDatabaseName(get_db_filename())  # Replace with your database name
         self.__imageDb.open()
+
+    def __initGlobal(self):
+        self.__settings_ini = QSettings(INI_FILE_NAME, QSettings.Format.IniFormat)
+        self.show_as_markdown = self.__settings_ini.value('show_as_markdown', True, type=bool)
 
     def __initFont(self):
         font_dict = get_font()
