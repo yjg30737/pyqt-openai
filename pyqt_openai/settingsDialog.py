@@ -1,7 +1,7 @@
 import os
 import sys
 
-from pyqt_openai import COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE, LANGUAGE_DICT, DB_NAME_REGEX, MESSAGE_MAXIMUM_HEIGHT_RANGE, \
+from pyqt_openai import COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_CHAT, COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_IMAGE, LANGUAGE_DICT, DB_NAME_REGEX, \
     MAXIMUM_MESSAGES_IN_PARAMETER_RANGE
 from pyqt_openai.widgets.checkBoxListWidget import CheckBoxListWidget
 
@@ -123,7 +123,7 @@ class SettingsDialog(QDialog):
 
         chatColAllCheckBox = QCheckBox(LangClass.TRANSLATIONS['Check All'])
         self.__chatColCheckBoxListWidget = CheckBoxListWidget()
-        for k in ChatThreadContainer.get_keys(excludes=COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE):
+        for k in ChatThreadContainer.get_keys(excludes=COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_CHAT):
             self.__chatColCheckBoxListWidget.addItem(k, checked=k in self.__chat_column_to_show)
 
         chatColAllCheckBox.stateChanged.connect(self.__chatColCheckBoxListWidget.toggleState)
@@ -138,7 +138,7 @@ class SettingsDialog(QDialog):
 
         imageColAllCheckBox = QCheckBox(LangClass.TRANSLATIONS['Check all'])
         self.__imageColCheckBoxListWidget = CheckBoxListWidget()
-        for k in ImagePromptContainer.get_keys(excludes=COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE):
+        for k in ImagePromptContainer.get_keys(excludes=COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_IMAGE):
             self.__imageColCheckBoxListWidget.addItem(k, checked=k in self.__image_column_to_show)
 
         imageColAllCheckBox.stateChanged.connect(self.__imageColCheckBoxListWidget.toggleState)
@@ -190,8 +190,8 @@ class SettingsDialog(QDialog):
             show_toolbar=self.__showToolbarCheckBox.isChecked(),
             show_secondary_toolbar=self.__showSecondaryToolBarChkBox.isChecked(),
             thread_tool_widget=self.__showThreadToolWidgetChkBox.isChecked(),
-            chat_column_to_show=COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE+self.__chatColCheckBoxListWidget.getCheckedItemsText(),
-            image_column_to_show=COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE+self.__imageColCheckBoxListWidget.getCheckedItemsText(),
+            chat_column_to_show=COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_CHAT+self.__chatColCheckBoxListWidget.getCheckedItemsText(),
+            image_column_to_show=COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_IMAGE+self.__imageColCheckBoxListWidget.getCheckedItemsText(),
             maximum_messages_in_parameter=self.__maximumMessagesInParameterSpinBox.value(),
             show_as_markdown=self.__showAsMarkdownCheckBox.isChecked()
         )

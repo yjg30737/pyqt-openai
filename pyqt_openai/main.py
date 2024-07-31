@@ -413,8 +413,10 @@ class MainWindow(QMainWindow):
 
     def __refreshColumns(self):
         self.__openAiChatBotWidget.setColumns(self.__settingsParamContainer.chat_column_to_show)
-        self.__dallEWidget.setColumns(self.__settingsParamContainer.image_column_to_show)
-        self.__replicateWidget.setColumns(self.__settingsParamContainer.image_column_to_show)
+        image_column_to_show = self.__settingsParamContainer.image_column_to_show
+        image_column_to_show.remove('data')
+        self.__dallEWidget.setColumns(image_column_to_show)
+        self.__replicateWidget.setColumns(image_column_to_show)
 
     def __showSettingsDialog(self):
         dialog = SettingsDialog(self.__settingsParamContainer)

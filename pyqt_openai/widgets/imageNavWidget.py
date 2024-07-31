@@ -183,5 +183,8 @@ class ImageNavWidget(QWidget):
         self.__columns = columns
         self.__model.clear()
         self.__model.setTable(self.__table_nm)
+        # Remove DATA for GUI performance
+        if self.__columns.__contains__('data'):
+            self.__columns.remove('data')
         self.__model.setQuery(QSqlQuery(f"SELECT {','.join(self.__columns)} FROM {self.__table_nm}"))
         self.__model.select()
