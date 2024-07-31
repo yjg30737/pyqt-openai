@@ -85,7 +85,7 @@ class AIChatUnit(QWidget):
             self.__result_info.favorite_set_date = current_date
 
     def __showInfo(self):
-        dialog = MessageResultDialog(self.__result_info)
+        dialog = MessageResultDialog(self.__result_info, parent=self)
         dialog.exec()
 
     def text(self):

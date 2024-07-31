@@ -26,7 +26,7 @@ from pyqt_openai.lang.translations import LangClass
 
 class SettingsDialog(QDialog):
     def __init__(self, args: SettingsParamsContainer, parent=None):
-        super(SettingsDialog, self).__init__(parent)
+        super().__init__(parent)
         self.__initVal(args)
         self.__initUi()
 
@@ -45,7 +45,7 @@ class SettingsDialog(QDialog):
 
     def __initUi(self):
         self.setWindowTitle(LangClass.TRANSLATIONS["Settings"])
-        self.setWindowFlags(Qt.WindowType.WindowCloseButtonHint)
+        self.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.WindowCloseButtonHint)
 
         # Language setting
         self.__langCmbBox = QComboBox()

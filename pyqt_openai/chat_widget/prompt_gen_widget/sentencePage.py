@@ -113,7 +113,7 @@ class SentenceGroupList(QWidget):
             self.__delBtn.setEnabled(False)
 
     def __import(self):
-        dialog = PromptGroupImportDialog()
+        dialog = PromptGroupImportDialog(parent=self)
         reply = dialog.exec()
         if reply == QDialog.DialogCode.Accepted:
             # Get the data
@@ -134,7 +134,7 @@ class SentenceGroupList(QWidget):
                 filename = file_data[0]
                 # Get the data
                 data = get_prompt_data('sentence')
-                dialog = PromptGroupExportDialog(data)
+                dialog = PromptGroupExportDialog(data, self)
                 reply = dialog.exec()
                 if reply == QDialog.DialogCode.Accepted:
                     data = dialog.getSelected()
@@ -265,7 +265,7 @@ class PromptTable(QWidget):
         DB.updatePromptEntry(id, name, prompt)
         
     def __add(self):
-        dialog = PromptEntryDirectInputDialog(self.__group_id)
+        dialog = PromptEntryDirectInputDialog(self.__group_id, self)
         reply = dialog.exec()
         if reply == QDialog.DialogCode.Accepted:
             self.__table.itemChanged.disconnect(self.__saveChangedPrompt)

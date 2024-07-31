@@ -26,8 +26,8 @@ from pyqt_openai.widgets.notifier import NotifierWidget
 
 
 class OpenAIChatBotWidget(QWidget):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None):
+        super().__init__(parent)
         self.__initVal()
         self.__initUi()
 
@@ -250,13 +250,20 @@ class OpenAIChatBotWidget(QWidget):
 
             json_content = self.__prompt.getJSONContent()
 
-            # Check llamaindex is available
-            is_llama_available = LLAMAINDEX_WRAPPER.get_directory() and use_llama_index
-            if is_llama_available:
-                if LLAMAINDEX_WRAPPER.is_query_engine_set():
-                    pass
+            is_llama_available = False
+            if use_llama_index:
+                # Check llamaindex is available
+                is_llama_available = LLAMAINDEX_WRAPPER.get_directory() != ''
+                if is_llama_available:
+                    if LLAMAINDEX_WRAPPER.is_query_engine_set():
+                        pass
+                    else:
+                        LLAMAINDEX_WRAPPER.set_query_engine(streaming=stream, similarity_top_k=3)
                 else:
-                    LLAMAINDEX_WRAPPER.set_query_engine(streaming=stream, similarity_top_k=3)
+                    # TODO LANGUAGE
+                    QMessageBox.warning(self, LangClass.TRANSLATIONS["Warning"], LangClass.TRANSLATIONS['LLAMA index is not available. '
+                                                                                                        'Please check the directory path or disable the llama index.'])
+                    return
 
             use_max_tokens = self.__settings_ini.value('use_max_tokens', type=bool)
 

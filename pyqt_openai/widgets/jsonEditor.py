@@ -11,8 +11,8 @@ from pyqt_openai.lang.translations import LangClass
 
 
 class JSONEditor(QTextEdit):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None):
+        super().__init__(parent)
         font = get_font()
         font_size = font.get('font_size', DEFAULT_FONT_SIZE)
         font = QFont(FONT_FAMILY_FOR_SOURCE, font_size)

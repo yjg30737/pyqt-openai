@@ -6,8 +6,8 @@ from pyqt_openai.models import ChatMessageContainer
 
 
 class MessageResultDialog(QDialog):
-    def __init__(self, result_info: ChatMessageContainer):
-        super(MessageResultDialog, self).__init__()
+    def __init__(self, result_info: ChatMessageContainer, parent=None):
+        super().__init__(parent)
         self.__initVal(result_info)
         self.__initUi()
 

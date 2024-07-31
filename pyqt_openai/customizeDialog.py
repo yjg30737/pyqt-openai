@@ -13,8 +13,8 @@ from pyqt_openai.widgets.normalImageView import NormalImageView
 
 
 class CustomizeDialog(QDialog):
-    def __init__(self, args: CustomizeParamsContainer):
-        super().__init__()
+    def __init__(self, args: CustomizeParamsContainer, parent=None):
+        super().__init__(parent)
         self.__initVal(args)
         self.__initUi()
 

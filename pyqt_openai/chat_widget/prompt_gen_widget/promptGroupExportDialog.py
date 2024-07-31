@@ -10,8 +10,8 @@ from pyqt_openai.widgets.jsonEditor import JSONEditor
 
 
 class PromptGroupExportDialog(QDialog):
-    def __init__(self, data, prompt_type='form'):
-        super().__init__()
+    def __init__(self, data, prompt_type='form', parent=None):
+        super().__init__(parent)
         self.__initVal(data, prompt_type)
         self.__initUi()
 
@@ -63,6 +63,9 @@ class PromptGroupExportDialog(QDialog):
         self.__jsonSample.setMinimumSize(600, 350)
         self.__jsonSample.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.__jsonSample.setWindowTitle(LangClass.TRANSLATIONS['JSON Sample'])
+        self.__jsonSample.setWindowModality(Qt.WindowModality.ApplicationModal)
+        self.__jsonSample.setWindowFlags(
+            Qt.WindowType.Window | Qt.WindowType.WindowCloseButtonHint | Qt.WindowType.WindowStaysOnTopHint)
         self.__jsonSample.show()
 
     def getSelected(self):

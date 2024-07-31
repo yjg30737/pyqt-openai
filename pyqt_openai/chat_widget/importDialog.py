@@ -5,8 +5,8 @@ from pyqt_openai.lang.translations import LangClass
 
 
 class ImportDialog(QDialog):
-    def __init__(self):
-        super(ImportDialog, self).__init__()
+    def __init__(self, parent=None):
+        super().__init__(parent)
         self.__initVal()
         self.__initUi()
 

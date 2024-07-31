@@ -12,7 +12,7 @@ from pyqt_openai.widgets.checkBoxTableWidget import CheckBoxTableWidget
 
 class ExportDialog(QDialog):
     def __init__(self, columns, data, sort_by=THREAD_ORDERBY, parent=None):
-        super(ExportDialog, self).__init__(parent)
+        super().__init__(parent)
         self.__initVal(columns, data, sort_by)
         self.__initUi()
 

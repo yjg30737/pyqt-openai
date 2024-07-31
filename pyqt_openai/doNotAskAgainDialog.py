@@ -10,8 +10,8 @@ class DoNotAskAgainDialog(QDialog):
 
     def __init__(self, do_not_ask_again: bool = False,
                  do_not_ask_again_message: str = LangClass.TRANSLATIONS["Would you like to exit the application? If you won't, it will be running in the background."],
-                do_not_ask_again_checkbox_message: str = LangClass.TRANSLATIONS['Do not ask again']):
-        super().__init__()
+                do_not_ask_again_checkbox_message: str = LangClass.TRANSLATIONS['Do not ask again'], parent=None):
+        super().__init__(parent)
         self.__initVal(do_not_ask_again, do_not_ask_again_message, do_not_ask_again_checkbox_message)
         self.__initUi()
 

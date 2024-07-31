@@ -17,8 +17,8 @@ from pyqt_openai.widgets.thumbnailView import ThumbnailView
 
 class DallEWidget(QWidget):
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None):
+        super().__init__(parent)
         self.__initVal()
         self.__initUi()
 

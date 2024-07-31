@@ -102,7 +102,7 @@ class FormGroupList(QWidget):
         self.deleted.emit(i)
 
     def __import(self):
-        dialog = PromptGroupImportDialog()
+        dialog = PromptGroupImportDialog(parent=self)
         reply = dialog.exec()
         if reply == QDialog.DialogCode.Accepted:
             # Get the data
@@ -123,7 +123,7 @@ class FormGroupList(QWidget):
                 filename = file_data[0]
                 # Get the data
                 data = get_prompt_data(prompt_type='form')
-                dialog = PromptGroupExportDialog(data)
+                dialog = PromptGroupExportDialog(data, self)
                 reply = dialog.exec()
                 if reply == QDialog.DialogCode.Accepted:
                     data = dialog.getSelected()

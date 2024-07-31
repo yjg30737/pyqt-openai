@@ -12,8 +12,8 @@ from pyqt_openai.widgets.findPathWidget import FindPathWidget
 
 
 class ChatImportDialog(QDialog):
-    def __init__(self, import_type='general'):
-        super(ChatImportDialog, self).__init__()
+    def __init__(self, import_type='general', parent=None):
+        super().__init__(parent)
         self.__initVal(import_type)
         self.__initUi()
 

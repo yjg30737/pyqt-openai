@@ -200,11 +200,11 @@ class ChatNavWidget(QWidget):
         self.__model.select()
 
     def __import(self):
-        dialog = ImportDialog()
+        dialog = ImportDialog(parent=self)
         reply = dialog.exec()
         if reply == QDialog.Accepted:
             import_type = dialog.getImportType()
-            chatImportDialog = ChatImportDialog(import_type=import_type)
+            chatImportDialog = ChatImportDialog(import_type=import_type, parent=self)
             reply = chatImportDialog.exec()
             if reply == QDialog.Accepted:
                 data = chatImportDialog.getData()
@@ -215,7 +215,7 @@ class ChatNavWidget(QWidget):
         data = DB.selectAllThread()
         sort_by = THREAD_ORDERBY
         if len(data) > 0:
-            dialog = ExportDialog(columns, data, sort_by=sort_by)
+            dialog = ExportDialog(columns, data, sort_by=sort_by, parent=self)
             reply = dialog.exec()
             if reply == QDialog.Accepted:
                 self.onExport.emit(dialog.getSelectedIds())
