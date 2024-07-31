@@ -1,8 +1,8 @@
-import functools
 import json
 import sqlite3
 from datetime import datetime
 from typing import List
+
 from qtpy.QtCore import QSettings
 
 from pyqt_openai import THREAD_TABLE_NAME, THREAD_TRIGGER_NAME, \
@@ -345,7 +345,11 @@ class SqliteDatabase:
                     f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{THREAD_TABLE_NAME}'").fetchone()[
                                             0] == 1
             if table_name_new_exists:
-                pass
+                # Will remove after v1.1.0
+                # Add is_json_response_available column which is added in v0.9.0
+                if self.__c.execute(
+                        f"SELECT count(*) FROM pragma_table_info('{MESSAGE_TABLE_NAME}') WHERE name='is_json_response_available'").fetchone()[0] == 0:
+                    self.__c.execute(f'ALTER TABLE {MESSAGE_TABLE_NAME} ADD COLUMN is_json_response_available INTEGER DEFAULT 0')
             else:
                 # If user uses app for the first time, create a table
                 # Create a table with update_dt and insert_dt columns

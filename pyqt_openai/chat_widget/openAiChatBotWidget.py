@@ -236,7 +236,7 @@ class OpenAIChatBotWidget(QWidget):
             temperature = self.__settings_ini.value('temperature', type=float)
             max_tokens = self.__settings_ini.value('max_tokens', type=int)
             top_p = self.__settings_ini.value('top_p', type=float)
-            is_json_response_available = self.__settings_ini.value('json_object', type=bool)
+            is_json_response_available = 1 if self.__settings_ini.value('json_object', type=bool) else 0
             frequency_penalty = self.__settings_ini.value('frequency_penalty', type=float)
             presence_penalty = self.__settings_ini.value('presence_penalty', type=float)
             use_llama_index = self.__settings_ini.value('use_llama_index', type=bool)
@@ -302,6 +302,7 @@ class OpenAIChatBotWidget(QWidget):
             container = ChatMessageContainer(**container_param)
 
             # For make chatbot continue to respond
+            # This is like easter egg, because chatbot won't respond this long unless you set the MAXIMUM_MESSAGES_IN_PARAMETER to a incredibly high number
             if continue_f:
                 query_text = LangClass.TRANSLATIONS['Continue to respond.']
             else:

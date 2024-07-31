@@ -73,7 +73,7 @@ def get_message_obj(role, content):
 def get_argument(model, system, messages, cur_text, temperature, top_p, frequency_penalty, presence_penalty, stream,
                      use_max_tokens, max_tokens,
                      images,
-                     is_llama_available=False, is_json_response_available=False,
+                     is_llama_available=False, is_json_response_available=0,
                      json_content=None
                  ):
     try:
