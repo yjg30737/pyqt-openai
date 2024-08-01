@@ -6,6 +6,7 @@ from pyqt_openai import PROMPT_BEGINNING_KEY_NAME, PROMPT_MAIN_KEY_NAME, PROMPT_
     PROMPT_JSON_KEY_NAME
 from pyqt_openai.chat_widget.textEditPrompt import TextEditPrompt
 from pyqt_openai.lang.translations import LangClass
+from pyqt_openai.util.script import moveCursorToOtherPrompt
 from pyqt_openai.widgets.jsonEditor import JSONEditor
 
 
@@ -41,8 +42,12 @@ class TextEditPromptGroup(QWidget):
 
         lay = QVBoxLayout()
         for w in self.__textGroup.values():
+            # Connect every group text edit widget to the signal
             w.textChanged.connect(self.onUpdateSuggestion)
             w.textChanged.connect(self.textChanged)
+            w.moveCursorToOtherPrompt.connect(moveCursorToOtherPrompt)
+
+            # Connect TextEditPrompt signal
             if isinstance(w, TextEditPrompt):
                 w.sendSuggestionWidget.connect(self.onSendKeySignalToSuggestion)
             lay.addWidget(w)
@@ -88,14 +93,14 @@ class TextEditPromptGroup(QWidget):
         """
         Adjust overall height of text edit group based on their contents and return adjusted height
         """
-        groupHeight = 0
+        group_height = 0
         for w in self.__textGroup.values():
             document = w.document()
             height = document.size().height()
-            overallHeight = int(height+document.documentMargin())
-            w.setMaximumHeight(overallHeight)
-            groupHeight += overallHeight
-        return groupHeight
+            overall_height = int(height+document.documentMargin())
+            w.setMaximumHeight(overall_height)
+            group_height += overall_height
+        return group_height
 
     def setVisibleTo(self, key, f):
         if key in self.__textGroup:
@@ -165,18 +170,3 @@ class TextEditPromptGroup(QWidget):
             self.onPasteFile.emit(image_data)
         else:
             self.__textEdit.paste()
-#
-# chat_widget\openAiChatBotWidget.py:32: RuntimeWarning: Invalid return value in function 'QWidget.eventFilter', expected bool, got NoneType.
-#   self.__initUi()
-# main.py:490: RuntimeWarning: Invalid return value in function 'QWidget.eventFilter', expected bool, got NoneType.
-#   main()
-# chat_widget\uploadedImageFileWidget.py:43: RuntimeWarning: Invalid return value in function 'QWidget.eventFilter', expected bool, got NoneType.
-#   self.__toggle()
-# main.py:486: RuntimeWarning: Invalid return value in function 'QWidget.eventFilter', expected bool, got NoneType.
-#   sys.exit(app.exec())
-# chat_widget\openAiChatBotWidget.py:344: RuntimeWarning: Invalid return value in function 'QWidget.eventFilter', expected bool, got NoneType.
-#   self.__prompt.activateDuringGeneratingWidget(not f)
-# chat_widget\textEditPromptGroup.py:135: RuntimeWarning: Invalid return value in function 'QWidget.eventFilter', expected bool, got NoneType.
-#   self.handlePaste()
-# chat_widget\prompt.py:246: RuntimeWarning: Invalid return value in function 'QWidget.eventFilter', expected bool, got NoneType.
-#   overallHeight = self.__textEditGroup.adjustHeight()

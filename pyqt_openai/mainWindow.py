@@ -426,9 +426,9 @@ class MainWindow(QMainWindow):
                 elif reply == QDialog.DialogCode.Rejected:
                     self.close()
 
-    def closeEvent(self, e):
+    def closeEvent(self, event):
         f = self.__beforeClose()
         if f:
-            e.ignore()
+            event.ignore()
         else:
-            return super().closeEvent(e)
+            return super().closeEvent(event)

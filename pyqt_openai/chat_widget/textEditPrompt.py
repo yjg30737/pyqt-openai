@@ -5,6 +5,7 @@ from qtpy.QtWidgets import QTextEdit
 class TextEditPrompt(QTextEdit):
     returnPressed = Signal()
     sendSuggestionWidget = Signal(str)
+    moveCursorToOtherPrompt = Signal(str)
 
     def __init__(self):
         super().__init__()
@@ -27,20 +28,37 @@ class TextEditPrompt(QTextEdit):
     def sendMessage(self):
         self.returnPressed.emit()
 
-    def keyPressEvent(self, e):
+    def keyPressEvent(self, event):
         # Send key events to the suggestion widget if enabled
         if self.__commandSuggestionEnabled:
-            if e.key() == Qt.Key.Key_Up:
+            if event.key() == Qt.Key.Key_Up:
                 self.sendSuggestionWidget.emit('up')
-            elif e.key() == Qt.Key.Key_Down:
+            elif event.key() == Qt.Key.Key_Down:
                 self.sendSuggestionWidget.emit('down')
-        if (e.key() == Qt.Key.Key_Return or e.key() == Qt.Key.Key_Enter) and self.__executeEnabled:
-            if e.modifiers() == Qt.KeyboardModifier.ShiftModifier:
-                return super().keyPressEvent(e)
+        else:
+            # If up and down keys are pressed and cursor is at the beginning or end of the text
+            if event.key() == Qt.Key.Key_Up or event.key() == Qt.Key.Key_Down:
+                if self.textCursor().atStart() or self.textCursor().atEnd():
+                    key = 'up' if event.key() == Qt.Key.Key_Up else 'down'
+                    self.moveCursorToOtherPrompt.emit(key)
+                else:
+                    return super().keyPressEvent(event)
+
+        if (event.key() == Qt.Key.Key_Return or event.key() == Qt.Key.Key_Enter) and self.__executeEnabled:
+            if event.modifiers() == Qt.KeyboardModifier.ShiftModifier:
+                return super().keyPressEvent(event)
             else:
                 if self.__commandSuggestionEnabled:
                     self.sendSuggestionWidget.emit('enter')
                 else:
                     self.sendMessage()
         else:
-            return super().keyPressEvent(e)
+            return super().keyPressEvent(event)
+
+    def focusInEvent(self, event):
+        self.setCursorWidth(1)
+        return super().focusInEvent(event)
+
+    def focusOutEvent(self, event):
+        self.setCursorWidth(0)
+        return super().focusInEvent(event)

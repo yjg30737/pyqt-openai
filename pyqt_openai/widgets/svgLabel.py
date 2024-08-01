@@ -12,11 +12,11 @@ class SvgLabel(QLabel):
         super().__init__()
         self.__renderer = ''
 
-    def paintEvent(self, e):
+    def paintEvent(self, event):
         painter = QPainter(self)
         if self.__renderer:
             self.__renderer.render(painter)
-        return super().paintEvent(e)
+        return super().paintEvent(event)
 
     def setSvgFile(self, filename: str):
         filename = os.path.join(SRC_DIR, filename)

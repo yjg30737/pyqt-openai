@@ -2,9 +2,11 @@ from qtpy.QtWidgets import QLabel, QWidget, QHBoxLayout, QGraphicsOpacityEffect
 from qtpy.QtCore import Qt, QTimer, QPropertyAnimation, QAbstractAnimation, QPoint
 from qtpy.QtGui import QFont, QColor
 
+from pyqt_openai import TOAST_DURATION
+
 
 class Toast(QWidget):
-    def __init__(self, text, duration=2, parent=None):
+    def __init__(self, text, duration=TOAST_DURATION, parent=None):
         super().__init__(parent)
         self.__initVal(parent, duration)
         self.__initUi(text)

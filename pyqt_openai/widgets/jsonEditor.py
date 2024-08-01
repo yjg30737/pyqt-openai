@@ -1,7 +1,7 @@
 import json
 import re
 
-from qtpy.QtCore import Qt, QTimer
+from qtpy.QtCore import Qt, QTimer, Signal
 from qtpy.QtGui import QTextCursor, QTextCharFormat, QColor
 from qtpy.QtWidgets import QTextEdit, QMessageBox
 
@@ -10,6 +10,8 @@ from pyqt_openai.lang.translations import LangClass
 
 
 class JSONEditor(QTextEdit):
+    moveCursorToOtherPrompt = Signal(str)
+
     def __init__(self, parent=None):
         super().__init__(parent)
         font = self.font()
@@ -62,6 +64,14 @@ class JSONEditor(QTextEdit):
 
     def keyPressEvent(self, event):
         cursor = self.textCursor()
+        # If up and down keys are pressed and cursor is at the beginning or end of the text
+        if event.key() == Qt.Key.Key_Up or event.key() == Qt.Key.Key_Down:
+            if self.textCursor().atStart() or self.textCursor().atEnd():
+                key = 'up' if event.key() == Qt.Key.Key_Up else 'down'
+                self.moveCursorToOtherPrompt.emit(key)
+            else:
+                return super().keyPressEvent(event)
+
         if event.key() == Qt.Key.Key_BraceLeft:
             super().keyPressEvent(event)
             self.insertPlainText('\n\n')
@@ -146,6 +156,14 @@ class JSONEditor(QTextEdit):
             self.setPlainText(formatted)
         except json.JSONDecodeError as e:
             QMessageBox.critical(self, "Invalid JSON", f"Error: {str(e)}")
+
+    def focusInEvent(self, event):
+        self.setCursorWidth(1)
+        return super().focusInEvent(event)
+
+    def focusOutEvent(self, event):
+        self.setCursorWidth(0)
+        return super().focusInEvent(event)
 
 # # Usage
 # class MainWindow(QWidget):

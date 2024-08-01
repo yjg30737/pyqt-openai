@@ -59,11 +59,11 @@ class NotifierWidget(QWidget):
         lay.setContentsMargins(8, 8, 8, 8)
         self.setLayout(lay)
 
-    def keyPressEvent(self, e):
-        if e.key() == Qt.Key.Key_Escape:
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key.Key_Escape:
             self.close()
 
-        return super().keyPressEvent(e)
+        return super().keyPressEvent(event)
 
     def addWidgets(self, widgets: list):
         for widget in widgets:
@@ -92,7 +92,7 @@ class NotifierWidget(QWidget):
         self.__animation.setEndValue(0.0)
         self.__animation.start()
 
-    def mouseDoubleClickEvent(self, e):
+    def mouseDoubleClickEvent(self, event):
         self.doubleClicked.emit()
         self.close()
-        return super().mouseDoubleClickEvent(e)
+        return super().mouseDoubleClickEvent(event)

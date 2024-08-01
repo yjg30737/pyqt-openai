@@ -20,9 +20,9 @@ class FindPathLineEdit(QLineEdit):
         self.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         self.customContextMenuRequested.connect(self.__prepareMenu)
 
-    def mouseMoveEvent(self, e):
+    def mouseMoveEvent(self, event):
         self.__showToolTip()
-        return super().mouseMoveEvent(e)
+        return super().mouseMoveEvent(event)
 
     def __showToolTip(self):
         text = self.text()

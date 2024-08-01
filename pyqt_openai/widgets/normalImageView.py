@@ -34,7 +34,7 @@ class NormalImageView(QGraphicsView):
     def setAspectRatioMode(self, mode):
         self.__aspectRatioMode = mode
 
-    def resizeEvent(self, e):
+    def resizeEvent(self, event):
         if self._item:
             self.fitInView(self._item, self.__aspectRatioMode)
-        return super().resizeEvent(e)
+        return super().resizeEvent(event)

@@ -23,7 +23,8 @@ from qtpy.QtCore import QSettings, Qt
 from qtpy.QtWidgets import QMessageBox
 
 from pyqt_openai import INI_FILE_NAME, DEFAULT_FONT_SIZE, DEFAULT_FONT_FAMILY, MAIN_INDEX, \
-    PROMPT_NAME_REGEX, PAYPAL_URL, BUYMEACOFFEE_URL
+    PROMPT_NAME_REGEX, PAYPAL_URL, BUYMEACOFFEE_URL, PROMPT_MAIN_KEY_NAME, PROMPT_BEGINNING_KEY_NAME, \
+    PROMPT_END_KEY_NAME, PROMPT_JSON_KEY_NAME
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ImagePromptContainer
 from pyqt_openai.pyqt_openai_data import DB
@@ -352,3 +353,24 @@ def get_content_of_text_file_for_send(filenames: list[str]):
         source_context += '\n'*2
     prompt_context = f'== Source Start ==\n{source_context}== Source End =='
     return prompt_context
+
+def moveCursorToOtherPrompt(direction):
+    def switch_focus(from_key, to_key):
+        """Switch focus from one text edit to another if both are visible."""
+        if self.__textGroup[from_key].isVisible() and self.__textGroup[from_key].hasFocus():
+            if self.__textGroup[to_key].isVisible():
+                self.__textGroup[from_key].clearFocus()
+                self.__textGroup[to_key].setFocus()
+
+    if direction == 'up':
+        switch_focus(PROMPT_MAIN_KEY_NAME, PROMPT_BEGINNING_KEY_NAME)
+        switch_focus(PROMPT_END_KEY_NAME, PROMPT_JSON_KEY_NAME)
+        switch_focus(PROMPT_END_KEY_NAME, PROMPT_MAIN_KEY_NAME)
+        switch_focus(PROMPT_JSON_KEY_NAME, PROMPT_MAIN_KEY_NAME)
+    elif direction == 'down':
+        switch_focus(PROMPT_BEGINNING_KEY_NAME, PROMPT_MAIN_KEY_NAME)
+        switch_focus(PROMPT_MAIN_KEY_NAME, PROMPT_JSON_KEY_NAME)
+        switch_focus(PROMPT_MAIN_KEY_NAME, PROMPT_END_KEY_NAME)
+        switch_focus(PROMPT_JSON_KEY_NAME, PROMPT_END_KEY_NAME)
+    else:
+        print('Invalid direction:', direction)

@@ -103,12 +103,12 @@ class Button(QPushButton):
         self.__styleInit()
         self.setIcon(QIcon(self.__icon))
 
-    def eventFilter(self, obj, e):
+    def eventFilter(self, obj, event):
         if obj == self:
             # to change grayscale when button gets disabled
             # if button get enabled/disabled EnableChange will emit
             # so catch the EnabledChange
-            if e.type() == 98:
+            if event.type() == 98:
                 # change to enabled state
                 effect = QGraphicsColorizeEffect()
                 effect.setColor(QColor(255, 255, 255))
@@ -120,7 +120,7 @@ class Button(QPushButton):
                 self.setGraphicsEffect(effect)
         if obj == self.__baseWidget:
             # catch the StyleChange event of base widget
-            if e.type() == 100:
+            if event.type() == 100:
                 # if base widget's background is transparent (#ffffff)
                 if self.__baseWidget.palette().color(QPalette.ColorRole.Base).name() == '#ffffff':
                     # then check the parent widget's background
@@ -131,7 +131,7 @@ class Button(QPushButton):
                             self.__baseWidget = self.__baseWidget.parent()
                 self.__initColorByBaseWidget()
                 self.__styleInit()
-        return super().eventFilter(obj, e)
+        return super().eventFilter(obj, event)
 
     def setPadding(self, padding: int):
         self.__padding = padding

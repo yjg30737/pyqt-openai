@@ -359,13 +359,13 @@ class DallEControlWidget(QScrollArea):
         if self.__t.isRunning():
             self.__t.stop()
 
-    def __failToGenerate(self, e):
+    def __failToGenerate(self, event):
         if self.isVisible():
-            toast = Toast(text=e, duration=3, parent=self)
+            toast = Toast(text=event, parent=self)
             toast.show()
         else:
             informative_text = 'Error 😥'
-            detailed_text = e
+            detailed_text = event
             self.__notifierWidget = NotifierWidget(informative_text=informative_text, detailed_text = detailed_text)
             self.__notifierWidget.show()
             self.__notifierWidget.doubleClicked.connect(self.window().show)

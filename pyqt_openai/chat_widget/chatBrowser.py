@@ -92,10 +92,10 @@ class ChatBrowser(QScrollArea):
         self.widget().layout().addWidget(chatUnit)
         return chatUnit
 
-    def event(self, e):
-        if e.type() == 43:
+    def event(self, event):
+        if event.type() == 43:
             self.verticalScrollBar().setSliderPosition(self.verticalScrollBar().maximum())
-        return super().event(e)
+        return super().event(event)
 
     def getMessages(self, limit=MAXIMUM_MESSAGES_IN_PARAMETER):
         messages = DB.selectCertainThreadMessages(self.__cur_id)
