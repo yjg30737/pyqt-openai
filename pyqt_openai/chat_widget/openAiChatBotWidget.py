@@ -3,21 +3,22 @@ import os
 import sys
 import webbrowser
 
-from pyqt_openai.chat_widget.chatNavWidget import ChatNavWidget
-from pyqt_openai.chat_widget.prompt_gen_widget.promptGeneratorWidget import PromptGeneratorWidget
-from pyqt_openai.chat_widget.right_sidebar.aiPlaygroundWidget import AIPlaygroundWidget
 from qtpy.QtCore import Qt, QSettings
 from qtpy.QtWidgets import QHBoxLayout, QWidget, QSizePolicy, QVBoxLayout, QFrame, QSplitter, \
     QFileDialog, QMessageBox, QPushButton
 
+from pyqt_openai import THREAD_TABLE_NAME, INI_FILE_NAME, JSON_FILE_EXT, ICON_SIDEBAR, ICON_SETTING, ICON_PROMPT, \
+    FILE_NAME_LENGTH, MAXIMUM_MESSAGES_IN_PARAMETER, SHORTCUT_FIND, SHORTCUT_LEFT_SIDEBAR_WINDOW, \
+    SHORTCUT_CONTROL_PROMPT_WINDOW, SHORTCUT_RIGHT_SIDEBAR_WINDOW
+from pyqt_openai.chat_widget.chatNavWidget import ChatNavWidget
 from pyqt_openai.chat_widget.chatWidget import ChatWidget
 from pyqt_openai.chat_widget.prompt import Prompt
-from pyqt_openai import THREAD_TABLE_NAME, INI_FILE_NAME, JSON_FILE_EXT, ICON_SIDEBAR, ICON_SETTING, ICON_PROMPT, \
-    FILE_NAME_LENGTH, MAXIMUM_MESSAGES_IN_PARAMETER, SHORTCUT_FIND
+from pyqt_openai.chat_widget.prompt_gen_widget.promptGeneratorWidget import PromptGeneratorWidget
+from pyqt_openai.chat_widget.right_sidebar.aiPlaygroundWidget import AIPlaygroundWidget
+from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ChatThreadContainer, ChatMessageContainer
 from pyqt_openai.openAiThread import OpenAIThread, LlamaOpenAIThread
 from pyqt_openai.pyqt_openai_data import DB, get_argument, LLAMAINDEX_WRAPPER
-from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.util.script import open_directory, get_generic_ext_out_of_qt_ext, message_list_to_txt, \
     conv_unit_to_html, \
     add_file_to_zip
@@ -78,6 +79,7 @@ class OpenAIChatBotWidget(QWidget):
         self.__sideBarBtn.setToolTip(LangClass.TRANSLATIONS['Chat List'])
         self.__sideBarBtn.setChecked(self.__show_chat_list)
         self.__sideBarBtn.toggled.connect(self.__toggle_sidebar)
+        self.__sideBarBtn.setShortcut(SHORTCUT_LEFT_SIDEBAR_WINDOW)
 
         self.__settingBtn = Button()
         self.__settingBtn.setStyleAndIcon(ICON_SETTING)
@@ -85,6 +87,7 @@ class OpenAIChatBotWidget(QWidget):
         self.__settingBtn.setCheckable(True)
         self.__settingBtn.setChecked(self.__show_setting)
         self.__settingBtn.toggled.connect(self.__toggle_setting)
+        self.__settingBtn.setShortcut(SHORTCUT_RIGHT_SIDEBAR_WINDOW)
 
         self.__promptBtn = Button()
         self.__promptBtn.setStyleAndIcon(ICON_PROMPT)
@@ -92,6 +95,7 @@ class OpenAIChatBotWidget(QWidget):
         self.__promptBtn.setCheckable(True)
         self.__promptBtn.setChecked(self.__show_prompt)
         self.__promptBtn.toggled.connect(self.__toggle_prompt)
+        self.__promptBtn.setShortcut(SHORTCUT_CONTROL_PROMPT_WINDOW)
 
         sep = QFrame()
         sep.setFrameShape(QFrame.Shape.VLine)

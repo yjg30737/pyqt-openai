@@ -9,7 +9,8 @@ from qtpy.QtWidgets import QMainWindow, QToolBar, QHBoxLayout, QDialog, QLineEdi
     QMessageBox, QCheckBox, QAction
 
 from pyqt_openai import INI_FILE_NAME, SHORTCUT_FULL_SCREEN, \
-    APP_INITIAL_WINDOW_SIZE, APP_NAME, APP_ICON, ICON_STACKONTOP, ICON_CUSTOMIZE, ICON_FULLSCREEN, ICON_CLOSE
+    APP_INITIAL_WINDOW_SIZE, APP_NAME, APP_ICON, ICON_STACKONTOP, ICON_CUSTOMIZE, ICON_FULLSCREEN, ICON_CLOSE, \
+    SHORTCUT_SETTING
 from pyqt_openai.aboutDialog import AboutDialog
 from pyqt_openai.chat_widget.openAiChatBotWidget import OpenAIChatBotWidget
 from pyqt_openai.customizeDialog import CustomizeDialog
@@ -167,6 +168,7 @@ class MainWindow(QMainWindow):
         self.__apiAction.setDefaultWidget(apiWidget)
 
         self.__settingsAction = QAction(LangClass.TRANSLATIONS['Settings'], self)
+        self.__settingsAction.setShortcut(SHORTCUT_SETTING)
         self.__settingsAction.triggered.connect(self.__showSettingsDialog)
 
     def __fullScreenToggle(self, f):

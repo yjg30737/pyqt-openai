@@ -3,7 +3,8 @@ import os
 from qtpy.QtCore import Qt, QSettings
 from qtpy.QtWidgets import QHBoxLayout, QVBoxLayout, QFrame, QWidget, QSplitter
 
-from pyqt_openai import INI_FILE_NAME, ICON_HISTORY, ICON_SETTING
+from pyqt_openai import INI_FILE_NAME, ICON_HISTORY, ICON_SETTING, SHORTCUT_LEFT_SIDEBAR_WINDOW, \
+    SHORTCUT_RIGHT_SIDEBAR_WINDOW
 from pyqt_openai.models import ImagePromptContainer
 from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.replicate_widget.replicateControlWidget import ReplicateControlWidget
@@ -55,6 +56,7 @@ class ReplicateWidget(QWidget):
         self.__historyBtn.setToolTip(LangClass.TRANSLATIONS['History'])
         self.__historyBtn.setChecked(self.__show_history)
         self.__historyBtn.toggled.connect(self.__toggle_history)
+        self.__historyBtn.setShortcut(SHORTCUT_LEFT_SIDEBAR_WINDOW)
 
         self.__settingBtn = Button()
         self.__settingBtn.setStyleAndIcon(ICON_SETTING)
@@ -62,6 +64,7 @@ class ReplicateWidget(QWidget):
         self.__settingBtn.setToolTip(LangClass.TRANSLATIONS['Settings'])
         self.__settingBtn.setChecked(self.__show_setting)
         self.__settingBtn.toggled.connect(self.__toggle_setting)
+        self.__settingBtn.setShortcut(SHORTCUT_RIGHT_SIDEBAR_WINDOW)
 
         self.__toReplicateLabel = LinkLabel()
         self.__toReplicateLabel.setText('To Replicate / What is Replicate?')
