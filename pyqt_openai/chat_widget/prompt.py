@@ -10,7 +10,7 @@ from pyqt_openai.chat_widget.uploadedImageFileWidget import UploadedImageFileWid
 from pyqt_openai import INI_FILE_NAME, READ_FILE_EXT_LIST_STR, PROMPT_BEGINNING_KEY_NAME, \
     PROMPT_END_KEY_NAME, PROMPT_JSON_KEY_NAME, SHORTCUT_PROMPT_BEGINNING, SHORTCUT_PROMPT_ENDING, \
     SHORTCUT_SUPPORT_PROMPT_COMMAND, ICON_VERTICAL_THREE_DOTS, ICON_SEND, PROMPT_MAIN_KEY_NAME, IMAGE_FILE_EXT_LIST, \
-    TEXT_FILE_EXT_LIST, QFILEDIALOG_DEFAULT_DIRECTORY
+    TEXT_FILE_EXT_LIST, QFILEDIALOG_DEFAULT_DIRECTORY, SHORTCUT_SEND
 from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.util.script import get_content_of_text_file_for_send
@@ -94,9 +94,10 @@ class Prompt(QWidget):
         leftWidget = QWidget()
         leftWidget.setLayout(lay)
 
-        submitBtn = Button()
-        submitBtn.setStyleAndIcon(ICON_SEND)
-        submitBtn.setToolTip(LangClass.TRANSLATIONS['Send'])
+        sendBtn = Button()
+        sendBtn.setStyleAndIcon(ICON_SEND)
+        sendBtn.setToolTip(LangClass.TRANSLATIONS['Send'])
+        sendBtn.setShortcut(SHORTCUT_SEND)
 
         settingsBtn = ToolButton()
         settingsBtn.setStyleAndIcon(ICON_VERTICAL_THREE_DOTS)
@@ -141,7 +142,7 @@ class Prompt(QWidget):
         settingsBtn.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
 
         lay = QHBoxLayout()
-        lay.addWidget(submitBtn)
+        lay.addWidget(sendBtn)
         lay.addWidget(settingsBtn)
         lay.setContentsMargins(1, 1, 1, 1)
         lay.setAlignment(Qt.AlignmentFlag.AlignRight)
@@ -175,7 +176,7 @@ class Prompt(QWidget):
 
         self.updateHeight()
 
-        submitBtn.clicked.connect(self.__textEditGroup.getMainTextEdit().sendMessage)
+        sendBtn.clicked.connect(self.__textEditGroup.getMainTextEdit().sendMessage)
 
     def __setEveryPromptCommands(self):
         command_obj_lst = []
