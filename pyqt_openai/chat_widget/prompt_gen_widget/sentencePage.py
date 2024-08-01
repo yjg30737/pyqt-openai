@@ -47,7 +47,9 @@ class SentenceGroupList(QWidget):
         self.__exportBtn.clicked.connect(self.__export)
 
         lay = QHBoxLayout()
-        lay.addWidget(QLabel(LangClass.TRANSLATIONS['Sentence Group']))
+        # Should've added "Sentence Group" to the translation, but it's not in the
+        # translation file for incomplete JSON response issue
+        lay.addWidget(QLabel(LangClass.TRANSLATIONS['Sentence'] + ' ' + LangClass.TRANSLATIONS['Group']))
         lay.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.Policy.MinimumExpanding))
         lay.addWidget(self.__addBtn)
         lay.addWidget(self.__delBtn)

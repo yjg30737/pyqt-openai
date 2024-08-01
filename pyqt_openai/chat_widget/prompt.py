@@ -94,7 +94,6 @@ class Prompt(QWidget):
 
         submitBtn = Button()
         submitBtn.setStyleAndIcon(ICON_SEND)
-        # TODO LANGUAGE
         submitBtn.setToolTip(LangClass.TRANSLATIONS['Send'])
 
         settingsBtn = ToolButton()
@@ -315,7 +314,9 @@ class Prompt(QWidget):
     def toggleJSON(self, f):
         self.__toggleJSONAction(f)
         self.__showJSON(f)
-        self.__textEditGroup.getGroup()[PROMPT_JSON_KEY_NAME].clear()
+        json_text_edit = self.__textEditGroup.getGroup()[PROMPT_JSON_KEY_NAME]
+        json_text_edit.clear()
+        json_text_edit.setFocus()
 
     def __showJSON(self, f):
         self.__json_object = f

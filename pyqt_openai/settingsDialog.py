@@ -115,7 +115,7 @@ class SettingsDialog(QDialog):
         lay = QFormLayout()
         lay.addRow(LangClass.TRANSLATIONS['Show Find Tool'], self.__showThreadToolWidgetChkBox)
         lay.addRow(LangClass.TRANSLATIONS['Maximum Messages in Parameter'], self.__maximumMessagesInParameterSpinBox)
-        # TODO LANGUAGE
+
         lay.addRow(LangClass.TRANSLATIONS['Show as Markdown'], self.__showAsMarkdownCheckBox)
 
         chatBrowserGrpBox = QGroupBox(LangClass.TRANSLATIONS['Chat Browser'])

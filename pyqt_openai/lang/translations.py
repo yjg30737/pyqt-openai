@@ -6,13 +6,13 @@ from qtpy.QtCore import QLocale
 from pyqt_openai import DEFAULT_LANGUAGE, LANGUAGE_FILE, LANGUAGE_DICT
 
 
-class WordsDict(dict):
-    """
-    Only used for release version
-    to prevent KeyError
-    """
-    def __missing__(self, key):
-        return key
+# class WordsDict(dict):
+#     """
+#     Only used for release version
+#     to prevent KeyError
+#     """
+#     def __missing__(self, key):
+#         return key
 
 
 class LangClass:
@@ -20,7 +20,7 @@ class LangClass:
     LangClass is the class that manages the language of the application.
     It reads the language file and sets the language.
     """
-    TRANSLATIONS = WordsDict()
+    TRANSLATIONS = dict()
 
     @classmethod
     def lang_changed(cls, lang=None):
@@ -34,7 +34,7 @@ class LangClass:
         else:
             language = LANGUAGE_DICT[lang]
 
-        cls.TRANSLATIONS = WordsDict(translations_data[language])
+        cls.TRANSLATIONS = dict(translations_data[language])
 
         for k, v in LANGUAGE_DICT.items():
             if v == language:

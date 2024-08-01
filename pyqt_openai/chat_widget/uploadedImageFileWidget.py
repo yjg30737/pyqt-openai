@@ -24,7 +24,6 @@ class UploadedImageFileWidget(QWidget):
         self.__activateDeleteBtn.setCheckable(True)
         self.__activateDeleteBtn.toggled.connect(self.__activateDelete)
 
-        # TODO LANGUAGE
         self.__manualLbl = QLabel(LangClass.TRANSLATIONS['Click the image to delete'])
         self.__manualLbl.setStyleSheet('color: red;')
 

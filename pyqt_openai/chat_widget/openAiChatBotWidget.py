@@ -260,9 +260,7 @@ class OpenAIChatBotWidget(QWidget):
                     else:
                         LLAMAINDEX_WRAPPER.set_query_engine(streaming=stream, similarity_top_k=3)
                 else:
-                    # TODO LANGUAGE
-                    QMessageBox.warning(self, LangClass.TRANSLATIONS["Warning"], LangClass.TRANSLATIONS['LLAMA index is not available. '
-                                                                                                        'Please check the directory path or disable the llama index.'])
+                    QMessageBox.warning(self, LangClass.TRANSLATIONS["Warning"], LangClass.TRANSLATIONS['LLAMA index is not available. Please check the directory path or disable the llama index.'])
                     return
 
             use_max_tokens = self.__settings_ini.value('use_max_tokens', type=bool)

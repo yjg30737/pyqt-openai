@@ -64,16 +64,22 @@ class JSONEditor(QTextEdit):
         cursor = self.textCursor()
         if event.key() == Qt.Key.Key_BraceLeft:
             super().keyPressEvent(event)
+            self.insertPlainText('\n\n')
             self.insertPlainText('}')
-            cursor.movePosition(QTextCursor.PreviousCharacter)
+            cursor.movePosition(QTextCursor.Up)
+            cursor.movePosition(QTextCursor.StartOfLine)
+            cursor.insertText(' ' * INDENT_SIZE)
+            self.setTextCursor(cursor)
         elif event.key() == Qt.Key.Key_QuoteDbl:
             super().keyPressEvent(event)
             self.insertPlainText('"')
             cursor.movePosition(QTextCursor.PreviousCharacter)
+            self.setTextCursor(cursor)
         elif event.key() == Qt.Key.Key_BracketLeft:
             super().keyPressEvent(event)
             self.insertPlainText(']')
             cursor.movePosition(QTextCursor.PreviousCharacter)
+            self.setTextCursor(cursor)
         elif event.key() == Qt.Key.Key_Tab and not event.modifiers() & Qt.KeyboardModifier.ShiftModifier:
             cursor = self.textCursor()
             if cursor.hasSelection():
@@ -140,7 +146,7 @@ class JSONEditor(QTextEdit):
             self.setPlainText(formatted)
         except json.JSONDecodeError as e:
             QMessageBox.critical(self, "Invalid JSON", f"Error: {str(e)}")
-#
+
 # # Usage
 # class MainWindow(QWidget):
 #     def __init__(self):
