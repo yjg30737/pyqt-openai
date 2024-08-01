@@ -1,6 +1,8 @@
 from qtpy.QtCore import Qt, Signal
 from qtpy.QtWidgets import QTextEdit
 
+from pyqt_openai.util.script import isCursorOnFirstOrLastLine
+
 
 class TextEditPrompt(QTextEdit):
     returnPressed = Signal()
@@ -36,10 +38,12 @@ class TextEditPrompt(QTextEdit):
             elif event.key() == Qt.Key.Key_Down:
                 self.sendSuggestionWidget.emit('down')
         else:
-            # If up and down keys are pressed and cursor is at the beginning or end of the text
+            # If up and down keys are pressed and cursor is at the first line or end line of the text
             if event.key() == Qt.Key.Key_Up or event.key() == Qt.Key.Key_Down:
-                if self.textCursor().atStart() or self.textCursor().atEnd():
-                    key = 'up' if event.key() == Qt.Key.Key_Up else 'down'
+                result = isCursorOnFirstOrLastLine(self)
+                key = 'up' if event.key() == Qt.Key.Key_Up else 'down'
+                if result == 'first' and key == 'up' or \
+                   result == 'last' and key == 'down' or result == 'only':
                     self.moveCursorToOtherPrompt.emit(key)
                 else:
                     return super().keyPressEvent(event)

@@ -45,7 +45,7 @@ class TextEditPromptGroup(QWidget):
             # Connect every group text edit widget to the signal
             w.textChanged.connect(self.onUpdateSuggestion)
             w.textChanged.connect(self.textChanged)
-            w.moveCursorToOtherPrompt.connect(moveCursorToOtherPrompt)
+            w.moveCursorToOtherPrompt.connect(self.__moveCursorToOtherPrompt)
 
             # Connect TextEditPrompt signal
             if isinstance(w, TextEditPrompt):
@@ -170,3 +170,6 @@ class TextEditPromptGroup(QWidget):
             self.onPasteFile.emit(image_data)
         else:
             self.__textEdit.paste()
+
+    def __moveCursorToOtherPrompt(self, direction):
+        moveCursorToOtherPrompt(direction, self.__textGroup)

@@ -354,13 +354,36 @@ def get_content_of_text_file_for_send(filenames: list[str]):
     prompt_context = f'== Source Start ==\n{source_context}== Source End =='
     return prompt_context
 
-def moveCursorToOtherPrompt(direction):
+def isCursorOnFirstOrLastLine(textEdit):
+    cursor = textEdit.textCursor()
+    current_line = cursor.blockNumber()  # Zero-based line number
+    total_lines = textEdit.document().blockCount()  # Total number of lines
+
+    if total_lines == 1:
+        return "only"
+    else:
+        if current_line == 0:
+            print("Cursor is on the first line.")
+            return "first"
+        elif current_line == total_lines - 1:
+            print("Cursor is on the last line.")
+            return "last"
+        else:
+            print("Cursor is in the middle.")
+            return "middle"
+
+def moveCursorToOtherPrompt(direction, textGroup):
+    """
+    Move the cursor to another prompt based on the direction
+    :param direction: The direction to move the cursor to
+    :param textGroup: The prompt in the group to move the cursor to
+    """
     def switch_focus(from_key, to_key):
         """Switch focus from one text edit to another if both are visible."""
-        if self.__textGroup[from_key].isVisible() and self.__textGroup[from_key].hasFocus():
-            if self.__textGroup[to_key].isVisible():
-                self.__textGroup[from_key].clearFocus()
-                self.__textGroup[to_key].setFocus()
+        if textGroup[from_key].isVisible() and textGroup[from_key].hasFocus():
+            if textGroup[to_key].isVisible():
+                textGroup[from_key].clearFocus()
+                textGroup[to_key].setFocus()
 
     if direction == 'up':
         switch_focus(PROMPT_MAIN_KEY_NAME, PROMPT_BEGINNING_KEY_NAME)
