@@ -5,7 +5,8 @@ from qtpy.QtCore import Signal, Qt
 from qtpy.QtWidgets import QWidget, QDialog, QTableWidget, QVBoxLayout, QHBoxLayout, QHeaderView, QTableWidgetItem, \
     QAbstractItemView, QFileDialog, QLabel, QSpacerItem, QListWidget, QListWidgetItem, QSizePolicy, QSplitter, QMessageBox
 
-from pyqt_openai import JSON_FILE_EXT, ICON_ADD, ICON_DELETE, ICON_IMPORT, ICON_EXPORT
+from pyqt_openai import JSON_FILE_EXT_LIST_STR, ICON_ADD, ICON_DELETE, ICON_IMPORT, ICON_EXPORT, \
+    QFILEDIALOG_DEFAULT_DIRECTORY
 from pyqt_openai.chat_widget.prompt_gen_widget.promptGroupDirectInputDialog import PromptGroupDirectInputDialog
 from pyqt_openai.chat_widget.prompt_gen_widget.promptEntryDirectInputDialog import PromptEntryDirectInputDialog
 from pyqt_openai.chat_widget.prompt_gen_widget.promptGroupExportDialog import PromptGroupExportDialog
@@ -131,7 +132,7 @@ class SentenceGroupList(QWidget):
     def __export(self):
         try:
             # Get the file
-            file_data = QFileDialog.getSaveFileName(self, LangClass.TRANSLATIONS['Save'], os.path.expanduser('~'), JSON_FILE_EXT)
+            file_data = QFileDialog.getSaveFileName(self, LangClass.TRANSLATIONS['Save'], QFILEDIALOG_DEFAULT_DIRECTORY, JSON_FILE_EXT_LIST_STR)
             if file_data[0]:
                 filename = file_data[0]
                 # Get the data

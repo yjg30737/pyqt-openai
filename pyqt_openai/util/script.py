@@ -333,3 +333,22 @@ def showJsonSample(json_sample_widget, json_sample):
     json_sample_widget.setWindowFlags(
         Qt.WindowType.Window | Qt.WindowType.WindowCloseButtonHint | Qt.WindowType.WindowStaysOnTopHint)
     json_sample_widget.show()
+
+def get_content_of_text_file_for_send(filenames: list[str]):
+    """
+    Get the content of the text file for sending to the AI
+    :param filenames: The list of filenames to get the content from
+    :return: The content of the text file
+    """
+    source_context = ''
+    for filename in filenames:
+        base_filename = os.path.basename(filename)
+        source_context += f'=== {base_filename} start ==='
+        source_context += '\n'*2
+        with open(filename, 'r', encoding='utf-8') as f:
+            source_context += f.read()
+        source_context += '\n'*2
+        source_context += f'=== {base_filename} end ==='
+        source_context += '\n'*2
+    prompt_context = f'== Source Start ==\n{source_context}== Source End =='
+    return prompt_context

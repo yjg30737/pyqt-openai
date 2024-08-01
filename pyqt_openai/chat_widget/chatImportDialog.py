@@ -4,7 +4,7 @@ from qtpy.QtCore import Qt
 from qtpy.QtWidgets import QWidget, QAbstractItemView, QSpinBox, QTableWidgetItem, QMessageBox, QGroupBox, QLabel, QDialogButtonBox, \
     QCheckBox, QDialog, QVBoxLayout
 
-from pyqt_openai import JSON_FILE_EXT, THREAD_ORDERBY, CHATGPT_IMPORT_MANUAL_LINK_1, CHATGPT_IMPORT_MANUAL_LINK_2
+from pyqt_openai import JSON_FILE_EXT_LIST_STR, THREAD_ORDERBY, CHATGPT_IMPORT_MANUAL_LINK_1, CHATGPT_IMPORT_MANUAL_LINK_2
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.util.script import get_chatgpt_data_for_import, get_chatgpt_data_for_preview
 from pyqt_openai.widgets.checkBoxTableWidget import CheckBoxTableWidget
@@ -30,7 +30,7 @@ class ChatImportDialog(QDialog):
 
         findPathWidget = FindPathWidget()
         findPathWidget.getLineEdit().setPlaceholderText(LangClass.TRANSLATIONS['Select a json file to import'])
-        findPathWidget.setExtOfFiles(JSON_FILE_EXT)
+        findPathWidget.setExtOfFiles(JSON_FILE_EXT_LIST_STR)
         findPathWidget.added.connect(self.__setPath)
 
         self.__chkBoxMostRecent = QCheckBox(LangClass.TRANSLATIONS['Get most recent'])

@@ -4,6 +4,7 @@ from qtpy.QtCore import Signal
 from qtpy.QtWidgets import QListWidget, QWidget, QVBoxLayout, QLabel, QHBoxLayout, QSpacerItem, QPushButton, \
     QSizePolicy, QFileDialog, QFrame
 
+from pyqt_openai import TEXT_FILE_EXT_LIST, QFILEDIALOG_DEFAULT_DIRECTORY
 from pyqt_openai.lang.translations import LangClass
 
 
@@ -54,11 +55,10 @@ class FileListWidget(QWidget):
     def setDirectory(self, directory=None):
         try:
             if not directory:
-                directory = QFileDialog.getExistingDirectory(self, LangClass.TRANSLATIONS['Select Directory'], os.path.expanduser('~'), QFileDialog.Option.ShowDirsOnly)
-            ext_lst = ['.txt']
+                directory = QFileDialog.getExistingDirectory(self, LangClass.TRANSLATIONS['Select Directory'], QFILEDIALOG_DEFAULT_DIRECTORY, QFileDialog.Option.ShowDirsOnly)
             if directory:
                 self.__listWidget.clear()
-                filenames = list(filter(lambda x: os.path.splitext(x)[-1] in ext_lst, os.listdir(directory)))
+                filenames = list(filter(lambda x: os.path.splitext(x)[-1] in TEXT_FILE_EXT_LIST, os.listdir(directory)))
                 self.__listWidget.addItems(filenames)
                 self.itemUpdate.emit(len(filenames) > 0)
                 self.__curDirName = directory

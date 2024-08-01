@@ -5,7 +5,7 @@ from qtpy.QtGui import QPixmap
 from qtpy.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QHBoxLayout, QSpacerItem, QSizePolicy, \
     QScrollArea
 
-from pyqt_openai import PROMPT_IMAGE_SCALE
+from pyqt_openai import PROMPT_IMAGE_SCALE, IMAGE_FILE_EXT_LIST
 from pyqt_openai.lang.translations import LangClass
 
 
@@ -62,7 +62,7 @@ class UploadedImageFileWidget(QWidget):
 
     def addFiles(self, filenames: list[str]):
         for filename in filenames:
-            if os.path.splitext(filename)[-1] in ['.png', '.jpg', '.jpeg', '.gif']:
+            if os.path.splitext(filename)[-1] in IMAGE_FILE_EXT_LIST:
                 buffer = QBuffer()
                 buffer.open(QBuffer.OpenModeFlag.ReadWrite)
                 buffer.write(open(filename, 'rb').read())

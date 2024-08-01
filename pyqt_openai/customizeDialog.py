@@ -3,7 +3,7 @@ from qtpy.QtGui import QFont
 from qtpy.QtWidgets import QDialog, QFrame, QPushButton, QHBoxLayout, QVBoxLayout, QWidget, QFormLayout, QSplitter, \
     QSizePolicy
 
-from pyqt_openai import IMAGE_FILE_EXT, DEFAULT_ICON_SIZE
+from pyqt_openai import IMAGE_FILE_EXT_LIST_STR, DEFAULT_ICON_SIZE
 from pyqt_openai.fontWidget import FontWidget
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import CustomizeParamsContainer
@@ -42,17 +42,17 @@ class CustomizeDialog(QDialog):
         self.__findPathWidget1 = FindPathWidget()
         self.__findPathWidget1.getLineEdit().setText(self.__background_image)
         self.__findPathWidget1.added.connect(self.__homePageGraphicsView.setFilename)
-        self.__findPathWidget1.setExtOfFiles(IMAGE_FILE_EXT)
+        self.__findPathWidget1.setExtOfFiles(IMAGE_FILE_EXT_LIST_STR)
 
         self.__findPathWidget2 = FindPathWidget()
         self.__findPathWidget2.getLineEdit().setText(self.__user_image)
         self.__findPathWidget2.added.connect(self.__userImage.setImage)
-        self.__findPathWidget2.setExtOfFiles(IMAGE_FILE_EXT)
+        self.__findPathWidget2.setExtOfFiles(IMAGE_FILE_EXT_LIST_STR)
 
         self.__findPathWidget3 = FindPathWidget()
         self.__findPathWidget3.getLineEdit().setText(self.__ai_image)
         self.__findPathWidget3.added.connect(self.__AIImage.setImage)
-        self.__findPathWidget3.setExtOfFiles(IMAGE_FILE_EXT)
+        self.__findPathWidget3.setExtOfFiles(IMAGE_FILE_EXT_LIST_STR)
 
         lay1 = QVBoxLayout()
         lay1.setContentsMargins(0, 0, 0, 0)

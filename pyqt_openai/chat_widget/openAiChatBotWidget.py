@@ -7,9 +7,10 @@ from qtpy.QtCore import Qt, QSettings
 from qtpy.QtWidgets import QHBoxLayout, QWidget, QSizePolicy, QVBoxLayout, QFrame, QSplitter, \
     QFileDialog, QMessageBox, QPushButton
 
-from pyqt_openai import THREAD_TABLE_NAME, INI_FILE_NAME, JSON_FILE_EXT, ICON_SIDEBAR, ICON_SETTING, ICON_PROMPT, \
+from pyqt_openai import THREAD_TABLE_NAME, INI_FILE_NAME, JSON_FILE_EXT_LIST_STR, ICON_SIDEBAR, ICON_SETTING, \
+    ICON_PROMPT, \
     FILE_NAME_LENGTH, MAXIMUM_MESSAGES_IN_PARAMETER, SHORTCUT_FIND, SHORTCUT_LEFT_SIDEBAR_WINDOW, \
-    SHORTCUT_CONTROL_PROMPT_WINDOW, SHORTCUT_RIGHT_SIDEBAR_WINDOW
+    SHORTCUT_CONTROL_PROMPT_WINDOW, SHORTCUT_RIGHT_SIDEBAR_WINDOW, QFILEDIALOG_DEFAULT_DIRECTORY
 from pyqt_openai.chat_widget.chatNavWidget import ChatNavWidget
 from pyqt_openai.chat_widget.chatWidget import ChatWidget
 from pyqt_openai.chat_widget.prompt import Prompt
@@ -415,7 +416,7 @@ class OpenAIChatBotWidget(QWidget):
             QMessageBox.critical(self, LangClass.TRANSLATIONS["Error"], LangClass.TRANSLATIONS['Check whether the file is a valid JSON file for importing.'])
 
     def __exportChat(self, ids):
-        file_data = QFileDialog.getSaveFileName(self, LangClass.TRANSLATIONS['Save'], os.path.expanduser('~'), f'{JSON_FILE_EXT};;txt files Compressed File (*.zip);;html files Compressed File (*.zip)')
+        file_data = QFileDialog.getSaveFileName(self, LangClass.TRANSLATIONS['Save'], QFILEDIALOG_DEFAULT_DIRECTORY, f'{JSON_FILE_EXT_LIST_STR};;txt files Compressed File (*.zip);;html files Compressed File (*.zip)')
         if file_data[0]:
             filename = file_data[0]
             ext = os.path.splitext(filename)[-1] or get_generic_ext_out_of_qt_ext(file_data[1])

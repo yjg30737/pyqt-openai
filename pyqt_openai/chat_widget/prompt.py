@@ -7,11 +7,13 @@ from qtpy.QtWidgets import QVBoxLayout, QAction, QPushButton, QFileDialog, QTool
 from pyqt_openai.chat_widget.commandSuggestionWidget import CommandSuggestionWidget
 from pyqt_openai.chat_widget.textEditPromptGroup import TextEditPromptGroup
 from pyqt_openai.chat_widget.uploadedImageFileWidget import UploadedImageFileWidget
-from pyqt_openai import INI_FILE_NAME, READ_FILE_EXT, PROMPT_BEGINNING_KEY_NAME, \
+from pyqt_openai import INI_FILE_NAME, READ_FILE_EXT_LIST_STR, PROMPT_BEGINNING_KEY_NAME, \
     PROMPT_END_KEY_NAME, PROMPT_JSON_KEY_NAME, SHORTCUT_PROMPT_BEGINNING, SHORTCUT_PROMPT_ENDING, \
-    SHORTCUT_SUPPORT_PROMPT_COMMAND, ICON_VERTICAL_THREE_DOTS, ICON_SEND
+    SHORTCUT_SUPPORT_PROMPT_COMMAND, ICON_VERTICAL_THREE_DOTS, ICON_SEND, PROMPT_MAIN_KEY_NAME, IMAGE_FILE_EXT_LIST, \
+    TEXT_FILE_EXT_LIST, QFILEDIALOG_DEFAULT_DIRECTORY
 from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.lang.translations import LangClass
+from pyqt_openai.util.script import get_content_of_text_file_for_send
 from pyqt_openai.widgets.button import Button
 from pyqt_openai.widgets.toolButton import ToolButton
 
@@ -267,37 +269,35 @@ class Prompt(QWidget):
 
     def __showBeginning(self, f):
         self.__textEditGroup.setVisibleTo(PROMPT_BEGINNING_KEY_NAME, f)
-        self.__textEditGroup.getGroup()[PROMPT_BEGINNING_KEY_NAME].setFocus()
+        if f:
+            self.__textEditGroup.getGroup()[PROMPT_BEGINNING_KEY_NAME].setFocus()
+        else:
+            self.__textEditGroup.getGroup()[PROMPT_BEGINNING_KEY_NAME].clear()
+            self.__textEditGroup.getGroup()[PROMPT_MAIN_KEY_NAME].setFocus()
 
     def __showEnding(self, f):
         self.__textEditGroup.setVisibleTo(PROMPT_END_KEY_NAME, f)
-        self.__textEditGroup.getGroup()[PROMPT_END_KEY_NAME].setFocus()
+        if f:
+            self.__textEditGroup.getGroup()[PROMPT_END_KEY_NAME].setFocus()
+        else:
+            self.__textEditGroup.getGroup()[PROMPT_END_KEY_NAME].clear()
+            self.__textEditGroup.getGroup()[PROMPT_MAIN_KEY_NAME].setFocus()
 
     def __supportPromptCommand(self, f):
         self.__commandEnabled = f
         self.__textEditGroup.setCommandEnabled(f)
 
     def __readingFiles(self):
-        filenames = QFileDialog.getOpenFileNames(self, LangClass.TRANSLATIONS['Find'], os.path.expanduser('~'), READ_FILE_EXT)
+        filenames = QFileDialog.getOpenFileNames(self, LangClass.TRANSLATIONS['Find'], QFILEDIALOG_DEFAULT_DIRECTORY, READ_FILE_EXT_LIST_STR)
         if filenames[0]:
             filenames = filenames[0]
             cur_file_extension = Path(filenames[0]).suffix
             # Text
-            if cur_file_extension == '.txt':
-                source_context = ''
-                for filename in filenames:
-                    base_filename = os.path.basename(filename)
-                    source_context += f'=== {base_filename} start ==='
-                    source_context += '\n'*2
-                    with open(filename, 'r', encoding='utf-8') as f:
-                        source_context += f.read()
-                    source_context += '\n'*2
-                    source_context += f'=== {base_filename} end ==='
-                    source_context += '\n'*2
-                prompt_context = f'== Source Start ==\n{source_context}== Source End =='
+            if cur_file_extension in TEXT_FILE_EXT_LIST:
+                prompt_context = get_content_of_text_file_for_send(filenames)
                 self.__textEditGroup.getMainTextEdit().setText(prompt_context)
             # Image
-            elif cur_file_extension in ['.jpg', '.png']:
+            elif cur_file_extension in IMAGE_FILE_EXT_LIST:
                 self.__uploadedImageFileWidget.addFiles(filenames)
 
     def getImageBuffers(self):
@@ -316,7 +316,10 @@ class Prompt(QWidget):
         self.__showJSON(f)
         json_text_edit = self.__textEditGroup.getGroup()[PROMPT_JSON_KEY_NAME]
         json_text_edit.clear()
-        json_text_edit.setFocus()
+        if f:
+            json_text_edit.setFocus()
+        else:
+            self.__textEditGroup.getGroup()[PROMPT_MAIN_KEY_NAME].setFocus()
 
     def __showJSON(self, f):
         self.__json_object = f

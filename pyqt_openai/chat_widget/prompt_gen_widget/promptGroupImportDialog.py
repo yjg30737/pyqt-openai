@@ -5,7 +5,7 @@ from qtpy.QtWidgets import QPushButton, QDialogButtonBox, QMessageBox, QDialog, 
     QTableWidget, QSplitter, \
     QWidget, QLabel, QAbstractItemView, QTableWidgetItem, QCheckBox
 
-from pyqt_openai import JSON_FILE_EXT, SENTENCE_PROMPT_GROUP_SAMPLE, FORM_PROMPT_GROUP_SAMPLE
+from pyqt_openai import JSON_FILE_EXT_LIST_STR, SENTENCE_PROMPT_GROUP_SAMPLE, FORM_PROMPT_GROUP_SAMPLE
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.util.script import validate_prompt_group_json, is_prompt_group_name_valid, showJsonSample
 from pyqt_openai.widgets.checkBoxListWidget import CheckBoxListWidget
@@ -28,7 +28,7 @@ class PromptGroupImportDialog(QDialog):
         self.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.WindowCloseButtonHint)
 
         findPathWidget = FindPathWidget()
-        findPathWidget.setExtOfFiles(JSON_FILE_EXT)
+        findPathWidget.setExtOfFiles(JSON_FILE_EXT_LIST_STR)
         findPathWidget.getLineEdit().setPlaceholderText(LangClass.TRANSLATIONS["Select a json file to import"])
         findPathWidget.added.connect(self.__setPath)
 

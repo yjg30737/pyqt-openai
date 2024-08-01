@@ -130,12 +130,15 @@ LLAMA_INDEX_DEFAULT_READ_DIRECTORY = './example'
 INI_FILE_NAME = 'pyqt_openai.ini'
 DB_FILE_NAME = 'conv'
 FILE_NAME_LENGTH = 32
+QFILEDIALOG_DEFAULT_DIRECTORY = os.path.expanduser('~')
 
 ## EXTENSIONS
-IMAGE_FILE_EXT = 'Image File (*.jpg *.png)'
-TEXT_FILE_EXT = 'Text File (*.txt)'
-JSON_FILE_EXT = 'JSON File (*.json)'
-READ_FILE_EXT = f'{TEXT_FILE_EXT};;{IMAGE_FILE_EXT}'
+TEXT_FILE_EXT_LIST = ['.txt']
+IMAGE_FILE_EXT_LIST = ['.png', '.jpg', '.jpeg', '.gif', '.bmp']
+IMAGE_FILE_EXT_LIST_STR = 'Image File (*.png *.jpg *.jpeg *.gif *.bmp)'
+TEXT_FILE_EXT_LIST_STR = 'Text File (*.txt)'
+JSON_FILE_EXT_LIST_STR = 'JSON File (*.json)'
+READ_FILE_EXT_LIST_STR = f'{TEXT_FILE_EXT_LIST_STR};;{IMAGE_FILE_EXT_LIST_STR}'
 
 ## LINK
 CHATGPT_IMPORT_MANUAL_LINK_1 = 'https://cdn.discordapp.com/attachments/1089739277379846226/1259834113884557362/image.png?ex=66a6d4b3&is=66a58333&hm=3544e9a6ec1610bc552f93b794e113c48c1505d5ba820628b9cd68876597f7dc&'
