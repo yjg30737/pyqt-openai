@@ -354,24 +354,6 @@ def get_content_of_text_file_for_send(filenames: list[str]):
     prompt_context = f'== Source Start ==\n{source_context}== Source End =='
     return prompt_context
 
-def isCursorOnFirstOrLastLine(textEdit):
-    cursor = textEdit.textCursor()
-    current_line = cursor.blockNumber()  # Zero-based line number
-    total_lines = textEdit.document().blockCount()  # Total number of lines
-
-    if total_lines == 1:
-        return "only"
-    else:
-        if current_line == 0:
-            print("Cursor is on the first line.")
-            return "first"
-        elif current_line == total_lines - 1:
-            print("Cursor is on the last line.")
-            return "last"
-        else:
-            print("Cursor is in the middle.")
-            return "middle"
-
 def moveCursorToOtherPrompt(direction, textGroup):
     """
     Move the cursor to another prompt based on the direction

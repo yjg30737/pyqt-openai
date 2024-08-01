@@ -172,4 +172,44 @@ class TextEditPromptGroup(QWidget):
             self.__textEdit.paste()
 
     def __moveCursorToOtherPrompt(self, direction):
-        moveCursorToOtherPrompt(direction, self.__textGroup)
+        if direction == 'up':
+            if self.__textGroup[PROMPT_MAIN_KEY_NAME].isVisible() and self.__textGroup[
+                PROMPT_MAIN_KEY_NAME].hasFocus():
+                if self.__textGroup[PROMPT_BEGINNING_KEY_NAME].isVisible():
+                    self.__textGroup[PROMPT_MAIN_KEY_NAME].clearFocus()
+                    self.__textGroup[PROMPT_BEGINNING_KEY_NAME].setFocus()
+            elif self.__textGroup[PROMPT_END_KEY_NAME].isVisible() and self.__textGroup[
+                PROMPT_END_KEY_NAME].hasFocus():
+                if self.__textGroup[PROMPT_JSON_KEY_NAME].isVisible():
+                    self.__textGroup[PROMPT_END_KEY_NAME].clearFocus()
+                    self.__textGroup[PROMPT_JSON_KEY_NAME].setFocus()
+                elif self.__textGroup[PROMPT_MAIN_KEY_NAME].isVisible():
+                    self.__textGroup[PROMPT_END_KEY_NAME].clearFocus()
+                    self.__textGroup[PROMPT_MAIN_KEY_NAME].setFocus()
+            elif self.__textGroup[PROMPT_JSON_KEY_NAME].isVisible() and self.__textGroup[
+                PROMPT_JSON_KEY_NAME].hasFocus():
+                if self.__textGroup[PROMPT_MAIN_KEY_NAME].isVisible():
+                    self.__textGroup[PROMPT_JSON_KEY_NAME].clearFocus()
+                    self.__textGroup[PROMPT_MAIN_KEY_NAME].setFocus()
+        elif direction == 'down':
+            if self.__textGroup[PROMPT_BEGINNING_KEY_NAME].isVisible() and self.__textGroup[
+                PROMPT_BEGINNING_KEY_NAME].hasFocus():
+                if self.__textGroup[PROMPT_MAIN_KEY_NAME].isVisible():
+                    self.__textGroup[PROMPT_BEGINNING_KEY_NAME].clearFocus()
+                    self.__textGroup[PROMPT_MAIN_KEY_NAME].setFocus()
+            elif self.__textGroup[PROMPT_MAIN_KEY_NAME].isVisible() and self.__textGroup[
+                PROMPT_MAIN_KEY_NAME].hasFocus():
+                if self.__textGroup[PROMPT_JSON_KEY_NAME].isVisible():
+                    self.__textGroup[PROMPT_MAIN_KEY_NAME].clearFocus()
+                    self.__textGroup[PROMPT_JSON_KEY_NAME].setFocus()
+                elif self.__textGroup[PROMPT_END_KEY_NAME].isVisible():
+                    self.__textGroup[PROMPT_MAIN_KEY_NAME].clearFocus()
+                    self.__textGroup[PROMPT_END_KEY_NAME].setFocus()
+            elif self.__textGroup[PROMPT_JSON_KEY_NAME].isVisible() and self.__textGroup[
+                PROMPT_JSON_KEY_NAME].hasFocus():
+                if self.__textGroup[PROMPT_END_KEY_NAME].isVisible():
+                    self.__textGroup[PROMPT_JSON_KEY_NAME].clearFocus()
+                    self.__textGroup[PROMPT_END_KEY_NAME].setFocus()
+
+        else:
+            print('Invalid direction:', direction)

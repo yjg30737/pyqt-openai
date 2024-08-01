@@ -65,10 +65,13 @@ class JSONEditor(QTextEdit):
     def keyPressEvent(self, event):
         cursor = self.textCursor()
         # If up and down keys are pressed and cursor is at the beginning or end of the text
-        if event.key() == Qt.Key.Key_Up or event.key() == Qt.Key.Key_Down:
-            if self.textCursor().atStart() or self.textCursor().atEnd():
-                key = 'up' if event.key() == Qt.Key.Key_Up else 'down'
-                self.moveCursorToOtherPrompt.emit(key)
+        if event.modifiers() == Qt.KeyboardModifier.ControlModifier:
+            if event.key() == Qt.Key.Key_Up:
+                self.moveCursorToOtherPrompt.emit('up')
+                return
+            elif event.key() == Qt.Key.Key_Down:
+                self.moveCursorToOtherPrompt.emit('down')
+                return
             else:
                 return super().keyPressEvent(event)
 
