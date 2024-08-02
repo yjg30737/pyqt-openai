@@ -5,7 +5,7 @@ from qtpy.QtCore import Qt, QTimer, Signal
 from qtpy.QtGui import QTextCursor, QTextCharFormat, QColor
 from qtpy.QtWidgets import QTextEdit, QMessageBox
 
-from pyqt_openai import INDENT_SIZE
+from pyqt_openai import INDENT_SIZE, SOURCE_HIGHLIGHT_COLOR, SOURCE_ERROR_COLOR
 from pyqt_openai.lang.translations import LangClass
 
 
@@ -20,10 +20,10 @@ class JSONEditor(QTextEdit):
         self.setPlaceholderText(LangClass.TRANSLATIONS["Enter JSON data here..."])
         self.textChanged.connect(self.on_text_changed)
         self.error_format = QTextCharFormat()
-        self.error_format.setUnderlineColor(QColor('red'))
+        self.error_format.setUnderlineColor(QColor(SOURCE_ERROR_COLOR))
         self.error_format.setUnderlineStyle(QTextCharFormat.SpellCheckUnderline)
         self.key_format = QTextCharFormat()
-        self.key_format.setForeground(QColor('blue'))
+        self.key_format.setForeground(QColor(SOURCE_HIGHLIGHT_COLOR))
         self.check_json_timer = QTimer()
         self.check_json_timer.setSingleShot(True)
         self.check_json_timer.timeout.connect(self.validate_json)

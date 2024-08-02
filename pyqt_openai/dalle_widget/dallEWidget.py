@@ -3,8 +3,8 @@ import os
 from qtpy.QtCore import Qt, QSettings
 from qtpy.QtWidgets import QHBoxLayout, QVBoxLayout, QFrame, QWidget, QSplitter
 
-from pyqt_openai import IMAGE_TABLE_NAME, INI_FILE_NAME, ICON_HISTORY, ICON_SETTING, SHORTCUT_LEFT_SIDEBAR_WINDOW, \
-    SHORTCUT_RIGHT_SIDEBAR_WINDOW
+from pyqt_openai import IMAGE_TABLE_NAME, INI_FILE_NAME, ICON_HISTORY, ICON_SETTING, DEFAULT_SHORTCUT_LEFT_SIDEBAR_WINDOW, \
+    DEFAULT_SHORTCUT_RIGHT_SIDEBAR_WINDOW
 from pyqt_openai.dalle_widget.dallEControlWidget import DallEControlWidget
 from pyqt_openai.models import ImagePromptContainer
 from pyqt_openai.pyqt_openai_data import DB
@@ -53,18 +53,18 @@ class DallEWidget(QWidget):
         self.__historyBtn = Button()
         self.__historyBtn.setStyleAndIcon(ICON_HISTORY)
         self.__historyBtn.setCheckable(True)
-        self.__historyBtn.setToolTip(LangClass.TRANSLATIONS['History'])
+        self.__historyBtn.setToolTip(LangClass.TRANSLATIONS['History'] + f' ({DEFAULT_SHORTCUT_LEFT_SIDEBAR_WINDOW})')
         self.__historyBtn.setChecked(self.__show_history)
         self.__historyBtn.toggled.connect(self.__toggle_history)
-        self.__historyBtn.setShortcut(SHORTCUT_LEFT_SIDEBAR_WINDOW)
+        self.__historyBtn.setShortcut(DEFAULT_SHORTCUT_LEFT_SIDEBAR_WINDOW)
 
         self.__settingBtn = Button()
         self.__settingBtn.setStyleAndIcon(ICON_SETTING)
         self.__settingBtn.setCheckable(True)
-        self.__settingBtn.setToolTip(LangClass.TRANSLATIONS['Settings'])
+        self.__settingBtn.setToolTip(LangClass.TRANSLATIONS['Settings'] + f' ({DEFAULT_SHORTCUT_RIGHT_SIDEBAR_WINDOW})')
         self.__settingBtn.setChecked(self.__show_setting)
         self.__settingBtn.toggled.connect(self.__toggle_setting)
-        self.__settingBtn.setShortcut(SHORTCUT_RIGHT_SIDEBAR_WINDOW)
+        self.__settingBtn.setShortcut(DEFAULT_SHORTCUT_RIGHT_SIDEBAR_WINDOW)
 
         lay = QHBoxLayout()
         lay.addWidget(self.__settingBtn)

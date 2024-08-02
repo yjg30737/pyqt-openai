@@ -8,9 +8,9 @@ from pyqt_openai.chat_widget.commandSuggestionWidget import CommandSuggestionWid
 from pyqt_openai.chat_widget.textEditPromptGroup import TextEditPromptGroup
 from pyqt_openai.chat_widget.uploadedImageFileWidget import UploadedImageFileWidget
 from pyqt_openai import INI_FILE_NAME, READ_FILE_EXT_LIST_STR, PROMPT_BEGINNING_KEY_NAME, \
-    PROMPT_END_KEY_NAME, PROMPT_JSON_KEY_NAME, SHORTCUT_PROMPT_BEGINNING, SHORTCUT_PROMPT_ENDING, \
-    SHORTCUT_SUPPORT_PROMPT_COMMAND, ICON_VERTICAL_THREE_DOTS, ICON_SEND, PROMPT_MAIN_KEY_NAME, IMAGE_FILE_EXT_LIST, \
-    TEXT_FILE_EXT_LIST, QFILEDIALOG_DEFAULT_DIRECTORY, SHORTCUT_SEND
+    PROMPT_END_KEY_NAME, PROMPT_JSON_KEY_NAME, DEFAULT_SHORTCUT_PROMPT_BEGINNING, DEFAULT_SHORTCUT_PROMPT_ENDING, \
+    DEFAULT_SHORTCUT_SUPPORT_PROMPT_COMMAND, ICON_VERTICAL_THREE_DOTS, ICON_SEND, PROMPT_MAIN_KEY_NAME, IMAGE_FILE_EXT_LIST, \
+    TEXT_FILE_EXT_LIST, QFILEDIALOG_DEFAULT_DIRECTORY, DEFAULT_SHORTCUT_SEND
 from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.util.script import get_content_of_text_file_for_send
@@ -96,8 +96,8 @@ class Prompt(QWidget):
 
         sendBtn = Button()
         sendBtn.setStyleAndIcon(ICON_SEND)
-        sendBtn.setToolTip(LangClass.TRANSLATIONS['Send'])
-        sendBtn.setShortcut(SHORTCUT_SEND)
+        sendBtn.setToolTip(LangClass.TRANSLATIONS['Send'] + f' ({DEFAULT_SHORTCUT_SEND})')
+        sendBtn.setShortcut(DEFAULT_SHORTCUT_SEND)
 
         settingsBtn = ToolButton()
         settingsBtn.setStyleAndIcon(ICON_VERTICAL_THREE_DOTS)
@@ -107,18 +107,18 @@ class Prompt(QWidget):
         menu = QMenu(self)
 
         # Create the actions
-        beginningAction = QAction(LangClass.TRANSLATIONS['Show Beginning'], self)
-        beginningAction.setShortcut(SHORTCUT_PROMPT_BEGINNING)
+        beginningAction = QAction(LangClass.TRANSLATIONS['Show Beginning'] + f' ({DEFAULT_SHORTCUT_PROMPT_BEGINNING})', self)
+        beginningAction.setShortcut(DEFAULT_SHORTCUT_PROMPT_BEGINNING)
         beginningAction.setCheckable(True)
         beginningAction.toggled.connect(self.__showBeginning)
 
-        endingAction = QAction(LangClass.TRANSLATIONS['Show Ending'], self)
-        endingAction.setShortcut(SHORTCUT_PROMPT_ENDING)
+        endingAction = QAction(LangClass.TRANSLATIONS['Show Ending'] + f' ({DEFAULT_SHORTCUT_PROMPT_ENDING})', self)
+        endingAction.setShortcut(DEFAULT_SHORTCUT_PROMPT_ENDING)
         endingAction.setCheckable(True)
         endingAction.toggled.connect(self.__showEnding)
 
-        supportPromptCommandAction = QAction(LangClass.TRANSLATIONS['Support Prompt Command'], self)
-        supportPromptCommandAction.setShortcut(SHORTCUT_SUPPORT_PROMPT_COMMAND)
+        supportPromptCommandAction = QAction(LangClass.TRANSLATIONS['Support Prompt Command'] + f' ({DEFAULT_SHORTCUT_SUPPORT_PROMPT_COMMAND})', self)
+        supportPromptCommandAction.setShortcut(DEFAULT_SHORTCUT_SUPPORT_PROMPT_COMMAND)
         supportPromptCommandAction.setCheckable(True)
         supportPromptCommandAction.toggled.connect(self.__supportPromptCommand)
 

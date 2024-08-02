@@ -5,7 +5,7 @@ from qtpy.QtWidgets import QWidget, QLabel, \
     QHBoxLayout, QGridLayout, QLineEdit, QMessageBox
 
 from pyqt_openai.chat_widget.chatBrowser import ChatBrowser
-from pyqt_openai import SHORTCUT_FIND_PREV, SHORTCUT_FIND_NEXT, SHORTCUT_GENERAL_ACTION, SHORTCUT_FIND_CLOSE, ICON_PREV, \
+from pyqt_openai import DEFAULT_SHORTCUT_FIND_PREV, DEFAULT_SHORTCUT_FIND_NEXT, DEFAULT_SHORTCUT_GENERAL_ACTION, DEFAULT_SHORTCUT_FIND_CLOSE, ICON_PREV, \
     ICON_NEXT, ICON_CASE, ICON_WORD, ICON_REGEX, ICON_CLOSE
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.widgets.button import Button
@@ -38,14 +38,15 @@ class FindTextWidget(QWidget):
         self.__cnt_cur_idx_text = '{0}/{1}'
         self.__cnt_lbl = QLabel(self.__cnt_init_text.format(0))
 
+
         self.__prevBtn = Button()
         self.__prevBtn.setStyleAndIcon(ICON_PREV)
-        self.__prevBtn.setShortcut(SHORTCUT_FIND_PREV)
+        self.__prevBtn.setShortcut(DEFAULT_SHORTCUT_FIND_PREV)
 
         self.__nextBtn = Button()
-        self.__nextBtn.setShortcut(SHORTCUT_GENERAL_ACTION)
+        self.__nextBtn.setShortcut(DEFAULT_SHORTCUT_GENERAL_ACTION)
         self.__nextBtn.setStyleAndIcon(ICON_NEXT)
-        self.__nextBtn.setShortcut(SHORTCUT_FIND_NEXT)
+        self.__nextBtn.setShortcut(DEFAULT_SHORTCUT_FIND_NEXT)
 
         self.__prevBtn.clicked.connect(self.prev)
         self.__nextBtn.clicked.connect(self.next)
@@ -70,15 +71,15 @@ class FindTextWidget(QWidget):
         self.__closeBtn = Button()
         self.__closeBtn.setVisible(False)
         self.__closeBtn.clicked.connect(self.close)
-        self.__closeBtn.setShortcut(SHORTCUT_FIND_CLOSE)
+        self.__closeBtn.setShortcut(DEFAULT_SHORTCUT_FIND_CLOSE)
         self.__closeBtn.setStyleAndIcon(ICON_CLOSE)
 
-        self.__prevBtn.setToolTip(LangClass.TRANSLATIONS['Previous Occurrence'])
-        self.__nextBtn.setToolTip(LangClass.TRANSLATIONS['Next Occurrence'])
+        self.__prevBtn.setToolTip(LangClass.TRANSLATIONS['Previous Occurrence'] + f' ({DEFAULT_SHORTCUT_FIND_PREV})')
+        self.__nextBtn.setToolTip(LangClass.TRANSLATIONS['Next Occurrence'] + f' ({DEFAULT_SHORTCUT_FIND_NEXT})')
         self.__caseBtn.setToolTip(LangClass.TRANSLATIONS['Match Case'])
         self.__wordBtn.setToolTip(LangClass.TRANSLATIONS['Match Word'])
         self.__regexBtn.setToolTip(LangClass.TRANSLATIONS['Regex'])
-        self.__closeBtn.setToolTip(LangClass.TRANSLATIONS['Close'])
+        self.__closeBtn.setToolTip(LangClass.TRANSLATIONS['Close'] + f' ({DEFAULT_SHORTCUT_FIND_CLOSE})')
 
         lay = QHBoxLayout()
         lay.addWidget(self.__findTextLineEdit)

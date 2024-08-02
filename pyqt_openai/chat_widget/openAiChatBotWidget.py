@@ -9,8 +9,8 @@ from qtpy.QtWidgets import QHBoxLayout, QWidget, QSizePolicy, QVBoxLayout, QFram
 
 from pyqt_openai import THREAD_TABLE_NAME, INI_FILE_NAME, JSON_FILE_EXT_LIST_STR, ICON_SIDEBAR, ICON_SETTING, \
     ICON_PROMPT, \
-    FILE_NAME_LENGTH, MAXIMUM_MESSAGES_IN_PARAMETER, SHORTCUT_FIND, SHORTCUT_LEFT_SIDEBAR_WINDOW, \
-    SHORTCUT_CONTROL_PROMPT_WINDOW, SHORTCUT_RIGHT_SIDEBAR_WINDOW, QFILEDIALOG_DEFAULT_DIRECTORY
+    FILE_NAME_LENGTH, MAXIMUM_MESSAGES_IN_PARAMETER, DEFAULT_SHORTCUT_FIND, DEFAULT_SHORTCUT_LEFT_SIDEBAR_WINDOW, \
+    DEFAULT_SHORTCUT_CONTROL_PROMPT_WINDOW, DEFAULT_SHORTCUT_RIGHT_SIDEBAR_WINDOW, QFILEDIALOG_DEFAULT_DIRECTORY
 from pyqt_openai.chat_widget.chatNavWidget import ChatNavWidget
 from pyqt_openai.chat_widget.chatWidget import ChatWidget
 from pyqt_openai.chat_widget.prompt import Prompt
@@ -77,26 +77,26 @@ class OpenAIChatBotWidget(QWidget):
         self.__sideBarBtn = Button()
         self.__sideBarBtn.setStyleAndIcon(ICON_SIDEBAR)
         self.__sideBarBtn.setCheckable(True)
-        self.__sideBarBtn.setToolTip(LangClass.TRANSLATIONS['Chat List'])
+        self.__sideBarBtn.setToolTip(LangClass.TRANSLATIONS['Chat List'] + f' ({DEFAULT_SHORTCUT_LEFT_SIDEBAR_WINDOW})')
         self.__sideBarBtn.setChecked(self.__show_chat_list)
         self.__sideBarBtn.toggled.connect(self.__toggle_sidebar)
-        self.__sideBarBtn.setShortcut(SHORTCUT_LEFT_SIDEBAR_WINDOW)
+        self.__sideBarBtn.setShortcut(DEFAULT_SHORTCUT_LEFT_SIDEBAR_WINDOW)
 
         self.__settingBtn = Button()
         self.__settingBtn.setStyleAndIcon(ICON_SETTING)
-        self.__settingBtn.setToolTip(LangClass.TRANSLATIONS['Chat Settings'])
+        self.__settingBtn.setToolTip(LangClass.TRANSLATIONS['Chat Settings'] + f' ({DEFAULT_SHORTCUT_RIGHT_SIDEBAR_WINDOW})')
         self.__settingBtn.setCheckable(True)
         self.__settingBtn.setChecked(self.__show_setting)
         self.__settingBtn.toggled.connect(self.__toggle_setting)
-        self.__settingBtn.setShortcut(SHORTCUT_RIGHT_SIDEBAR_WINDOW)
+        self.__settingBtn.setShortcut(DEFAULT_SHORTCUT_RIGHT_SIDEBAR_WINDOW)
 
         self.__promptBtn = Button()
         self.__promptBtn.setStyleAndIcon(ICON_PROMPT)
-        self.__promptBtn.setToolTip(LangClass.TRANSLATIONS['Prompt Generator'])
+        self.__promptBtn.setToolTip(LangClass.TRANSLATIONS['Prompt Generator'] + f' ({DEFAULT_SHORTCUT_CONTROL_PROMPT_WINDOW})')
         self.__promptBtn.setCheckable(True)
         self.__promptBtn.setChecked(self.__show_prompt)
         self.__promptBtn.toggled.connect(self.__toggle_prompt)
-        self.__promptBtn.setShortcut(SHORTCUT_CONTROL_PROMPT_WINDOW)
+        self.__promptBtn.setShortcut(DEFAULT_SHORTCUT_CONTROL_PROMPT_WINDOW)
 
         sep = QFrame()
         sep.setFrameShape(QFrame.Shape.VLine)
@@ -106,7 +106,7 @@ class OpenAIChatBotWidget(QWidget):
         toggleFindToolButton.setCheckable(True)
         toggleFindToolButton.setChecked(True)
         toggleFindToolButton.toggled.connect(self.__chatWidget.toggleMenuWidget)
-        toggleFindToolButton.setShortcut(SHORTCUT_FIND)
+        toggleFindToolButton.setShortcut(DEFAULT_SHORTCUT_FIND)
 
         lay = QHBoxLayout()
         lay.addWidget(self.__sideBarBtn)
