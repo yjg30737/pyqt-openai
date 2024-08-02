@@ -10,7 +10,7 @@ from qtpy.QtWidgets import QMainWindow, QToolBar, QHBoxLayout, QDialog, QLineEdi
 
 from pyqt_openai import INI_FILE_NAME, DEFAULT_SHORTCUT_FULL_SCREEN, \
     APP_INITIAL_WINDOW_SIZE, APP_NAME, APP_ICON, ICON_STACKONTOP, ICON_CUSTOMIZE, ICON_FULLSCREEN, ICON_CLOSE, \
-    DEFAULT_SHORTCUT_SETTING
+    DEFAULT_SHORTCUT_SETTING, TRANSPARENT_RANGE, TRANSPARENT_INIT_VAL
 from pyqt_openai.aboutDialog import AboutDialog
 from pyqt_openai.chat_widget.openAiChatBotWidget import OpenAIChatBotWidget
 from pyqt_openai.customizeDialog import CustomizeDialog
@@ -113,8 +113,8 @@ class MainWindow(QMainWindow):
 
         self.__transparentAction = QWidgetAction(self)
         self.__transparentSpinBox = QSpinBox()
-        self.__transparentSpinBox.setRange(20, 100)
-        self.__transparentSpinBox.setValue(100)
+        self.__transparentSpinBox.setRange(*TRANSPARENT_RANGE)
+        self.__transparentSpinBox.setValue(TRANSPARENT_INIT_VAL)
         self.__transparentSpinBox.valueChanged.connect(self.__setTransparency)
         self.__transparentSpinBox.setToolTip(LangClass.TRANSLATIONS['Set Transparency of Window'])
         self.__transparentSpinBox.setMinimumWidth(100)

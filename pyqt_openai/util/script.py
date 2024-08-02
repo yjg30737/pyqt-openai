@@ -20,7 +20,7 @@ from pathlib import Path
 import requests
 from jinja2 import Template
 from qtpy.QtCore import QSettings, Qt
-from qtpy.QtWidgets import QMessageBox
+from qtpy.QtWidgets import QMessageBox, QFrame
 
 from pyqt_openai import INI_FILE_NAME, DEFAULT_FONT_SIZE, DEFAULT_FONT_FAMILY, MAIN_INDEX, \
     PROMPT_NAME_REGEX, PAYPAL_URL, BUYMEACOFFEE_URL, PROMPT_MAIN_KEY_NAME, PROMPT_BEGINNING_KEY_NAME, \
@@ -354,6 +354,7 @@ def get_content_of_text_file_for_send(filenames: list[str]):
     prompt_context = f'== Source Start ==\n{source_context}== Source End =='
     return prompt_context
 
+# FIXME This should be used but this has a couple of flaws that need to be fixed
 def moveCursorToOtherPrompt(direction, textGroup):
     """
     Move the cursor to another prompt based on the direction
@@ -379,3 +380,14 @@ def moveCursorToOtherPrompt(direction, textGroup):
         switch_focus(PROMPT_JSON_KEY_NAME, PROMPT_END_KEY_NAME)
     else:
         print('Invalid direction:', direction)
+
+def getSeperator(orientation='horizontal'):
+    sep = QFrame()
+    if orientation == 'horizontal':
+        sep.setFrameShape(QFrame.Shape.HLine)
+    elif orientation == 'vertical':
+        sep.setFrameShape(QFrame.Shape.VLine)
+    else:
+        raise ValueError('Invalid orientation')
+    sep.setFrameShadow(QFrame.Shadow.Sunken)
+    return sep

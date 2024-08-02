@@ -29,6 +29,10 @@ APP_NAME = pyproject_data["project"]["name"]
 CONTACT = pyproject_data["project"]["authors"][0]['email']
 APP_ICON = 'icon.png'
 APP_INITIAL_WINDOW_SIZE = (1280, 768)
+
+TRANSPARENT_RANGE = 20, 100
+TRANSPARENT_INIT_VAL = 100
+
 LICENSE = pyproject_data["project"]["license"]['text']
 LICENSE_URL = 'https://github.com/yjg30737/pyqt-openai/blob/main/LICENSE'
 PAYPAL_URL = 'https://paypal.me/yjg30737'
