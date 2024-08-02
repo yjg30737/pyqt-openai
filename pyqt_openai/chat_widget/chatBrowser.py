@@ -181,7 +181,7 @@ class ChatBrowser(QScrollArea):
         return self.__getLabelsByType(AIChatUnit)
 
     def isFinishedByLength(self):
-        return 1
+        return self.__getLastUnit().getResponseInfo().finish_reason == 'length'
 
     def __clearFormatting(self, label):
         cursor = label.textCursor()

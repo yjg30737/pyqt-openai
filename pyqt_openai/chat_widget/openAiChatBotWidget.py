@@ -59,8 +59,6 @@ class OpenAIChatBotWidget(QWidget):
 
         self.__prompt = Prompt()
         self.__prompt.onStoppedClicked.connect(self.__stopResponse)
-        self.__prompt.onContinuedClicked.connect(self.__continueResponse)
-        self.__prompt.onRegenerateClicked.connect(self.__regenerateResponse)
 
         self.__lineEdit = self.__prompt.getMainPromptInput()
         self.__aiPlaygroundWidget = AIPlaygroundWidget()
@@ -226,7 +224,7 @@ class OpenAIChatBotWidget(QWidget):
     def refreshCustomizedInformation(self):
         self.__chatWidget.refreshCustomizedInformation()
 
-    def __chat(self, continue_f=False):
+    def __chat(self):
         try:
             # Get necessary parameters
             stream = self.__settings_ini.value('stream', type=bool)
@@ -303,12 +301,7 @@ class OpenAIChatBotWidget(QWidget):
             # Create a container for the user's input and output from the chatbot
             container = ChatMessageContainer(**container_param)
 
-            # For make chatbot continue to respond
-            # This is like easter egg, because chatbot won't respond this long unless you set the MAXIMUM_MESSAGES_IN_PARAMETER to a incredibly high number
-            if continue_f:
-                query_text = LangClass.TRANSLATIONS['Continue to respond.']
-            else:
-                query_text = self.__prompt.getContent()
+            query_text = self.__prompt.getContent()
             self.__browser.showLabel(query_text, False, container)
 
             # Run a different thread based on whether the llama-index is enabled or not.
@@ -339,29 +332,17 @@ class OpenAIChatBotWidget(QWidget):
     def __stopResponse(self):
         self.__t.stop_streaming()
 
-    def __continueResponse(self):
-        self.__chat(True)
-
-    def __regenerateResponse(self):
-        # TODO
-        """
-        get last question and make it another response based on it
-        """
-        pass
-
-    def __toggleWidgetWhileChatting(self, f, continue_f=False):
+    def __toggleWidgetWhileChatting(self, f):
         self.__lineEdit.setExecuteEnabled(f)
         self.__chatNavWidget.setEnabled(f)
-        self.__prompt.activateDuringGeneratingWidget(not f)
-        self.__prompt.activateAfterResponseWidget(f, continue_f)
+        self.__prompt.activateAfterResponseWidget(f)
 
     def __beforeGenerated(self):
         self.__toggleWidgetWhileChatting(False)
         self.__lineEdit.clear()
 
     def __afterGenerated(self):
-        continue_f = self.__browser.isFinishedByLength() == 'Finish Reason: length'
-        self.__toggleWidgetWhileChatting(True, continue_f)
+        self.__toggleWidgetWhileChatting(True)
         self.__lineEdit.setFocus()
         if not self.isVisible():
             if self.__notify_finish:
@@ -375,13 +356,11 @@ class OpenAIChatBotWidget(QWidget):
         conv_data = DB.selectCertainThreadMessages(id)
         self.__chatWidget.showTitle(title)
         self.__browser.replaceThread(conv_data, id)
-        self.__prompt.activateDuringGeneratingWidget(False)
         self.__prompt.activateAfterResponseWidget(False)
 
     def __clearChat(self):
         self.__chatWidget.showTitle('')
         self.__browser.resetChatWidget(0)
-        self.__prompt.activateDuringGeneratingWidget(False)
         self.__prompt.activateAfterResponseWidget(False)
 
     def __addThread(self):

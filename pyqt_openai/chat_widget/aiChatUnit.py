@@ -109,8 +109,16 @@ class AIChatUnit(QWidget):
         """
         Get the response information
         :return: ChatMessageContainer
+
+        Note: This function is used to get the response information after the response is generated.
         """
-        return self.__result_info
+        try:
+            if self.__result_info and isinstance(self.__result_info, ChatMessageContainer):
+                return self.__result_info
+            else:
+                raise AttributeError('Response information is not available')
+        except AttributeError as e:
+            raise e
 
     def afterResponse(self, arg: ChatMessageContainer):
         self.toggleGUI(True)

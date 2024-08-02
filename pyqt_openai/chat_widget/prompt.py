@@ -20,9 +20,7 @@ from pyqt_openai.widgets.toolButton import ToolButton
 
 class Prompt(QWidget):
     onStoppedClicked = Signal()
-    onContinuedClicked = Signal()
-    onRegenerateClicked = Signal()
-    
+
     def __init__(self):
         super().__init__()
         self.__initVal()
@@ -47,22 +45,6 @@ class Prompt(QWidget):
         lay.setContentsMargins(0, 0, 0, 0)
         lay.setSpacing(0)
         lay.addWidget(self.__stopBtn)
-        lay.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        self.__controlWidgetDuringGeneration = QWidget()
-        self.__controlWidgetDuringGeneration.setLayout(lay)
-
-        self.__continueBtn = QPushButton(LangClass.TRANSLATIONS['Continue'])
-        self.__continueBtn.clicked.connect(self.onContinuedClicked.emit)
-
-        self.__regenerateBtn = QPushButton(LangClass.TRANSLATIONS['Regenerate'])
-        self.__regenerateBtn.clicked.connect(self.onRegenerateClicked.emit)
-
-        lay = QHBoxLayout()
-        lay.setContentsMargins(0, 0, 0, 0)
-        lay.setSpacing(0)
-        lay.addWidget(self.__continueBtn)
-        lay.addWidget(self.__regenerateBtn)
         lay.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.__controlWidgetAfterGeneration = QWidget()
@@ -161,7 +143,6 @@ class Prompt(QWidget):
         bottomWidget.setLayout(lay)
 
         lay = QVBoxLayout()
-        lay.addWidget(self.__controlWidgetDuringGeneration)
         lay.addWidget(self.__controlWidgetAfterGeneration)
         lay.addWidget(bottomWidget)
         lay.setContentsMargins(0, 0, 0, 0)
@@ -244,12 +225,8 @@ class Prompt(QWidget):
         elif key == 'enter':
             self.executeCommand(self.__suggestion_list.currentItem())
 
-    def activateDuringGeneratingWidget(self, f):
-        self.__controlWidgetDuringGeneration.setVisible(f)
-
-    def activateAfterResponseWidget(self, f, continue_f=False):
+    def activateAfterResponseWidget(self, f):
         self.__controlWidgetAfterGeneration.setVisible(f)
-        self.__continueBtn.setVisible(continue_f)
 
     def executeCommand(self, item):
         self.__textEditGroup.executeCommand(item, self.__p_grp)
