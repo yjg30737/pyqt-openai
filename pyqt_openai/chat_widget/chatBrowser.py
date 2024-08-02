@@ -45,11 +45,11 @@ class ChatBrowser(QScrollArea):
         unit = self.__setLabel(text, stream_f, arg.role)
         if not stream_f:
             arg.id = DB.insertMessage(arg)
-            self.__showConvResultInfo(unit, arg)
+            self.__setResponseInfo(unit, arg)
 
     def showLabelForFavorite(self, arg: ChatMessageContainer):
         unit = self.__setLabel(arg.content, False, arg.role)
-        self.__showConvResultInfo(unit, arg)
+        self.__setResponseInfo(unit, arg)
 
     def __getLastUnit(self) -> AIChatUnit | None:
         item = self.widget().layout().itemAt(self.widget().layout().count() - 1)
@@ -58,7 +58,7 @@ class ChatBrowser(QScrollArea):
         else:
             return None
 
-    def __showConvResultInfo(self, unit, arg: ChatMessageContainer):
+    def __setResponseInfo(self, unit, arg: ChatMessageContainer):
         if isinstance(unit, AIChatUnit):
             unit.afterResponse(arg)
 
@@ -66,7 +66,7 @@ class ChatBrowser(QScrollArea):
         unit = self.__getLastUnit()
         arg.content = self.getLastResponse()
         arg.id = DB.insertMessage(arg)
-        self.__showConvResultInfo(unit, arg)
+        self.__setResponseInfo(unit, arg)
 
     def __setLabel(self, text, stream_f, role):
         chatUnit = QLabel()
@@ -114,22 +114,8 @@ class ChatBrowser(QScrollArea):
             if lay.itemAt(i) and lay.itemAt(i).widget():
                 widget = lay.itemAt(i).widget()
                 if isinstance(widget, AIChatUnit):
-                    return widget.text()
+                    return widget.getResponseInfo().content
         return ''
-
-    def getEveryResponse(self):
-        lay = self.widget().layout()
-        if lay:
-            text_lst = []
-            for i in range(lay.count()):
-                item = lay.itemAt(i)
-                if item and item.widget():
-                    widget = item.widget()
-                    if isinstance(widget, AIChatUnit) and i % 2 == 1:
-                        text_lst.append(widget.text())
-            return '\n'.join(text_lst)
-        else:
-            return ''
 
     def clear(self):
         """
@@ -153,32 +139,58 @@ class ChatBrowser(QScrollArea):
         self.clear()
         self.setCurId(id)
 
-    def __getEveryLabels(self):
+    def __getLabelsByType(self, label_type=None):
+        """
+        Retrieve all labels from the widget's layout, optionally filtering by a specific label type.
+
+        :param label_type: The type of label to filter by (e.g., UserChatUnit, AIChatUnit). If None, retrieves all labels.
+        :return: A list of label widgets.
+        """
         lay = self.widget().layout()
-        labels = [lay.itemAt(i).widget() for i in range(lay.count()) if lay.itemAt(i)]
+        labels = []
+        for i in range(lay.count()):
+            item = lay.itemAt(i)
+            if item:
+                widget = item.widget()
+                if label_type is None or isinstance(widget, label_type):
+                    labels.append(widget)
         return labels
+
+    def __getEveryLabels(self):
+        """
+        Retrieve all labels from the widget's layout.
+
+        :return: A list of all label widgets.
+        """
+        return self.__getLabelsByType()
 
     def __getEveryUserLabels(self):
-        lay = self.widget().layout()
-        labels = [lay.itemAt(i).widget() for i in range(lay.count()) if lay.itemAt(i) and isinstance(lay.itemAt(i).widget(), UserChatUnit)]
-        return labels
+        """
+        Retrieve all user-specific labels from the widget's layout.
+
+        :return: A list of UserChatUnit label widgets.
+        """
+        return self.__getLabelsByType(UserChatUnit)
 
     def __getEveryAILabels(self):
-        lay = self.widget().layout()
-        labels = [lay.itemAt(i).widget() for i in range(lay.count()) if lay.itemAt(i) and isinstance(lay.itemAt(i).widget(), AIChatUnit)]
-        return labels
+        """
+        Retrieve all AI-specific labels from the widget's layout.
+
+        :return: A list of AIChatUnit label widgets.
+        """
+        return self.__getLabelsByType(AIChatUnit)
 
     def isFinishedByLength(self):
         return 1
 
-    def clearFormatting(self, label):
+    def __clearFormatting(self, label):
         cursor = label.textCursor()
         cursor.select(QTextCursor.Document)
         format = QTextCharFormat()
         cursor.setCharFormat(format)
 
-    def highlightText(self, label, pattern, case_sensitive, word_only):
-        self.clearFormatting(label)  # Clear any previous formatting
+    def __highlightText(self, label, pattern, case_sensitive, word_only):
+        self.__clearFormatting(label)  # Clear any previous formatting
 
         cursor = label.textCursor()
         format = QTextCharFormat()
@@ -195,7 +207,7 @@ class ChatBrowser(QScrollArea):
         # Find and highlight all occurrences of the pattern
         regex_flags = 0 if case_sensitive else re.IGNORECASE
         regex = re.compile(pattern, regex_flags)
-        text = label.toPlainText()
+        text = label.getResponseInfo().content
 
         for match in regex.finditer(text):
             start, end = match.span()
@@ -216,16 +228,16 @@ class ChatBrowser(QScrollArea):
                         result = re.search(pattern, _['text'], re.IGNORECASE)
                         if result:
                             res_lbl.append(_)
-                            self.highlightText(_['class'], pattern, case_sensitive, word_only)
+                            self.__highlightText(_['class'], pattern, case_sensitive, word_only)
                     else:
                         result = re.search(pattern, _['text'])
                         if result:
                             res_lbl.append(_)
-                            self.highlightText(_['class'], pattern, case_sensitive, word_only)
+                            self.__highlightText(_['class'], pattern, case_sensitive, word_only)
                 else:
                     if _['text'].find(text) != -1:
                         res_lbl.append(_)
-                        self.highlightText(_['class'], pattern, case_sensitive, word_only)
+                        self.__highlightText(_['class'], pattern, case_sensitive, word_only)
             else:
                 if case_sensitive:
                     if word_only:
@@ -233,24 +245,24 @@ class ChatBrowser(QScrollArea):
                         result = re.search(pattern, _['text'])
                         if result:
                             res_lbl.append(_)
-                            self.highlightText(_['class'], pattern, case_sensitive, word_only)
+                            self.__highlightText(_['class'], pattern, case_sensitive, word_only)
                     else:
                         if _['text'].find(text) != -1:
                             res_lbl.append(_)
-                            self.highlightText(_['class'], pattern, case_sensitive, word_only)
+                            self.__highlightText(_['class'], pattern, case_sensitive, word_only)
                 else:
                     if word_only:
                         pattern = r'\b' + re.escape(text) + r'\b'
                         result = re.search(pattern, _['text'], re.IGNORECASE)
                         if result:
                             res_lbl.append(_)
-                            self.highlightText(_['class'], pattern, case_sensitive, word_only)
+                            self.__highlightText(_['class'], pattern, case_sensitive, word_only)
                     else:
                         pattern = re.escape(text)
                         result = re.search(pattern, _['text'], re.IGNORECASE)
                         if result:
                             res_lbl.append(_)
-                            self.highlightText(_['class'], pattern, case_sensitive, word_only)
+                            self.__highlightText(_['class'], pattern, case_sensitive, word_only)
 
         return res_lbl
 
@@ -265,7 +277,7 @@ class ChatBrowser(QScrollArea):
             arg = args[i]
             # stream is False no matter what
             unit = self.__setLabel(arg.content, False, arg.role)
-            self.__showConvResultInfo(unit, arg)
+            self.__setResponseInfo(unit, arg)
 
     def replaceThreadForFavorite(self, args: List[ChatMessageContainer]):
         """
@@ -277,7 +289,7 @@ class ChatBrowser(QScrollArea):
             arg = args[i]
             # stream is False no matter what
             unit = self.__setLabel(arg.content, False, arg.role)
-            self.__showConvResultInfo(unit, arg)
+            self.__setResponseInfo(unit, arg)
 
     def setUserImage(self, img):
         self.__user_image = img

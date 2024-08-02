@@ -208,7 +208,7 @@ class Prompt(QWidget):
     def __updateSuggestions(self):
         w = self.__textEditGroup.getCurrentTextEdit()
         if w and self.__commandEnabled:
-            input_text_chunk = w.toPlainText().split()
+            input_text_chunk = w.getResponse().content.split()
             input_text_chunk_exists = len(input_text_chunk) > 0
             self.__suggestionWidget.setVisible(input_text_chunk_exists)
             if input_text_chunk_exists:
