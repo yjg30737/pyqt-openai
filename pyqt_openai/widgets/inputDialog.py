@@ -2,7 +2,7 @@ from qtpy.QtCore import Qt
 from qtpy.QtWidgets import QDialog, QVBoxLayout, QLineEdit, QPushButton, QHBoxLayout, QWidget
 
 from pyqt_openai.lang.translations import LangClass
-from pyqt_openai.util.script import getSeperator
+from pyqt_openai.util.script import getSeparator
 
 
 class InputDialog(QDialog):
@@ -16,7 +16,7 @@ class InputDialog(QDialog):
 
         self.__newName = QLineEdit(text)
         self.__newName.textChanged.connect(self.__setAccept)
-        sep = getSeperator('horizontal')
+        sep = getSeparator('horizontal')
 
         self.__okBtn = QPushButton(LangClass.TRANSLATIONS['OK'])
         self.__okBtn.clicked.connect(self.accept)

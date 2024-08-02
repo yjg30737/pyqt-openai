@@ -5,12 +5,13 @@ from qtpy.QtCore import QThread, Signal, QSettings
 from qtpy.QtWidgets import QMessageBox, QScrollArea, QWidget, QCheckBox, QSpinBox, QGroupBox, QVBoxLayout, QPushButton, \
     QComboBox, \
     QPlainTextEdit, \
-    QFormLayout, QLabel, QFrame, QRadioButton
+    QFormLayout, QLabel, QRadioButton
 
 from pyqt_openai import INI_FILE_NAME, IMAGE_DEFAULT_SAVE_DIRECTORY
+from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ImagePromptContainer
 from pyqt_openai.pyqt_openai_data import OPENAI_STRUCT
-from pyqt_openai.lang.translations import LangClass
+from pyqt_openai.util.script import getSeparator
 from pyqt_openai.widgets.findPathWidget import FindPathWidget
 from pyqt_openai.widgets.notifier import NotifierWidget
 from pyqt_openai.widgets.toast import Toast
@@ -229,9 +230,7 @@ class DallEControlWidget(QScrollArea):
 
         paramGrpBox.setLayout(lay)
 
-        sep = QFrame()
-        sep.setFrameShape(QFrame.Shape.HLine)
-        sep.setFrameShadow(QFrame.Shadow.Sunken)
+        sep = getSeparator('horizontal')
 
         lay = QVBoxLayout()
         lay.addWidget(self.__generalGrpBox)

@@ -1,6 +1,5 @@
 from qtpy.QtCore import Qt
 from qtpy.QtWidgets import QPushButton, QCheckBox, QDialogButtonBox, QDialog, QVBoxLayout, \
-    QFrame, \
     QLabel
 
 from pyqt_openai import SENTENCE_PROMPT_GROUP_SAMPLE, FORM_PROMPT_GROUP_SAMPLE
@@ -28,10 +27,6 @@ class PromptGroupExportDialog(QDialog):
         btn.clicked.connect(self.__showJsonSample)
 
         self.__jsonSampleWidget = JSONEditor()
-
-        sep = QFrame()
-        sep.setFrameShape(QFrame.HLine)
-        sep.setFrameShadow(QFrame.Sunken)
 
         allCheckBox = QCheckBox(LangClass.TRANSLATIONS['Select All'])
         self.__listWidget = CheckBoxListWidget()

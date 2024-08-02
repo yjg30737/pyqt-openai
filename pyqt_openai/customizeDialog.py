@@ -1,12 +1,13 @@
 from qtpy.QtCore import Qt
 from qtpy.QtGui import QFont
-from qtpy.QtWidgets import QDialog, QFrame, QPushButton, QHBoxLayout, QVBoxLayout, QWidget, QFormLayout, QSplitter, \
+from qtpy.QtWidgets import QDialog, QPushButton, QHBoxLayout, QVBoxLayout, QWidget, QFormLayout, QSplitter, \
     QSizePolicy
 
 from pyqt_openai import IMAGE_FILE_EXT_LIST_STR, DEFAULT_ICON_SIZE
 from pyqt_openai.fontWidget import FontWidget
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import CustomizeParamsContainer
+from pyqt_openai.util.script import getSeparator
 from pyqt_openai.widgets.circleProfileImage import RoundedImage
 from pyqt_openai.widgets.findPathWidget import FindPathWidget
 from pyqt_openai.widgets.normalImageView import NormalImageView
@@ -94,9 +95,7 @@ class CustomizeDialog(QDialog):
         self.__splitter.setStyleSheet("QSplitterHandle {background-color: lightgray;}")
         self.__splitter.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
 
-        sep = QFrame()
-        sep.setFrameShape(QFrame.Shape.HLine)
-        sep.setFrameShadow(QFrame.Shadow.Sunken)
+        sep = getSeparator('horizontal')
 
         self.__okBtn = QPushButton(LangClass.TRANSLATIONS['OK'])
         self.__okBtn.clicked.connect(self.accept)

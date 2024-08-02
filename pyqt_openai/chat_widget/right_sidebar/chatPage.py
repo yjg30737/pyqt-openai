@@ -1,12 +1,13 @@
 from qtpy.QtCore import Qt, Signal, QSettings
 from qtpy.QtWidgets import QWidget, QDoubleSpinBox, QSpinBox, QFormLayout, QSizePolicy, QComboBox, QTextEdit, \
-    QLabel, QVBoxLayout, QCheckBox, QPushButton, QScrollArea, QGroupBox, QFrame
+    QLabel, QVBoxLayout, QCheckBox, QPushButton, QScrollArea, QGroupBox
 
 from pyqt_openai import INI_FILE_NAME, DEFAULT_SHORTCUT_JSON_MODE, OPENAI_TEMPERATURE_RANGE, OPENAI_TEMPERATURE_STEP, \
     MAX_TOKENS_RANGE, TOP_P_RANGE, TOP_P_STEP, FREQUENCY_PENALTY_RANGE, PRESENCE_PENALTY_STEP, PRESENCE_PENALTY_RANGE, \
     FREQUENCY_PENALTY_STEP
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.pyqt_openai_data import get_chat_model, LLAMAINDEX_WRAPPER
+from pyqt_openai.util.script import getSeparator
 
 
 class ChatPage(QWidget):
@@ -155,9 +156,7 @@ class ChatPage(QWidget):
         useMaxTokenChkBox.setText(LangClass.TRANSLATIONS['Use Max Tokens'])
         self.__maxTokensSpinBox.setEnabled(self.__use_max_tokens)
 
-        sep = QFrame()
-        sep.setFrameShape(QFrame.HLine)
-        sep.setFrameShadow(QFrame.Sunken)
+        sep = getSeparator('horizontal')
 
         lay = QVBoxLayout()
         lay.addWidget(systemlbl)

@@ -1,18 +1,20 @@
 import os
 
 from qtpy.QtCore import Qt, QSettings
-from qtpy.QtWidgets import QHBoxLayout, QVBoxLayout, QFrame, QWidget, QSplitter
+from qtpy.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget, QSplitter
 
-from pyqt_openai import IMAGE_TABLE_NAME, INI_FILE_NAME, ICON_HISTORY, ICON_SETTING, DEFAULT_SHORTCUT_LEFT_SIDEBAR_WINDOW, \
+from pyqt_openai import IMAGE_TABLE_NAME, INI_FILE_NAME, ICON_HISTORY, ICON_SETTING, \
+    DEFAULT_SHORTCUT_LEFT_SIDEBAR_WINDOW, \
     DEFAULT_SHORTCUT_RIGHT_SIDEBAR_WINDOW
 from pyqt_openai.dalle_widget.dallEControlWidget import DallEControlWidget
+from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ImagePromptContainer
 from pyqt_openai.pyqt_openai_data import DB
-from pyqt_openai.lang.translations import LangClass
-from pyqt_openai.util.script import get_image_filename_for_saving, open_directory, get_image_prompt_filename_for_saving
+from pyqt_openai.util.script import get_image_filename_for_saving, open_directory, get_image_prompt_filename_for_saving, \
+    getSeparator
+from pyqt_openai.widgets.button import Button
 from pyqt_openai.widgets.imageNavWidget import ImageNavWidget
 from pyqt_openai.widgets.notifier import NotifierWidget
-from pyqt_openai.widgets.button import Button
 from pyqt_openai.widgets.thumbnailView import ThumbnailView
 
 
@@ -76,9 +78,7 @@ class DallEWidget(QWidget):
         self.__menuWidget.setLayout(lay)
         self.__menuWidget.setMaximumHeight(self.__menuWidget.sizeHint().height())
 
-        sep = QFrame()
-        sep.setFrameShape(QFrame.Shape.HLine)
-        sep.setFrameShadow(QFrame.Shadow.Sunken)
+        sep = getSeparator('horizontal')
 
         mainWidget = QSplitter()
         mainWidget.addWidget(self.__imageNavWidget)

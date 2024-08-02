@@ -1,8 +1,9 @@
 from qtpy.QtCore import Qt
-from qtpy.QtWidgets import QDialog, QVBoxLayout, QPlainTextEdit, QLineEdit, QFrame, QPushButton, QHBoxLayout, QWidget, QMessageBox
+from qtpy.QtWidgets import QDialog, QVBoxLayout, QPlainTextEdit, QLineEdit, QPushButton, QHBoxLayout, QWidget, \
+    QMessageBox
 
 from pyqt_openai.lang.translations import LangClass
-from pyqt_openai.util.script import is_prompt_entry_name_valid
+from pyqt_openai.util.script import is_prompt_entry_name_valid, getSeparator
 
 
 class PromptEntryDirectInputDialog(QDialog):
@@ -26,9 +27,7 @@ class PromptEntryDirectInputDialog(QDialog):
         self.__content.setPlaceholderText(LangClass.TRANSLATIONS['Content'])
         self.__content.textChanged.connect(lambda x: self.__name.text().strip() != '' and self.__okBtn.setEnabled(x.strip() != ''))
 
-        sep = QFrame()
-        sep.setFrameShape(QFrame.Shape.HLine)
-        sep.setFrameShadow(QFrame.Shadow.Sunken)
+        sep = getSeparator('horizontal')
 
         self.__okBtn = QPushButton(LangClass.TRANSLATIONS['OK'])
         self.__okBtn.clicked.connect(self.__accept)

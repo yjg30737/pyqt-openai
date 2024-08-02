@@ -2,10 +2,11 @@ import os
 
 from qtpy.QtCore import Signal
 from qtpy.QtWidgets import QListWidget, QWidget, QVBoxLayout, QLabel, QHBoxLayout, QSpacerItem, QPushButton, \
-    QSizePolicy, QFileDialog, QFrame
+    QSizePolicy, QFileDialog
 
 from pyqt_openai import TEXT_FILE_EXT_LIST, QFILEDIALOG_DEFAULT_DIRECTORY
 from pyqt_openai.lang.translations import LangClass
+from pyqt_openai.util.script import getSeparator
 
 
 class FileListWidget(QWidget):
@@ -40,9 +41,7 @@ class FileListWidget(QWidget):
         self.__listWidget = QListWidget()
         self.__listWidget.itemClicked.connect(self.__sendDirectory)
 
-        sep = QFrame()
-        sep.setFrameShape(QFrame.Shape.HLine)
-        sep.setFrameShadow(QFrame.Shadow.Sunken)
+        sep = getSeparator('horizontal')
 
         lay = QVBoxLayout()
         lay.addWidget(topWidget)

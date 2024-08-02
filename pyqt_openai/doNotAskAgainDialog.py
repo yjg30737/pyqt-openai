@@ -1,8 +1,9 @@
 from qtpy.QtCore import Qt, Signal
-from qtpy.QtWidgets import QDialog, QLabel, QPushButton, QVBoxLayout, QFrame, QHBoxLayout, QWidget, \
+from qtpy.QtWidgets import QDialog, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QWidget, \
     QCheckBox, QSpacerItem, QSizePolicy
 
 from pyqt_openai.lang.translations import LangClass
+from pyqt_openai.util.script import getSeparator
 
 
 class DoNotAskAgainDialog(QDialog):
@@ -42,9 +43,7 @@ class DoNotAskAgainDialog(QDialog):
         self.doNotAskAgainCheckBox.setChecked(self.__do_not_ask_again)
         self.doNotAskAgainCheckBox.stateChanged.connect(self.__onCheckBoxStateChanged)
 
-        sep = QFrame()
-        sep.setFrameShape(QFrame.Shape.HLine)
-        sep.setFrameShadow(QFrame.Shadow.Sunken)
+        sep = getSeparator('horizontal')
 
         lay = QHBoxLayout()
         lay.addWidget(self.doNotAskAgainCheckBox)

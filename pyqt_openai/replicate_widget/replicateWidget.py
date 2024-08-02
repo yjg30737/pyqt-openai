@@ -1,19 +1,20 @@
 import os
 
 from qtpy.QtCore import Qt, QSettings
-from qtpy.QtWidgets import QHBoxLayout, QVBoxLayout, QFrame, QWidget, QSplitter
+from qtpy.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget, QSplitter
 
 from pyqt_openai import INI_FILE_NAME, ICON_HISTORY, ICON_SETTING, DEFAULT_SHORTCUT_LEFT_SIDEBAR_WINDOW, \
     DEFAULT_SHORTCUT_RIGHT_SIDEBAR_WINDOW
+from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ImagePromptContainer
 from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.replicate_widget.replicateControlWidget import ReplicateControlWidget
-from pyqt_openai.lang.translations import LangClass
-from pyqt_openai.util.script import get_image_filename_for_saving, open_directory, get_image_prompt_filename_for_saving
+from pyqt_openai.util.script import get_image_filename_for_saving, open_directory, get_image_prompt_filename_for_saving, \
+    getSeparator
+from pyqt_openai.widgets.button import Button
 from pyqt_openai.widgets.imageNavWidget import ImageNavWidget
 from pyqt_openai.widgets.linkLabel import LinkLabel
 from pyqt_openai.widgets.notifier import NotifierWidget
-from pyqt_openai.widgets.button import Button
 from pyqt_openai.widgets.thumbnailView import ThumbnailView
 
 
@@ -74,13 +75,9 @@ class ReplicateWidget(QWidget):
         self.__howToUseReplicateLabel.setText('How to use Replicate?')
         self.__howToUseReplicateLabel.setUrl('https://replicate.com/account/api-tokens')
 
-        sep1 = QFrame()
-        sep1.setFrameShape(QFrame.Shape.VLine)
-        sep1.setFrameShadow(QFrame.Shadow.Sunken)
+        sep1 = getSeparator('vertical')
 
-        sep2 = QFrame()
-        sep2.setFrameShape(QFrame.Shape.VLine)
-        sep2.setFrameShadow(QFrame.Shadow.Sunken)
+        sep2 = getSeparator('vertical')
 
         lay = QHBoxLayout()
         lay.addWidget(self.__settingBtn)
@@ -96,9 +93,7 @@ class ReplicateWidget(QWidget):
         self.__menuWidget.setLayout(lay)
         self.__menuWidget.setMaximumHeight(self.__menuWidget.sizeHint().height())
 
-        sep = QFrame()
-        sep.setFrameShape(QFrame.Shape.HLine)
-        sep.setFrameShadow(QFrame.Shadow.Sunken)
+        sep = getSeparator('horizontal')
 
         mainWidget = QSplitter()
         mainWidget.addWidget(self.__imageNavWidget)

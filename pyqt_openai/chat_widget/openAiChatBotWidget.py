@@ -4,7 +4,7 @@ import sys
 import webbrowser
 
 from qtpy.QtCore import Qt, QSettings
-from qtpy.QtWidgets import QHBoxLayout, QWidget, QSizePolicy, QVBoxLayout, QFrame, QSplitter, \
+from qtpy.QtWidgets import QHBoxLayout, QWidget, QSizePolicy, QVBoxLayout, QSplitter, \
     QFileDialog, QMessageBox, QPushButton
 
 from pyqt_openai import THREAD_TABLE_NAME, INI_FILE_NAME, JSON_FILE_EXT_LIST_STR, ICON_SIDEBAR, ICON_SETTING, \
@@ -22,7 +22,7 @@ from pyqt_openai.openAiThread import OpenAIThread, LlamaOpenAIThread
 from pyqt_openai.pyqt_openai_data import DB, get_argument, LLAMAINDEX_WRAPPER
 from pyqt_openai.util.script import open_directory, get_generic_ext_out_of_qt_ext, message_list_to_txt, \
     conv_unit_to_html, \
-    add_file_to_zip
+    add_file_to_zip, getSeparator
 from pyqt_openai.widgets.button import Button
 from pyqt_openai.widgets.notifier import NotifierWidget
 
@@ -98,9 +98,7 @@ class OpenAIChatBotWidget(QWidget):
         self.__promptBtn.toggled.connect(self.__toggle_prompt)
         self.__promptBtn.setShortcut(DEFAULT_SHORTCUT_CONTROL_PROMPT_WINDOW)
 
-        sep = QFrame()
-        sep.setFrameShape(QFrame.Shape.VLine)
-        sep.setFrameShadow(QFrame.Shadow.Sunken)
+        sep = getSeparator('vertical')
 
         toggleFindToolButton = QPushButton(LangClass.TRANSLATIONS['Show Find Tool'])
         toggleFindToolButton.setCheckable(True)
@@ -121,9 +119,7 @@ class OpenAIChatBotWidget(QWidget):
         self.__menuWidget.setLayout(lay)
         self.__menuWidget.setMaximumHeight(self.__menuWidget.sizeHint().height())
 
-        sep = QFrame()
-        sep.setFrameShape(QFrame.Shape.HLine)
-        sep.setFrameShadow(QFrame.Shadow.Sunken)
+        sep = getSeparator('horizontal')
 
         self.__chatNavWidget.added.connect(self.__addThread)
         self.__chatNavWidget.clicked.connect(self.__showChat)
@@ -133,8 +129,6 @@ class OpenAIChatBotWidget(QWidget):
         self.__chatNavWidget.onFavoriteClicked.connect(self.__showFavorite)
 
         self.__lineEdit.returnPressed.connect(self.__chat)
-
-        # self.__browser.messageUpdated.connect(self.__updateMessage)
 
         lay = QHBoxLayout()
         lay.addWidget(self.__prompt)

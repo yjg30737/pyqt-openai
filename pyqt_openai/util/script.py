@@ -381,7 +381,7 @@ def moveCursorToOtherPrompt(direction, textGroup):
     else:
         print('Invalid direction:', direction)
 
-def getSeperator(orientation='horizontal'):
+def getSeparator(orientation='horizontal'):
     sep = QFrame()
     if orientation == 'horizontal':
         sep.setFrameShape(QFrame.Shape.HLine)

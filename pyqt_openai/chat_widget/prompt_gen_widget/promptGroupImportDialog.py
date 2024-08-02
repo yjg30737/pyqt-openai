@@ -1,13 +1,12 @@
 import json
 
 from qtpy.QtCore import Qt
-from qtpy.QtWidgets import QPushButton, QDialogButtonBox, QMessageBox, QDialog, QVBoxLayout, QFrame, \
-    QTableWidget, QSplitter, \
+from qtpy.QtWidgets import QPushButton, QDialogButtonBox, QMessageBox, QDialog, QVBoxLayout, QTableWidget, QSplitter, \
     QWidget, QLabel, QAbstractItemView, QTableWidgetItem, QCheckBox
 
 from pyqt_openai import JSON_FILE_EXT_LIST_STR, SENTENCE_PROMPT_GROUP_SAMPLE, FORM_PROMPT_GROUP_SAMPLE
 from pyqt_openai.lang.translations import LangClass
-from pyqt_openai.util.script import validate_prompt_group_json, is_prompt_group_name_valid, showJsonSample
+from pyqt_openai.util.script import validate_prompt_group_json, is_prompt_group_name_valid, showJsonSample, getSeparator
 from pyqt_openai.widgets.checkBoxListWidget import CheckBoxListWidget
 from pyqt_openai.widgets.findPathWidget import FindPathWidget
 from pyqt_openai.widgets.jsonEditor import JSONEditor
@@ -37,9 +36,7 @@ class PromptGroupImportDialog(QDialog):
 
         self.__jsonSampleWidget = JSONEditor()
 
-        sep = QFrame()
-        sep.setFrameShape(QFrame.HLine)
-        sep.setFrameShadow(QFrame.Sunken)
+        sep = getSeparator('horizontal')
 
         allCheckBox = QCheckBox(LangClass.TRANSLATIONS['Select All'])
         self.__listWidget = CheckBoxListWidget()

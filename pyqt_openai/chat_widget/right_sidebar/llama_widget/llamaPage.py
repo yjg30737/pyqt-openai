@@ -1,11 +1,11 @@
 from qtpy.QtCore import Qt, Signal, QSettings
 from qtpy.QtGui import QFont
-from qtpy.QtWidgets import QFrame, QTextBrowser
+from qtpy.QtWidgets import QTextBrowser
 from qtpy.QtWidgets import QWidget, QLabel, QVBoxLayout
 
 from pyqt_openai import INI_FILE_NAME
-from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.chat_widget.right_sidebar.llama_widget.listWidget import FileListWidget
+from pyqt_openai.lang.translations import LangClass
 
 
 class LlamaPage(QWidget):
@@ -26,10 +26,6 @@ class LlamaPage(QWidget):
         self.__txtBrowser = QTextBrowser()
         self.__txtBrowser.setPlaceholderText(LangClass.TRANSLATIONS["This text browser shows selected file's content in the list."])
         self.__txtBrowser.setMaximumHeight(150)
-
-        sep = QFrame()
-        sep.setFrameShape(QFrame.Shape.HLine)
-        sep.setFrameShadow(QFrame.Shadow.Sunken)
 
         lay = QVBoxLayout()
         lay.addWidget(self.__listWidget)

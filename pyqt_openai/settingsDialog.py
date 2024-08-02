@@ -87,10 +87,6 @@ class SettingsDialog(QDialog):
         buttonBox.accepted.connect(self.__accept)
         buttonBox.rejected.connect(self.reject)
 
-        sep = QFrame()
-        sep.setFrameShape(QFrame.Shape.HLine)
-        sep.setFrameShadow(QFrame.Shadow.Sunken)
-
         lay = QVBoxLayout()
         lay.addWidget(langWidget)
         lay.addLayout(dbLayout)

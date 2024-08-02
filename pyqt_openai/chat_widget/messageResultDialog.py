@@ -1,8 +1,9 @@
 from qtpy.QtCore import Qt
-from qtpy.QtWidgets import QDialog, QFormLayout, QLabel, QFrame, QPushButton
+from qtpy.QtWidgets import QDialog, QFormLayout, QLabel, QPushButton
 
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ChatMessageContainer
+from pyqt_openai.util.script import getSeparator
 
 
 class MessageResultDialog(QDialog):
@@ -25,9 +26,7 @@ class MessageResultDialog(QDialog):
             else:
                 lbls.append(QLabel(f'{k}: {v}'))
 
-        sep = QFrame()
-        sep.setFrameShape(QFrame.Shape.HLine)
-        sep.setFrameShadow(QFrame.Shadow.Sunken)
+        sep = getSeparator('horizontal')
 
         okBtn = QPushButton('OK')
         okBtn.clicked.connect(self.accept)
