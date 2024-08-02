@@ -54,13 +54,13 @@ class UserChatUnit(QWidget):
         self.__lbl.adjustBrowserHeight()
 
     def __copy(self):
-        pyperclip.copy(self.toPlainText())
+        pyperclip.copy(self.getText())
 
     def setText(self, text):
         self.__lbl.setText(text)
         self.__lbl.adjustBrowserHeight()
 
-    def toPlainText(self):
+    def getText(self):
         return self.__lbl.toPlainText()
 
     def getIcon(self):
@@ -68,6 +68,3 @@ class UserChatUnit(QWidget):
 
     def setIcon(self, filename):
         self.__icon.setImage(filename)
-
-    def getLbl(self):
-        return self.__lbl

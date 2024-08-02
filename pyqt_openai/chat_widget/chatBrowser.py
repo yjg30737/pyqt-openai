@@ -114,7 +114,7 @@ class ChatBrowser(QScrollArea):
             if lay.itemAt(i) and lay.itemAt(i).widget():
                 widget = lay.itemAt(i).widget()
                 if isinstance(widget, AIChatUnit):
-                    return widget.getResponseInfo().content
+                    return widget.getText()
         return ''
 
     def clear(self):
@@ -207,7 +207,7 @@ class ChatBrowser(QScrollArea):
         # Find and highlight all occurrences of the pattern
         regex_flags = 0 if case_sensitive else re.IGNORECASE
         regex = re.compile(pattern, regex_flags)
-        text = label.getResponseInfo().content
+        text = label.getText()
 
         for match in regex.finditer(text):
             start, end = match.span()

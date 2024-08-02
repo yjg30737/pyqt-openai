@@ -71,7 +71,7 @@ class AIChatUnit(QWidget):
         self.setAutoFillBackground(True)
 
     def __copy(self):
-        pyperclip.copy(self.getResponseInfo().content)
+        pyperclip.copy(self.getText())
 
     def __favorite(self, f, insert_f=True):
         favorite = 1 if f else 0
@@ -106,6 +106,10 @@ class AIChatUnit(QWidget):
         self.__favorite(True if arg.favorite else False, insert_f=False)
 
     def getResponseInfo(self):
+        """
+        Get the response information
+        :return: ChatMessageContainer
+        """
         return self.__result_info
 
     def afterResponse(self, arg: ChatMessageContainer):
@@ -147,5 +151,5 @@ class AIChatUnit(QWidget):
     def setIcon(self, filename):
         self.__icon.setImage(filename)
 
-    def getLbl(self):
-        return self.__lbl
+    def getText(self):
+        return self.__lbl.toPlainText()
