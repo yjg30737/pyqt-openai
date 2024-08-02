@@ -353,15 +353,14 @@ class OpenAIChatBotWidget(QWidget):
         self.__lineEdit.setExecuteEnabled(f)
         self.__chatNavWidget.setEnabled(f)
         self.__prompt.activateDuringGeneratingWidget(not f)
-        # TODO
-        # self.__prompt.activateAfterResponseWidget(f, continue_f)
+        self.__prompt.activateAfterResponseWidget(f, continue_f)
 
     def __beforeGenerated(self):
         self.__toggleWidgetWhileChatting(False)
         self.__lineEdit.clear()
 
     def __afterGenerated(self):
-        continue_f = self.__browser.getLastFinishReason() == 'Finish Reason: length'
+        continue_f = self.__browser.isFinishedByLength() == 'Finish Reason: length'
         self.__toggleWidgetWhileChatting(True, continue_f)
         self.__lineEdit.setFocus()
         if not self.isVisible():

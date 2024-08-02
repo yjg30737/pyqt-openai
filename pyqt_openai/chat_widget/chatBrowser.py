@@ -168,9 +168,7 @@ class ChatBrowser(QScrollArea):
         labels = [lay.itemAt(i).widget() for i in range(lay.count()) if lay.itemAt(i) and isinstance(lay.itemAt(i).widget(), AIChatUnit)]
         return labels
 
-    def getLastFinishReason(self):
-        # TODO 2023-11-11
-        # 1 is continue 0 is not continue
+    def isFinishedByLength(self):
         return 1
 
     def clearFormatting(self, label):
