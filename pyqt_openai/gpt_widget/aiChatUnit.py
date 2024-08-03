@@ -4,8 +4,8 @@ from qtpy.QtGui import QPalette
 from qtpy.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QSpacerItem, QSizePolicy
 
 from pyqt_openai import DEFAULT_ICON_SIZE, ICON_FAVORITE_NO, ICON_INFO, ICON_COPY, ICON_FAVORITE_YES
-from pyqt_openai.chat_widget.responseInfoDialog import ResponseInfoDialog
-from pyqt_openai.chat_widget.messageTextBrowser import MessageTextBrowser
+from pyqt_openai.gpt_widget.responseInfoDialog import ResponseInfoDialog
+from pyqt_openai.gpt_widget.messageTextBrowser import MessageTextBrowser
 from pyqt_openai.models import ChatMessageContainer
 from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.widgets.button import Button

@@ -12,7 +12,7 @@ from pyqt_openai import INI_FILE_NAME, DEFAULT_SHORTCUT_FULL_SCREEN, \
     APP_INITIAL_WINDOW_SIZE, APP_NAME, APP_ICON, ICON_STACKONTOP, ICON_CUSTOMIZE, ICON_FULLSCREEN, ICON_CLOSE, \
     DEFAULT_SHORTCUT_SETTING, TRANSPARENT_RANGE, TRANSPARENT_INIT_VAL
 from pyqt_openai.aboutDialog import AboutDialog
-from pyqt_openai.chat_widget.openAiChatBotWidget import OpenAIChatBotWidget
+from pyqt_openai.gpt_widget.openAiChatBotWidget import OpenAIChatBotWidget
 from pyqt_openai.customizeDialog import CustomizeDialog
 from pyqt_openai.dalle_widget.dallEWidget import DallEWidget
 from pyqt_openai.doNotAskAgainDialog import DoNotAskAgainDialog

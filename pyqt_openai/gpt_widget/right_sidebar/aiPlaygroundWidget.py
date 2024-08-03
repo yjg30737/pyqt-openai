@@ -5,8 +5,8 @@ from qtpy.QtWidgets import QScrollArea, QWidget, QTabWidget, QGridLayout
 
 from pyqt_openai import INI_FILE_NAME
 from pyqt_openai.lang.translations import LangClass
-from pyqt_openai.chat_widget.right_sidebar.chatPage import ChatPage
-from pyqt_openai.chat_widget.right_sidebar.llama_widget.llamaPage import LlamaPage
+from pyqt_openai.gpt_widget.right_sidebar.chatPage import ChatPage
+from pyqt_openai.gpt_widget.right_sidebar.llama_widget.llamaPage import LlamaPage
 
 
 class AIPlaygroundWidget(QScrollArea):

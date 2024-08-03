@@ -7,9 +7,9 @@ from qtpy.QtWidgets import QWidget, QVBoxLayout, QMessageBox, QPushButton, QStyl
 
 from pyqt_openai import THREAD_ORDERBY, ICON_ADD, ICON_DELETE, ICON_IMPORT, ICON_SAVE, ICON_CLOSE, \
     ICON_REFRESH
-from pyqt_openai.chat_widget.chatImportDialog import ChatImportDialog
-from pyqt_openai.chat_widget.exportDialog import ExportDialog
-from pyqt_openai.chat_widget.importDialog import ImportDialog
+from pyqt_openai.gpt_widget.chatImportDialog import ChatImportDialog
+from pyqt_openai.gpt_widget.exportDialog import ExportDialog
+from pyqt_openai.gpt_widget.importDialog import ImportDialog
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ChatThreadContainer
 from pyqt_openai.pyqt_openai_data import DB

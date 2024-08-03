@@ -4,9 +4,9 @@ from pathlib import Path
 from qtpy.QtCore import Qt, Signal, QSettings
 from qtpy.QtWidgets import QVBoxLayout, QAction, QPushButton, QFileDialog, QToolButton, QMenu, QWidget, QHBoxLayout
 
-from pyqt_openai.chat_widget.commandSuggestionWidget import CommandSuggestionWidget
-from pyqt_openai.chat_widget.textEditPromptGroup import TextEditPromptGroup
-from pyqt_openai.chat_widget.uploadedImageFileWidget import UploadedImageFileWidget
+from pyqt_openai.gpt_widget.commandSuggestionWidget import CommandSuggestionWidget
+from pyqt_openai.gpt_widget.textEditPromptGroup import TextEditPromptGroup
+from pyqt_openai.gpt_widget.uploadedImageFileWidget import UploadedImageFileWidget
 from pyqt_openai import INI_FILE_NAME, READ_FILE_EXT_LIST_STR, PROMPT_BEGINNING_KEY_NAME, \
     PROMPT_END_KEY_NAME, PROMPT_JSON_KEY_NAME, DEFAULT_SHORTCUT_PROMPT_BEGINNING, DEFAULT_SHORTCUT_PROMPT_ENDING, \
     DEFAULT_SHORTCUT_SUPPORT_PROMPT_COMMAND, ICON_VERTICAL_THREE_DOTS, ICON_SEND, PROMPT_MAIN_KEY_NAME, IMAGE_FILE_EXT_LIST, \

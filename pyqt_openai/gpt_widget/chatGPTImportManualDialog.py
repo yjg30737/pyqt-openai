@@ -1,12 +1,12 @@
 from qtpy.QtCore import Qt
 from qtpy.QtWidgets import QDialog, QLabel, QVBoxLayout
 
-# TODO WILL_BE_REPLACED_WITH_ONLINE_MANUAL
 from pyqt_openai import IMAGE_CHATGPT_IMPORT_MANUAL
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.widgets.normalImageView import NormalImageView
 
 
+# TODO WILL_BE_REPLACED_WITH_ONLINE_MANUAL
 class ChatGPTImportManualDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)

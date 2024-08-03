@@ -6,7 +6,7 @@ from qtpy.QtWidgets import QWidget, QAbstractItemView, QSpinBox, QTableWidgetIte
     QCheckBox, QDialog, QVBoxLayout, QPushButton
 
 from pyqt_openai import JSON_FILE_EXT_LIST_STR, THREAD_ORDERBY
-from pyqt_openai.chat_widget.chatGPTImportManualDialog import ChatGPTImportManualDialog
+from pyqt_openai.gpt_widget.chatGPTImportManualDialog import ChatGPTImportManualDialog
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.util.script import get_chatgpt_data_for_import, get_chatgpt_data_for_preview
 from pyqt_openai.widgets.checkBoxTableWidget import CheckBoxTableWidget

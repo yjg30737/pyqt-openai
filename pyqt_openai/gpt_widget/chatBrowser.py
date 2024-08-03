@@ -6,8 +6,8 @@ from qtpy.QtCore import Qt, Signal
 from qtpy.QtWidgets import QScrollArea, QVBoxLayout, QWidget, QLabel
 
 from pyqt_openai import MAXIMUM_MESSAGES_IN_PARAMETER, DEFAULT_FOUND_TEXT_BG_COLOR, DEFAULT_FOUND_TEXT_COLOR
-from pyqt_openai.chat_widget.aiChatUnit import AIChatUnit
-from pyqt_openai.chat_widget.userChatUnit import UserChatUnit
+from pyqt_openai.gpt_widget.aiChatUnit import AIChatUnit
+from pyqt_openai.gpt_widget.userChatUnit import UserChatUnit
 from pyqt_openai.models import ChatMessageContainer
 from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.util.script import is_valid_regex

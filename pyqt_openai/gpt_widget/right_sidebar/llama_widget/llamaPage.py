@@ -4,7 +4,7 @@ from qtpy.QtWidgets import QTextBrowser
 from qtpy.QtWidgets import QWidget, QLabel, QVBoxLayout
 
 from pyqt_openai import INI_FILE_NAME
-from pyqt_openai.chat_widget.right_sidebar.llama_widget.listWidget import FileListWidget
+from pyqt_openai.gpt_widget.right_sidebar.llama_widget.listWidget import FileListWidget
 from pyqt_openai.lang.translations import LangClass
 
 

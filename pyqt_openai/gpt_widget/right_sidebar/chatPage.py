@@ -85,6 +85,11 @@ class ChatPage(QWidget):
         self.__temperatureSpinBox.setValue(self.__temperature)
         self.__temperatureSpinBox.valueChanged.connect(self.__valueChanged)
 
+        useMaxTokenChkBox = QCheckBox()
+        useMaxTokenChkBox.toggled.connect(self.__useMaxChecked)
+        useMaxTokenChkBox.setChecked(self.__use_max_tokens)
+        useMaxTokenChkBox.setText(LangClass.TRANSLATIONS['Use Max Tokens'])
+
         self.__maxTokensSpinBox = QSpinBox()
         self.__maxTokensSpinBox.setRange(*MAX_TOKENS_RANGE)
         self.__maxTokensSpinBox.setAccelerated(True)
@@ -112,8 +117,11 @@ class ChatPage(QWidget):
         self.__presencePenaltySpinBox.setValue(self.__presence_penalty)
         self.__presencePenaltySpinBox.valueChanged.connect(self.__valueChanged)
 
+        self.__maxTokensSpinBox.setEnabled(self.__use_max_tokens)
+
         lay = QFormLayout()
 
+        lay.addWidget(useMaxTokenChkBox)
         lay.addRow('temperature', self.__temperatureSpinBox)
         lay.addRow('maxTokens', self.__maxTokensSpinBox)
         lay.addRow('topp', self.__toppSpinBox)
@@ -150,12 +158,6 @@ class ChatPage(QWidget):
         llamaChkBox.toggled.connect(self.__use_llama_indexChecked)
         llamaChkBox.setText(LangClass.TRANSLATIONS['Use LlamaIndex'])
 
-        useMaxTokenChkBox = QCheckBox()
-        useMaxTokenChkBox.toggled.connect(self.__useMaxChecked)
-        useMaxTokenChkBox.setChecked(self.__use_max_tokens)
-        useMaxTokenChkBox.setText(LangClass.TRANSLATIONS['Use Max Tokens'])
-        self.__maxTokensSpinBox.setEnabled(self.__use_max_tokens)
-
         sep = getSeparator('horizontal')
 
         lay = QVBoxLayout()
@@ -165,7 +167,6 @@ class ChatPage(QWidget):
         lay.addWidget(modelCmbBox)
         lay.addWidget(streamChkBox)
         lay.addWidget(jsonChkBox)
-        lay.addWidget(useMaxTokenChkBox)
         lay.addWidget(llamaChkBox)
         lay.addWidget(sep)
         lay.addWidget(advancedSettingsGrpBox)
