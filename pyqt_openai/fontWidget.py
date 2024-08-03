@@ -1,5 +1,3 @@
-import os
-
 from qtpy.QtCore import Signal, Qt, QThread
 from qtpy.QtGui import QFontDatabase, QFont
 from qtpy.QtWidgets import QListWidget, QWidget, QVBoxLayout, QLabel, QLineEdit, QListWidgetItem
@@ -92,9 +90,15 @@ class SizeWidget(QWidget):
             item = items[0]
         else:
             item = self.__sizeListWidget.item(0)
-        self.__sizeListWidget.setCurrentItem(item)
-        size_text = item.text()
-        self.__sizeLineEdit.setText(size_text)
+        if item:
+            self.__sizeListWidget.setCurrentItem(item)
+            size_text = item.text()
+            self.__sizeLineEdit.setText(size_text)
+        else:
+            item = QListWidgetItem('10')
+            self.__sizeListWidget.setCurrentItem(item)
+            size_text = item.text()
+            self.__sizeLineEdit.setText(size_text)
 
     def __textEdited(self):
         size_text = self.__sizeLineEdit.text()
@@ -121,7 +125,7 @@ class SizeWidget(QWidget):
             self.__sizeLineEdit.setText(str(prev_size))
 
     def getSize(self):
-        return self.__sizeListWidget.currentItem().text()
+        return self.__sizeListWidget.currentItem().text() if self.__sizeListWidget.currentItem() else 10
 
 class FontItemWidget(QWidget):
     fontItemChanged = Signal(str, list, list)

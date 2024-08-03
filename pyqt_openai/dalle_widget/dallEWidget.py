@@ -1,12 +1,13 @@
 import os
 
 from qtpy.QtCore import Qt, QSettings
-from qtpy.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget, QSplitter
+from qtpy.QtWidgets import QStackedWidget, QHBoxLayout, QVBoxLayout, QWidget, QSplitter
 
 from pyqt_openai import IMAGE_TABLE_NAME, INI_FILE_NAME, ICON_HISTORY, ICON_SETTING, \
     DEFAULT_SHORTCUT_LEFT_SIDEBAR_WINDOW, \
     DEFAULT_SHORTCUT_RIGHT_SIDEBAR_WINDOW
 from pyqt_openai.dalle_widget.dallEControlWidget import DallEControlWidget
+from pyqt_openai.dalle_widget.home import HomePage
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ImagePromptContainer
 from pyqt_openai.pyqt_openai_data import DB
@@ -44,6 +45,15 @@ class DallEWidget(QWidget):
 
     def __initUi(self):
         self.__imageNavWidget = ImageNavWidget(ImagePromptContainer.get_keys(), IMAGE_TABLE_NAME)
+
+        # Main widget
+        # This contains home page (at the beginning of the stack) and
+        # widget for main view
+        self.__mainWidget = QStackedWidget()
+
+        self.__homePage = HomePage()
+        self.__viewWidget = ThumbnailView()
+
         self.__viewWidget = ThumbnailView()
         self.__rightSideBarWidget = DallEControlWidget()
 
