@@ -27,7 +27,7 @@ __author__ = pyproject_data["project"]["authors"][0]['name']
 # APP
 APP_NAME = pyproject_data["project"]["name"]
 CONTACT = pyproject_data["project"]["authors"][0]['email']
-APP_ICON = 'icon.png'
+APP_ICON = 'icon.ico'
 APP_INITIAL_WINDOW_SIZE = (1280, 768)
 
 TRANSPARENT_RANGE = 20, 100
@@ -169,9 +169,8 @@ TEXT_FILE_EXT_LIST_STR = 'Text File (*.txt)'
 JSON_FILE_EXT_LIST_STR = 'JSON File (*.json)'
 READ_FILE_EXT_LIST_STR = f'{TEXT_FILE_EXT_LIST_STR};;{IMAGE_FILE_EXT_LIST_STR}'
 
-## LINK
-CHATGPT_IMPORT_MANUAL_LINK_1 = 'https://cdn.discordapp.com/attachments/1089739277379846226/1259834113884557362/image.png?ex=66a6d4b3&is=66a58333&hm=3544e9a6ec1610bc552f93b794e113c48c1505d5ba820628b9cd68876597f7dc&'
-CHATGPT_IMPORT_MANUAL_LINK_2 = 'https://cdn.discordapp.com/attachments/1089739277379846226/1265952420773498880/image.png?ex=66a6ad51&is=66a55bd1&hm=0279112be31354eb1a45f1d72d28363285dd6b640854b6dc98e58de98f4fc349&'
+## IMAGE
+IMAGE_CHATGPT_IMPORT_MANUAL = 'images/import_from_chatgpt.png'
 
 ## PROMPT
 PROMPT_BEGINNING_KEY_NAME = 'prompt_beginning'
@@ -228,7 +227,7 @@ FORM_PROMPT_GROUP_SAMPLE = json.dumps([
         "name": 'Default',
         "data": PROPERTY_PROMPT_UNIT_DEFAULT_VALUE
     }
-], indent=4)
+], indent=INDENT_SIZE)
 
 SENTENCE_PROMPT_GROUP_SAMPLE = '''[
     {

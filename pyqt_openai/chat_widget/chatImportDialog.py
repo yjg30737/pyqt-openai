@@ -1,10 +1,12 @@
 import json
 
 from qtpy.QtCore import Qt
-from qtpy.QtWidgets import QWidget, QAbstractItemView, QSpinBox, QTableWidgetItem, QMessageBox, QGroupBox, QLabel, QDialogButtonBox, \
-    QCheckBox, QDialog, QVBoxLayout
+from qtpy.QtWidgets import QWidget, QAbstractItemView, QSpinBox, QTableWidgetItem, QMessageBox, QGroupBox, QLabel, \
+    QDialogButtonBox, \
+    QCheckBox, QDialog, QVBoxLayout, QPushButton
 
-from pyqt_openai import JSON_FILE_EXT_LIST_STR, THREAD_ORDERBY, CHATGPT_IMPORT_MANUAL_LINK_1, CHATGPT_IMPORT_MANUAL_LINK_2
+from pyqt_openai import JSON_FILE_EXT_LIST_STR, THREAD_ORDERBY
+from pyqt_openai.chat_widget.chatGPTImportManualDialog import ChatGPTImportManualDialog
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.util.script import get_chatgpt_data_for_import, get_chatgpt_data_for_preview
 from pyqt_openai.widgets.checkBoxTableWidget import CheckBoxTableWidget
@@ -75,17 +77,9 @@ class ChatImportDialog(QDialog):
         lay.addWidget(manual_lbl)
 
         if self.__import_type == 'chatgpt':
-            manual_lbl.setText(LangClass.TRANSLATIONS['You can import "conversation.json" in zip file exported form ChatGPT.'])
-            subManualGrpBox = QGroupBox(LangClass.TRANSLATIONS['How to import your ChatGPT data'])
-            manual_link_1 = QLabel(f'<a href="{CHATGPT_IMPORT_MANUAL_LINK_1}">Step 1</a>')
-            manual_link_1.setOpenExternalLinks(True)
-            manual_link_2 = QLabel(f'<a href="{CHATGPT_IMPORT_MANUAL_LINK_2}">Step 2</a>')
-            manual_link_2.setOpenExternalLinks(True)
-            _lay = QVBoxLayout()
-            _lay.addWidget(manual_link_1)
-            _lay.addWidget(manual_link_2)
-            subManualGrpBox.setLayout(_lay)
-            lay.addWidget(subManualGrpBox)
+            viewManualBtn = QPushButton(LangClass.TRANSLATIONS['How to import your ChatGPT data'])
+            viewManualBtn.clicked.connect(self.__showManual)
+            lay.addWidget(viewManualBtn)
 
         manualWidget = QWidget()
         manualWidget.setLayout(lay)
@@ -158,3 +152,7 @@ class ChatImportDialog(QDialog):
         elif self.__import_type == 'chatgpt':
             self.__data = get_chatgpt_data_for_import([self.__data[r] for r in checked_rows])
         return self.__data
+
+    def __showManual(self):
+        dialog = ChatGPTImportManualDialog(self)
+        dialog.exec()

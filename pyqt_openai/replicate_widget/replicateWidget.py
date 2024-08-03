@@ -68,10 +68,12 @@ class ReplicateWidget(QWidget):
         self.__settingBtn.setShortcut(DEFAULT_SHORTCUT_RIGHT_SIDEBAR_WINDOW)
 
         self.__toReplicateLabel = LinkLabel()
+        # TODO WILL_BE_REPLACED_WITH_ONLINE_MANUAL
         self.__toReplicateLabel.setText('To Replicate / What is Replicate?')
         self.__toReplicateLabel.setUrl('https://replicate.com/')
 
         self.__howToUseReplicateLabel = LinkLabel()
+        # TODO WILL_BE_REPLACED_WITH_ONLINE_MANUAL
         self.__howToUseReplicateLabel.setText('How to use Replicate?')
         self.__howToUseReplicateLabel.setUrl('https://replicate.com/account/api-tokens')
 

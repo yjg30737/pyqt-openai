@@ -225,7 +225,6 @@ class Prompt(QWidget):
             self.executeCommand(self.__suggestion_list.currentItem())
 
     def showWidgetInPromptDuringResponse(self, f):
-        print(f)
         self.__controlWidgetDuringGeneration.setVisible(f)
 
     def executeCommand(self, item):
