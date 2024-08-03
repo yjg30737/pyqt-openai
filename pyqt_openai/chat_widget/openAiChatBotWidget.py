@@ -335,7 +335,7 @@ class OpenAIChatBotWidget(QWidget):
     def __toggleWidgetWhileChatting(self, f):
         self.__lineEdit.setExecuteEnabled(f)
         self.__chatNavWidget.setEnabled(f)
-        self.__prompt.activateAfterResponseWidget(f)
+        self.__prompt.showWidgetInPromptDuringResponse(not f)
 
     def __beforeGenerated(self):
         self.__toggleWidgetWhileChatting(False)
@@ -356,12 +356,12 @@ class OpenAIChatBotWidget(QWidget):
         conv_data = DB.selectCertainThreadMessages(id)
         self.__chatWidget.showTitle(title)
         self.__browser.replaceThread(conv_data, id)
-        self.__prompt.activateAfterResponseWidget(False)
+        self.__prompt.showWidgetInPromptDuringResponse(False)
 
     def __clearChat(self):
         self.__chatWidget.showTitle('')
         self.__browser.resetChatWidget(0)
-        self.__prompt.activateAfterResponseWidget(False)
+        self.__prompt.showWidgetInPromptDuringResponse(False)
 
     def __addThread(self):
         title = LangClass.TRANSLATIONS['New Chat']

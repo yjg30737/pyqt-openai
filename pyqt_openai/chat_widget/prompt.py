@@ -47,8 +47,8 @@ class Prompt(QWidget):
         lay.addWidget(self.__stopBtn)
         lay.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.__controlWidgetAfterGeneration = QWidget()
-        self.__controlWidgetAfterGeneration.setLayout(lay)
+        self.__controlWidgetDuringGeneration = QWidget()
+        self.__controlWidgetDuringGeneration.setLayout(lay)
 
         # Create the command suggestion list
         self.__suggestionWidget = CommandSuggestionWidget()
@@ -143,15 +143,14 @@ class Prompt(QWidget):
         bottomWidget.setLayout(lay)
 
         lay = QVBoxLayout()
-        lay.addWidget(self.__controlWidgetAfterGeneration)
+        lay.addWidget(self.__controlWidgetDuringGeneration)
         lay.addWidget(bottomWidget)
         lay.setContentsMargins(0, 0, 0, 0)
         lay.setSpacing(0)
 
         self.setLayout(lay)
 
-        self.activateDuringGeneratingWidget(False)
-        self.activateAfterResponseWidget(False)
+        self.showWidgetInPromptDuringResponse(False)
 
         self.__suggestionWidget.setVisible(False)
 
@@ -225,8 +224,9 @@ class Prompt(QWidget):
         elif key == 'enter':
             self.executeCommand(self.__suggestion_list.currentItem())
 
-    def activateAfterResponseWidget(self, f):
-        self.__controlWidgetAfterGeneration.setVisible(f)
+    def showWidgetInPromptDuringResponse(self, f):
+        print(f)
+        self.__controlWidgetDuringGeneration.setVisible(f)
 
     def executeCommand(self, item):
         self.__textEditGroup.executeCommand(item, self.__p_grp)
