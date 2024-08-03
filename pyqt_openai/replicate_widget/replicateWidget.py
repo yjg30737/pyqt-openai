@@ -57,7 +57,7 @@ class ReplicateWidget(QWidget):
 
         self.__rightSideBarWidget = ReplicateControlWidget()
 
-        self.__imageNavWidget.getContent.connect(self.__viewWidget.setContent)
+        self.__imageNavWidget.getContent.connect(lambda x: self.__updateCenterWidget(1, x))
 
         self.__rightSideBarWidget.submitReplicate.connect(self.__setResult)
         self.__rightSideBarWidget.submitReplicateAllComplete.connect(self.__imageGenerationAllComplete)
@@ -121,15 +121,28 @@ class ReplicateWidget(QWidget):
     def showSecondaryToolBar(self, f):
         self.__menuWidget.setVisible(f)
 
+    def __updateCenterWidget(self, idx, data=None):
+        """
+        0 is home page, 1 is the main view
+        :param idx: index
+        :param data: data (bytes)
+        """
+
+        # Set the current index
+        self.__mainWidget.setCurrentIndex(idx)
+
+        # If the index is 1, set the content
+        if idx == 1 and data is not None:
+            self.__viewWidget.setContent(data)
+
     def setAIEnabled(self, f):
         self.__rightSideBarWidget.setEnabled(f)
 
     def __setResult(self, result):
+        self.__updateCenterWidget(1, result.data)
         # save
         if self.__rightSideBarWidget.isSavedEnabled():
             self.__saveResultImage(result)
-
-        self.__viewWidget.setContent(result.data)
         DB.insertImage(result)
         self.__imageNavWidget.refresh()
 
