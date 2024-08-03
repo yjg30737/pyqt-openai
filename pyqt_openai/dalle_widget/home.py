@@ -29,3 +29,4 @@ class HomePage(QScrollArea):
         mainWidget = QWidget()
         mainWidget.setLayout(lay)
         self.setWidget(mainWidget)
+        self.setWidgetResizable(True)

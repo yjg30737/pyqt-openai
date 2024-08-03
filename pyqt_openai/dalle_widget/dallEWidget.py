@@ -54,7 +54,9 @@ class DallEWidget(QWidget):
         self.__homePage = HomePage()
         self.__viewWidget = ThumbnailView()
 
-        self.__viewWidget = ThumbnailView()
+        self.__mainWidget.addWidget(self.__homePage)
+        self.__mainWidget.addWidget(self.__viewWidget)
+
         self.__rightSideBarWidget = DallEControlWidget()
 
         self.__imageNavWidget.getContent.connect(self.__viewWidget.setContent)
@@ -92,7 +94,7 @@ class DallEWidget(QWidget):
 
         mainWidget = QSplitter()
         mainWidget.addWidget(self.__imageNavWidget)
-        mainWidget.addWidget(self.__viewWidget)
+        mainWidget.addWidget(self.__mainWidget)
         mainWidget.addWidget(self.__rightSideBarWidget)
         mainWidget.setSizes([200, 500, 300])
         mainWidget.setChildrenCollapsible(False)
