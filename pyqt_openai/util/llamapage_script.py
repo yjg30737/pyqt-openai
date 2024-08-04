@@ -1,3 +1,5 @@
+import os.path
+
 from llama_index.core import VectorStoreIndex, SimpleDirectoryReader
 
 from pyqt_openai import LLAMA_INDEX_DEFAULT_READ_DIRECTORY
@@ -31,7 +33,11 @@ class GPTLLamaIndexWrapper:
             raise Exception(f'Error in setting query engine: {e}')
 
     def get_directory(self):
-        return self._directory
+        """
+        This function returns the directory path.
+        If directory does not exist, it will return the empty string.
+        """
+        return self._directory if os.path.exists(self._directory) else ''
 
     def get_response(self, text):
         try:

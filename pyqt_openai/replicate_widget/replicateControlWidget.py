@@ -4,12 +4,13 @@ from qtpy.QtCore import QThread, Signal, QSettings, Qt
 from qtpy.QtWidgets import QLineEdit, QScrollArea, QMessageBox, QWidget, QCheckBox, QSpinBox, QGroupBox, QVBoxLayout, \
     QPushButton, \
     QPlainTextEdit, \
-    QFormLayout, QLabel, QFrame, QSplitter
+    QFormLayout, QLabel, QSplitter
 
 from pyqt_openai import INI_FILE_NAME, IMAGE_DEFAULT_SAVE_DIRECTORY
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ImagePromptContainer
 from pyqt_openai.util.replicate_script import ReplicateWrapper
+from pyqt_openai.util.script import getSeparator
 from pyqt_openai.widgets.findPathWidget import FindPathWidget
 from pyqt_openai.widgets.notifier import NotifierWidget
 from pyqt_openai.widgets.toast import Toast
@@ -207,9 +208,7 @@ class ReplicateControlWidget(QScrollArea):
         lay.addWidget(splitter)
         paramGrpBox.setLayout(lay)
 
-        sep = QFrame()
-        sep.setFrameShape(QFrame.Shape.HLine)
-        sep.setFrameShadow(QFrame.Shadow.Sunken)
+        sep = getSeparator('horizontal')
 
         lay = QVBoxLayout()
         lay.addWidget(self.__generalGrpBox)
@@ -318,13 +317,13 @@ class ReplicateControlWidget(QScrollArea):
         if self.__t.isRunning():
             self.__t.stop()
 
-    def __failToGenerate(self, e):
+    def __failToGenerate(self, event):
         if self.isVisible():
-            toast = Toast(text=e, duration=3, parent=self)
+            toast = Toast(text=event, parent=self)
             toast.show()
         else:
             informative_text = 'Error 😥'
-            detailed_text = e
+            detailed_text = event
             self.__notifierWidget = NotifierWidget(informative_text=informative_text, detailed_text = detailed_text)
             self.__notifierWidget.show()
             self.__notifierWidget.doubleClicked.connect(self.window().show)

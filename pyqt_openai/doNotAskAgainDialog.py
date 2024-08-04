@@ -1,8 +1,9 @@
 from qtpy.QtCore import Qt, Signal
-from qtpy.QtWidgets import QDialog, QLabel, QPushButton, QVBoxLayout, QFrame, QHBoxLayout, QWidget, \
+from qtpy.QtWidgets import QDialog, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QWidget, \
     QCheckBox, QSpacerItem, QSizePolicy
 
 from pyqt_openai.lang.translations import LangClass
+from pyqt_openai.util.script import getSeparator
 
 
 class DoNotAskAgainDialog(QDialog):
@@ -10,8 +11,8 @@ class DoNotAskAgainDialog(QDialog):
 
     def __init__(self, do_not_ask_again: bool = False,
                  do_not_ask_again_message: str = LangClass.TRANSLATIONS["Would you like to exit the application? If you won't, it will be running in the background."],
-                do_not_ask_again_checkbox_message: str = LangClass.TRANSLATIONS['Do not ask again']):
-        super().__init__()
+                do_not_ask_again_checkbox_message: str = LangClass.TRANSLATIONS['Do not ask again'], parent=None):
+        super().__init__(parent)
         self.__initVal(do_not_ask_again, do_not_ask_again_message, do_not_ask_again_checkbox_message)
         self.__initUi()
 
@@ -42,9 +43,7 @@ class DoNotAskAgainDialog(QDialog):
         self.doNotAskAgainCheckBox.setChecked(self.__do_not_ask_again)
         self.doNotAskAgainCheckBox.stateChanged.connect(self.__onCheckBoxStateChanged)
 
-        sep = QFrame()
-        sep.setFrameShape(QFrame.Shape.HLine)
-        sep.setFrameShadow(QFrame.Shadow.Sunken)
+        sep = getSeparator('horizontal')
 
         lay = QHBoxLayout()
         lay.addWidget(self.doNotAskAgainCheckBox)

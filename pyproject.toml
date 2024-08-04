@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pyqt-openai"
-version = "0.8.2"
+version = "0.9.0"
 description = "PyQt/PySide multipurpose chatbot that user can use GPT, other AI models altogether"
 authors = [{ name = "Jung Gyu Yoon", email = "yjg30737@gmail.com" }]
 license = { text = "MIT" }
@@ -36,14 +36,13 @@ classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "Topic :: Software Development :: Libraries",
-    "License :: OSI Approved :: MIT License",  # Just an example, use your actual license
+    "License :: OSI Approved :: MIT License",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
-    "Framework :: PyQt",
     "Topic :: Software Development :: Libraries :: Application Frameworks",
     "Topic :: Software Development :: User Interfaces"
 ]
@@ -53,42 +52,7 @@ homepage = "https://github.com/yjg30737/pyqt-openai.git"
 
 [tool.setuptools]
 packages = ["pyqt_openai"]
-
-[tool.setuptools.package-data]
-pyqt_openai = [
-    "ico/add.svg",
-    "ico/case.svg",
-    "ico/close.svg",
-    "ico/copy.svg",
-    "ico/customize.svg",
-    "ico/delete.svg",
-    "ico/discord.svg",
-    "ico/export.svg",
-    "ico/favorite_no.svg",
-    "ico/favorite_yes.svg",
-    "ico/fullscreen.svg",
-    "ico/github.svg",
-    "ico/history.svg",
-    "ico/import.svg",
-    "ico/info.svg",
-    "ico/next.svg",
-    "ico/openai.png",
-    "ico/openai.svg",
-    "ico/prev.svg",
-    "ico/prompt.svg",
-    "ico/question.svg",
-    "ico/refresh.svg",
-    "ico/regex.svg",
-    "ico/save.svg",
-    "ico/search.svg",
-    "ico/setting.svg",
-    "ico/sidebar.svg",
-    "ico/stackontop.svg",
-    "ico/user.png",
-    "ico/user.svg",
-    "ico/vertical_three_dots.svg",
-    "ico/word.svg"
-]
+include_package_data = true
 
 [project.gui-scripts]
 pyqt-openai = "pyqt_openai.main:main"

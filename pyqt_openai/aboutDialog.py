@@ -11,8 +11,8 @@ from pyqt_openai.widgets.linkLabel import LinkLabel
 
 
 class AboutDialog(QDialog):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None):
+        super().__init__(parent)
         self.__initUi()
 
     def __initUi(self):

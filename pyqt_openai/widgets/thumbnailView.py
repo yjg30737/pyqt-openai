@@ -116,28 +116,28 @@ class ThumbnailView(QGraphicsView):
     def __zoomOut(self):
         self.scale(1 / self.__factor, 1 / self.__factor)
 
-    def enterEvent(self, e):
+    def enterEvent(self, event):
         # Show the button when the mouse enters the view
         if self._item.pixmap().width():
             self.__controlWidget.move(self.rect().x(), self.rect().y())
             self.setForegroundBrush(self.__brush)
             self.__controlWidget.show()
-        return super().enterEvent(e)
+        return super().enterEvent(event)
 
-    def leaveEvent(self, e):
+    def leaveEvent(self, event):
         # Hide the button when the mouse leaves the view
         self.__controlWidget.hide()
         self.setForegroundBrush(self.__defaultBrush)
-        return super().leaveEvent(e)
+        return super().leaveEvent(event)
 
-    def resizeEvent(self, e):
+    def resizeEvent(self, event):
         if self._item.pixmap().width():
             self.setScene(self._scene)
-        return super().resizeEvent(e)
+        return super().resizeEvent(event)
 
-    def mousePressEvent(self, e):
+    def mousePressEvent(self, event):
         self.clicked.emit(self._p)
-        return super().mousePressEvent(e)
+        return super().mousePressEvent(event)
 
     def wheelEvent(self, event):
         if event.modifiers() == Qt.KeyboardModifier.ControlModifier:

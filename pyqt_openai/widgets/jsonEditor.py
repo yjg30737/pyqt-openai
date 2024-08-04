@@ -1,30 +1,29 @@
 import json
 import re
 
-from qtpy.QtCore import Qt, QTimer
-from qtpy.QtGui import QFont, QTextCursor, QTextCharFormat, QColor
+from qtpy.QtCore import Qt, QTimer, Signal
+from qtpy.QtGui import QTextCursor, QTextCharFormat, QColor
 from qtpy.QtWidgets import QTextEdit, QMessageBox
 
-from pyqt_openai import FONT_FAMILY_FOR_SOURCE, INDENT_SIZE, DEFAULT_FONT_SIZE
-from pyqt_openai.util.script import get_font
+from pyqt_openai import INDENT_SIZE, DEFAULT_SOURCE_HIGHLIGHT_COLOR, DEFAULT_SOURCE_ERROR_COLOR
 from pyqt_openai.lang.translations import LangClass
 
 
 class JSONEditor(QTextEdit):
-    def __init__(self):
-        super().__init__()
-        font = get_font()
-        font_size = font.get('font_size', DEFAULT_FONT_SIZE)
-        font = QFont(FONT_FAMILY_FOR_SOURCE, font_size)
+    moveCursorToOtherPrompt = Signal(str)
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        font = self.font()
 
         self.setFont(font)
         self.setPlaceholderText(LangClass.TRANSLATIONS["Enter JSON data here..."])
         self.textChanged.connect(self.on_text_changed)
         self.error_format = QTextCharFormat()
-        self.error_format.setUnderlineColor(QColor('red'))
+        self.error_format.setUnderlineColor(QColor(DEFAULT_SOURCE_ERROR_COLOR))
         self.error_format.setUnderlineStyle(QTextCharFormat.SpellCheckUnderline)
         self.key_format = QTextCharFormat()
-        self.key_format.setForeground(QColor('blue'))
+        self.key_format.setForeground(QColor(DEFAULT_SOURCE_HIGHLIGHT_COLOR))
         self.check_json_timer = QTimer()
         self.check_json_timer.setSingleShot(True)
         self.check_json_timer.timeout.connect(self.validate_json)
@@ -65,18 +64,35 @@ class JSONEditor(QTextEdit):
 
     def keyPressEvent(self, event):
         cursor = self.textCursor()
+        # If up and down keys are pressed and cursor is at the beginning or end of the text
+        if event.modifiers() == Qt.KeyboardModifier.ControlModifier:
+            if event.key() == Qt.Key.Key_Up:
+                self.moveCursorToOtherPrompt.emit('up')
+                return
+            elif event.key() == Qt.Key.Key_Down:
+                self.moveCursorToOtherPrompt.emit('down')
+                return
+            else:
+                return super().keyPressEvent(event)
+
         if event.key() == Qt.Key.Key_BraceLeft:
             super().keyPressEvent(event)
+            self.insertPlainText('\n\n')
             self.insertPlainText('}')
-            cursor.movePosition(QTextCursor.PreviousCharacter)
+            cursor.movePosition(QTextCursor.Up)
+            cursor.movePosition(QTextCursor.StartOfLine)
+            cursor.insertText(' ' * INDENT_SIZE)
+            self.setTextCursor(cursor)
         elif event.key() == Qt.Key.Key_QuoteDbl:
             super().keyPressEvent(event)
             self.insertPlainText('"')
             cursor.movePosition(QTextCursor.PreviousCharacter)
+            self.setTextCursor(cursor)
         elif event.key() == Qt.Key.Key_BracketLeft:
             super().keyPressEvent(event)
             self.insertPlainText(']')
             cursor.movePosition(QTextCursor.PreviousCharacter)
+            self.setTextCursor(cursor)
         elif event.key() == Qt.Key.Key_Tab and not event.modifiers() & Qt.KeyboardModifier.ShiftModifier:
             cursor = self.textCursor()
             if cursor.hasSelection():
@@ -143,7 +159,15 @@ class JSONEditor(QTextEdit):
             self.setPlainText(formatted)
         except json.JSONDecodeError as e:
             QMessageBox.critical(self, "Invalid JSON", f"Error: {str(e)}")
-#
+
+    def focusInEvent(self, event):
+        self.setCursorWidth(1)
+        return super().focusInEvent(event)
+
+    def focusOutEvent(self, event):
+        self.setCursorWidth(0)
+        return super().focusInEvent(event)
+
 # # Usage
 # class MainWindow(QWidget):
 #     def __init__(self):

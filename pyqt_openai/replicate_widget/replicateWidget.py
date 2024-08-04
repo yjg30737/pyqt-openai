@@ -1,25 +1,27 @@
 import os
 
 from qtpy.QtCore import Qt, QSettings
-from qtpy.QtWidgets import QHBoxLayout, QVBoxLayout, QFrame, QWidget, QSplitter
+from qtpy.QtWidgets import QStackedWidget, QHBoxLayout, QVBoxLayout, QWidget, QSplitter
 
-from pyqt_openai import INI_FILE_NAME, ICON_HISTORY, ICON_SETTING
+from pyqt_openai import INI_FILE_NAME, ICON_HISTORY, ICON_SETTING, DEFAULT_SHORTCUT_LEFT_SIDEBAR_WINDOW, \
+    DEFAULT_SHORTCUT_RIGHT_SIDEBAR_WINDOW
+from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ImagePromptContainer
 from pyqt_openai.pyqt_openai_data import DB
+from pyqt_openai.replicate_widget.home import HomePage
 from pyqt_openai.replicate_widget.replicateControlWidget import ReplicateControlWidget
-from pyqt_openai.lang.translations import LangClass
-from pyqt_openai.util.script import get_image_filename_for_saving, open_directory, get_image_prompt_filename_for_saving
-from pyqt_openai.widgets.imageNavWidget import ImageNavWidget
-from pyqt_openai.widgets.linkLabel import LinkLabel
-from pyqt_openai.widgets.notifier import NotifierWidget
+from pyqt_openai.util.script import get_image_filename_for_saving, open_directory, get_image_prompt_filename_for_saving, \
+    getSeparator
 from pyqt_openai.widgets.button import Button
+from pyqt_openai.widgets.imageNavWidget import ImageNavWidget
+from pyqt_openai.widgets.notifier import NotifierWidget
 from pyqt_openai.widgets.thumbnailView import ThumbnailView
 
 
 class ReplicateWidget(QWidget):
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None):
+        super().__init__(parent)
         self.__initVal()
         self.__initUi()
 
@@ -41,10 +43,21 @@ class ReplicateWidget(QWidget):
 
     def __initUi(self):
         self.__imageNavWidget = ImageNavWidget(ImagePromptContainer.get_keys(), 'image_tb')
+
+        # Main widget
+        # This contains home page (at the beginning of the stack) and
+        # widget for main view
+        self.__mainWidget = QStackedWidget()
+
+        self.__homePage = HomePage()
         self.__viewWidget = ThumbnailView()
+
+        self.__mainWidget.addWidget(self.__homePage)
+        self.__mainWidget.addWidget(self.__viewWidget)
+
         self.__rightSideBarWidget = ReplicateControlWidget()
 
-        self.__imageNavWidget.getContent.connect(self.__viewWidget.setContent)
+        self.__imageNavWidget.getContent.connect(lambda x: self.__updateCenterWidget(1, x))
 
         self.__rightSideBarWidget.submitReplicate.connect(self.__setResult)
         self.__rightSideBarWidget.submitReplicateAllComplete.connect(self.__imageGenerationAllComplete)
@@ -52,40 +65,22 @@ class ReplicateWidget(QWidget):
         self.__historyBtn = Button()
         self.__historyBtn.setStyleAndIcon(ICON_HISTORY)
         self.__historyBtn.setCheckable(True)
-        self.__historyBtn.setToolTip(LangClass.TRANSLATIONS['History'])
+        self.__historyBtn.setToolTip(LangClass.TRANSLATIONS['History'] + f' ({DEFAULT_SHORTCUT_LEFT_SIDEBAR_WINDOW})')
         self.__historyBtn.setChecked(self.__show_history)
         self.__historyBtn.toggled.connect(self.__toggle_history)
+        self.__historyBtn.setShortcut(DEFAULT_SHORTCUT_LEFT_SIDEBAR_WINDOW)
 
         self.__settingBtn = Button()
         self.__settingBtn.setStyleAndIcon(ICON_SETTING)
         self.__settingBtn.setCheckable(True)
-        self.__settingBtn.setToolTip(LangClass.TRANSLATIONS['Settings'])
+        self.__settingBtn.setToolTip(LangClass.TRANSLATIONS['Settings'] + f' ({DEFAULT_SHORTCUT_RIGHT_SIDEBAR_WINDOW})')
         self.__settingBtn.setChecked(self.__show_setting)
         self.__settingBtn.toggled.connect(self.__toggle_setting)
-
-        self.__toReplicateLabel = LinkLabel()
-        self.__toReplicateLabel.setText('To Replicate / What is Replicate?')
-        self.__toReplicateLabel.setUrl('https://replicate.com/')
-
-        self.__howToUseReplicateLabel = LinkLabel()
-        self.__howToUseReplicateLabel.setText('How to use Replicate?')
-        self.__howToUseReplicateLabel.setUrl('https://replicate.com/account/api-tokens')
-
-        sep1 = QFrame()
-        sep1.setFrameShape(QFrame.Shape.VLine)
-        sep1.setFrameShadow(QFrame.Shadow.Sunken)
-
-        sep2 = QFrame()
-        sep2.setFrameShape(QFrame.Shape.VLine)
-        sep2.setFrameShadow(QFrame.Shadow.Sunken)
+        self.__settingBtn.setShortcut(DEFAULT_SHORTCUT_RIGHT_SIDEBAR_WINDOW)
 
         lay = QHBoxLayout()
         lay.addWidget(self.__settingBtn)
         lay.addWidget(self.__historyBtn)
-        lay.addWidget(sep1)
-        lay.addWidget(self.__toReplicateLabel)
-        lay.addWidget(sep2)
-        lay.addWidget(self.__howToUseReplicateLabel)
         lay.setContentsMargins(2, 2, 2, 2)
         lay.setAlignment(Qt.AlignmentFlag.AlignLeft)
 
@@ -93,13 +88,11 @@ class ReplicateWidget(QWidget):
         self.__menuWidget.setLayout(lay)
         self.__menuWidget.setMaximumHeight(self.__menuWidget.sizeHint().height())
 
-        sep = QFrame()
-        sep.setFrameShape(QFrame.Shape.HLine)
-        sep.setFrameShadow(QFrame.Shadow.Sunken)
+        sep = getSeparator('horizontal')
 
         mainWidget = QSplitter()
         mainWidget.addWidget(self.__imageNavWidget)
-        mainWidget.addWidget(self.__viewWidget)
+        mainWidget.addWidget(self.__mainWidget)
         mainWidget.addWidget(self.__rightSideBarWidget)
         mainWidget.setSizes([200, 500, 300])
         mainWidget.setChildrenCollapsible(False)
@@ -128,15 +121,28 @@ class ReplicateWidget(QWidget):
     def showSecondaryToolBar(self, f):
         self.__menuWidget.setVisible(f)
 
+    def __updateCenterWidget(self, idx, data=None):
+        """
+        0 is home page, 1 is the main view
+        :param idx: index
+        :param data: data (bytes)
+        """
+
+        # Set the current index
+        self.__mainWidget.setCurrentIndex(idx)
+
+        # If the index is 1, set the content
+        if idx == 1 and data is not None:
+            self.__viewWidget.setContent(data)
+
     def setAIEnabled(self, f):
         self.__rightSideBarWidget.setEnabled(f)
 
     def __setResult(self, result):
+        self.__updateCenterWidget(1, result.data)
         # save
         if self.__rightSideBarWidget.isSavedEnabled():
             self.__saveResultImage(result)
-
-        self.__viewWidget.setContent(result.data)
         DB.insertImage(result)
         self.__imageNavWidget.refresh()
 

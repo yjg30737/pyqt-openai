@@ -2,6 +2,7 @@ import json
 import sqlite3
 from datetime import datetime
 from typing import List
+
 from qtpy.QtCore import QSettings
 
 from pyqt_openai import THREAD_TABLE_NAME, THREAD_TRIGGER_NAME, \
@@ -76,15 +77,15 @@ class SqliteDatabase:
                 # Create prompt entry
                 self.__createPromptEntry()
 
-                # Will remove after v1.0.0
+                # TODO WILL_REMOVE_AFTER v1.0.0
                 # Alter old prompt group table to new one
                 self.__alterOldPromptGroup()
 
-                # Will remove after v1.0.0
+                # TODO WILL_REMOVE_AFTER v1.0.0
                 # Remove old prompt group
                 self.__removeOldPromptGroup()
 
-                # Will remove after v1.0.0
+                # TODO WILL_REMOVE_AFTER v1.0.0
                 # Remove old prompt entry
                 self.__removeOldPromptEntry()
 
@@ -335,7 +336,7 @@ class SqliteDatabase:
 
     def __createThread(self):
         try:
-            # Will remove after v1.0.0
+            # TODO WILL_REMOVE_AFTER v1.0.0
             # Check if the old thread table exists for v0.6.5 and below for migration purpose
             self.__alterOldThread()
 
@@ -344,7 +345,11 @@ class SqliteDatabase:
                     f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{THREAD_TABLE_NAME}'").fetchone()[
                                             0] == 1
             if table_name_new_exists:
-                pass
+                # TODO WILL_REMOVE_AFTER v1.1.0
+                # Add is_json_response_available column which is added in v0.9.0
+                if self.__c.execute(
+                        f"SELECT count(*) FROM pragma_table_info('{MESSAGE_TABLE_NAME}') WHERE name='is_json_response_available'").fetchone()[0] == 0:
+                    self.__c.execute(f'ALTER TABLE {MESSAGE_TABLE_NAME} ADD COLUMN is_json_response_available INTEGER DEFAULT 0')
             else:
                 # If user uses app for the first time, create a table
                 # Create a table with update_dt and insert_dt columns
@@ -583,10 +588,11 @@ class SqliteDatabase:
                               update_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
                               insert_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
                               favorite_set_date DATETIME,
+                              is_json_response_available INT DEFAULT 0,
                               FOREIGN KEY (thread_id) REFERENCES {THREAD_TABLE_NAME}(id)
                               ON DELETE CASCADE)''')
 
-                # Will remove after v1.0.0
+                # TODO WILL_REMOVE_AFTER v1.0.0
                 self.__removeOldTrigger()
 
                 self.__createMessageTrigger()
@@ -663,7 +669,7 @@ class SqliteDatabase:
         try:
             # Check if the table exists
             self.__c.execute(f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{IMAGE_TABLE_NAME}'")
-            # Will remove after v1.0.0
+            # TODO WILL_REMOVE_AFTER v1.0.0
             if self.__c.fetchone()[0] == 1:
                 # To not make table every time to change column's name and type
                 self.__c.execute(f'PRAGMA table_info({IMAGE_TABLE_NAME})')

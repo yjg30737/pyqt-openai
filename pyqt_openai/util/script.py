@@ -1,3 +1,10 @@
+"""
+This file includes utility functions that are used in various parts of the application.
+Mostly, these functions are used to perform common tasks such as opening a directory, generating random strings, etc.
+Some of the functions are used to set PyQt settings, restart the application, show message boxes, etc.
+"""
+
+
 import base64
 import json
 import os
@@ -12,11 +19,13 @@ from pathlib import Path
 
 import requests
 from jinja2 import Template
-from qtpy.QtCore import QSettings
-from qtpy.QtWidgets import QMessageBox
+from qtpy.QtCore import QSettings, Qt
+from qtpy.QtWidgets import QMessageBox, QFrame
 
 from pyqt_openai import INI_FILE_NAME, DEFAULT_FONT_SIZE, DEFAULT_FONT_FAMILY, MAIN_INDEX, \
-    PROMPT_NAME_REGEX, PAYPAL_URL, BUYMEACOFFEE_URL
+    PROMPT_NAME_REGEX, PAYPAL_URL, BUYMEACOFFEE_URL, PROMPT_MAIN_KEY_NAME, PROMPT_BEGINNING_KEY_NAME, \
+    PROMPT_END_KEY_NAME, PROMPT_JSON_KEY_NAME
+from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ImagePromptContainer
 from pyqt_openai.pyqt_openai_data import DB
 
@@ -140,7 +149,13 @@ def restart_app(settings=None):
     # Call os.execv() to execute the new process
     os.execv(sys.executable, args)
 
-def show_message_box(title, text):
+def show_message_box_after_change_to_restart(change_list):
+    title = LangClass.TRANSLATIONS['Application Restart Required']
+    text = LangClass.TRANSLATIONS[
+        'The program needs to be restarted because of following changes']
+    text += '\n\n' + '\n'.join(change_list) + '\n\n'
+    text += LangClass.TRANSLATIONS['Would you like to restart it?']
+
     msg_box = QMessageBox()
     msg_box.setWindowTitle(title)
     msg_box.setText(text)
@@ -305,3 +320,74 @@ def goPayPal():
 
 def goBuyMeCoffee():
     webbrowser.open(BUYMEACOFFEE_URL)
+
+def isUsingPyQt5():
+    return os.environ['QT_API'] == 'pyqt5'
+
+def showJsonSample(json_sample_widget, json_sample):
+    json_sample_widget.setText(json_sample)
+    json_sample_widget.setReadOnly(True)
+    json_sample_widget.setMinimumSize(600, 350)
+    json_sample_widget.setWindowModality(Qt.WindowModality.ApplicationModal)
+    json_sample_widget.setWindowTitle(LangClass.TRANSLATIONS['JSON Sample'])
+    json_sample_widget.setWindowModality(Qt.WindowModality.ApplicationModal)
+    json_sample_widget.setWindowFlags(
+        Qt.WindowType.Window | Qt.WindowType.WindowCloseButtonHint | Qt.WindowType.WindowStaysOnTopHint)
+    json_sample_widget.show()
+
+def get_content_of_text_file_for_send(filenames: list[str]):
+    """
+    Get the content of the text file for sending to the AI
+    :param filenames: The list of filenames to get the content from
+    :return: The content of the text file
+    """
+    source_context = ''
+    for filename in filenames:
+        base_filename = os.path.basename(filename)
+        source_context += f'=== {base_filename} start ==='
+        source_context += '\n'*2
+        with open(filename, 'r', encoding='utf-8') as f:
+            source_context += f.read()
+        source_context += '\n'*2
+        source_context += f'=== {base_filename} end ==='
+        source_context += '\n'*2
+    prompt_context = f'== Source Start ==\n{source_context}== Source End =='
+    return prompt_context
+
+# FIXME This should be used but this has a couple of flaws that need to be fixed
+def moveCursorToOtherPrompt(direction, textGroup):
+    """
+    Move the cursor to another prompt based on the direction
+    :param direction: The direction to move the cursor to
+    :param textGroup: The prompt in the group to move the cursor to
+    """
+    def switch_focus(from_key, to_key):
+        """Switch focus from one text edit to another if both are visible."""
+        if textGroup[from_key].isVisible() and textGroup[from_key].hasFocus():
+            if textGroup[to_key].isVisible():
+                textGroup[from_key].clearFocus()
+                textGroup[to_key].setFocus()
+
+    if direction == 'up':
+        switch_focus(PROMPT_MAIN_KEY_NAME, PROMPT_BEGINNING_KEY_NAME)
+        switch_focus(PROMPT_END_KEY_NAME, PROMPT_JSON_KEY_NAME)
+        switch_focus(PROMPT_END_KEY_NAME, PROMPT_MAIN_KEY_NAME)
+        switch_focus(PROMPT_JSON_KEY_NAME, PROMPT_MAIN_KEY_NAME)
+    elif direction == 'down':
+        switch_focus(PROMPT_BEGINNING_KEY_NAME, PROMPT_MAIN_KEY_NAME)
+        switch_focus(PROMPT_MAIN_KEY_NAME, PROMPT_JSON_KEY_NAME)
+        switch_focus(PROMPT_MAIN_KEY_NAME, PROMPT_END_KEY_NAME)
+        switch_focus(PROMPT_JSON_KEY_NAME, PROMPT_END_KEY_NAME)
+    else:
+        print('Invalid direction:', direction)
+
+def getSeparator(orientation='horizontal'):
+    sep = QFrame()
+    if orientation == 'horizontal':
+        sep.setFrameShape(QFrame.Shape.HLine)
+    elif orientation == 'vertical':
+        sep.setFrameShape(QFrame.Shape.VLine)
+    else:
+        raise ValueError('Invalid orientation')
+    sep.setFrameShadow(QFrame.Shadow.Sunken)
+    return sep
