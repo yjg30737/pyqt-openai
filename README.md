@@ -99,8 +99,10 @@ If you have any additional languages you would like to add, please feel free to 
 Also you can submit a pull request if you want to update any words naturally by modify "translations.json" in "lang" directory.
 
 ## Requirements
+* Python >= 3.9 
 * qtpy - the package allowing you to write code that works with both PyQt5, PyQt6, PySide6
 * PyQt5 >= 5.14 or PyQt6 (or PySide6 if you want)
+  * I personally recommend Qt6. 
 * openai
 * aiohttp - for openai dependency 
 * pyperclip - to copy prompt text from prompt generator
