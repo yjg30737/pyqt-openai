@@ -1,18 +1,18 @@
-import os
 from pathlib import Path
 
 from qtpy.QtCore import Qt, Signal, QSettings
 from qtpy.QtWidgets import QVBoxLayout, QAction, QPushButton, QFileDialog, QToolButton, QMenu, QWidget, QHBoxLayout
 
+from pyqt_openai import INI_FILE_NAME, READ_FILE_EXT_LIST_STR, PROMPT_BEGINNING_KEY_NAME, \
+    PROMPT_END_KEY_NAME, PROMPT_JSON_KEY_NAME, DEFAULT_SHORTCUT_PROMPT_BEGINNING, DEFAULT_SHORTCUT_PROMPT_ENDING, \
+    DEFAULT_SHORTCUT_SUPPORT_PROMPT_COMMAND, ICON_VERTICAL_THREE_DOTS, ICON_SEND, PROMPT_MAIN_KEY_NAME, \
+    IMAGE_FILE_EXT_LIST, \
+    TEXT_FILE_EXT_LIST, QFILEDIALOG_DEFAULT_DIRECTORY, DEFAULT_SHORTCUT_SEND
 from pyqt_openai.gpt_widget.commandSuggestionWidget import CommandSuggestionWidget
 from pyqt_openai.gpt_widget.textEditPromptGroup import TextEditPromptGroup
 from pyqt_openai.gpt_widget.uploadedImageFileWidget import UploadedImageFileWidget
-from pyqt_openai import INI_FILE_NAME, READ_FILE_EXT_LIST_STR, PROMPT_BEGINNING_KEY_NAME, \
-    PROMPT_END_KEY_NAME, PROMPT_JSON_KEY_NAME, DEFAULT_SHORTCUT_PROMPT_BEGINNING, DEFAULT_SHORTCUT_PROMPT_ENDING, \
-    DEFAULT_SHORTCUT_SUPPORT_PROMPT_COMMAND, ICON_VERTICAL_THREE_DOTS, ICON_SEND, PROMPT_MAIN_KEY_NAME, IMAGE_FILE_EXT_LIST, \
-    TEXT_FILE_EXT_LIST, QFILEDIALOG_DEFAULT_DIRECTORY, DEFAULT_SHORTCUT_SEND
-from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.lang.translations import LangClass
+from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.util.script import get_content_of_text_file_for_send
 from pyqt_openai.widgets.button import Button
 from pyqt_openai.widgets.toolButton import ToolButton
@@ -188,7 +188,7 @@ class Prompt(QWidget):
     def __updateSuggestions(self):
         w = self.__textEditGroup.getCurrentTextEdit()
         if w and self.__commandEnabled:
-            input_text_chunk = w.getResponse().content.split()
+            input_text_chunk = w.toPlainText().split()
             input_text_chunk_exists = len(input_text_chunk) > 0
             self.__suggestionWidget.setVisible(input_text_chunk_exists)
             if input_text_chunk_exists:

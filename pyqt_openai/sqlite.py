@@ -588,6 +588,7 @@ class SqliteDatabase:
                               update_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
                               insert_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
                               favorite_set_date DATETIME,
+                              is_json_response_available INT DEFAULT 0,
                               FOREIGN KEY (thread_id) REFERENCES {THREAD_TABLE_NAME}(id)
                               ON DELETE CASCADE)''')
 
