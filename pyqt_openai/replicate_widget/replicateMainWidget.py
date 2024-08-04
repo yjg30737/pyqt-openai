@@ -8,8 +8,8 @@ from pyqt_openai import INI_FILE_NAME, ICON_HISTORY, ICON_SETTING, DEFAULT_SHORT
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ImagePromptContainer
 from pyqt_openai.pyqt_openai_data import DB
-from pyqt_openai.replicate_widget.home import HomePage
-from pyqt_openai.replicate_widget.replicateControlWidget import ReplicateControlWidget
+from pyqt_openai.replicate_widget.replicateHome import ReplicateHome
+from pyqt_openai.replicate_widget.replicateRightSideBar import ReplicateRightSideBarWidget
 from pyqt_openai.util.script import get_image_filename_for_saving, open_directory, get_image_prompt_filename_for_saving, \
     getSeparator
 from pyqt_openai.widgets.button import Button
@@ -18,7 +18,7 @@ from pyqt_openai.widgets.notifier import NotifierWidget
 from pyqt_openai.widgets.thumbnailView import ThumbnailView
 
 
-class ReplicateWidget(QWidget):
+class ReplicateMainWidget(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -49,13 +49,13 @@ class ReplicateWidget(QWidget):
         # widget for main view
         self.__mainWidget = QStackedWidget()
 
-        self.__homePage = HomePage()
+        self.__homePage = ReplicateHome()
         self.__viewWidget = ThumbnailView()
 
         self.__mainWidget.addWidget(self.__homePage)
         self.__mainWidget.addWidget(self.__viewWidget)
 
-        self.__rightSideBarWidget = ReplicateControlWidget()
+        self.__rightSideBarWidget = ReplicateRightSideBarWidget()
 
         self.__imageNavWidget.getContent.connect(lambda x: self.__updateCenterWidget(1, x))
 

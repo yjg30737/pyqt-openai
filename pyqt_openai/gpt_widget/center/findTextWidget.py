@@ -4,7 +4,7 @@ from qtpy.QtCore import Signal
 from qtpy.QtWidgets import QWidget, QLabel, \
     QHBoxLayout, QGridLayout, QLineEdit, QMessageBox
 
-from pyqt_openai.gpt_widget.chatBrowser import ChatBrowser
+from pyqt_openai.gpt_widget.center.chatBrowser import ChatBrowser
 from pyqt_openai import DEFAULT_SHORTCUT_FIND_PREV, DEFAULT_SHORTCUT_FIND_NEXT, DEFAULT_SHORTCUT_GENERAL_ACTION, DEFAULT_SHORTCUT_FIND_CLOSE, ICON_PREV, \
     ICON_NEXT, ICON_CASE, ICON_WORD, ICON_REGEX, ICON_CLOSE
 from pyqt_openai.lang.translations import LangClass

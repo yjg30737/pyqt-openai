@@ -8,9 +8,9 @@ from pyqt_openai import INI_FILE_NAME, READ_FILE_EXT_LIST_STR, PROMPT_BEGINNING_
     DEFAULT_SHORTCUT_SUPPORT_PROMPT_COMMAND, ICON_VERTICAL_THREE_DOTS, ICON_SEND, PROMPT_MAIN_KEY_NAME, \
     IMAGE_FILE_EXT_LIST, \
     TEXT_FILE_EXT_LIST, QFILEDIALOG_DEFAULT_DIRECTORY, DEFAULT_SHORTCUT_SEND
-from pyqt_openai.gpt_widget.commandSuggestionWidget import CommandSuggestionWidget
-from pyqt_openai.gpt_widget.textEditPromptGroup import TextEditPromptGroup
-from pyqt_openai.gpt_widget.uploadedImageFileWidget import UploadedImageFileWidget
+from pyqt_openai.gpt_widget.center.commandSuggestionWidget import CommandSuggestionWidget
+from pyqt_openai.gpt_widget.center.textEditPromptGroup import TextEditPromptGroup
+from pyqt_openai.gpt_widget.center.uploadedImageFileWidget import UploadedImageFileWidget
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.util.script import get_content_of_text_file_for_send

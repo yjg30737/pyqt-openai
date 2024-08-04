@@ -4,7 +4,7 @@ from qtpy.QtGui import QPalette
 from qtpy.QtWidgets import QSpacerItem, QSizePolicy, QWidget, QVBoxLayout, QHBoxLayout
 
 from pyqt_openai import DEFAULT_ICON_SIZE, ICON_COPY
-from pyqt_openai.gpt_widget.messageTextBrowser import MessageTextBrowser
+from pyqt_openai.gpt_widget.center.messageTextBrowser import MessageTextBrowser
 from pyqt_openai.widgets.button import Button
 from pyqt_openai.widgets.circleProfileImage import RoundedImage
 

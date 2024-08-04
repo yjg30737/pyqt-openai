@@ -12,14 +12,14 @@ from pyqt_openai import INI_FILE_NAME, DEFAULT_SHORTCUT_FULL_SCREEN, \
     APP_INITIAL_WINDOW_SIZE, APP_NAME, APP_ICON, ICON_STACKONTOP, ICON_CUSTOMIZE, ICON_FULLSCREEN, ICON_CLOSE, \
     DEFAULT_SHORTCUT_SETTING, TRANSPARENT_RANGE, TRANSPARENT_INIT_VAL
 from pyqt_openai.aboutDialog import AboutDialog
-from pyqt_openai.gpt_widget.openAiChatBotWidget import OpenAIChatBotWidget
+from pyqt_openai.gpt_widget.gptMainWidget import GPTMainWidget
 from pyqt_openai.customizeDialog import CustomizeDialog
-from pyqt_openai.dalle_widget.dallEWidget import DallEWidget
+from pyqt_openai.dalle_widget.dalleMainWidget import DallEMainWidget
 from pyqt_openai.doNotAskAgainDialog import DoNotAskAgainDialog
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import SettingsParamsContainer, CustomizeParamsContainer
 from pyqt_openai.pyqt_openai_data import OPENAI_STRUCT, LLAMAINDEX_WRAPPER
-from pyqt_openai.replicate_widget.replicateWidget import ReplicateWidget
+from pyqt_openai.replicate_widget.replicateMainWidget import ReplicateMainWidget
 from pyqt_openai.settingsDialog import SettingsDialog
 from pyqt_openai.util.script import restart_app, show_message_box_after_change_to_restart, goPayPal, goBuyMeCoffee
 from pyqt_openai.widgets.button import Button
@@ -42,9 +42,9 @@ class MainWindow(QMainWindow):
     def __initUi(self):
         self.setWindowTitle(APP_NAME)
 
-        self.__openAiChatBotWidget = OpenAIChatBotWidget(self)
-        self.__dallEWidget = DallEWidget(self)
-        self.__replicateWidget = ReplicateWidget(self)
+        self.__openAiChatBotWidget = GPTMainWidget(self)
+        self.__dallEWidget = DallEMainWidget(self)
+        self.__replicateWidget = ReplicateMainWidget(self)
 
         self.__mainWidget = QStackedWidget()
         self.__mainWidget.addWidget(self.__openAiChatBotWidget)
@@ -244,7 +244,8 @@ class MainWindow(QMainWindow):
         for i in range(self.__mainWidget.count()):
             currentWidget = self.__mainWidget.widget(i)
             currentWidget.showSecondaryToolBar(self.__settingsParamContainer.show_secondary_toolbar)
-        self.__mainWidget.currentWidget().showThreadToolWidget(self.__settingsParamContainer.thread_tool_widget)
+        if isinstance(self.__mainWidget.currentWidget(), GPTMainWidget):
+            self.__mainWidget.currentWidget().showThreadToolWidget(self.__settingsParamContainer.thread_tool_widget)
 
     def __setApiKeyAndClient(self, api_key):
         # for subprocess (mostly)
@@ -359,7 +360,7 @@ class MainWindow(QMainWindow):
                     currentWidget.showSecondaryToolBar(container.show_secondary_toolbar)
             # If thread_tool_widget is changed
             if container.thread_tool_widget != prev_thread_tool_widget:
-                if isinstance(self.__mainWidget.currentWidget(), OpenAIChatBotWidget):
+                if isinstance(self.__mainWidget.currentWidget(), GPTMainWidget):
                     self.__mainWidget.currentWidget().showThreadToolWidget(container.thread_tool_widget)
             # If properties that require a restart are changed
             if container.lang != self.__lang or container.show_as_markdown != prev_show_as_markdown:

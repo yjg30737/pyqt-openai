@@ -11,9 +11,9 @@ from pyqt_openai import THREAD_TABLE_NAME, INI_FILE_NAME, JSON_FILE_EXT_LIST_STR
     ICON_PROMPT, \
     FILE_NAME_LENGTH, MAXIMUM_MESSAGES_IN_PARAMETER, DEFAULT_SHORTCUT_FIND, DEFAULT_SHORTCUT_LEFT_SIDEBAR_WINDOW, \
     DEFAULT_SHORTCUT_CONTROL_PROMPT_WINDOW, DEFAULT_SHORTCUT_RIGHT_SIDEBAR_WINDOW, QFILEDIALOG_DEFAULT_DIRECTORY
-from pyqt_openai.gpt_widget.chatNavWidget import ChatNavWidget
-from pyqt_openai.gpt_widget.chatWidget import ChatWidget
-from pyqt_openai.gpt_widget.prompt import Prompt
+from pyqt_openai.gpt_widget.left_sidebar.chatNavWidget import ChatNavWidget
+from pyqt_openai.gpt_widget.center.chatWidget import ChatWidget
+from pyqt_openai.gpt_widget.center.prompt import Prompt
 from pyqt_openai.gpt_widget.prompt_gen_widget.promptGeneratorWidget import PromptGeneratorWidget
 from pyqt_openai.gpt_widget.right_sidebar.aiPlaygroundWidget import AIPlaygroundWidget
 from pyqt_openai.lang.translations import LangClass
@@ -27,7 +27,7 @@ from pyqt_openai.widgets.button import Button
 from pyqt_openai.widgets.notifier import NotifierWidget
 
 
-class OpenAIChatBotWidget(QWidget):
+class GPTMainWidget(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.__initVal()

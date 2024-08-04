@@ -2,8 +2,8 @@ from qtpy.QtGui import QFont, QPixmap
 from qtpy.QtWidgets import QWidget, QScrollArea, QLabel, QVBoxLayout, QStackedWidget
 from qtpy.QtCore import Qt, QSettings
 
-from pyqt_openai.gpt_widget.chatBrowser import ChatBrowser
-from pyqt_openai.gpt_widget.menuWidget import MenuWidget
+from pyqt_openai.gpt_widget.center.chatBrowser import ChatBrowser
+from pyqt_openai.gpt_widget.center.menuWidget import MenuWidget
 from pyqt_openai import INI_FILE_NAME, ICON_USER, ICON_OPENAI
 from pyqt_openai.lang.translations import LangClass
 

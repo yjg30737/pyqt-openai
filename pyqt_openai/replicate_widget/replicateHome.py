@@ -5,7 +5,7 @@ from qtpy.QtWidgets import QLabel, QWidget, QVBoxLayout, QScrollArea
 from pyqt_openai.widgets.linkLabel import LinkLabel
 
 
-class HomePage(QScrollArea):
+class ReplicateHome(QScrollArea):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.__initUi()

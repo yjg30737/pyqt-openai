@@ -4,7 +4,7 @@ from qtpy.QtWidgets import QVBoxLayout, QWidget, QApplication
 
 from pyqt_openai import PROMPT_BEGINNING_KEY_NAME, PROMPT_MAIN_KEY_NAME, PROMPT_END_KEY_NAME, \
     PROMPT_JSON_KEY_NAME
-from pyqt_openai.gpt_widget.textEditPrompt import TextEditPrompt
+from pyqt_openai.gpt_widget.center.textEditPrompt import TextEditPrompt
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.widgets.jsonEditor import JSONEditor
 

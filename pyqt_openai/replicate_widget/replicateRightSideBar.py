@@ -1,30 +1,31 @@
-import base64
 import os
 
-from qtpy.QtCore import QThread, Signal, QSettings
-from qtpy.QtWidgets import QMessageBox, QScrollArea, QWidget, QCheckBox, QSpinBox, QGroupBox, QVBoxLayout, QPushButton, \
-    QComboBox, \
+from qtpy.QtCore import QThread, Signal, QSettings, Qt
+from qtpy.QtWidgets import QLineEdit, QScrollArea, QMessageBox, QWidget, QCheckBox, QSpinBox, QGroupBox, QVBoxLayout, \
+    QPushButton, \
     QPlainTextEdit, \
-    QFormLayout, QLabel, QRadioButton
+    QFormLayout, QLabel, QSplitter
 
 from pyqt_openai import INI_FILE_NAME, IMAGE_DEFAULT_SAVE_DIRECTORY
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ImagePromptContainer
-from pyqt_openai.pyqt_openai_data import OPENAI_STRUCT
+from pyqt_openai.util.replicate_script import ReplicateWrapper
 from pyqt_openai.util.script import getSeparator
 from pyqt_openai.widgets.findPathWidget import FindPathWidget
 from pyqt_openai.widgets.notifier import NotifierWidget
 from pyqt_openai.widgets.toast import Toast
 
 
-class Thread(QThread):
+class ReplicateThread(QThread):
     replyGenerated = Signal(ImagePromptContainer)
     errorGenerated = Signal(str)
     allReplyGenerated = Signal()
 
-    def __init__(self, openai_arg, number_of_images, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.__openai_arg = openai_arg
+    def __init__(self, wrapper, model, input_args, number_of_images):
+        super().__init__()
+        self.__wrapper = wrapper
+        self.__model = model
+        self.__input_args = input_args
         self.__number_of_images = number_of_images
         self.__stop = False
 
@@ -36,26 +37,16 @@ class Thread(QThread):
             for _ in range(self.__number_of_images):
                 if self.__stop:
                     break
-
-                response = OPENAI_STRUCT.images.generate(
-                    **self.__openai_arg
-                )
-                container = ImagePromptContainer(**self.__openai_arg)
-                for _ in response.data:
-                    image_data = base64.b64decode(_.b64_json)
-                    container.data = image_data
-                    container.revised_prompt = _.revised_prompt
-                    container.width = self.__openai_arg['size'].split('x')[0]
-                    container.height = self.__openai_arg['size'].split('x')[1]
-                    self.replyGenerated.emit(container)
+                result = self.__wrapper.get_image_response(model=self.__model, input_args=self.__input_args)
+                self.replyGenerated.emit(result)
             self.allReplyGenerated.emit()
         except Exception as e:
             self.errorGenerated.emit(str(e))
 
 
-class DallEControlWidget(QScrollArea):
-    submitDallE = Signal(ImagePromptContainer)
-    submitDallEAllComplete = Signal()
+class ReplicateRightSideBarWidget(QScrollArea):
+    submitReplicate = Signal(ImagePromptContainer)
+    submitReplicateAllComplete = Signal()
 
     def __init__(self):
         super().__init__()
@@ -66,14 +57,19 @@ class DallEControlWidget(QScrollArea):
         default_directory = IMAGE_DEFAULT_SAVE_DIRECTORY
 
         self.__settings_ini = QSettings(INI_FILE_NAME, QSettings.Format.IniFormat)
-        self.__settings_ini.beginGroup('DALLE')
-
-        if not self.__settings_ini.contains('quality'):
-            self.__settings_ini.setValue('quality', 'standard')
-        if not self.__settings_ini.contains('n'):
-            self.__settings_ini.setValue('n', 1)
-        if not self.__settings_ini.contains('size'):
-            self.__settings_ini.setValue('size', '1024x1024')
+        self.__settings_ini.beginGroup('REPLICATE')
+        if not self.__settings_ini.contains('REPLICATE_API_TOKEN'):
+            self.__settings_ini.setValue('REPLICATE_API_TOKEN', '')
+        if not self.__settings_ini.contains('model'):
+            self.__settings_ini.setValue('model', 'stability-ai/sdxl:39ed52f2a78e934b3ba6e2a89f5b1c712de7dfea535525255b1aa35c5565e08b')
+        if not self.__settings_ini.contains('width'):
+            self.__settings_ini.setValue('width', 768)
+        if not self.__settings_ini.contains('height'):
+            self.__settings_ini.setValue('height', 768)
+        if not self.__settings_ini.contains('prompt'):
+            self.__settings_ini.setValue('prompt', "Astronaut in a jungle, cold color palette, muted colors, detailed, 8k")
+        if not self.__settings_ini.contains('negative_prompt'):
+            self.__settings_ini.setValue('negative_prompt', "ugly, deformed, noisy, blurry, distorted")
         if not self.__settings_ini.contains('directory'):
             self.__settings_ini.setValue('directory', os.path.join(os.path.expanduser('~'), default_directory))
         if not self.__settings_ini.contains('is_save'):
@@ -82,43 +78,34 @@ class DallEControlWidget(QScrollArea):
             self.__settings_ini.setValue('continue_generation', False)
         if not self.__settings_ini.contains('number_of_images_to_create'):
             self.__settings_ini.setValue('number_of_images_to_create', 2)
-        if not self.__settings_ini.contains('style'):
-            self.__settings_ini.setValue('style', 'vivid')
-        if not self.__settings_ini.contains('response_format'):
-            self.__settings_ini.setValue('response_format', 'b64_json')
         if not self.__settings_ini.contains('save_prompt_as_text'):
             self.__settings_ini.setValue('save_prompt_as_text', True)
         if not self.__settings_ini.contains('show_prompt_on_image'):
             self.__settings_ini.setValue('show_prompt_on_image', False)
-        if not self.__settings_ini.contains('prompt_type'):
-            self.__settings_ini.setValue('prompt_type', 1)
-        if not self.__settings_ini.contains('width'):
-            self.__settings_ini.setValue('width', 1024)
-        if not self.__settings_ini.contains('height'):
-            self.__settings_ini.setValue('height', 1024)
-        if not self.__settings_ini.contains('prompt'):
-            self.__settings_ini.setValue('prompt', "Astronaut in a jungle, cold color palette, muted colors, detailed, 8k")
 
-        self.__quality = self.__settings_ini.value('quality', type=str)
-        self.__n = self.__settings_ini.value('n', type=int)
-        self.__size = self.__settings_ini.value('size', type=str)
         self.__directory = self.__settings_ini.value('directory', type=str)
-        self.__is_save = self.__settings_ini.value('is_save', type=bool)
-        self.__continue_generation = self.__settings_ini.value('continue_generation', type=bool)
-        self.__number_of_images_to_create = self.__settings_ini.value('number_of_images_to_create', type=int)
-        self.__style = self.__settings_ini.value('style', type=str)
-        self.__response_format = self.__settings_ini.value('response_format', type=str)
-        self.__save_prompt_as_text = self.__settings_ini.value('save_prompt_as_text', type=bool)
-        self.__prompt_type = self.__settings_ini.value('prompt_type', type=int)
+        self.__api_key = self.__settings_ini.value('REPLICATE_API_TOKEN', type=str)
+        self.__model = self.__settings_ini.value('model', type=str)
         self.__width = self.__settings_ini.value('width', type=int)
         self.__height = self.__settings_ini.value('height', type=int)
         self.__prompt = self.__settings_ini.value('prompt', type=str)
+        self.__negative_prompt = self.__settings_ini.value('negative_prompt', type=str)
+        self.__is_save = self.__settings_ini.value('is_save', type=bool)
+        self.__continue_generation = self.__settings_ini.value('continue_generation', type=bool)
+        self.__number_of_images_to_create = self.__settings_ini.value('number_of_images_to_create', type=int)
+        self.__save_prompt_as_text = self.__settings_ini.value('save_prompt_as_text', type=bool)
 
+        self.__wrapper = ReplicateWrapper(self.__api_key)
         self.__settings_ini.endGroup()
 
     def __initUi(self):
+        self.__apiKeyLineEdit = QLineEdit()
+        self.__apiKeyLineEdit.setPlaceholderText(LangClass.TRANSLATIONS['Enter Replicate API Key...'])
+        self.__apiKeyLineEdit.setText(self.__api_key)
+        self.__apiKeyLineEdit.setEchoMode(QLineEdit.EchoMode.Password)
+        self.__apiKeyLineEdit.textChanged.connect(self.__replicateChanged)
+
         self.__numberOfImagesToCreateSpinBox = QSpinBox()
-        self.__promptTypeToShowRadioGrpBox = QGroupBox(LangClass.TRANSLATIONS['Prompt Type To Show'])
 
         # generic settings
         self.__findPathWidget = FindPathWidget()
@@ -137,76 +124,51 @@ class DallEControlWidget(QScrollArea):
         self.__continueGenerationChkBox.toggled.connect(self.__continueGenerationChkBoxToggled)
         self.__continueGenerationChkBox.setChecked(self.__continue_generation)
 
+        self.__modelTextEdit = QPlainTextEdit()
+        self.__modelTextEdit.setPlainText(self.__model)
+        self.__modelTextEdit.textChanged.connect(self.__replicateTextChanged)
+
+        self.__widthSpinBox = QSpinBox()
+        self.__widthSpinBox.setRange(512, 1392)
+        self.__widthSpinBox.setSingleStep(8)
+        self.__widthSpinBox.setValue(self.__width)
+        self.__widthSpinBox.valueChanged.connect(self.__replicateChanged)
+
+        self.__heightSpinBox = QSpinBox()
+        self.__heightSpinBox.setRange(512, 1392)
+        self.__heightSpinBox.setSingleStep(8)
+        self.__heightSpinBox.setValue(self.__height)
+        self.__heightSpinBox.valueChanged.connect(self.__replicateChanged)
+
         self.__numberOfImagesToCreateSpinBox.setRange(2, 1000)
         self.__numberOfImagesToCreateSpinBox.setValue(self.__number_of_images_to_create)
         self.__numberOfImagesToCreateSpinBox.valueChanged.connect(self.__numberOfImagesToCreateSpinBoxValueChanged)
 
-        self.__savePromptAsTextChkBox = QCheckBox(LangClass.TRANSLATIONS['Save Prompt (Revised) as Text'])
+        self.__savePromptAsTextChkBox = QCheckBox(LangClass.TRANSLATIONS['Save Prompt as Text'])
         self.__savePromptAsTextChkBox.setChecked(True)
         self.__savePromptAsTextChkBox.toggled.connect(self.__savePromptAsTextChkBoxToggled)
         self.__savePromptAsTextChkBox.setChecked(self.__save_prompt_as_text)
-
-        self.__normalOne = QRadioButton(LangClass.TRANSLATIONS['Normal'])
-        self.__revisedOne = QRadioButton(LangClass.TRANSLATIONS['Revised'])
-
-        if self.__prompt_type == 1:
-            self.__normalOne.setChecked(True)
-        else:
-            self.__revisedOne.setChecked(True)
-
-        self.__normalOne.toggled.connect(self.__promptTypeToggled)
-        self.__revisedOne.toggled.connect(self.__promptTypeToggled)
-
-        lay = QVBoxLayout()
-        lay.addWidget(self.__normalOne)
-        lay.addWidget(self.__revisedOne)
-        self.__promptTypeToShowRadioGrpBox.setLayout(lay)
 
         self.__generalGrpBox = QGroupBox()
         self.__generalGrpBox.setTitle(LangClass.TRANSLATIONS['General'])
 
         lay = QVBoxLayout()
+        lay.addWidget(self.__apiKeyLineEdit)
         lay.addWidget(self.__findPathWidget)
         lay.addWidget(self.__saveChkBox)
         lay.addWidget(self.__continueGenerationChkBox)
         lay.addWidget(self.__numberOfImagesToCreateSpinBox)
         lay.addWidget(self.__savePromptAsTextChkBox)
-        lay.addWidget(self.__promptTypeToShowRadioGrpBox)
         self.__generalGrpBox.setLayout(lay)
 
-        # parameter settings
-        self.__qualityCmbBox = QComboBox()
-        self.__qualityCmbBox.addItems(['standard', 'hd'])
-        self.__qualityCmbBox.setCurrentText(self.__quality)
-        self.__qualityCmbBox.currentTextChanged.connect(self.__dalleChanged)
-
-        self.__nSpinBox = QSpinBox()
-        self.__nSpinBox.setRange(1, 10)
-        self.__nSpinBox.setValue(self.__n)
-        self.__nSpinBox.valueChanged.connect(self.__dalleChanged)
-        self.__nSpinBox.setEnabled(False)
-
-        self.__sizeLimitLabel = QLabel(LangClass.TRANSLATIONS['※ Images can have a size of 1024x1024, 1024x1792 or 1792x1024 pixels.'])
-        self.__sizeLimitLabel.setWordWrap(True)
-
-        self.__widthCmbBox = QComboBox()
-        self.__widthCmbBox.addItems(['1024', '1792'])
-        self.__widthCmbBox.setCurrentText(str(self.__width))
-        self.__widthCmbBox.currentTextChanged.connect(self.__dalleChanged)
-
-        self.__heightCmbBox = QComboBox()
-        self.__heightCmbBox.addItems(['1024', '1792'])
-        self.__heightCmbBox.setCurrentText(str(self.__height))
-        self.__heightCmbBox.currentTextChanged.connect(self.__dalleChanged)
-
         self.__promptWidget = QPlainTextEdit()
-        self.__promptWidget.setPlaceholderText(LangClass.TRANSLATIONS['Enter prompt here...'])
         self.__promptWidget.setPlainText(self.__prompt)
-        self.__promptWidget.textChanged.connect(self.__dalleTextChanged)
+        self.__promptWidget.textChanged.connect(self.__replicateTextChanged)
 
-        self.__styleCmbBox = QComboBox()
-        self.__styleCmbBox.addItems(['vivid', 'natural'])
-        self.__styleCmbBox.currentTextChanged.connect(self.__dalleChanged)
+        self.__negativePromptWidget = QPlainTextEdit()
+        self.__negativePromptWidget.setPlaceholderText('ugly, deformed, noisy, blurry, distorted')
+        self.__negativePromptWidget.setPlainText(self.__negative_prompt)
+        self.__negativePromptWidget.textChanged.connect(self.__replicateTextChanged)
 
         self.__submitBtn = QPushButton(LangClass.TRANSLATIONS['Submit'])
         self.__submitBtn.clicked.connect(self.__submit)
@@ -218,16 +180,32 @@ class DallEControlWidget(QScrollArea):
         paramGrpBox = QGroupBox()
         paramGrpBox.setTitle(LangClass.TRANSLATIONS['Parameters'])
 
-        lay = QFormLayout()
-        lay.addRow(LangClass.TRANSLATIONS['Quality'], self.__qualityCmbBox)
-        lay.addRow(LangClass.TRANSLATIONS['Total'], self.__nSpinBox)
-        lay.addRow(self.__sizeLimitLabel)
-        lay.addRow(LangClass.TRANSLATIONS['Width'], self.__widthCmbBox)
-        lay.addRow(LangClass.TRANSLATIONS['Height'], self.__heightCmbBox)
-        lay.addRow(LangClass.TRANSLATIONS['Style'], self.__styleCmbBox)
-        lay.addRow(QLabel(LangClass.TRANSLATIONS['Prompt']))
-        lay.addRow(self.__promptWidget)
+        lay = QVBoxLayout()
+        lay.addWidget(QLabel(LangClass.TRANSLATIONS['Prompt']))
+        lay.addWidget(self.__promptWidget)
+        lay.addWidget(QLabel(LangClass.TRANSLATIONS['Negative Prompt']))
+        lay.addWidget(self.__negativePromptWidget)
+        promptWidget = QWidget()
+        promptWidget.setLayout(lay)
 
+        lay = QFormLayout()
+        lay.addRow(LangClass.TRANSLATIONS['Model'], self.__modelTextEdit)
+        lay.addRow(LangClass.TRANSLATIONS['Width'], self.__widthSpinBox)
+        lay.addRow(LangClass.TRANSLATIONS['Height'], self.__heightSpinBox)
+        otherParamWidget = QWidget()
+        otherParamWidget.setLayout(lay)
+
+        splitter = QSplitter()
+        splitter.addWidget(otherParamWidget)
+        splitter.addWidget(promptWidget)
+        splitter.setHandleWidth(1)
+        splitter.setOrientation(Qt.Orientation.Vertical)
+        splitter.setChildrenCollapsible(False)
+        splitter.setSizes([500, 500])
+        splitter.setStyleSheet("QSplitterHandle {background-color: lightgray;}")
+
+        lay = QVBoxLayout()
+        lay.addWidget(splitter)
         paramGrpBox.setLayout(lay)
 
         sep = getSeparator('horizontal')
@@ -245,112 +223,93 @@ class DallEControlWidget(QScrollArea):
         self.setWidget(mainWidget)
         self.setWidgetResizable(True)
 
-    def __dalleChanged(self, v):
+    def __replicateChanged(self, v):
         sender = self.sender()
-        self.__settings_ini.beginGroup('DALLE')
-        if sender == self.__qualityCmbBox:
-            self.__quality = v
-            self.__settings_ini.setValue('quality', self.__quality)
-        elif sender == self.__nSpinBox:
-            self.__n = v
-            self.__settings_ini.setValue('n', self.__n)
-        elif sender == self.__widthCmbBox:
-            if self.__widthCmbBox.currentText() == '1792' and self.__heightCmbBox.currentText() == '1792':
-                self.__heightCmbBox.setCurrentText('1024')
+        self.__settings_ini.beginGroup('REPLICATE')
+        if sender == self.__apiKeyLineEdit:
+            self.__api_key = v
+            self.__settings_ini.setValue('REPLICATE_API_TOKEN', self.__api_key)
+        elif sender == self.__widthSpinBox:
             self.__width = v
             self.__settings_ini.setValue('width', self.__width)
-        elif sender == self.__heightCmbBox:
-            if self.__widthCmbBox.currentText() == '1792' and self.__heightCmbBox.currentText() == '1792':
-                self.__widthCmbBox.setCurrentText('1024')
+        elif sender == self.__heightSpinBox:
             self.__height = v
             self.__settings_ini.setValue('height', self.__height)
-        elif sender == self.__styleCmbBox:
-            self.__style = v
-            self.__settings_ini.setValue('style', self.__style)
         self.__settings_ini.endGroup()
 
-    def __dalleTextChanged(self):
+    def __replicateTextChanged(self):
         sender = self.sender()
-        self.__settings_ini.beginGroup('DALLE')
+        self.__settings_ini.beginGroup('REPLICATE')
         if isinstance(sender, QPlainTextEdit):
-            if sender == self.__promptWidget:
+            if sender == self.__modelTextEdit:
+                self.__model = sender.toPlainText()
+                self.__settings_ini.setValue('model', self.__model)
+            elif sender == self.__promptWidget:
                 self.__prompt = sender.toPlainText()
                 self.__settings_ini.setValue('prompt', self.__prompt)
+            elif sender == self.__negativePromptWidget:
+                self.__negative_prompt = sender.toPlainText()
+                self.__settings_ini.setValue('negative_prompt', self.__negative_prompt)
         self.__settings_ini.endGroup()
 
     def __setSaveDirectory(self, directory):
         self.__directory = directory
-        self.__settings_ini.beginGroup('DALLE')
+        self.__settings_ini.beginGroup('REPLICATE')
         self.__settings_ini.setValue('directory', self.__directory)
         self.__settings_ini.endGroup()
 
     def __saveChkBoxToggled(self, f):
         self.__is_save = f
-        self.__settings_ini.beginGroup('DALLE')
+        self.__settings_ini.beginGroup('REPLICATE')
         self.__settings_ini.setValue('is_save', self.__is_save)
         self.__settings_ini.endGroup()
 
     def __continueGenerationChkBoxToggled(self, f):
         self.__continue_generation = f
-        self.__settings_ini.beginGroup('DALLE')
+        self.__settings_ini.beginGroup('REPLICATE')
         self.__settings_ini.setValue('continue_generation', self.__continue_generation)
         self.__settings_ini.endGroup()
         self.__numberOfImagesToCreateSpinBox.setEnabled(f)
 
     def __numberOfImagesToCreateSpinBoxValueChanged(self, value):
         self.__number_of_images_to_create = value
-        self.__settings_ini.beginGroup('DALLE')
+        self.__settings_ini.beginGroup('REPLICATE')
         self.__settings_ini.setValue('number_of_images_to_create', self.__number_of_images_to_create)
         self.__settings_ini.endGroup()
 
     def __savePromptAsTextChkBoxToggled(self, f):
         self.__save_prompt_as_text = f
-        self.__settings_ini.beginGroup('DALLE')
+        self.__settings_ini.beginGroup('REPLICATE')
         self.__settings_ini.setValue('save_prompt_as_text', self.__save_prompt_as_text)
         self.__settings_ini.endGroup()
 
-    def __promptTypeToggled(self, f):
-        sender = self.sender()
-        self.__settings_ini.beginGroup('DALLE')
-        # Prompt type to show on the image
-        # 1 is normal, 2 is revised
-        if sender == self.__normalOne:
-            self.__prompt_type = 1
-            self.__settings_ini.setValue('prompt_type', self.__prompt_type)
-        elif sender == self.__revisedOne:
-            self.__prompt_type = 2
-            self.__settings_ini.setValue('prompt_type', self.__prompt_type)
-        self.__settings_ini.endGroup()
-
     def __submit(self):
-        openai_arg = {
-            "model": "dall-e-3",
+        arg = {
+            "model": self.__model,
             "prompt": self.__promptWidget.toPlainText(),
-            "n": self.__n,
-            "size": f'{self.__width}x{self.__height}',
-            'quality': self.__quality,
-            "style": self.__style,
-            'response_format': self.__response_format,
+            "negative_prompt": self.__negativePromptWidget.toPlainText(),
+            "width": self.__width,
+            "height": self.__height,
         }
         number_of_images = self.__number_of_images_to_create if self.__continue_generation else 1
 
-        self.__t = Thread(openai_arg, number_of_images)
+        self.__api_key = self.__apiKeyLineEdit.text().strip()
+        self.__wrapper.set_api(self.__api_key)
+
+        self.__t = ReplicateThread(self.__wrapper, self.__model, arg, number_of_images)
         self.__t.start()
         self.__t.started.connect(self.__toggleWidget)
         self.__t.replyGenerated.connect(self.__afterGenerated)
         self.__t.errorGenerated.connect(self.__failToGenerate)
         self.__t.finished.connect(self.__toggleWidget)
-        self.__t.allReplyGenerated.connect(self.submitDallEAllComplete)
+        self.__t.allReplyGenerated.connect(self.submitReplicateAllComplete)
 
     def __toggleWidget(self):
         f = not self.__t.isRunning()
         self.__generalGrpBox.setEnabled(f)
-        self.__qualityCmbBox.setEnabled(f)
-        self.__nSpinBox.setEnabled(f)
-        self.__widthCmbBox.setEnabled(f)
-        self.__heightCmbBox.setEnabled(f)
+        self.__widthSpinBox.setEnabled(f)
+        self.__heightSpinBox.setEnabled(f)
         self.__submitBtn.setEnabled(f)
-        self.__styleCmbBox.setEnabled(f)
         if self.__continue_generation:
             self.__stopGeneratingImageBtn.setEnabled(not f)
 
@@ -370,16 +329,15 @@ class DallEControlWidget(QScrollArea):
             self.__notifierWidget.doubleClicked.connect(self.window().show)
             QMessageBox.critical(self, informative_text, detailed_text)
 
-    def __afterGenerated(self, arg):
-        self.submitDallE.emit(arg)
+    def __afterGenerated(self, result):
+        self.submitReplicate.emit(result)
 
     def getArgument(self):
         return {
             'prompt': self.__promptWidget.toPlainText(),
-            'n': self.__n,
-            'size': self.__size,
-            'quality': self.__quality,
-            'style': self.__style
+            'negative_prompt': self.__negativePromptWidget.toPlainText(),
+            'width': self.__width,
+            'height': self.__height,
         }
 
     def getSavePromptAsText(self):

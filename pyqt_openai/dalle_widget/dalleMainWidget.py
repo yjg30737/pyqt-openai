@@ -6,8 +6,8 @@ from qtpy.QtWidgets import QStackedWidget, QHBoxLayout, QVBoxLayout, QWidget, QS
 from pyqt_openai import IMAGE_TABLE_NAME, INI_FILE_NAME, ICON_HISTORY, ICON_SETTING, \
     DEFAULT_SHORTCUT_LEFT_SIDEBAR_WINDOW, \
     DEFAULT_SHORTCUT_RIGHT_SIDEBAR_WINDOW
-from pyqt_openai.dalle_widget.dallEControlWidget import DallEControlWidget
-from pyqt_openai.dalle_widget.home import HomePage
+from pyqt_openai.dalle_widget.dalleRightSideBar import DallERightSideBarWidget
+from pyqt_openai.dalle_widget.dalleHome import DallEHome
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ImagePromptContainer
 from pyqt_openai.pyqt_openai_data import DB
@@ -19,7 +19,7 @@ from pyqt_openai.widgets.notifier import NotifierWidget
 from pyqt_openai.widgets.thumbnailView import ThumbnailView
 
 
-class DallEWidget(QWidget):
+class DallEMainWidget(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -51,13 +51,13 @@ class DallEWidget(QWidget):
         # widget for main view
         self.__mainWidget = QStackedWidget()
 
-        self.__homePage = HomePage()
+        self.__homePage = DallEHome()
         self.__viewWidget = ThumbnailView()
 
         self.__mainWidget.addWidget(self.__homePage)
         self.__mainWidget.addWidget(self.__viewWidget)
 
-        self.__rightSideBarWidget = DallEControlWidget()
+        self.__rightSideBarWidget = DallERightSideBarWidget()
 
         self.__imageNavWidget.getContent.connect(lambda x: self.__updateCenterWidget(1, x))
 
