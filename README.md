@@ -5,6 +5,8 @@
   
 Join our <a href="https://discord.gg/cHekprskVE">Discord Channel</a> for questions or discussions! 
 Also we need contributor. Feel free to join the server !
+
+Email: yjg30737@gmail.com
 </div>
 
 ![image](https://github.com/user-attachments/assets/f5281b7e-1414-4335-adb4-a92928cd609e)
@@ -230,9 +232,6 @@ second, do this:
 pip install -r requirements.txt --upgrade
 ```
 then it will work :)
-
-## Contact
-You can join pyqt-openai's <a href="https://discord.gg/cHekprskVE">Discord Server</a> to have a conversation about it or AI-related stuff 🙂
 
 ## Disclaimer
 
