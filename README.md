@@ -1,16 +1,17 @@
 # pyqt-openai
 <div align="center">
-  <img src="https://user-images.githubusercontent.com/55078043/229002952-9afe57de-b0b6-400f-9628-b8e0044d3f7b.png" width="150px" height="150px"><br/><br/>
+  <img src="https://user-images.githubusercontent.com/55078043/229002952-9afe57de-b0b6-400f-9628-b8e0044d3f7b.png" width="240px" height="240px"><br/><br/>
+<h3>Multi-purpose Text & Image Generation Desktop Chatbot (supporting various models including GPT).</h3>
   
-  [![](https://dcbadge.vercel.app/api/server/cHekprskVE)](https://discord.gg/cHekprskVE)
-
+Join our <a href="https://discord.gg/cHekprskVE">Discord Channel</a> for questions or discussions! 
+Also we need contributor. Feel free to join the server !
 </div>
 
 ![image](https://github.com/user-attachments/assets/f5281b7e-1414-4335-adb4-a92928cd609e)
 
-## Multi-purpose Text & Image Generation Desktop Commercial Chatbot (supporting various models including GPT)
+<hr/>
 
-This application is developed using PyQt.
+This application is developed using PyQt/PySide.
 
 It supports Windows, macOS, and Linux.
 
@@ -45,7 +46,6 @@ If you would like to support this project, please click the button below to make
   * [Prompt Generator](#prompt-generator)
 * [How to Install](#how-to-install)
 * [Troubleshooting](#troubleshooting)
-* [Contact](#contact)
 * [Note](#note)
 * [Disclaimer](#disclaimer)
 
