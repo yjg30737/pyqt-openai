@@ -207,7 +207,7 @@ class ChatBrowser(QScrollArea):
         # Find and highlight all occurrences of the pattern
         regex_flags = 0 if case_sensitive else re.IGNORECASE
         regex = re.compile(pattern, regex_flags)
-        text = label.getText()
+        text = label.toPlainText()
 
         for match in regex.finditer(text):
             start, end = match.span()
@@ -217,7 +217,7 @@ class ChatBrowser(QScrollArea):
 
     def setCurrentLabelIncludingTextBySliderPosition(self, text, case_sensitive=False, word_only=False, is_regex=False):
         labels = self.__getEveryLabels()
-        label_info = [{'class':label.getLbl(), 'text':label.toPlainText(), 'pos':label.y()} for label in labels]
+        label_info = [{'class':label.getLbl(), 'text':label.getText(), 'pos':label.y()} for label in labels]
         res_lbl = []
 
         for _ in label_info:

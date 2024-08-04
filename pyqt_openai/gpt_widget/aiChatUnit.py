@@ -161,3 +161,6 @@ class AIChatUnit(QWidget):
 
     def getText(self):
         return self.__lbl.toPlainText()
+
+    def getLbl(self):
+        return self.__lbl
