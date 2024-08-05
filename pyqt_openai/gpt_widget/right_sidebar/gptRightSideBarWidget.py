@@ -9,7 +9,7 @@ from pyqt_openai.gpt_widget.right_sidebar.chatPage import ChatPage
 from pyqt_openai.gpt_widget.right_sidebar.llama_widget.llamaPage import LlamaPage
 
 
-class AIPlaygroundWidget(QScrollArea):
+class GPTRightSideBarWidget(QScrollArea):
     onDirectorySelected = Signal(str)
     onToggleJSON = Signal(bool)
 

@@ -42,12 +42,12 @@ class MainWindow(QMainWindow):
     def __initUi(self):
         self.setWindowTitle(APP_NAME)
 
-        self.__openAiChatBotWidget = GPTMainWidget(self)
+        self.__gptWidget = GPTMainWidget(self)
         self.__dallEWidget = DallEMainWidget(self)
         self.__replicateWidget = ReplicateMainWidget(self)
 
         self.__mainWidget = QStackedWidget()
-        self.__mainWidget.addWidget(self.__openAiChatBotWidget)
+        self.__mainWidget.addWidget(self.__gptWidget)
         self.__mainWidget.addWidget(self.__dallEWidget)
         self.__mainWidget.addWidget(self.__replicateWidget)
 
@@ -71,6 +71,7 @@ class MainWindow(QMainWindow):
         self.resize(*APP_INITIAL_WINDOW_SIZE)
 
         self.__refreshColumns()
+        self.__gptWidget.refreshCustomizedInformation(self.__customizeParamsContainer)
 
     def __setActions(self):
         self.__langAction = QAction()
@@ -267,7 +268,7 @@ class MainWindow(QMainWindow):
             LLAMAINDEX_WRAPPER.set_directory(self.__settings_struct.value('llama_index_directory'))
 
     def __setAIEnabled(self, f):
-        self.__openAiChatBotWidget.setAIEnabled(f)
+        self.__gptWidget.setAIEnabled(f)
         self.__dallEWidget.setAIEnabled(f)
 
     def __setApi(self):
@@ -317,7 +318,7 @@ class MainWindow(QMainWindow):
             container = dialog.getParam()
             self.__customizeParamsContainer = container
             self.__refreshContainer(container)
-            self.__openAiChatBotWidget.refreshCustomizedInformation()
+            self.__gptWidget.refreshCustomizedInformation(container)
 
     def __aiTypeChanged(self, i):
         self.__mainWidget.setCurrentIndex(i)
@@ -389,7 +390,7 @@ class MainWindow(QMainWindow):
                     restart_app(settings=self.__settings_struct)
 
     def __refreshColumns(self):
-        self.__openAiChatBotWidget.setColumns(self.__settingsParamContainer.chat_column_to_show)
+        self.__gptWidget.setColumns(self.__settingsParamContainer.chat_column_to_show)
         image_column_to_show = self.__settingsParamContainer.image_column_to_show
         if image_column_to_show.__contains__('data'):
             image_column_to_show.remove('data')

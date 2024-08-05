@@ -24,7 +24,6 @@ class ChatBrowser(QScrollArea):
 
     def __initVal(self):
         self.__cur_id = 0
-
         self.__user_image = ''
         self.__ai_image = ''
 
