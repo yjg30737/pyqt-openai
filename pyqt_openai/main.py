@@ -23,10 +23,9 @@ from qtpy.QtWidgets import QApplication, \
 from qtpy.QtCore import Qt, QCoreApplication, QSettings
 from qtpy.QtSql import QSqlDatabase
 
-from pyqt_openai.mainWindow import MainWindow
 from pyqt_openai.util.script import get_font, isUsingPyQt5
 from pyqt_openai.sqlite import get_db_filename
-
+from pyqt_openai.mainWindow import MainWindow
 from pyqt_openai import INI_FILE_NAME, APP_ICON
 
 # HighDPI support
