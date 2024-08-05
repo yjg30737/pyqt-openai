@@ -82,7 +82,6 @@ class ChatBrowser(QScrollArea):
             if stream_f:
                 unit = self.__getLastUnit()
                 if isinstance(unit, AIChatUnit):
-                    # TODO 2023-11-10
                     unit.toggleGUI(False)
                     unit.addText(text)
                     return

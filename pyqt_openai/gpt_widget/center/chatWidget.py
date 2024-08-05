@@ -232,15 +232,10 @@ class ChatWidget(QWidget):
     def toggleJSON(self, f):
         self.__prompt.toggleJSON(f)
 
-    def showMessages(self, conv_data, id):
-        self.__browser.replaceThread(conv_data, id)
-        self.__prompt.showWidgetInPromptDuringResponse(False)
-
-    def clearMessages(self):
-        self.__browser.resetChatWidget(0)
-        self.__prompt.showWidgetInPromptDuringResponse(False)
-
-    def showMessageInThread(self, cur_id):
+    def showMessages(self, cur_id):
         self.__browser.resetChatWidget(cur_id)
         self.__browser.replaceThread(DB.selectCertainThreadMessages(cur_id), cur_id)
         self.__mainPrompt.setFocus()
+
+    def clearMessages(self):
+        self.__browser.resetChatWidget(0)
