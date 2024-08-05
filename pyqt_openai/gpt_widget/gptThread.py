@@ -7,7 +7,7 @@ from pyqt_openai.pyqt_openai_data import OPENAI_STRUCT
 from pyqt_openai.pyqt_openai_data import form_response
 
 
-class OpenAIThread(QThread):
+class GPTThread(QThread):
     """
     == replyGenerated Signal ==
     First: response

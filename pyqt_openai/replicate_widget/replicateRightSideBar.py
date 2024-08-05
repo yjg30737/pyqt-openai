@@ -1,6 +1,6 @@
 import os
 
-from qtpy.QtCore import QThread, Signal, QSettings, Qt
+from qtpy.QtCore import Signal, QSettings, Qt
 from qtpy.QtWidgets import QLineEdit, QScrollArea, QMessageBox, QWidget, QCheckBox, QSpinBox, QGroupBox, QVBoxLayout, \
     QPushButton, \
     QPlainTextEdit, \
@@ -9,39 +9,12 @@ from qtpy.QtWidgets import QLineEdit, QScrollArea, QMessageBox, QWidget, QCheckB
 from pyqt_openai import INI_FILE_NAME, IMAGE_DEFAULT_SAVE_DIRECTORY
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ImagePromptContainer
+from pyqt_openai.replicate_widget.replicateThread import ReplicateThread
 from pyqt_openai.util.replicate_script import ReplicateWrapper
 from pyqt_openai.util.script import getSeparator
 from pyqt_openai.widgets.findPathWidget import FindPathWidget
 from pyqt_openai.widgets.notifier import NotifierWidget
 from pyqt_openai.widgets.toast import Toast
-
-
-class ReplicateThread(QThread):
-    replyGenerated = Signal(ImagePromptContainer)
-    errorGenerated = Signal(str)
-    allReplyGenerated = Signal()
-
-    def __init__(self, wrapper, model, input_args, number_of_images):
-        super().__init__()
-        self.__wrapper = wrapper
-        self.__model = model
-        self.__input_args = input_args
-        self.__number_of_images = number_of_images
-        self.__stop = False
-
-    def stop(self):
-        self.__stop = True
-
-    def run(self):
-        try:
-            for _ in range(self.__number_of_images):
-                if self.__stop:
-                    break
-                result = self.__wrapper.get_image_response(model=self.__model, input_args=self.__input_args)
-                self.replyGenerated.emit(result)
-            self.allReplyGenerated.emit()
-        except Exception as e:
-            self.errorGenerated.emit(str(e))
 
 
 class ReplicateRightSideBarWidget(QScrollArea):
@@ -107,7 +80,6 @@ class ReplicateRightSideBarWidget(QScrollArea):
 
         self.__numberOfImagesToCreateSpinBox = QSpinBox()
 
-        # generic settings
         self.__findPathWidget = FindPathWidget()
         self.__findPathWidget.setAsDirectory(True)
         self.__findPathWidget.getLineEdit().setPlaceholderText(LangClass.TRANSLATIONS['Choose Directory to Save...'])

@@ -18,7 +18,7 @@ from pyqt_openai.gpt_widget.prompt_gen_widget.promptGeneratorWidget import Promp
 from pyqt_openai.gpt_widget.right_sidebar.aiPlaygroundWidget import AIPlaygroundWidget
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ChatThreadContainer, ChatMessageContainer
-from pyqt_openai.openAiThread import OpenAIThread, LlamaOpenAIThread
+from pyqt_openai.gpt_widget.gptThread import GPTThread, LlamaOpenAIThread
 from pyqt_openai.pyqt_openai_data import DB, get_argument, LLAMAINDEX_WRAPPER
 from pyqt_openai.util.script import open_directory, get_generic_ext_out_of_qt_ext, message_list_to_txt, \
     conv_unit_to_html, \
@@ -308,7 +308,7 @@ class GPTMainWidget(QWidget):
             if is_llama_available:
                 self.__t = LlamaOpenAIThread(LLAMAINDEX_WRAPPER, openai_arg=openai_param, query_text=query_text, info=container)
             else:
-                self.__t = OpenAIThread(openai_param, info=container)
+                self.__t = GPTThread(openai_param, info=container)
             self.__t.started.connect(self.__beforeGenerated)
             self.__t.replyGenerated.connect(self.__browser.showLabel)
             self.__t.streamFinished.connect(self.__browser.streamFinished)

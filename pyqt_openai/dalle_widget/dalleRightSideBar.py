@@ -1,56 +1,19 @@
-import base64
 import os
 
-from qtpy.QtCore import QThread, Signal, QSettings
+from qtpy.QtCore import Signal, QSettings
 from qtpy.QtWidgets import QMessageBox, QScrollArea, QWidget, QCheckBox, QSpinBox, QGroupBox, QVBoxLayout, QPushButton, \
     QComboBox, \
     QPlainTextEdit, \
     QFormLayout, QLabel, QRadioButton
 
 from pyqt_openai import INI_FILE_NAME, IMAGE_DEFAULT_SAVE_DIRECTORY
+from pyqt_openai.dalle_widget.dalleThread import DallEThread
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ImagePromptContainer
-from pyqt_openai.pyqt_openai_data import OPENAI_STRUCT
 from pyqt_openai.util.script import getSeparator
 from pyqt_openai.widgets.findPathWidget import FindPathWidget
 from pyqt_openai.widgets.notifier import NotifierWidget
 from pyqt_openai.widgets.toast import Toast
-
-
-class DallEThread(QThread):
-    replyGenerated = Signal(ImagePromptContainer)
-    errorGenerated = Signal(str)
-    allReplyGenerated = Signal()
-
-    def __init__(self, openai_arg, number_of_images, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.__openai_arg = openai_arg
-        self.__number_of_images = number_of_images
-        self.__stop = False
-
-    def stop(self):
-        self.__stop = True
-
-    def run(self):
-        try:
-            for _ in range(self.__number_of_images):
-                if self.__stop:
-                    break
-
-                response = OPENAI_STRUCT.images.generate(
-                    **self.__openai_arg
-                )
-                container = ImagePromptContainer(**self.__openai_arg)
-                for _ in response.data:
-                    image_data = base64.b64decode(_.b64_json)
-                    container.data = image_data
-                    container.revised_prompt = _.revised_prompt
-                    container.width = self.__openai_arg['size'].split('x')[0]
-                    container.height = self.__openai_arg['size'].split('x')[1]
-                    self.replyGenerated.emit(container)
-            self.allReplyGenerated.emit()
-        except Exception as e:
-            self.errorGenerated.emit(str(e))
 
 
 class DallERightSideBarWidget(QScrollArea):
@@ -120,7 +83,6 @@ class DallERightSideBarWidget(QScrollArea):
         self.__numberOfImagesToCreateSpinBox = QSpinBox()
         self.__promptTypeToShowRadioGrpBox = QGroupBox(LangClass.TRANSLATIONS['Prompt Type To Show'])
 
-        # generic settings
         self.__findPathWidget = FindPathWidget()
         self.__findPathWidget.setAsDirectory(True)
         self.__findPathWidget.getLineEdit().setPlaceholderText(LangClass.TRANSLATIONS['Choose Directory to Save...'])
@@ -174,7 +136,6 @@ class DallERightSideBarWidget(QScrollArea):
         lay.addWidget(self.__promptTypeToShowRadioGrpBox)
         self.__generalGrpBox.setLayout(lay)
 
-        # parameter settings
         self.__qualityCmbBox = QComboBox()
         self.__qualityCmbBox.addItems(['standard', 'hd'])
         self.__qualityCmbBox.setCurrentText(self.__quality)

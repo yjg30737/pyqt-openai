@@ -46,7 +46,7 @@ class AIPlaygroundWidget(QScrollArea):
         self.__llamaPage = LlamaPage()
         self.__llamaPage.onDirectorySelected.connect(self.__onDirectorySelected)
 
-        tabWidget.addTab(chatPage, LangClass.TRANSLATIONS['Chat'], )
+        tabWidget.addTab(chatPage, LangClass.TRANSLATIONS['GPT'], )
         tabWidget.addTab(self.__llamaPage, 'LlamaIndex', )
         tabWidget.currentChanged.connect(self.__tabChanged)
         tabWidget.setTabEnabled(1, self.__use_llama_index)
