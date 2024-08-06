@@ -181,14 +181,22 @@ class ChatBrowser(QScrollArea):
     def isFinishedByLength(self):
         return self.__getLastUnit().getResponseInfo().finish_reason == 'length'
 
-    def __clearFormatting(self, label):
+    def clearFormatting(self, label=None):
+        if label is None:
+            labels = [lbl.getLbl() for lbl in self.__getEveryLabels()]
+            for lbl in labels:
+                self.clearFormatting(lbl)
+            return
         cursor = label.textCursor()
         cursor.select(QTextCursor.Document)
         format = QTextCharFormat()
         cursor.setCharFormat(format)
 
-    def __highlightText(self, label, pattern, case_sensitive, word_only):
-        self.__clearFormatting(label)  # Clear any previous formatting
+    def highlightText(self, label, pattern, case_sensitive):
+        self.clearFormatting(label)  # Clear any previous formatting
+
+        if pattern == '':
+            return
 
         cursor = label.textCursor()
         format = QTextCharFormat()
@@ -197,10 +205,6 @@ class ChatBrowser(QScrollArea):
 
         # Ensure we start from the beginning
         cursor.setPosition(0)
-
-        # Create regex pattern for word-only search if needed
-        if word_only:
-            pattern = r'\b' + re.escape(pattern) + r'\b'
 
         # Find and highlight all occurrences of the pattern
         regex_flags = 0 if case_sensitive else re.IGNORECASE
@@ -216,53 +220,47 @@ class ChatBrowser(QScrollArea):
     def setCurrentLabelIncludingTextBySliderPosition(self, text, case_sensitive=False, word_only=False, is_regex=False):
         labels = self.__getEveryLabels()
         label_info = [{'class':label.getLbl(), 'text':label.getText(), 'pos':label.y()} for label in labels]
-        res_lbl = []
+        selections = []
 
         for _ in label_info:
             pattern = text
+            _['pattern'] = pattern
             if is_regex:
                 if is_valid_regex(pattern):
                     if case_sensitive:
                         result = re.search(pattern, _['text'], re.IGNORECASE)
                         if result:
-                            res_lbl.append(_)
-                            self.__highlightText(_['class'], pattern, case_sensitive, word_only)
+                            selections.append(_)
                     else:
                         result = re.search(pattern, _['text'])
                         if result:
-                            res_lbl.append(_)
-                            self.__highlightText(_['class'], pattern, case_sensitive, word_only)
+                            selections.append(_)
                 else:
                     if _['text'].find(text) != -1:
-                        res_lbl.append(_)
-                        self.__highlightText(_['class'], pattern, case_sensitive, word_only)
+                        selections.append(_)
             else:
                 if case_sensitive:
                     if word_only:
                         pattern = r'\b' + re.escape(text) + r'\b'
                         result = re.search(pattern, _['text'])
                         if result:
-                            res_lbl.append(_)
-                            self.__highlightText(_['class'], pattern, case_sensitive, word_only)
+                            selections.append(_)
                     else:
                         if _['text'].find(text) != -1:
-                            res_lbl.append(_)
-                            self.__highlightText(_['class'], pattern, case_sensitive, word_only)
+                            selections.append(_)
                 else:
                     if word_only:
                         pattern = r'\b' + re.escape(text) + r'\b'
                         result = re.search(pattern, _['text'], re.IGNORECASE)
                         if result:
-                            res_lbl.append(_)
-                            self.__highlightText(_['class'], pattern, case_sensitive, word_only)
+                            selections.append(_)
                     else:
                         pattern = re.escape(text)
                         result = re.search(pattern, _['text'], re.IGNORECASE)
                         if result:
-                            res_lbl.append(_)
-                            self.__highlightText(_['class'], pattern, case_sensitive, word_only)
+                            selections.append(_)
 
-        return res_lbl
+        return selections
 
     def replaceThread(self, args: List[ChatMessageContainer], id):
         """

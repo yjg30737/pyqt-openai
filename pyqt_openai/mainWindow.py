@@ -136,11 +136,11 @@ class MainWindow(QMainWindow):
         transparencyActionWidget.setLayout(lay)
         self.__transparentAction.setDefaultWidget(transparencyActionWidget)
 
-        self.__showAiToolBarAction = QWidgetAction(self)
-        self.__showAiToolBarChkBox = QCheckBox(LangClass.TRANSLATIONS['Show Secondary Toolbar'])
-        self.__showAiToolBarChkBox.setChecked(self.__settingsParamContainer.show_secondary_toolbar)
-        self.__showAiToolBarChkBox.toggled.connect(self.__showAiToolBarChkBoxChecked)
-        self.__showAiToolBarAction.setDefaultWidget(self.__showAiToolBarChkBox)
+        self.__showSecondaryToolBarAction = QWidgetAction(self)
+        self.__showSecondaryToolBarChkBox = QCheckBox(LangClass.TRANSLATIONS['Show Secondary Toolbar'])
+        self.__showSecondaryToolBarChkBox.setChecked(self.__settingsParamContainer.show_secondary_toolbar)
+        self.__showSecondaryToolBarChkBox.toggled.connect(self.__showSecondaryToolBarChkBoxChecked)
+        self.__showSecondaryToolBarAction.setDefaultWidget(self.__showSecondaryToolBarChkBox)
 
         self.__apiCheckPreviewLbl = QLabel()
         self.__apiCheckPreviewLbl.setFont(QFont('Arial', 10))
@@ -231,7 +231,7 @@ class MainWindow(QMainWindow):
         self.__toolbar.addAction(self.__customizeAction)
         self.__toolbar.addAction(self.__fullScreenAction)
         self.__toolbar.addAction(self.__transparentAction)
-        self.__toolbar.addAction(self.__showAiToolBarAction)
+        self.__toolbar.addAction(self.__showSecondaryToolBarAction)
         self.__toolbar.addAction(self.__apiAction)
         self.__toolbar.setLayout(lay)
         self.__toolbar.setMovable(False)
@@ -307,7 +307,7 @@ class MainWindow(QMainWindow):
     def __setTransparency(self, v):
         self.setWindowOpacity(v / 100)
 
-    def __showAiToolBarChkBoxChecked(self, f):
+    def __showSecondaryToolBarChkBoxChecked(self, f):
         self.__mainWidget.currentWidget().showSecondaryToolBar(f)
         self.__settingsParamContainer.show_secondary_toolbar = f
 

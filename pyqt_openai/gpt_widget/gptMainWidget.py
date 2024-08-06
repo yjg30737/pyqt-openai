@@ -103,18 +103,18 @@ class GPTMainWidget(QWidget):
 
         sep = getSeparator('vertical')
 
-        toggleFindToolButton = QPushButton(LangClass.TRANSLATIONS['Show Find Tool'])
-        toggleFindToolButton.setCheckable(True)
-        toggleFindToolButton.setChecked(True)
-        toggleFindToolButton.toggled.connect(self.__chatWidget.toggleMenuWidget)
-        toggleFindToolButton.setShortcut(DEFAULT_SHORTCUT_FIND)
+        self.__toggleFindToolButton = QPushButton(LangClass.TRANSLATIONS['Show Find Tool'])
+        self.__toggleFindToolButton.setCheckable(True)
+        self.__toggleFindToolButton.setChecked(True)
+        self.__toggleFindToolButton.toggled.connect(self.__chatWidget.toggleMenuWidget)
+        self.__toggleFindToolButton.setShortcut(DEFAULT_SHORTCUT_FIND)
 
         lay = QHBoxLayout()
         lay.addWidget(self.__sideBarBtn)
         lay.addWidget(self.__settingBtn)
         lay.addWidget(self.__promptBtn)
         lay.addWidget(sep)
-        lay.addWidget(toggleFindToolButton)
+        lay.addWidget(self.__toggleFindToolButton)
         lay.setContentsMargins(2, 2, 2, 2)
         lay.setAlignment(Qt.AlignmentFlag.AlignLeft)
 

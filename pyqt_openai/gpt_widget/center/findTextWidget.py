@@ -38,7 +38,6 @@ class FindTextWidget(QWidget):
         self.__cnt_cur_idx_text = '{0}/{1}'
         self.__cnt_lbl = QLabel(self.__cnt_init_text.format(0))
 
-
         self.__prevBtn = Button()
         self.__prevBtn.setStyleAndIcon(ICON_PREV)
         self.__prevBtn.setShortcut(DEFAULT_SHORTCUT_FIND_PREV)
@@ -113,9 +112,12 @@ class FindTextWidget(QWidget):
                                                                                                 case_sensitive=self.__caseBtn.isChecked(),
                                                                                                 word_only=self.__wordBtn.isChecked(),
                                                                                                 is_regex=self.__regexBtn.isChecked())
-            is_exist = len(self.__selections) > 0
+            is_exist = len(list(map(lambda x: x['pattern'], self.__selections))) > 0 and text.strip() != ''
+
             if is_exist:
                 self.__setCurrentPosition()
+            else:
+                self.__chatBrowser.clearFormatting()
             self.__btnToggled(is_exist)
 
     def __textChanged(self, text):
@@ -137,14 +139,21 @@ class FindTextWidget(QWidget):
         self.__nextBtn.setEnabled(f)
 
     def __setCurrentPosition(self):
+        self.__chatBrowser.highlightText(self.__selections[self.__cur_idx]['class'], self.__selections[self.__cur_idx]['pattern'], self.__caseBtn.isChecked())
         self.__chatBrowser.verticalScrollBar().setSliderPosition(self.__selections[self.__cur_idx]['pos'])
 
     def prev(self):
+        self.__chatBrowser.clearFormatting(self.__selections[self.__cur_idx]['class'])
         self.__cur_idx = max(0, self.__cur_idx-1)
+        if self.__cur_idx == 0:
+            QMessageBox.information(self, LangClass.TRANSLATIONS['Information'], LangClass.TRANSLATIONS['Reached the beginning'])
         self.__setCurrentPosition()
 
     def next(self):
+        self.__chatBrowser.clearFormatting(self.__selections[self.__cur_idx]['class'])
         self.__cur_idx = min(len(self.__selections)-1, self.__cur_idx+1)
+        if self.__cur_idx == len(self.__selections)-1:
+            QMessageBox.information(self, LangClass.TRANSLATIONS['Information'], LangClass.TRANSLATIONS['Reached the end'])
         self.__setCurrentPosition()
 
     def __caseToggled(self, f):
