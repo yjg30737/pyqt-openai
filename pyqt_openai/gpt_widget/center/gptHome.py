@@ -4,7 +4,7 @@ from qtpy.QtCore import Qt
 from qtpy.QtGui import QFont, QPixmap
 from qtpy.QtWidgets import QLabel, QWidget, QVBoxLayout, QScrollArea
 
-from pyqt_openai import APP_NAME
+from pyqt_openai import DEFAULT_APP_NAME
 
 
 class GPTHome(QScrollArea):
@@ -13,7 +13,7 @@ class GPTHome(QScrollArea):
         self.__initUi()
 
     def __initUi(self):
-        title = QLabel(f'Welcome to {APP_NAME}!', self)
+        title = QLabel(f'Welcome to {DEFAULT_APP_NAME}!', self)
         title.setFont(QFont('Arial', 32))
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
 

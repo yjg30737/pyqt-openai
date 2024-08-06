@@ -9,7 +9,7 @@ from qtpy.QtWidgets import QMainWindow, QToolBar, QHBoxLayout, QDialog, QLineEdi
     QMessageBox, QCheckBox, QAction
 
 from pyqt_openai import INI_FILE_NAME, DEFAULT_SHORTCUT_FULL_SCREEN, \
-    APP_INITIAL_WINDOW_SIZE, APP_NAME, APP_ICON, ICON_STACKONTOP, ICON_CUSTOMIZE, ICON_FULLSCREEN, ICON_CLOSE, \
+    APP_INITIAL_WINDOW_SIZE, DEFAULT_APP_NAME, DEFAULT_APP_ICON, ICON_STACKONTOP, ICON_CUSTOMIZE, ICON_FULLSCREEN, ICON_CLOSE, \
     DEFAULT_SHORTCUT_SETTING, TRANSPARENT_RANGE, TRANSPARENT_INIT_VAL
 from pyqt_openai.aboutDialog import AboutDialog
 from pyqt_openai.gpt_widget.gptMainWidget import GPTMainWidget
@@ -32,7 +32,7 @@ class MainWindow(QMainWindow):
         self.__initUi()
 
     def __initVal(self):
-        self.__settings_struct = QSettings(INI_FILE_NAME, QSettings.Format.IniFormat)
+        self.__settings_ini = QSettings(INI_FILE_NAME, QSettings.Format.IniFormat)
         self.__settingsParamContainer = SettingsParamsContainer()
         self.__customizeParamsContainer = CustomizeParamsContainer()
 
@@ -40,7 +40,7 @@ class MainWindow(QMainWindow):
         self.__initContainer(self.__customizeParamsContainer)
 
     def __initUi(self):
-        self.setWindowTitle(APP_NAME)
+        self.setWindowTitle(DEFAULT_APP_NAME)
 
         self.__gptWidget = GPTMainWidget(self)
         self.__dallEWidget = DallEMainWidget(self)
@@ -212,7 +212,7 @@ class MainWindow(QMainWindow):
         menu.addAction(action)
 
         tray_icon = QSystemTrayIcon(app)
-        tray_icon.setIcon(QIcon(APP_ICON))
+        tray_icon.setIcon(QIcon(DEFAULT_APP_ICON))
         tray_icon.activated.connect(self.__activated)
 
         tray_icon.setContextMenu(menu)
@@ -258,14 +258,14 @@ class MainWindow(QMainWindow):
 
     def __loadApiKeyInIni(self):
         # this api key should be yours
-        if self.__settings_struct.contains('API_KEY'):
-            self.__setApiKeyAndClient(self.__settings_struct.value('API_KEY'))
+        if self.__settings_ini.contains('API_KEY'):
+            self.__setApiKeyAndClient(self.__settings_ini.value('API_KEY'))
         else:
-            self.__settings_struct.setValue('API_KEY', '')
+            self.__settings_ini.setValue('API_KEY', '')
 
         # Set llama index directory if it exists
-        if self.__settings_struct.contains('llama_index_directory') and self.__settings_struct.value('use_llama_index', False, type=bool):
-            LLAMAINDEX_WRAPPER.set_directory(self.__settings_struct.value('llama_index_directory'))
+        if self.__settings_ini.contains('llama_index_directory') and self.__settings_ini.value('use_llama_index', False, type=bool):
+            LLAMAINDEX_WRAPPER.set_directory(self.__settings_ini.value('llama_index_directory'))
 
     def __setAIEnabled(self, f):
         self.__gptWidget.setAIEnabled(f)
@@ -279,7 +279,7 @@ class MainWindow(QMainWindow):
             self.__setAIEnabled(f)
             if f:
                 self.__setApiKeyAndClient(api_key)
-                self.__settings_struct.setValue('API_KEY', api_key)
+                self.__settings_ini.setValue('API_KEY', api_key)
 
                 self.__apiCheckPreviewLbl.setStyleSheet("color: {}".format(QColor(0, 200, 0).name()))
                 self.__apiCheckPreviewLbl.setText(LangClass.TRANSLATIONS['API key is valid'])
@@ -330,23 +330,23 @@ class MainWindow(QMainWindow):
         Initialize the container with the values in the settings file
         """
         for k, v in container.get_items():
-            if not self.__settings_struct.contains(k):
-                self.__settings_struct.setValue(k, v)
+            if not self.__settings_ini.contains(k):
+                self.__settings_ini.setValue(k, v)
             else:
-                setattr(container, k, self.__settings_struct.value(k, type=type(v)))
+                setattr(container, k, self.__settings_ini.value(k, type=type(v)))
         if isinstance(container, SettingsParamsContainer):
             self.__lang = LangClass.lang_changed(container.lang)
 
     def __refreshContainer(self, container):
         if isinstance(container, SettingsParamsContainer):
-            prev_db = self.__settings_struct.value('db')
-            prev_show_toolbar = self.__settings_struct.value('show_toolbar', type=bool)
-            prev_show_secondary_toolbar = self.__settings_struct.value('show_secondary_toolbar', type=bool)
-            prev_thread_tool_widget = self.__settings_struct.value('thread_tool_widget', type=bool)
-            prev_show_as_markdown = self.__settings_struct.value('show_as_markdown', type=bool)
+            prev_db = self.__settings_ini.value('db')
+            prev_show_toolbar = self.__settings_ini.value('show_toolbar', type=bool)
+            prev_show_secondary_toolbar = self.__settings_ini.value('show_secondary_toolbar', type=bool)
+            prev_thread_tool_widget = self.__settings_ini.value('thread_tool_widget', type=bool)
+            prev_show_as_markdown = self.__settings_ini.value('show_as_markdown', type=bool)
 
             for k, v in container.get_items():
-                self.__settings_struct.setValue(k, v)
+                self.__settings_ini.setValue(k, v)
 
             # If db name is changed
             if container.db != prev_db:
@@ -372,14 +372,14 @@ class MainWindow(QMainWindow):
                     change_list.append(LangClass.TRANSLATIONS["Show as Markdown"])
                 result = show_message_box_after_change_to_restart(change_list)
                 if result == QMessageBox.StandardButton.Yes:
-                    restart_app(settings=self.__settings_struct)
+                    restart_app(settings=self.__settings_ini)
 
         elif isinstance(container, CustomizeParamsContainer):
-            prev_font_family = self.__settings_struct.value('font_family')
-            prev_font_size = self.__settings_struct.value('font_size', type=int)
+            prev_font_family = self.__settings_ini.value('font_family')
+            prev_font_size = self.__settings_ini.value('font_size', type=int)
 
             for k, v in container.get_items():
-                self.__settings_struct.setValue(k, v)
+                self.__settings_ini.setValue(k, v)
 
             if container.font_family != prev_font_family or container.font_size != prev_font_size:
                 change_list = [
@@ -387,7 +387,7 @@ class MainWindow(QMainWindow):
                 ]
                 result = show_message_box_after_change_to_restart(change_list)
                 if result == QMessageBox.StandardButton.Yes:
-                    restart_app(settings=self.__settings_struct)
+                    restart_app(settings=self.__settings_ini)
 
     def __refreshColumns(self):
         self.__gptWidget.setColumns(self.__settingsParamContainer.chat_column_to_show)

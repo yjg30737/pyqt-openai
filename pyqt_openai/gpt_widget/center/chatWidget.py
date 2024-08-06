@@ -54,7 +54,7 @@ class ChatWidget(QWidget):
         self.__mainWidget.addWidget(self.__homePage)
         self.__mainWidget.addWidget(chatWidget)
 
-        self.__prompt = Prompt()
+        self.__prompt = Prompt(self)
         self.__prompt.onStoppedClicked.connect(self.__stopResponse)
         self.__mainPrompt = self.__prompt.getMainPromptInput()
 
@@ -214,7 +214,7 @@ class ChatWidget(QWidget):
     def __toggleWidgetWhileChatting(self, f):
         self.__mainPrompt.setExecuteEnabled(f)
         self.__prompt.showWidgetInPromptDuringResponse(not f)
-        self.__mainPrompt.setEnabled(f)
+        self.__prompt.sendEnabled(f)
 
     def __beforeGenerated(self):
         self.__toggleWidgetWhileChatting(False)

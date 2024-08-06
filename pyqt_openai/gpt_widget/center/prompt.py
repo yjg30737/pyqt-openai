@@ -21,8 +21,8 @@ from pyqt_openai.widgets.toolButton import ToolButton
 class Prompt(QWidget):
     onStoppedClicked = Signal()
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None):
+        super().__init__(parent)
         self.__initVal()
         self.__initUi()
 
@@ -76,10 +76,10 @@ class Prompt(QWidget):
         leftWidget = QWidget()
         leftWidget.setLayout(lay)
 
-        sendBtn = Button()
-        sendBtn.setStyleAndIcon(ICON_SEND)
-        sendBtn.setToolTip(LangClass.TRANSLATIONS['Send'] + f' ({DEFAULT_SHORTCUT_SEND})')
-        sendBtn.setShortcut(DEFAULT_SHORTCUT_SEND)
+        self.__sendBtn = Button()
+        self.__sendBtn.setStyleAndIcon(ICON_SEND)
+        self.__sendBtn.setToolTip(LangClass.TRANSLATIONS['Send'] + f' ({DEFAULT_SHORTCUT_SEND})')
+        self.__sendBtn.setShortcut(DEFAULT_SHORTCUT_SEND)
 
         settingsBtn = ToolButton()
         settingsBtn.setStyleAndIcon(ICON_VERTICAL_THREE_DOTS)
@@ -124,7 +124,7 @@ class Prompt(QWidget):
         settingsBtn.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
 
         lay = QHBoxLayout()
-        lay.addWidget(sendBtn)
+        lay.addWidget(self.__sendBtn)
         lay.addWidget(settingsBtn)
         lay.setContentsMargins(1, 1, 1, 1)
         lay.setAlignment(Qt.AlignmentFlag.AlignRight)
@@ -156,7 +156,9 @@ class Prompt(QWidget):
 
         self.updateHeight()
 
-        sendBtn.clicked.connect(self.__textEditGroup.getMainTextEdit().sendMessage)
+        self.__sendBtn.clicked.connect(self.getMainPromptInput().sendMessage)
+
+        self.__textEditGroup.installEventFilter(self)
 
     def __setEveryPromptCommands(self):
         command_obj_lst = []
@@ -272,7 +274,7 @@ class Prompt(QWidget):
             # Text
             if cur_file_extension in TEXT_FILE_EXT_LIST:
                 prompt_context = get_content_of_text_file_for_send(filenames)
-                self.__textEditGroup.getMainTextEdit().setText(prompt_context)
+                self.getMainPromptInput().setText(prompt_context)
             # Image
             elif cur_file_extension in IMAGE_FILE_EXT_LIST:
                 self.__uploadedImageFileWidget.addFiles(filenames)
@@ -302,3 +304,14 @@ class Prompt(QWidget):
         self.__json_object = f
         self.__textEditGroup.setVisibleTo(PROMPT_JSON_KEY_NAME, f)
 
+    def sendEnabled(self, f):
+        self.getMainPromptInput().setEnabled(f)
+        self.__sendBtn.setEnabled(f)
+
+    def eventFilter(self, source, event):
+        if event.type() == 6:
+            if event.key() == Qt.Key.Key_Return or event.key() == Qt.Key.Key_Enter:
+                if event.modifiers() == Qt.KeyboardModifier.ControlModifier:
+                    self.__sendBtn.click()
+                    return True
+        return super().eventFilter(source, event)

@@ -25,9 +25,9 @@ __author__ = pyproject_data["project"]["authors"][0]['name']
 # Constants
 # ----------------------------
 # APP
-APP_NAME = pyproject_data["project"]["name"]
+DEFAULT_APP_NAME = pyproject_data["project"]["name"]
 CONTACT = pyproject_data["project"]["authors"][0]['email']
-APP_ICON = 'icon.ico'
+DEFAULT_APP_ICON = 'icon.ico'
 APP_INITIAL_WINDOW_SIZE = (1280, 768)
 
 TRANSPARENT_RANGE = 20, 100

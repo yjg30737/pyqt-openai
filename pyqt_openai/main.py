@@ -27,7 +27,7 @@ from pyqt_openai.mainWindow import MainWindow
 from pyqt_openai.util.script import get_font, isUsingPyQt5
 from pyqt_openai.sqlite import get_db_filename
 
-from pyqt_openai import INI_FILE_NAME, APP_ICON
+from pyqt_openai import INI_FILE_NAME, DEFAULT_APP_ICON
 
 # HighDPI support
 # Qt version should be above 5.14
@@ -42,13 +42,14 @@ class App(QApplication):
     def __init__(self, *args):
         super().__init__(*args)
         self.setQuitOnLastWindowClosed(False)
-        self.setWindowIcon(QIcon(APP_ICON))
-        self.splash = QSplashScreen(QPixmap(APP_ICON))
+        self.setWindowIcon(QIcon(DEFAULT_APP_ICON))
+        self.splash = QSplashScreen(QPixmap(DEFAULT_APP_ICON))
         self.splash.show()
 
-        self.__initGlobal()
+        self.__initGlobalIni()
         self.__initQSqlDb()
         self.__initFont()
+        # self.__initGlobalActions()
 
         self.__showMainWindow()
         self.splash.finish(self.main_window)
@@ -59,7 +60,7 @@ class App(QApplication):
         self.__imageDb.setDatabaseName(get_db_filename())  # Replace with your database name
         self.__imageDb.open()
 
-    def __initGlobal(self):
+    def __initGlobalIni(self):
         """
         This function initializes the global variables including the settings file.
         """
