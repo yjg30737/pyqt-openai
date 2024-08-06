@@ -1,8 +1,9 @@
 import json
-from qtpy.QtGui import QPalette, QColor
+
+from qtpy.QtGui import QPalette, QColor, QTextDocument
 from qtpy.QtWidgets import QTextBrowser
 
-from pyqt_openai import MESSAGE_ADDITIONAL_HEIGHT, MESSAGE_MAXIMUM_HEIGHT, MESSAGE_PADDING
+from pyqt_openai import MESSAGE_ADDITIONAL_HEIGHT, MESSAGE_MAXIMUM_HEIGHT, MESSAGE_PADDING, INDENT_SIZE
 
 
 class MessageTextBrowser(QTextBrowser):
@@ -27,7 +28,7 @@ class MessageTextBrowser(QTextBrowser):
     def setJson(self, json_str):
         try:
             json_data = json.loads(json_str)
-            pretty_json = json.dumps(json_data, indent=4)
+            pretty_json = json.dumps(json_data, indent=INDENT_SIZE)
             self.setPlainText(pretty_json)
         except json.JSONDecodeError as e:
             self.setPlainText(f"Error decoding JSON: {e}")
@@ -41,3 +42,38 @@ class MessageTextBrowser(QTextBrowser):
         else:
             self.setMinimumHeight(int(max_height))
         self.verticalScrollBar().setSliderPosition(self.verticalScrollBar().maximum())
+
+    # def setMarkdown(self, markdown: str) -> None:
+    #     super().setMarkdown(markdown)
+    #
+    #     # TODO
+    #     # # Convert markdown to HTML using QTextDocument
+    #     # document = QTextDocument()
+    #     # document.setMarkdown(markdown)
+    #     # html_text = document.toHtml()
+    #     #
+    #     # # Customize the converted HTML (e.g., add style tags)
+    #     # custom_html = f"""
+    #     # <style>
+    #     # h1 {{
+    #     #     color: blue;
+    #     #     font-size: 24px;
+    #     # }}
+    #     # h2 {{
+    #     #     color: darkgreen;
+    #     #     font-size: 20px;
+    #     # }}
+    #     # ul {{
+    #     #     margin-left: 20px;
+    #     # }}
+    #     # a {{
+    #     #     color: red;
+    #     #     text-decoration: none;
+    #     # }}
+    #     # a:hover {{
+    #     #     text-decoration: underline;
+    #     # }}
+    #     # </style>
+    #     # {html_text}
+    #     # """
+    #     # self.setHtml(custom_html)

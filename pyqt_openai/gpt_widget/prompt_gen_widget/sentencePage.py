@@ -1,3 +1,4 @@
+import functools
 import json
 import os
 
@@ -6,7 +7,7 @@ from qtpy.QtWidgets import QWidget, QDialog, QTableWidget, QVBoxLayout, QHBoxLay
     QAbstractItemView, QFileDialog, QLabel, QSpacerItem, QListWidget, QListWidgetItem, QSizePolicy, QSplitter, QMessageBox
 
 from pyqt_openai import JSON_FILE_EXT_LIST_STR, ICON_ADD, ICON_DELETE, ICON_IMPORT, ICON_EXPORT, \
-    QFILEDIALOG_DEFAULT_DIRECTORY
+    QFILEDIALOG_DEFAULT_DIRECTORY, INDENT_SIZE
 from pyqt_openai.gpt_widget.prompt_gen_widget.promptGroupDirectInputDialog import PromptGroupDirectInputDialog
 from pyqt_openai.gpt_widget.prompt_gen_widget.promptEntryDirectInputDialog import PromptEntryDirectInputDialog
 from pyqt_openai.gpt_widget.prompt_gen_widget.promptGroupExportDialog import PromptGroupExportDialog
@@ -143,7 +144,7 @@ class SentenceGroupList(QWidget):
                     data = dialog.getSelected()
                     # Save the data
                     with open(filename, 'w') as f:
-                        json.dump(data, f, indent=4)
+                        json.dump(data, f, indent=INDENT_SIZE)
                     open_directory(os.path.dirname(filename))
         except Exception as e:
             QMessageBox.critical(self, LangClass.TRANSLATIONS['Error'], str(e))
