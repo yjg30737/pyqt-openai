@@ -2,7 +2,7 @@ import json
 import sys
 
 from qtpy.QtCore import QSettings, Signal
-from qtpy.QtWidgets import QStackedWidget, QWidget, QSizePolicy, QHBoxLayout, QVBoxLayout, QMessageBox
+from qtpy.QtWidgets import QApplication, QStackedWidget, QWidget, QSizePolicy, QHBoxLayout, QVBoxLayout, QMessageBox
 
 from pyqt_openai import INI_FILE_NAME
 from pyqt_openai.gpt_widget.center.chatBrowser import ChatBrowser
@@ -223,11 +223,19 @@ class ChatWidget(QWidget):
     def __afterGenerated(self):
         self.__toggleWidgetWhileChatting(True)
         self.__mainPrompt.setFocus()
-        if not self.isVisible():
+        # TODO
+        if not self.isVisible() or not self.window().isActiveWindow():
             if self.__notify_finish:
                 self.__notifierWidget = NotifierWidget(informative_text=LangClass.TRANSLATIONS['Response 👌'], detailed_text = self.__browser.getLastResponse())
                 self.__notifierWidget.show()
-                self.__notifierWidget.doubleClicked.connect(self.window().show)
+                self.__notifierWidget.doubleClicked.connect(self.__bringWindowToFront)
+
+    # TODO
+    def __bringWindowToFront(self):
+        window = self.window()
+        window.showNormal()
+        window.raise_()
+        window.activateWindow()
 
     def toggleJSON(self, f):
         self.__prompt.toggleJSON(f)
