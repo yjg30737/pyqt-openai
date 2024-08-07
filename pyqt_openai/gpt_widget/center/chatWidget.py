@@ -18,6 +18,7 @@ from pyqt_openai.widgets.notifier import NotifierWidget
 
 class ChatWidget(QWidget):
     addThread = Signal()
+    onMenuCloseClicked = Signal()
 
     def __init__(self, parent=None):
         super(ChatWidget, self).__init__(parent)
@@ -41,7 +42,7 @@ class ChatWidget(QWidget):
         self.__browser.onReplacedCurrentPage.connect(self.__mainWidget.setCurrentIndex)
 
         self.__menuWidget = MenuWidget(self.__browser)
-        self.__menuWidget.onCloseClicked.connect(self.__onMenuCloseClicked)
+        self.__menuWidget.onMenuCloseClicked.connect(self.__onMenuCloseClicked)
 
         lay = QVBoxLayout()
         lay.addWidget(self.__menuWidget)
@@ -88,10 +89,11 @@ class ChatWidget(QWidget):
 
     def toggleMenuWidget(self, f):
         self.__menuWidget.setVisible(f)
-        self.__onMenuCloseClicked()
+        self.__menuWidget.getFindTextWidget().clearFormatting()
 
     def __onMenuCloseClicked(self):
         self.__mainPrompt.setFocus()
+        self.onMenuCloseClicked.emit()
 
     def setAIEnabled(self, f):
         self.__prompt.setEnabled(f)

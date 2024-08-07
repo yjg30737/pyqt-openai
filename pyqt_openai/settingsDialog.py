@@ -1,7 +1,8 @@
 import os
 import sys
 
-from pyqt_openai import COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_CHAT, COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_IMAGE, LANGUAGE_DICT, DB_NAME_REGEX, \
+from pyqt_openai import COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_CHAT, COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_IMAGE, LANGUAGE_DICT, \
+    DB_NAME_REGEX, \
     MAXIMUM_MESSAGES_IN_PARAMETER_RANGE
 from pyqt_openai.widgets.checkBoxListWidget import CheckBoxListWidget
 
@@ -17,7 +18,7 @@ sys.path.insert(0, os.getcwd())  # Add the current directory as well
 
 from qtpy.QtCore import Qt, QRegularExpression
 from qtpy.QtGui import QRegularExpressionValidator
-from qtpy.QtWidgets import QFrame, QDialog, QComboBox, QFormLayout, QLineEdit, QCheckBox, QSizePolicy, \
+from qtpy.QtWidgets import QDialog, QComboBox, QFormLayout, QLineEdit, QCheckBox, QSizePolicy, \
     QVBoxLayout, QHBoxLayout, QGroupBox, QSplitter, QLabel, QDialogButtonBox, QWidget, QMessageBox, QSpinBox
 
 from pyqt_openai.models import SettingsParamsContainer, ImagePromptContainer, ChatThreadContainer
@@ -37,7 +38,6 @@ class SettingsDialog(QDialog):
         self.__notify_finish = args.notify_finish
         self.__show_toolbar = args.show_toolbar
         self.__show_secondary_toolbar = args.show_secondary_toolbar
-        self.__thread_tool_widget = args.thread_tool_widget
         self.__chat_column_to_show = args.chat_column_to_show
         self.__image_column_to_show = args.image_column_to_show
         self.__maximum_messages_in_parameter = args.maximum_messages_in_parameter
@@ -98,9 +98,6 @@ class SettingsDialog(QDialog):
         generalGrpBox = QGroupBox(LangClass.TRANSLATIONS['General'])
         generalGrpBox.setLayout(lay)
 
-        self.__showThreadToolWidgetChkBox = QCheckBox()
-        self.__showThreadToolWidgetChkBox.setChecked(self.__thread_tool_widget)
-
         self.__maximumMessagesInParameterSpinBox = QSpinBox()
         self.__maximumMessagesInParameterSpinBox.setRange(*MAXIMUM_MESSAGES_IN_PARAMETER_RANGE)
         self.__maximumMessagesInParameterSpinBox.setValue(self.__maximum_messages_in_parameter)
@@ -109,9 +106,7 @@ class SettingsDialog(QDialog):
         self.__showAsMarkdownCheckBox.setChecked(self.__show_as_markdown)
 
         lay = QFormLayout()
-        lay.addRow(LangClass.TRANSLATIONS['Show Find Tool'], self.__showThreadToolWidgetChkBox)
         lay.addRow(LangClass.TRANSLATIONS['Maximum Messages in Parameter'], self.__maximumMessagesInParameterSpinBox)
-
         lay.addRow(LangClass.TRANSLATIONS['Show as Markdown'], self.__showAsMarkdownCheckBox)
 
         chatBrowserGrpBox = QGroupBox(LangClass.TRANSLATIONS['Chat Browser'])
@@ -185,7 +180,6 @@ class SettingsDialog(QDialog):
             notify_finish=self.__notifyFinishCheckBox.isChecked(),
             show_toolbar=self.__showToolbarCheckBox.isChecked(),
             show_secondary_toolbar=self.__showSecondaryToolBarChkBox.isChecked(),
-            thread_tool_widget=self.__showThreadToolWidgetChkBox.isChecked(),
             chat_column_to_show=COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_CHAT+self.__chatColCheckBoxListWidget.getCheckedItemsText(),
             image_column_to_show=COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_IMAGE+self.__imageColCheckBoxListWidget.getCheckedItemsText(),
             maximum_messages_in_parameter=self.__maximumMessagesInParameterSpinBox.value(),

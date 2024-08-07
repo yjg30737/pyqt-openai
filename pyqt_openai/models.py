@@ -120,7 +120,6 @@ class SettingsParamsContainer(Container):
     notify_finish: bool = True
     show_toolbar: bool = True
     show_secondary_toolbar: bool = True
-    thread_tool_widget: bool = True
     chat_column_to_show: List[str] = field(default_factory=ChatThreadContainer.get_keys)
     image_column_to_show: List[str] = field(default_factory=ImagePromptContainer.get_keys)
     maximum_messages_in_parameter: int = MAXIMUM_MESSAGES_IN_PARAMETER

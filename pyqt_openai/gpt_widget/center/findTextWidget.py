@@ -142,16 +142,18 @@ class FindTextWidget(QWidget):
 
     def prev(self):
         self.__chatBrowser.clearFormatting(self.__selections[self.__cur_idx]['class'])
-        self.__cur_idx = max(0, self.__cur_idx-1)
-        if self.__cur_idx == 0:
+        self.__cur_idx -= 1
+        if self.__cur_idx == -1:
             QMessageBox.information(self, LangClass.TRANSLATIONS['Information'], LangClass.TRANSLATIONS['Reached the beginning'])
+            self.__cur_idx = 0
         self.__setCurrentPosition()
 
     def next(self):
         self.__chatBrowser.clearFormatting(self.__selections[self.__cur_idx]['class'])
-        self.__cur_idx = min(len(self.__selections)-1, self.__cur_idx+1)
-        if self.__cur_idx == len(self.__selections)-1:
+        self.__cur_idx += 1
+        if self.__cur_idx == len(self.__selections):
             QMessageBox.information(self, LangClass.TRANSLATIONS['Information'], LangClass.TRANSLATIONS['Reached the end'])
+            self.__cur_idx = len(self.__selections) - 1
         self.__setCurrentPosition()
 
     def __caseToggled(self, f):

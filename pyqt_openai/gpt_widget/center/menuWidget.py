@@ -9,7 +9,7 @@ from pyqt_openai.widgets.button import Button
 
 
 class MenuWidget(QWidget):
-    onCloseClicked = Signal()
+    onMenuCloseClicked = Signal()
 
     def __init__(self, widget: ChatBrowser):
         super().__init__()
@@ -21,7 +21,7 @@ class MenuWidget(QWidget):
         self.__chatBrowser = widget
 
         self.__closeBtn = Button()
-        self.__closeBtn.clicked.connect(self.__onCloseClicked)
+        self.__closeBtn.clicked.connect(self.__onMenuCloseClicked)
         self.__closeBtn.setShortcut(DEFAULT_SHORTCUT_FIND_CLOSE)
         self.__closeBtn.setStyleAndIcon(ICON_CLOSE)
 
@@ -51,9 +51,9 @@ class MenuWidget(QWidget):
         self.__findTextWidget.initFind(self.__findTextWidget.getLineEdit().text())
         super().showEvent(event)
 
-    def __onCloseClicked(self):
+    def __onMenuCloseClicked(self):
         self.__findTextWidget.clearFormatting()
-        self.onCloseClicked.emit()
+        self.onMenuCloseClicked.emit()
         self.hide()
 
     def getFindTextWidget(self):

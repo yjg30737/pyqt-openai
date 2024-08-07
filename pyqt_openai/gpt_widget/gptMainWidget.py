@@ -62,6 +62,7 @@ class GPTMainWidget(QWidget):
 
         self.__chatWidget = ChatWidget()
         self.__chatWidget.addThread.connect(self.__addThread)
+        self.__chatWidget.onMenuCloseClicked.connect(self.__onMenuCloseClicked)
 
         self.__browser = self.__chatWidget.getChatBrowser()
 
@@ -105,7 +106,7 @@ class GPTMainWidget(QWidget):
 
         self.__toggleFindToolButton = QPushButton(LangClass.TRANSLATIONS['Show Find Tool'])
         self.__toggleFindToolButton.setCheckable(True)
-        self.__toggleFindToolButton.setChecked(True)
+        self.__toggleFindToolButton.setChecked(False)
         self.__toggleFindToolButton.toggled.connect(self.__chatWidget.toggleMenuWidget)
         self.__toggleFindToolButton.setShortcut(DEFAULT_SHORTCUT_FIND)
 
@@ -194,7 +195,10 @@ class GPTMainWidget(QWidget):
         self.__settings_ini.setValue('show_prompt', x)
 
     def showThreadToolWidget(self, f):
-        self.__chatWidget.toggleMenuWidget(f)
+        self.__toggleFindToolButton.setChecked(f)
+
+    def __onMenuCloseClicked(self):
+        self.__toggleFindToolButton.setChecked(False)
 
     def showSecondaryToolBar(self, f):
         self.__menuWidget.setVisible(f)

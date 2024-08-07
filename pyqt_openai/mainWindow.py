@@ -245,8 +245,6 @@ class MainWindow(QMainWindow):
         for i in range(self.__mainWidget.count()):
             currentWidget = self.__mainWidget.widget(i)
             currentWidget.showSecondaryToolBar(self.__settingsParamContainer.show_secondary_toolbar)
-        if isinstance(self.__mainWidget.currentWidget(), GPTMainWidget):
-            self.__mainWidget.currentWidget().showThreadToolWidget(self.__settingsParamContainer.thread_tool_widget)
 
     def __setApiKeyAndClient(self, api_key):
         # for subprocess (mostly)
@@ -342,7 +340,6 @@ class MainWindow(QMainWindow):
             prev_db = self.__settings_ini.value('db')
             prev_show_toolbar = self.__settings_ini.value('show_toolbar', type=bool)
             prev_show_secondary_toolbar = self.__settings_ini.value('show_secondary_toolbar', type=bool)
-            prev_thread_tool_widget = self.__settings_ini.value('thread_tool_widget', type=bool)
             prev_show_as_markdown = self.__settings_ini.value('show_as_markdown', type=bool)
 
             for k, v in container.get_items():
@@ -359,10 +356,6 @@ class MainWindow(QMainWindow):
                 for i in range(self.__mainWidget.count()):
                     currentWidget = self.__mainWidget.widget(i)
                     currentWidget.showSecondaryToolBar(container.show_secondary_toolbar)
-            # If thread_tool_widget is changed
-            if container.thread_tool_widget != prev_thread_tool_widget:
-                if isinstance(self.__mainWidget.currentWidget(), GPTMainWidget):
-                    self.__mainWidget.currentWidget().showThreadToolWidget(container.thread_tool_widget)
             # If properties that require a restart are changed
             if container.lang != self.__lang or container.show_as_markdown != prev_show_as_markdown:
                 change_list = []
