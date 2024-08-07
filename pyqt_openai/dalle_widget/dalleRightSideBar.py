@@ -320,16 +320,22 @@ class DallERightSideBarWidget(QScrollArea):
             self.__t.stop()
 
     def __failToGenerate(self, event):
-        if self.isVisible():
-            toast = Toast(text=event, parent=self)
-            toast.show()
-        else:
+        if not self.isVisible() or not self.window().isActiveWindow():
             informative_text = 'Error 😥'
             detailed_text = event
             self.__notifierWidget = NotifierWidget(informative_text=informative_text, detailed_text = detailed_text)
             self.__notifierWidget.show()
-            self.__notifierWidget.doubleClicked.connect(self.window().show)
+            self.__notifierWidget.doubleClicked.connect(self.__bringWindowToFront)
             QMessageBox.critical(self, informative_text, detailed_text)
+        else:
+            toast = Toast(text=event, parent=self)
+            toast.show()
+
+    def __bringWindowToFront(self):
+        window = self.window()
+        window.showNormal()
+        window.raise_()
+        window.activateWindow()
 
     def __afterGenerated(self, arg):
         self.submitDallE.emit(arg)

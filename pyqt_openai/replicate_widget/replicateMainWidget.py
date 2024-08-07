@@ -159,13 +159,19 @@ class ReplicateMainWidget(QWidget):
                 f.write(result.prompt)
 
     def __imageGenerationAllComplete(self):
-        if not self.isVisible():
+        if not self.isVisible() or not self.window().isActiveWindow():
             if self.__settings_ini.value('notify_finish', type=bool):
                 self.__notifierWidget = NotifierWidget(informative_text=LangClass.TRANSLATIONS['Response 👌'], detailed_text = LangClass.TRANSLATIONS['Image Generation complete.'])
                 self.__notifierWidget.show()
-                self.__notifierWidget.doubleClicked.connect(self.window().show)
+                self.__notifierWidget.doubleClicked.connect(self.__bringWindowToFront)
 
                 open_directory(self.__rightSideBarWidget.getDirectory())
+
+    def __bringWindowToFront(self):
+        window = self.window()
+        window.showNormal()
+        window.raise_()
+        window.activateWindow()
 
     def showEvent(self, event):
         self.__imageNavWidget.refresh()

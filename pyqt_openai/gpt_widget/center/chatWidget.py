@@ -223,14 +223,12 @@ class ChatWidget(QWidget):
     def __afterGenerated(self):
         self.__toggleWidgetWhileChatting(True)
         self.__mainPrompt.setFocus()
-        # TODO
         if not self.isVisible() or not self.window().isActiveWindow():
             if self.__notify_finish:
                 self.__notifierWidget = NotifierWidget(informative_text=LangClass.TRANSLATIONS['Response 👌'], detailed_text = self.__browser.getLastResponse())
                 self.__notifierWidget.show()
                 self.__notifierWidget.doubleClicked.connect(self.__bringWindowToFront)
 
-    # TODO
     def __bringWindowToFront(self):
         window = self.window()
         window.showNormal()

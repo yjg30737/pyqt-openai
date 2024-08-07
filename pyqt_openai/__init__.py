@@ -179,6 +179,7 @@ PROMPT_MAIN_KEY_NAME = 'prompt_main'
 PROMPT_END_KEY_NAME = 'prompt_ending'
 PROMPT_NAME_REGEX = '^[a-zA-Z_0-9]+$'
 INDENT_SIZE = 4
+NOTIFIER_MAX_CHAR = 100
 
 # DB
 DB_NAME_REGEX = '[a-zA-Z0-9]{1,20}'

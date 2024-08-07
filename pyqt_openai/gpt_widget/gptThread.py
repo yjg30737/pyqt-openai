@@ -57,7 +57,8 @@ class GPTThread(QThread):
                 self.replyGenerated.emit(self.__info.content, False, self.__info)
         except Exception as e:
             self.__info.finish_reason = 'Error'
-            self.replyGenerated.emit(f'<p style="color:red">{e}</p>', False, self.__info)
+            self.__info.content = f'<p style="color:red">{e}</p>'
+            self.replyGenerated.emit(self.__info.content, False, self.__info)
 
 
 class LlamaOpenAIThread(QThread):
@@ -93,4 +94,5 @@ class LlamaOpenAIThread(QThread):
                 self.replyGenerated.emit(self.__info.content, False, self.__info)
         except Exception as e:
             self.__info.finish_reason = 'Error'
-            self.replyGenerated.emit(f'<p style="color:red">{e}</p>', False, self.__info)
+            self.__info.content = f'<p style="color:red">{e}</p>'
+            self.replyGenerated.emit(self.__info.content, False, self.__info)
