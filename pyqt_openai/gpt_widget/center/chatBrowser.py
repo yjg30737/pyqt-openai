@@ -183,7 +183,9 @@ class ChatBrowser(QScrollArea):
 
     def clearFormatting(self, label=None):
         if label is None:
-            labels = [lbl.getLbl() for lbl in self.__getEveryLabels()]
+            # if isinstance(lbl, AIChatUnit) or isinstance(lbl, UserChatUnit) should be added
+            # Or else AttributeError: 'QWidget' object has no attribute 'getLbl' will be raised when calling getLbl()
+            labels = [lbl.getLbl() for lbl in self.__getEveryLabels() if isinstance(lbl, AIChatUnit) or isinstance(lbl, UserChatUnit)]
             for lbl in labels:
                 self.clearFormatting(lbl)
             return

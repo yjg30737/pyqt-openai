@@ -1,6 +1,6 @@
 import re
 
-from qtpy.QtCore import Signal
+from qtpy.QtCore import Signal, Qt
 from qtpy.QtWidgets import QWidget, QLabel, \
     QHBoxLayout, QGridLayout, QLineEdit, QMessageBox
 
@@ -30,7 +30,7 @@ class FindTextWidget(QWidget):
 
     def __initUi(self):
         self.__findTextLineEdit = QLineEdit()
-        self.__findTextLineEdit.textChanged.connect(self.__textChanged)
+        self.__findTextLineEdit.textChanged.connect(self.initFind)
         self.__findTextLineEdit.returnPressed.connect(self.next)
         self.setFocusProxy(self.__findTextLineEdit)
 
@@ -67,18 +67,11 @@ class FindTextWidget(QWidget):
         self.__regexBtn.toggled.connect(self.__regexToggled)
         self.__regexBtn.setStyleAndIcon(ICON_REGEX)
 
-        self.__closeBtn = Button()
-        self.__closeBtn.setVisible(False)
-        self.__closeBtn.clicked.connect(self.close)
-        self.__closeBtn.setShortcut(DEFAULT_SHORTCUT_FIND_CLOSE)
-        self.__closeBtn.setStyleAndIcon(ICON_CLOSE)
-
         self.__prevBtn.setToolTip(LangClass.TRANSLATIONS['Previous Occurrence'] + f' ({DEFAULT_SHORTCUT_FIND_PREV})')
         self.__nextBtn.setToolTip(LangClass.TRANSLATIONS['Next Occurrence'] + f' ({DEFAULT_SHORTCUT_FIND_NEXT})')
         self.__caseBtn.setToolTip(LangClass.TRANSLATIONS['Match Case'])
         self.__wordBtn.setToolTip(LangClass.TRANSLATIONS['Match Word'])
         self.__regexBtn.setToolTip(LangClass.TRANSLATIONS['Regex'])
-        self.__closeBtn.setToolTip(LangClass.TRANSLATIONS['Close'] + f' ({DEFAULT_SHORTCUT_FIND_CLOSE})')
 
         lay = QHBoxLayout()
         lay.addWidget(self.__findTextLineEdit)
@@ -88,7 +81,6 @@ class FindTextWidget(QWidget):
         lay.addWidget(self.__caseBtn)
         lay.addWidget(self.__wordBtn)
         lay.addWidget(self.__regexBtn)
-        lay.addWidget(self.__closeBtn)
         lay.setContentsMargins(0, 0, 0, 0)
 
         mainWidget = QWidget()
@@ -101,9 +93,9 @@ class FindTextWidget(QWidget):
         self.setLayout(lay)
 
     def widgetTextChanged(self):
-        self.__textChanged(self.__findTextLineEdit.text())
+        self.initFind(self.__findTextLineEdit.text())
 
-    def __findInit(self, text):
+    def __initSelections(self, text):
         # Show "bad pattern" message if text is "\"
         if self.__regexBtn.isChecked() and re.escape(text) == re.escape('\\'):
             QMessageBox.warning(self, LangClass.TRANSLATIONS['Warning'], LangClass.TRANSLATIONS['Bad pattern'])
@@ -120,11 +112,11 @@ class FindTextWidget(QWidget):
                 self.__chatBrowser.clearFormatting()
             self.__btnToggled(is_exist)
 
-    def __textChanged(self, text):
+    def initFind(self, text):
         f1 = text.strip() != ''
         self.__cur_idx = 0
         self.__cur_text = text
-        self.__findInit(text)
+        self.__initSelections(text)
         if not f1:
             self.__selections = []
             self.__btnToggled(False)
@@ -158,20 +150,17 @@ class FindTextWidget(QWidget):
 
     def __caseToggled(self, f):
         text = self.__findTextLineEdit.text()
-        self.__textChanged(text)
+        self.initFind(text)
 
     def __wordToggled(self, f):
         text = self.__findTextLineEdit.text()
-        self.__textChanged(text)
+        self.initFind(text)
 
     def __regexToggled(self, f):
         # regex and word-only feature can't be use at the same time
         self.__wordBtn.setChecked(False)
         text = self.__findTextLineEdit.text()
-        self.__textChanged(text)
-
-    def setCloseBtn(self, f: bool):
-        self.__closeBtn.setVisible(f)
+        self.initFind(text)
 
     def getLineEdit(self):
         return self.__findTextLineEdit
