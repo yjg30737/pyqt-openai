@@ -39,7 +39,7 @@ class MenuWidget(QWidget):
         lay = QHBoxLayout()
         lay.addWidget(mainWidget)
         lay.addWidget(self.__closeBtn)
-        lay.setContentsMargins(0, 0, 0, 0)
+        lay.setContentsMargins(4, 4, 4, 4)
 
         self.setLayout(lay)
 
