@@ -41,6 +41,7 @@ class ChatWidget(QWidget):
         self.__browser.onReplacedCurrentPage.connect(self.__mainWidget.setCurrentIndex)
 
         self.__menuWidget = MenuWidget(self.__browser)
+        self.__menuWidget.onCloseClicked.connect(self.__onMenuCloseClicked)
 
         lay = QVBoxLayout()
         lay.addWidget(self.__menuWidget)
@@ -87,6 +88,10 @@ class ChatWidget(QWidget):
 
     def toggleMenuWidget(self, f):
         self.__menuWidget.setVisible(f)
+        self.__onMenuCloseClicked()
+
+    def __onMenuCloseClicked(self):
+        self.__mainPrompt.setFocus()
 
     def setAIEnabled(self, f):
         self.__prompt.setEnabled(f)

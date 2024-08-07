@@ -1,4 +1,5 @@
 from qtpy.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QLabel
+from qtpy.QtCore import Signal
 
 from pyqt_openai import DEFAULT_SHORTCUT_FIND_CLOSE, ICON_CLOSE
 from pyqt_openai.gpt_widget.center.findTextWidget import FindTextWidget
@@ -8,6 +9,8 @@ from pyqt_openai.widgets.button import Button
 
 
 class MenuWidget(QWidget):
+    onCloseClicked = Signal()
+
     def __init__(self, widget: ChatBrowser):
         super().__init__()
         self.__initUi(widget=widget)
@@ -18,7 +21,7 @@ class MenuWidget(QWidget):
         self.__chatBrowser = widget
 
         self.__closeBtn = Button()
-        self.__closeBtn.clicked.connect(self.hide)
+        self.__closeBtn.clicked.connect(self.__onCloseClicked)
         self.__closeBtn.setShortcut(DEFAULT_SHORTCUT_FIND_CLOSE)
         self.__closeBtn.setStyleAndIcon(ICON_CLOSE)
 
@@ -45,10 +48,13 @@ class MenuWidget(QWidget):
 
     def showEvent(self, event):
         self.__findTextWidget.getLineEdit().setFocus()
+        self.__findTextWidget.initFind(self.__findTextWidget.getLineEdit().text())
         super().showEvent(event)
 
-    def hideEvent(self, *args, **kwargs):
-        # Clear all formatting when closing
-        # self.__findTextWidget.findInit(self.__findTextWidget.getLineEdit().text())
-        # self.__chatBrowser.clearFormatting()
-        super().hideEvent(*args, **kwargs)
+    def __onCloseClicked(self):
+        self.__findTextWidget.clearFormatting()
+        self.onCloseClicked.emit()
+        self.hide()
+
+    def getFindTextWidget(self):
+        return self.__findTextWidget

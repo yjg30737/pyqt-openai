@@ -221,7 +221,7 @@ class ChatBrowser(QScrollArea):
 
     def setCurrentLabelIncludingTextBySliderPosition(self, text, case_sensitive=False, word_only=False, is_regex=False):
         labels = self.__getEveryLabels()
-        label_info = [{'class':label.getLbl(), 'text':label.getText(), 'pos':label.y()} for label in labels]
+        label_info = [{'class':label.getLbl(), 'text':label.getText(), 'pos':label.y()} for label in labels if isinstance(label, AIChatUnit) or isinstance(label, UserChatUnit)]
         selections = []
 
         for _ in label_info:
