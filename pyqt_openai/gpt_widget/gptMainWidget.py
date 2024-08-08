@@ -15,7 +15,7 @@ from pyqt_openai.gpt_widget.prompt_gen_widget.promptGeneratorWidget import Promp
 from pyqt_openai.gpt_widget.right_sidebar.gptRightSideBarWidget import GPTRightSideBarWidget
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ChatThreadContainer, ChatMessageContainer, CustomizeParamsContainer
-from pyqt_openai.pyqt_openai_data import DB, LLAMAINDEX_WRAPPER
+from pyqt_openai.pyqt_openai_data import DB, LLAMAINDEX_WRAPPER, isOpenAIEnabled
 from pyqt_openai.util.script import open_directory, get_generic_ext_out_of_qt_ext, message_list_to_txt, \
     conv_unit_to_html, \
     add_file_to_zip, getSeparator
@@ -278,4 +278,4 @@ class GPTMainWidget(QWidget):
             else:
                 lst = [ChatMessageContainer(**dict(c)) for c in lst]
                 self.__browser.replaceThreadForFavorite(lst)
-        self.__chatWidget.setAIEnabled(not f)
+        self.__chatWidget.setAIEnabled(not f and isOpenAIEnabled())
