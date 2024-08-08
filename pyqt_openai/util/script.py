@@ -140,10 +140,7 @@ def get_font():
         'font_size': font_size
     }
 
-def restart_app(settings=None):
-    if settings:
-        # Save before restart
-        settings.sync()
+def restart_app():
     # Define the arguments to be passed to the executable
     args = [sys.executable, MAIN_INDEX]
     # Call os.execv() to execute the new process

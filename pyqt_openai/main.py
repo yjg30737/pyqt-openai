@@ -1,8 +1,6 @@
 import os
 import sys
 
-from pyqt_openai.config_loader import ini_to_yaml
-
 # Get the absolute path of the current script file
 script_path = os.path.abspath(__file__)
 
@@ -21,14 +19,16 @@ sys.path.insert(0, os.getcwd())  # Add the current directory as well
 from qtpy.QtGui import QGuiApplication, QFont, QIcon, QPixmap
 from qtpy.QtWidgets import QApplication, \
     QSplashScreen
-from qtpy.QtCore import Qt, QCoreApplication, QSettings
+from qtpy.QtCore import Qt, QCoreApplication
 from qtpy.QtSql import QSqlDatabase
 
+from pyqt_openai.config_loader import CONFIG_MANAGER
+
 from pyqt_openai.mainWindow import MainWindow
-from pyqt_openai.util.script import get_font, isUsingPyQt5
+from pyqt_openai.util.script import isUsingPyQt5
 from pyqt_openai.sqlite import get_db_filename
 
-from pyqt_openai import INI_FILE_NAME, DEFAULT_APP_ICON
+from pyqt_openai import DEFAULT_APP_ICON
 
 # HighDPI support
 # Qt version should be above 5.14
@@ -65,13 +65,11 @@ class App(QApplication):
         """
         This function initializes the global variables including the settings file.
         """
-        self.__settings_ini = QSettings(INI_FILE_NAME, QSettings.Format.IniFormat)
-        self.show_as_markdown = self.__settings_ini.value('show_as_markdown', True, type=bool)
+        self.show_as_markdown = CONFIG_MANAGER.get_general_property('show_as_markdown')
 
     def __initFont(self):
-        font_dict = get_font()
-        font_family = font_dict['font_family']
-        font_size = font_dict['font_size']
+        font_family = CONFIG_MANAGER.get_general_property('font_family')
+        font_size = CONFIG_MANAGER.get_general_property('font_size')
         QApplication.setFont(QFont(font_family, font_size))
 
     def __showMainWindow(self):
@@ -79,7 +77,6 @@ class App(QApplication):
         self.main_window.show()
 
 def main():
-    ini_to_yaml()
     app = App(sys.argv)
     sys.exit(app.exec())
 

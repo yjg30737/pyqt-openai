@@ -38,7 +38,7 @@ def ini_to_yaml():
 
         # Open INI file
         config = configparser.ConfigParser()
-
+        config.optionxform = str
         config.read(ini_new_filename)
 
         # Convert to yaml data
@@ -61,6 +61,7 @@ def ini_to_yaml():
         with open(yaml_filename, 'w') as yaml_file:
             yaml.dump(yaml_data, yaml_file, default_flow_style=False)
 
+
 def load_config(file_path='config.yaml'):
    global _config_cache
    if _config_cache is None:
@@ -68,8 +69,10 @@ def load_config(file_path='config.yaml'):
            _config_cache = yaml.safe_load(file)
    return _config_cache
 
+
 class ConfigManager:
-    def __init__(self, yaml_file):
+    # TODO config.yaml -> INI_FILE_NAME
+    def __init__(self, yaml_file='config.yaml'):
         self.yaml_file = yaml_file
         self.config = self._load_yaml()
 
@@ -120,4 +123,6 @@ class ConfigManager:
         self._save_yaml()
 
 
-
+ini_to_yaml()
+# CONFIG_MANAGER = ConfigManager()
+# print(CONFIG_MANAGER.get_general_property('API_KEY'))

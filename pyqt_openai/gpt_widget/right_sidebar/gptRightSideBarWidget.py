@@ -22,11 +22,11 @@ class GPTRightSideBarWidget(QScrollArea):
         self.__settings_ini = QSettings(INI_FILE_NAME, QSettings.Format.IniFormat)
 
         # load tab widget's last current index
-        if self.__settings_ini.contains('TAB_IDX'):
-            self.__cur_idx = int(self.__settings_ini.value('TAB_IDX'))
+        if self.__settings_ini.contains('tab_idx'):
+            self.__cur_idx = int(self.__settings_ini.value('tab_idx'))
         else:
             self.__cur_idx = 0
-            self.__settings_ini.setValue('TAB_IDX', str(self.__cur_idx))
+            self.__settings_ini.setValue('tab_idx', str(self.__cur_idx))
 
         if self.__settings_ini.contains('use_llama_index'):
             self.__use_llama_index = self.__settings_ini.value('use_llama_index', type=bool)
@@ -68,7 +68,7 @@ class GPTRightSideBarWidget(QScrollArea):
         self.setStyleSheet('QScrollArea { border: 0 }')
 
     def __tabChanged(self, idx):
-        self.__settings_ini.setValue('TAB_IDX', idx)
+        self.__settings_ini.setValue('tab_idx', idx)
 
     def __onDirectorySelected(self, selected_dirname):
         self.__llama_index_directory = selected_dirname

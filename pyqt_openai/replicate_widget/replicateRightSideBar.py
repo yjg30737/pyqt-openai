@@ -31,8 +31,8 @@ class ReplicateRightSideBarWidget(QScrollArea):
 
         self.__settings_ini = QSettings(INI_FILE_NAME, QSettings.Format.IniFormat)
         self.__settings_ini.beginGroup('REPLICATE')
-        if not self.__settings_ini.contains('REPLICATE_API_TOKEN'):
-            self.__settings_ini.setValue('REPLICATE_API_TOKEN', '')
+        if not self.__settings_ini.contains('replicate_api_token'):
+            self.__settings_ini.setValue('replicate_api_token', '')
         if not self.__settings_ini.contains('model'):
             self.__settings_ini.setValue('model', 'stability-ai/sdxl:39ed52f2a78e934b3ba6e2a89f5b1c712de7dfea535525255b1aa35c5565e08b')
         if not self.__settings_ini.contains('width'):
@@ -57,7 +57,7 @@ class ReplicateRightSideBarWidget(QScrollArea):
             self.__settings_ini.setValue('show_prompt_on_image', False)
 
         self.__directory = self.__settings_ini.value('directory', type=str)
-        self.__api_key = self.__settings_ini.value('REPLICATE_API_TOKEN', type=str)
+        self.__api_key = self.__settings_ini.value('replicate_api_token', type=str)
         self.__model = self.__settings_ini.value('model', type=str)
         self.__width = self.__settings_ini.value('width', type=int)
         self.__height = self.__settings_ini.value('height', type=int)
@@ -200,7 +200,7 @@ class ReplicateRightSideBarWidget(QScrollArea):
         self.__settings_ini.beginGroup('REPLICATE')
         if sender == self.__apiKeyLineEdit:
             self.__api_key = v
-            self.__settings_ini.setValue('REPLICATE_API_TOKEN', self.__api_key)
+            self.__settings_ini.setValue('replicate_api_token', self.__api_key)
         elif sender == self.__widthSpinBox:
             self.__width = v
             self.__settings_ini.setValue('width', self.__width)

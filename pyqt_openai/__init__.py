@@ -270,7 +270,7 @@ if os.path.exists(ALEX_BROGAN_PROMPT_FILENAME):
 # ----------------------------
 CONFIG_DATA = {
     'General': {
-        'TAB_IDX': 0,
+        'tab_idx': 0,
         'lang': 'English',
         'show_chat_list': True,
         'stream': True,
@@ -300,7 +300,7 @@ CONFIG_DATA = {
         'ai_image': DEFAULT_AI_IMAGE_PATH,
         'font_size': DEFAULT_FONT_SIZE,
         'font_family': DEFAULT_FONT_FAMILY,
-        'API_KEY': ''
+        'api_key': ''
     },
     'DALLE': {
         'quality': 'standard',
@@ -322,7 +322,7 @@ CONFIG_DATA = {
         'prompt': "Astronaut in a jungle, cold color palette, muted colors, detailed, 8k"
     },
     'REPLICATE': {
-        'REPLICATE_API_TOKEN': '',
+        'replicate_api_token': '',
         'show_history': True,
         'model': 'stability-ai/sdxl:39ed52f2a78e934b3ba6e2a89f5b1c712de7dfea535525255b1aa35c5565e08b',
         'show_setting': True,
