@@ -265,6 +265,80 @@ if os.path.exists(AWESOME_CHATGPT_PROMPTS_FILENAME):
 if os.path.exists(ALEX_BROGAN_PROMPT_FILENAME):
     ALEX_BROGAN_PROMPT = json.load(open(ALEX_BROGAN_PROMPT_FILENAME))[0]
 
+# DEFAULT Configuration data for the application settings
+# Initialize here to avoid circular import
+# ----------------------------
+CONFIG_DATA = {
+    'General': {
+        'TAB_IDX': 0,
+        'lang': 'English',
+        'show_chat_list': True,
+        'stream': True,
+        'db': 'conv',
+        'model': 'gpt-4o',
+        'show_setting': True,
+        'use_llama_index': False,
+        'do_not_ask_again': False,
+        'show_prompt': True,
+        'system': 'You are a helpful assistant.',
+        'notify_finish': True,
+        'temperature': 1,
+        'max_tokens': -1,
+        'show_toolbar': True,
+        'show_secondary_toolbar': True,
+        'top_p': 1,
+        'chat_column_to_show': ['id', 'name', 'insert_dt', 'update_dt'],
+        'frequency_penalty': 0,
+        'image_column_to_show': ['id', 'model', 'width', 'height', 'prompt', 'negative_prompt', 'n', 'quality', 'data', 'style', 'revised_prompt', 'update_dt', 'insert_dt'],
+        'presence_penalty': 0,
+        'json_object': False,
+        'maximum_messages_in_parameter': MAXIMUM_MESSAGES_IN_PARAMETER,
+        'show_as_markdown': True,
+        'use_max_tokens': False,
+        'background_image': '',
+        'user_image': DEFAULT_USER_IMAGE_PATH,
+        'ai_image': DEFAULT_AI_IMAGE_PATH,
+        'font_size': DEFAULT_FONT_SIZE,
+        'font_family': DEFAULT_FONT_FAMILY,
+        'API_KEY': ''
+    },
+    'DALLE': {
+        'quality': 'standard',
+        'show_history': True,
+        'n': 1,
+        'show_setting': True,
+        'size': '1024x1024',
+        'directory': QFILEDIALOG_DEFAULT_DIRECTORY,
+        'is_save': True,
+        'continue_generation': False,
+        'number_of_images_to_create': 2,
+        'style': 'vivid',
+        'response_format': 'b64_json',
+        'save_prompt_as_text': True,
+        'show_prompt_on_image': False,
+        'prompt_type': 1,
+        'width': 1024,
+        'height': 1024,
+        'prompt': "Astronaut in a jungle, cold color palette, muted colors, detailed, 8k"
+    },
+    'REPLICATE': {
+        'REPLICATE_API_TOKEN': '',
+        'show_history': True,
+        'model': 'stability-ai/sdxl:39ed52f2a78e934b3ba6e2a89f5b1c712de7dfea535525255b1aa35c5565e08b',
+        'show_setting': True,
+        'width': 768,
+        'height': 768,
+        'prompt': "Astronaut in a jungle, cold color palette, muted colors, detailed, 8k",
+        'negative_prompt': "ugly, deformed, noisy, blurry, distorted",
+        'directory': QFILEDIALOG_DEFAULT_DIRECTORY,
+        'is_save': True,
+        'continue_generation': False,
+        'number_of_images_to_create': 2,
+        'save_prompt_as_text': True,
+        'show_prompt_on_image': False
+    }
+}
+
 # Update the __all__ list with the PEP8 standard dunder names
 __all__ = ['__version__',
            '__author__']

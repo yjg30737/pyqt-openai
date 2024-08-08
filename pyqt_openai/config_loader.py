@@ -1,11 +1,33 @@
 import configparser
 import os
 
-from pyqt_openai import CONFIG_DATA
+from pyqt_openai import MAXIMUM_MESSAGES_IN_PARAMETER, DEFAULT_USER_IMAGE_PATH, DEFAULT_AI_IMAGE_PATH, \
+    DEFAULT_FONT_SIZE, DEFAULT_FONT_FAMILY, QFILEDIALOG_DEFAULT_DIRECTORY, CONFIG_DATA
 
 _config_cache = None
 
-# TODO WILL_REMOVE_AFTER v1.2.0
+
+def parse_value(value):
+    # Boolean conversion
+    if value.lower() in ('true', 'false'):
+        return value.lower() == 'true'
+    # Numeric conversion
+    try:
+        return int(value)
+    except ValueError:
+        try:
+            return float(value)
+        except ValueError:
+            pass
+    # Default: return the value as is (string)
+    return value
+
+
+def convert_list(value):
+    # Convert comma-separated string to list
+    return [item.strip() for item in value.split(',')]
+
+
 def ini_to_yaml():
     ini_old_filename = 'pyqt_openai.ini'
     if os.path.exists(ini_old_filename):
@@ -19,10 +41,19 @@ def ini_to_yaml():
         config.read(ini_new_filename)
 
         # Convert to yaml data
-        yaml_data = {section: dict(config.items(section)) for section in config.sections()}
+        yaml_data = {}
+        for section in config.sections():
+            yaml_data[section] = {}
+            for key, value in config.items(section):
+                if key in ['chat_column_to_show', 'image_column_to_show']:
+                    yaml_data[section][key] = convert_list(value)
+                else:
+                    yaml_data[section][key] = parse_value(value)
+
         os.remove(ini_new_filename)
     else:
         yaml_data = CONFIG_DATA
+
     yaml_filename = 'config.yaml'
     if not os.path.exists(yaml_filename):
         # Save as YAML file
@@ -78,9 +109,12 @@ class ConfigManager:
         self.config['General'][key] = value
         self._save_yaml()
 
-ini_to_yaml()
-# Usage example:
-CONFIG = ConfigManager('config.yaml')
-# # print(CONFIG.get_dalle())
-# # CONFIG.set_dalle_property('height', 1080)
-#
+# yaml_filename = 'config.yaml'
+
+# with open(yaml_filename, 'w') as yaml_file:
+#     yaml.dump(CONFIG_DATA, yaml_file, default_flow_style=False)
+
+# ini_to_yaml()
+# config = ConfigManager('config.yaml')
+# print(type(config.get_dalle()['directory']))
+# print(type(config.get_dalle()['prompt']))

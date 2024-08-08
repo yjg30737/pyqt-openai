@@ -1,6 +1,7 @@
 import os
 import sys
 
+from pyqt_openai.config_loader import ini_to_yaml
 
 # Get the absolute path of the current script file
 script_path = os.path.abspath(__file__)
@@ -78,6 +79,7 @@ class App(QApplication):
         self.main_window.show()
 
 def main():
+    ini_to_yaml()
     app = App(sys.argv)
     sys.exit(app.exec())
 
