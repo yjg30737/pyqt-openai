@@ -1,8 +1,9 @@
 import configparser
 import os
 
-from pyqt_openai import MAXIMUM_MESSAGES_IN_PARAMETER, DEFAULT_USER_IMAGE_PATH, DEFAULT_AI_IMAGE_PATH, \
-    DEFAULT_FONT_SIZE, DEFAULT_FONT_FAMILY, QFILEDIALOG_DEFAULT_DIRECTORY, CONFIG_DATA
+import yaml
+
+from pyqt_openai import CONFIG_DATA
 
 _config_cache = None
 
@@ -67,9 +68,6 @@ def load_config(file_path='config.yaml'):
            _config_cache = yaml.safe_load(file)
    return _config_cache
 
-
-import yaml
-
 class ConfigManager:
     def __init__(self, yaml_file):
         self.yaml_file = yaml_file
@@ -90,11 +88,17 @@ class ConfigManager:
     def get_general(self):
         return self.config.get('General', {})
 
+    def get_replicate(self):
+        return self.config.get('REPLICATE', {})
+
     def get_dalle_property(self, key):
         return self.config.get('DALLE', {}).get(key)
 
     def get_general_property(self, key):
         return self.config.get('General', {}).get(key)
+
+    def get_replicate_property(self, key):
+        return self.config.get('REPLICATE', {}).get(key)
 
     # Setter methods
     def set_dalle_property(self, key, value):
@@ -109,12 +113,11 @@ class ConfigManager:
         self.config['General'][key] = value
         self._save_yaml()
 
-# yaml_filename = 'config.yaml'
+    def set_replicate_property(self, key, value):
+        if 'REPLICATE' not in self.config:
+            self.config['REPLICATE'] = {}
+        self.config['REPLICATE'][key] = value
+        self._save_yaml()
 
-# with open(yaml_filename, 'w') as yaml_file:
-#     yaml.dump(CONFIG_DATA, yaml_file, default_flow_style=False)
 
-# ini_to_yaml()
-# config = ConfigManager('config.yaml')
-# print(type(config.get_dalle()['directory']))
-# print(type(config.get_dalle()['prompt']))
+
