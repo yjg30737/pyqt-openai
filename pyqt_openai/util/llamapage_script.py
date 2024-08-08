@@ -37,7 +37,7 @@ class GPTLLamaIndexWrapper:
         This function returns the directory path.
         If directory does not exist, it will return the empty string.
         """
-        return self._directory if os.path.exists(self._directory) else ''
+        return self._directory if self._directory and os.path.exists(self._directory) else ''
 
     def get_response(self, text):
         try:
