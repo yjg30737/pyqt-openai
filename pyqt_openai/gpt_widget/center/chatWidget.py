@@ -2,9 +2,10 @@ import json
 import sys
 
 from qtpy.QtCore import QSettings, Signal
-from qtpy.QtWidgets import QApplication, QStackedWidget, QWidget, QSizePolicy, QHBoxLayout, QVBoxLayout, QMessageBox
+from qtpy.QtWidgets import QStackedWidget, QWidget, QSizePolicy, QHBoxLayout, QVBoxLayout, QMessageBox
 
 from pyqt_openai import INI_FILE_NAME
+from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.gpt_widget.center.chatBrowser import ChatBrowser
 from pyqt_openai.gpt_widget.center.gptHome import GPTHome
 from pyqt_openai.gpt_widget.center.menuWidget import MenuWidget
@@ -27,9 +28,8 @@ class ChatWidget(QWidget):
 
     def __initVal(self):
         self.__cur_id = 0
-        self.__settings_ini = QSettings(INI_FILE_NAME, QSettings.Format.IniFormat)
-        self.__notify_finish = self.__settings_ini.value('notify_finish', type=bool)
-        self.__maximum_messages_in_parameter = self.__settings_ini.value('maximum_messages_in_parameter', type=int)
+        self.__notify_finish = CONFIG_MANAGER.get_general_property('notify_finish')
+        self.__maximum_messages_in_parameter = CONFIG_MANAGER.get_general_property('maximum_messages_in_parameter')
 
     def __initUi(self):
         # Main widget
@@ -113,16 +113,17 @@ class ChatWidget(QWidget):
     def __chat(self):
         try:
             # Get necessary parameters
-            stream = self.__settings_ini.value('stream', type=bool)
-            model = self.__settings_ini.value('model', type=str)
-            system = self.__settings_ini.value('system', type=str)
-            temperature = self.__settings_ini.value('temperature', type=float)
-            max_tokens = self.__settings_ini.value('max_tokens', type=int)
-            top_p = self.__settings_ini.value('top_p', type=float)
-            is_json_response_available = 1 if self.__settings_ini.value('json_object', type=bool) else 0
-            frequency_penalty = self.__settings_ini.value('frequency_penalty', type=float)
-            presence_penalty = self.__settings_ini.value('presence_penalty', type=float)
-            use_llama_index = self.__settings_ini.value('use_llama_index', type=bool)
+            stream = CONFIG_MANAGER.get_general_property('stream')
+            model = CONFIG_MANAGER.get_general_property('model')
+            system = CONFIG_MANAGER.get_general_property('system')
+            temperature = CONFIG_MANAGER.get_general_property('temperature')
+            max_tokens = CONFIG_MANAGER.get_general_property('max_tokens')
+            top_p = CONFIG_MANAGER.get_general_property('top_p')
+            is_json_response_available = 1 if CONFIG_MANAGER.get_general_property('json_object') else 0
+            frequency_penalty = CONFIG_MANAGER.get_general_property('frequency_penalty')
+            presence_penalty = CONFIG_MANAGER.get_general_property('presence_penalty')
+            use_llama_index = CONFIG_MANAGER.get_general_property('use_llama_index')
+            use_max_tokens = CONFIG_MANAGER.get_general_property('use_max_tokens')
 
             # Get image files
             images = self.__prompt.getImageBuffers()
@@ -145,8 +146,6 @@ class ChatWidget(QWidget):
                 else:
                     QMessageBox.warning(self, LangClass.TRANSLATIONS["Warning"], LangClass.TRANSLATIONS['LLAMA index is not available. Please check the directory path or disable the llama index.'])
                     return
-
-            use_max_tokens = self.__settings_ini.value('use_max_tokens', type=bool)
 
             # Check JSON response is valid
             if is_json_response_available:

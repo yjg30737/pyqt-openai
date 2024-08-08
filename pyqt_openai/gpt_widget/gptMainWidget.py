@@ -9,6 +9,7 @@ from pyqt_openai import THREAD_TABLE_NAME, INI_FILE_NAME, JSON_FILE_EXT_LIST_STR
     FILE_NAME_LENGTH, MAXIMUM_MESSAGES_IN_PARAMETER, DEFAULT_SHORTCUT_FIND, DEFAULT_SHORTCUT_LEFT_SIDEBAR_WINDOW, \
     DEFAULT_SHORTCUT_CONTROL_PROMPT_WINDOW, DEFAULT_SHORTCUT_RIGHT_SIDEBAR_WINDOW, QFILEDIALOG_DEFAULT_DIRECTORY, \
     ICON_USER, ICON_OPENAI
+from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.gpt_widget.center.chatWidget import ChatWidget
 from pyqt_openai.gpt_widget.left_sidebar.chatNavWidget import ChatNavWidget
 from pyqt_openai.gpt_widget.prompt_gen_widget.promptGeneratorWidget import PromptGeneratorWidget
@@ -29,33 +30,17 @@ class GPTMainWidget(QWidget):
         self.__initUi()
 
     def __initVal(self):
-        self.__settings_ini = QSettings(INI_FILE_NAME, QSettings.Format.IniFormat)
-        self.__notify_finish = self.__settings_ini.value('notify_finish', type=bool)
+        self.__notify_finish = CONFIG_MANAGER.get_general_property('notify_finish')
 
-        if not self.__settings_ini.contains('show_chat_list'):
-            self.__settings_ini.setValue('show_chat_list', True)
-        if not self.__settings_ini.contains('show_setting'):
-            self.__settings_ini.setValue('show_setting', True)
-        if not self.__settings_ini.contains('show_prompt'):
-            self.__settings_ini.setValue('show_prompt', True)
+        self.__show_chat_list = CONFIG_MANAGER.get_general_property('show_chat_list')
+        self.__show_setting = CONFIG_MANAGER.get_general_property('show_setting')
+        self.__show_prompt = CONFIG_MANAGER.get_general_property('show_prompt')
 
-        if not self.__settings_ini.contains('background_image'):
-            self.__settings_ini.setValue('background_image', '')
-        if not self.__settings_ini.contains('user_image'):
-            self.__settings_ini.setValue('user_image', ICON_USER)
-        if not self.__settings_ini.contains('ai_image'):
-            self.__settings_ini.setValue('ai_image', ICON_OPENAI)
+        self.__background_image = CONFIG_MANAGER.get_general_property('background_image')
+        self.__user_image = CONFIG_MANAGER.get_general_property('user_image')
+        self.__ai_image = CONFIG_MANAGER.get_general_property('ai_image')
 
-        self.__show_chat_list = self.__settings_ini.value('show_chat_list', type=bool)
-        self.__show_setting = self.__settings_ini.value('show_setting', type=bool)
-        self.__show_prompt = self.__settings_ini.value('show_prompt', type=bool)
-
-        self.__background_image = self.__settings_ini.value('background_image', type=str)
-        self.__user_image = self.__settings_ini.value('user_image', type=str)
-        self.__ai_image = self.__settings_ini.value('ai_image', type=str)
-
-        self.__maximum_messages_in_parameter = self.__settings_ini.value('maximum_messages_in_parameter',
-                                                                         MAXIMUM_MESSAGES_IN_PARAMETER, type=int)
+        self.__maximum_messages_in_parameter = CONFIG_MANAGER.get_general_property('maximum_messages_in_parameter')
 
     def __initUi(self):
         self.__chatNavWidget = ChatNavWidget(ChatThreadContainer.get_keys(), THREAD_TABLE_NAME)
@@ -182,17 +167,17 @@ class GPTMainWidget(QWidget):
     def __toggle_sidebar(self, x):
         self.__chatNavWidget.setVisible(x)
         self.__show_chat_list = x
-        self.__settings_ini.setValue('show_chat_list', x)
+        CONFIG_MANAGER.set_general_property('show_chat_list')
 
     def __toggle_setting(self, x):
         self.__gptRightSideBarWidget.setVisible(x)
         self.__show_setting = x
-        self.__settings_ini.setValue('show_setting', x)
+        CONFIG_MANAGER.set_general_property('show_setting')
 
     def __toggle_prompt(self, x):
         self.__promptGeneratorWidget.setVisible(x)
         self.__show_prompt = x
-        self.__settings_ini.setValue('show_prompt', x)
+        CONFIG_MANAGER.set_general_property('show_prompt')
 
     def showThreadToolWidget(self, f):
         self.__toggleFindToolButton.setChecked(f)

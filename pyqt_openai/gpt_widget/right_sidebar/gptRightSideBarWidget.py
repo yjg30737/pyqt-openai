@@ -4,6 +4,7 @@ from qtpy.QtCore import QSettings, Signal
 from qtpy.QtWidgets import QScrollArea, QWidget, QTabWidget, QGridLayout
 
 from pyqt_openai import INI_FILE_NAME
+from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.gpt_widget.right_sidebar.chatPage import ChatPage
 from pyqt_openai.gpt_widget.right_sidebar.llama_widget.llamaPage import LlamaPage
@@ -22,22 +23,26 @@ class GPTRightSideBarWidget(QScrollArea):
         self.__settings_ini = QSettings(INI_FILE_NAME, QSettings.Format.IniFormat)
 
         # load tab widget's last current index
-        if self.__settings_ini.contains('tab_idx'):
-            self.__cur_idx = int(self.__settings_ini.value('tab_idx'))
-        else:
-            self.__cur_idx = 0
-            self.__settings_ini.setValue('tab_idx', str(self.__cur_idx))
+        # if self.__settings_ini.contains('TAB_IDX'):
+        #     self.__cur_idx = int(self.__settings_ini.value('TAB_IDX'))
+        # else:
+        #     self.__cur_idx = 0
+        #     self.__settings_ini.setValue('TAB_IDX', str(self.__cur_idx))
+        #
+        # if self.__settings_ini.contains('use_llama_index'):
+        #     self.__use_llama_index = self.__settings_ini.value('use_llama_index', type=bool)
+        # else:
+        #     self.__use_llama_index = False
+        #     self.__settings_ini.setValue('use_llama_index', self.__use_llama_index)
 
-        if self.__settings_ini.contains('use_llama_index'):
-            self.__use_llama_index = self.__settings_ini.value('use_llama_index', type=bool)
-        else:
-            self.__use_llama_index = False
-            self.__settings_ini.setValue('use_llama_index', self.__use_llama_index)
+        self.__cur_idx = CONFIG_MANAGER.get_general_property('TAB_IDX')
+        self.__use_llama_index = CONFIG_MANAGER.get_general_property('use_llama_index')
+        self.__llama_index_directory = CONFIG_MANAGER.get_general_property('llama_index_directory')
 
         # load saved llamaindex directory
-        self.__llama_index_directory = ''
-        if self.__settings_ini.contains('llama_index_directory'):
-            self.__llama_index_directory = self.__settings_ini.value('llama_index_directory', type=str)
+        # self.__llama_index_directory = ''
+        # if self.__settings_ini.contains('llama_index_directory'):
+        #     self.__llama_index_directory = self.__settings_ini.value('llama_index_directory', type=str)
 
     def __initUi(self):
         tabWidget = QTabWidget()
@@ -68,9 +73,9 @@ class GPTRightSideBarWidget(QScrollArea):
         self.setStyleSheet('QScrollArea { border: 0 }')
 
     def __tabChanged(self, idx):
-        self.__settings_ini.setValue('tab_idx', idx)
+        CONFIG_MANAGER.set_general_property('TAB_IDX', idx)
 
     def __onDirectorySelected(self, selected_dirname):
         self.__llama_index_directory = selected_dirname
-        self.__settings_ini.setValue('llama_index_directory', selected_dirname)
+        CONFIG_MANAGER.set_general_property('llama_index_directory', selected_dirname)
         self.onDirectorySelected.emit(selected_dirname)

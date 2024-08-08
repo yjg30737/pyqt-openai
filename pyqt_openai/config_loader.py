@@ -124,5 +124,5 @@ class ConfigManager:
 
 
 ini_to_yaml()
-# CONFIG_MANAGER = ConfigManager()
+CONFIG_MANAGER = ConfigManager()
 # print(CONFIG_MANAGER.get_general_property('API_KEY'))

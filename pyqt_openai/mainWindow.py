@@ -20,7 +20,7 @@ from pyqt_openai.dalle_widget.dalleMainWidget import DallEMainWidget
 from pyqt_openai.doNotAskAgainDialog import DoNotAskAgainDialog
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import SettingsParamsContainer, CustomizeParamsContainer
-from pyqt_openai.pyqt_openai_data import OPENAI_STRUCT, LLAMAINDEX_WRAPPER
+from pyqt_openai.pyqt_openai_data import OPENAI_STRUCT, init_llama
 from pyqt_openai.replicate_widget.replicateMainWidget import ReplicateMainWidget
 from pyqt_openai.settingsDialog import SettingsDialog
 from pyqt_openai.util.script import restart_app, show_message_box_after_change_to_restart, goPayPal, goBuyMeCoffee
@@ -257,10 +257,9 @@ class MainWindow(QMainWindow):
 
     def __loadApiKeyInIni(self):
         # this api key should be yours
-        self.__setApiKeyAndClient(CONFIG_MANAGER.get_general_property('api_key'))
+        self.__setApiKeyAndClient(CONFIG_MANAGER.get_general_property('API_KEY'))
         # Set llama index directory if it exists
-        if CONFIG_MANAGER.get_general_property('llama_index_directory') and CONFIG_MANAGER.get_general_property('use_llama_index'):
-            LLAMAINDEX_WRAPPER.set_directory(CONFIG_MANAGER.get_general_property('llama_index_directory'))
+        init_llama()
 
     def __setAIEnabled(self, f):
         self.__gptWidget.setAIEnabled(f)
@@ -274,7 +273,7 @@ class MainWindow(QMainWindow):
             self.__setAIEnabled(f)
             if f:
                 self.__setApiKeyAndClient(api_key)
-                CONFIG_MANAGER.set_general_property('api_key', api_key)
+                CONFIG_MANAGER.set_general_property('API_KEY', api_key)
 
                 self.__apiCheckPreviewLbl.setStyleSheet("color: {}".format(QColor(0, 200, 0).name()))
                 self.__apiCheckPreviewLbl.setText(LangClass.TRANSLATIONS['API key is valid'])
