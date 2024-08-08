@@ -51,10 +51,11 @@ class FileListWidget(QWidget):
         lay.setContentsMargins(0, 0, 0, 0)
         self.setLayout(lay)
 
-    def setDirectory(self, directory=None):
+    def setDirectory(self, directory=None, called_from_btn=True):
         try:
-            if not directory:
-                directory = QFileDialog.getExistingDirectory(self, LangClass.TRANSLATIONS['Select Directory'], QFILEDIALOG_DEFAULT_DIRECTORY, QFileDialog.Option.ShowDirsOnly)
+            if called_from_btn:
+                if not directory:
+                    directory = QFileDialog.getExistingDirectory(self, LangClass.TRANSLATIONS['Select Directory'], QFILEDIALOG_DEFAULT_DIRECTORY, QFileDialog.Option.ShowDirsOnly)
             if directory:
                 self.__listWidget.clear()
                 filenames = list(filter(lambda x: os.path.splitext(x)[-1] in TEXT_FILE_EXT_LIST, os.listdir(directory)))

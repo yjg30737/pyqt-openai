@@ -8,6 +8,7 @@ from pyqt_openai import INI_FILE_NAME, READ_FILE_EXT_LIST_STR, PROMPT_BEGINNING_
     DEFAULT_SHORTCUT_SUPPORT_PROMPT_COMMAND, ICON_VERTICAL_THREE_DOTS, ICON_SEND, PROMPT_MAIN_KEY_NAME, \
     IMAGE_FILE_EXT_LIST, \
     TEXT_FILE_EXT_LIST, QFILEDIALOG_DEFAULT_DIRECTORY, DEFAULT_SHORTCUT_SEND
+from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.gpt_widget.center.commandSuggestionWidget import CommandSuggestionWidget
 from pyqt_openai.gpt_widget.center.textEditPromptGroup import TextEditPromptGroup
 from pyqt_openai.gpt_widget.center.uploadedImageFileWidget import UploadedImageFileWidget
@@ -33,8 +34,7 @@ class Prompt(QWidget):
         # False by default
         self.__commandEnabled = False
 
-        self.__settings_ini = QSettings(INI_FILE_NAME, QSettings.Format.IniFormat)
-        self.__json_object = self.__settings_ini.value('json_object', False, type=bool)
+        self.__json_object = CONFIG_MANAGER.get_general_property('json_object')
 
     def __initUi(self):
         # Prompt control buttons

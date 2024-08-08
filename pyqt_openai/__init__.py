@@ -300,7 +300,8 @@ CONFIG_DATA = {
         'ai_image': DEFAULT_AI_IMAGE_PATH,
         'font_size': DEFAULT_FONT_SIZE,
         'font_family': DEFAULT_FONT_FAMILY,
-        'API_KEY': ''
+        'API_KEY': '',
+        'llama_index_directory': LLAMA_INDEX_DEFAULT_READ_DIRECTORY,
     },
     'DALLE': {
         'quality': 'standard',

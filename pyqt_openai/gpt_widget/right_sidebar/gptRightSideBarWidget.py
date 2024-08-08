@@ -20,29 +20,9 @@ class GPTRightSideBarWidget(QScrollArea):
         self.__initUi()
 
     def __initVal(self):
-        self.__settings_ini = QSettings(INI_FILE_NAME, QSettings.Format.IniFormat)
-
-        # load tab widget's last current index
-        # if self.__settings_ini.contains('TAB_IDX'):
-        #     self.__cur_idx = int(self.__settings_ini.value('TAB_IDX'))
-        # else:
-        #     self.__cur_idx = 0
-        #     self.__settings_ini.setValue('TAB_IDX', str(self.__cur_idx))
-        #
-        # if self.__settings_ini.contains('use_llama_index'):
-        #     self.__use_llama_index = self.__settings_ini.value('use_llama_index', type=bool)
-        # else:
-        #     self.__use_llama_index = False
-        #     self.__settings_ini.setValue('use_llama_index', self.__use_llama_index)
-
         self.__cur_idx = CONFIG_MANAGER.get_general_property('TAB_IDX')
         self.__use_llama_index = CONFIG_MANAGER.get_general_property('use_llama_index')
         self.__llama_index_directory = CONFIG_MANAGER.get_general_property('llama_index_directory')
-
-        # load saved llamaindex directory
-        # self.__llama_index_directory = ''
-        # if self.__settings_ini.contains('llama_index_directory'):
-        #     self.__llama_index_directory = self.__settings_ini.value('llama_index_directory', type=str)
 
     def __initUi(self):
         tabWidget = QTabWidget()
