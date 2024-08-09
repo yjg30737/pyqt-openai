@@ -60,6 +60,20 @@ def ini_to_yaml():
         # Save as YAML file
         with open(yaml_filename, 'w') as yaml_file:
             yaml.dump(yaml_data, yaml_file, default_flow_style=False)
+    else:
+        with open(yaml_filename, 'r') as yaml_file:
+            prev_yaml_data = yaml.safe_load(yaml_file)
+        # Add new keys
+        for section, values in yaml_data.items():
+            if section not in prev_yaml_data:
+                prev_yaml_data[section] = values
+            else:
+                for key, value in values.items():
+                    if key not in prev_yaml_data[section]:
+                        prev_yaml_data[section][key] = value
+        # Save as YAML file
+        with open(yaml_filename, 'w') as yaml_file:
+            yaml.dump(prev_yaml_data, yaml_file, default_flow_style=False)
 
 
 def load_config(file_path=INI_FILE_NAME):

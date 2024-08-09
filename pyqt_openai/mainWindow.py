@@ -1,31 +1,30 @@
 import os
 
 import requests
-from qtpy.QtCore import Qt, QSettings
+from qtpy.QtCore import Qt
 from qtpy.QtGui import QFont, QIcon, QColor
 from qtpy.QtWidgets import QMainWindow, QToolBar, QHBoxLayout, QDialog, QLineEdit, QPushButton, QWidgetAction, QSpinBox, \
     QLabel, QWidget, QApplication, \
     QComboBox, QSizePolicy, QStackedWidget, QMenu, QSystemTrayIcon, \
     QMessageBox, QCheckBox, QAction
 
-from pyqt_openai.config_loader import CONFIG_MANAGER
-
-from pyqt_openai import INI_FILE_NAME, DEFAULT_SHORTCUT_FULL_SCREEN, \
-    APP_INITIAL_WINDOW_SIZE, DEFAULT_APP_NAME, DEFAULT_APP_ICON, ICON_STACKONTOP, ICON_CUSTOMIZE, ICON_FULLSCREEN, ICON_CLOSE, \
+from pyqt_openai import DEFAULT_SHORTCUT_FULL_SCREEN, \
+    APP_INITIAL_WINDOW_SIZE, DEFAULT_APP_NAME, DEFAULT_APP_ICON, ICON_STACKONTOP, ICON_CUSTOMIZE, ICON_FULLSCREEN, \
+    ICON_CLOSE, \
     DEFAULT_SHORTCUT_SETTING, TRANSPARENT_RANGE, TRANSPARENT_INIT_VAL
 from pyqt_openai.aboutDialog import AboutDialog
-from pyqt_openai.gpt_widget.gptMainWidget import GPTMainWidget
+from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.customizeDialog import CustomizeDialog
 from pyqt_openai.dalle_widget.dalleMainWidget import DallEMainWidget
 from pyqt_openai.doNotAskAgainDialog import DoNotAskAgainDialog
+from pyqt_openai.gpt_widget.gptMainWidget import GPTMainWidget
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import SettingsParamsContainer, CustomizeParamsContainer
 from pyqt_openai.pyqt_openai_data import OPENAI_STRUCT, init_llama
 from pyqt_openai.replicate_widget.replicateMainWidget import ReplicateMainWidget
-from pyqt_openai.settingsDialog import SettingsDialog
+from pyqt_openai.settings_dialog.settingsDialog import SettingsDialog
 from pyqt_openai.util.script import restart_app, show_message_box_after_change_to_restart, goPayPal, goBuyMeCoffee
 from pyqt_openai.widgets.button import Button
-
 from pyqt_openai_data import setOpenAIEnabled
 
 

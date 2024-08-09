@@ -302,6 +302,7 @@ CONFIG_DATA = {
         'font_family': DEFAULT_FONT_FAMILY,
         'API_KEY': '',
         'llama_index_directory': LLAMA_INDEX_DEFAULT_READ_DIRECTORY,
+        'apply_user_defined_styles': False,
     },
     'DALLE': {
         'quality': 'standard',

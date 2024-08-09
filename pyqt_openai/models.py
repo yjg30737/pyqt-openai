@@ -125,6 +125,8 @@ class SettingsParamsContainer(Container):
     maximum_messages_in_parameter: int = MAXIMUM_MESSAGES_IN_PARAMETER
     show_as_markdown: bool = True
 
+    apply_user_defined_styles: bool = False
+
 @dataclass
 class CustomizeParamsContainer(Container):
     background_image: str = ''
