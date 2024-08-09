@@ -40,6 +40,7 @@ def setOpenAIEnabled(f):
 def isOpenAIEnabled():
     return OPENAI_API_VALID
 
+
 # https://platform.openai.com/docs/models/model-endpoint-compatibility
 ENDPOINT_DICT = {
     '/v1/chat/completions': ['gpt-4o', 'gpt-4o-mini'],

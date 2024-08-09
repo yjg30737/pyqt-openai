@@ -1,10 +1,6 @@
 import json
 import sys
 
-from qtpy.QtCore import QSettings, Signal
-from qtpy.QtWidgets import QStackedWidget, QWidget, QSizePolicy, QHBoxLayout, QVBoxLayout, QMessageBox
-
-from pyqt_openai import INI_FILE_NAME
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.gpt_widget.center.chatBrowser import ChatBrowser
 from pyqt_openai.gpt_widget.center.gptHome import GPTHome
@@ -15,6 +11,8 @@ from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ChatMessageContainer
 from pyqt_openai.pyqt_openai_data import LLAMAINDEX_WRAPPER, get_argument, DB
 from pyqt_openai.widgets.notifier import NotifierWidget
+from qtpy.QtCore import Signal
+from qtpy.QtWidgets import QStackedWidget, QWidget, QSizePolicy, QHBoxLayout, QVBoxLayout, QMessageBox
 
 
 class ChatWidget(QWidget):

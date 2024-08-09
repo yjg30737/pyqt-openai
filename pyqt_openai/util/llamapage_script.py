@@ -15,7 +15,7 @@ class GPTLLamaIndexWrapper:
     def set_directory(self, directory):
         try:
             self._directory = directory
-            documents = SimpleDirectoryReader(self._directory, required_exts=['.txt']).load_data()
+            documents = SimpleDirectoryReader(input_dir=self._directory, required_exts=['.txt']).load_data()
             self._index = VectorStoreIndex.from_documents(documents)
         except Exception as e:
             print(e)

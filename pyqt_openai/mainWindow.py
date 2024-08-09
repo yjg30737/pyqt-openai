@@ -26,6 +26,8 @@ from pyqt_openai.settingsDialog import SettingsDialog
 from pyqt_openai.util.script import restart_app, show_message_box_after_change_to_restart, goPayPal, goBuyMeCoffee
 from pyqt_openai.widgets.button import Button
 
+from pyqt_openai_data import setOpenAIEnabled
+
 
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
@@ -269,7 +271,7 @@ class MainWindow(QMainWindow):
         try:
             api_key = self.__apiLineEdit.text()
             response = requests.get('https://api.openai.com/v1/models', headers={'Authorization': f'Bearer {api_key}'})
-            f = response.status_code == 200
+            f = setOpenAIEnabled(response.status_code == 200)
             self.__setAIEnabled(f)
             if f:
                 self.__setApiKeyAndClient(api_key)

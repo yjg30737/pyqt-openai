@@ -3,7 +3,7 @@ import os
 
 import yaml
 
-from pyqt_openai import CONFIG_DATA
+from pyqt_openai import CONFIG_DATA, INI_FILE_NAME
 
 _config_cache = None
 
@@ -55,14 +55,14 @@ def ini_to_yaml():
     else:
         yaml_data = CONFIG_DATA
 
-    yaml_filename = 'config.yaml'
+    yaml_filename = INI_FILE_NAME
     if not os.path.exists(yaml_filename):
         # Save as YAML file
         with open(yaml_filename, 'w') as yaml_file:
             yaml.dump(yaml_data, yaml_file, default_flow_style=False)
 
 
-def load_config(file_path='config.yaml'):
+def load_config(file_path=INI_FILE_NAME):
    global _config_cache
    if _config_cache is None:
        with open(file_path, 'r') as file:
@@ -72,7 +72,7 @@ def load_config(file_path='config.yaml'):
 
 class ConfigManager:
     # TODO config.yaml -> INI_FILE_NAME
-    def __init__(self, yaml_file='config.yaml'):
+    def __init__(self, yaml_file=INI_FILE_NAME):
         self.yaml_file = yaml_file
         self.config = self._load_yaml()
 
