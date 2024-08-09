@@ -13,7 +13,18 @@ class MarkdownSettingsWidget(QWidget):
         self.__initUi()
 
     def __initVal(self, args):
-        self.__args = args
+        self.__show_as_markdown = args.show_as_markdown
+        self.__apply_user_defined_styles = args.apply_user_defined_styles
+        self.__span_font = args.span_font
+        self.__span_color = args.span_color
+        self.__ul_color = args.ul_color
+        self.__h1_color = args.h1_color
+        self.__h2_color = args.h2_color
+        self.__h3_color = args.h3_color
+        self.__h4_color = args.h4_color
+        self.__h5_color = args.h5_color
+        self.__h6_color = args.h6_color
+        self.__a_color = args.a_color
 
     def __initUi(self):
         self.__showAsMarkdownCheckBox = QCheckBox(LangClass.TRANSLATIONS['Show as Markdown'])
@@ -44,7 +55,7 @@ class MarkdownSettingsWidget(QWidget):
         # Adding form fields for each tag and attribute
         self.font_editors = {}
         self.color_buttons = {}
-        tags_attributes = [
+        self.__tags_attributes = [
             ('span', 'Font, Color'),
             ('ol', 'Color'),
             ('li', 'Color'),
@@ -58,7 +69,7 @@ class MarkdownSettingsWidget(QWidget):
             ('a', 'Color')
         ]
 
-        for tag, attributes in tags_attributes:
+        for tag, attributes in self.__tags_attributes:
             if 'Font' in attributes:
                 self.font_editors[tag], self.color_buttons[tag] = create_color_picker(tag)
             else:
@@ -85,8 +96,8 @@ class MarkdownSettingsWidget(QWidget):
         self.__applyUserDefinedStylesCheckBox.toggled.connect(
             lambda: markdownWidget.setEnabled(self.__applyUserDefinedStylesCheckBox.isChecked() and self.__showAsMarkdownCheckBox.isChecked()))
 
-        self.__showAsMarkdownCheckBox.setChecked(self.__args.show_as_markdown)
-        self.__applyUserDefinedStylesCheckBox.setChecked(self.__args.apply_user_defined_styles)
+        self.__showAsMarkdownCheckBox.setChecked(self.__show_as_markdown)
+        self.__applyUserDefinedStylesCheckBox.setChecked(self.__apply_user_defined_styles)
 
         self.__applyUserDefinedStylesCheckBox.setEnabled(self.__showAsMarkdownCheckBox.isChecked())
         markdownWidget.setEnabled(self.__applyUserDefinedStylesCheckBox.isChecked() and self.__showAsMarkdownCheckBox.isChecked())
@@ -99,7 +110,8 @@ class MarkdownSettingsWidget(QWidget):
 
     def getParam(self):
         params = {
-            'show_as_markdown': self.__showAsMarkdownCheckBox.isChecked()
+            'show_as_markdown': self.__showAsMarkdownCheckBox.isChecked(),
+            'apply_user_defined_styles': self.__applyUserDefinedStylesCheckBox.isChecked(),
         }
         for tag, editor in self.font_editors.items():
             if editor:  # editor will be None for tags without a font combo box

@@ -124,8 +124,17 @@ class SettingsParamsContainer(Container):
     image_column_to_show: List[str] = field(default_factory=ImagePromptContainer.get_keys)
     maximum_messages_in_parameter: int = MAXIMUM_MESSAGES_IN_PARAMETER
     show_as_markdown: bool = True
-
     apply_user_defined_styles: bool = False
+    span_font: str = 'Courier New'
+    span_color: str = '#000'
+    ul_color: str = '#000'
+    h1_color: str = '#000'
+    h2_color: str = '#000'
+    h3_color: str = '#000'
+    h4_color: str = '#000'
+    h5_color: str = '#000'
+    h6_color: str = '#000'
+    a_color: str = '#00F'
 
 @dataclass
 class CustomizeParamsContainer(Container):
