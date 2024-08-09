@@ -43,37 +43,44 @@ class MessageTextBrowser(QTextBrowser):
             self.setMinimumHeight(int(max_height))
         self.verticalScrollBar().setSliderPosition(self.verticalScrollBar().maximum())
 
-    # def setMarkdown(self, markdown: str) -> None:
-    #     super().setMarkdown(markdown)
+    def setMarkdown(self, markdown: str) -> None:
+        super().setMarkdown(markdown)
+
+        # TODO
+        # Convert markdown to HTML using QTextDocument
+        document = QTextDocument()
+        document.setMarkdown(markdown)
+        html_text = document.toHtml()
+        # with open("test.html", "w") as f:
+        #     f.write(html_text)
     #
-    #     # TODO
-    #     # # Convert markdown to HTML using QTextDocument
-    #     # document = QTextDocument()
-    #     # document.setMarkdown(markdown)
-    #     # html_text = document.toHtml()
-    #     #
-    #     # # Customize the converted HTML (e.g., add style tags)
-    #     # custom_html = f"""
-    #     # <style>
-    #     # h1 {{
-    #     #     color: blue;
-    #     #     font-size: 24px;
-    #     # }}
-    #     # h2 {{
-    #     #     color: darkgreen;
-    #     #     font-size: 20px;
-    #     # }}
-    #     # ul {{
-    #     #     margin-left: 20px;
-    #     # }}
-    #     # a {{
-    #     #     color: red;
-    #     #     text-decoration: none;
-    #     # }}
-    #     # a:hover {{
-    #     #     text-decoration: underline;
-    #     # }}
-    #     # </style>
-    #     # {html_text}
-    #     # """
-    #     # self.setHtml(custom_html)
+    #     # Customize the converted HTML (e.g., add style tags)
+    #     custom_html = f"""
+    #     <style>
+    #     h1 {{
+    #         color: red;
+    #         font-size: 24px;
+    #     }}
+    #     h2 {{
+    #         color: darkgreen;
+    #         font-size: 20px;
+    #     }}
+    #     ul {{
+    #         margin-left: 20px;
+    #         color: blue;
+    #     }}
+    #     a {{
+    #         color: red;
+    #         text-decoration: none;
+    #     }}
+    #     a:hover {{
+    #         text-decoration: underline;
+    #     }}
+    #     </style>
+    #     {html_text}
+    #     """
+    #     self.setHtml(custom_html)
+    #
+    # def eventFilter(self, obj, event):
+    #     print(obj, int(event.type()))
+    #     return super().eventFilter(obj, event)

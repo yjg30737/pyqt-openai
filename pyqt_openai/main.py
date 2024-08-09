@@ -47,10 +47,8 @@ class App(QApplication):
         self.splash = QSplashScreen(QPixmap(DEFAULT_APP_ICON))
         self.splash.show()
 
-        self.__initGlobalIni()
         self.__initQSqlDb()
         self.__initFont()
-        # self.__initGlobalActions()
 
         self.__showMainWindow()
         self.splash.finish(self.main_window)
@@ -60,12 +58,6 @@ class App(QApplication):
         self.__imageDb = QSqlDatabase.addDatabase('QSQLITE')  # Replace with your database type
         self.__imageDb.setDatabaseName(get_db_filename())  # Replace with your database name
         self.__imageDb.open()
-
-    def __initGlobalIni(self):
-        """
-        This function initializes the global variables including the settings file.
-        """
-        self.show_as_markdown = CONFIG_MANAGER.get_general_property('show_as_markdown')
 
     def __initFont(self):
         font_family = CONFIG_MANAGER.get_general_property('font_family')

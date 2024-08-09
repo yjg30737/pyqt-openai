@@ -326,10 +326,7 @@ class MainWindow(QMainWindow):
         Initialize the container with the values in the settings file
         """
         for k, v in container.get_items():
-            if not CONFIG_MANAGER.get_general_property(k):
-                CONFIG_MANAGER.set_general_property(k, v)
-            else:
-                setattr(container, k, CONFIG_MANAGER.get_general_property(k))
+            setattr(container, k, CONFIG_MANAGER.get_general_property(k))
         if isinstance(container, SettingsParamsContainer):
             self.__lang = LangClass.lang_changed(container.lang)
 
