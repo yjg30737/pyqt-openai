@@ -155,7 +155,6 @@ DEFAULT_SHORTCUT_SEND = 'Ctrl+Enter'
 ## DIRECTORY PATH & FILE'S NAME
 MAIN_INDEX = 'main.py'
 IMAGE_DEFAULT_SAVE_DIRECTORY = 'image_result'
-LLAMA_INDEX_DEFAULT_READ_DIRECTORY = './example'
 INI_FILE_NAME = 'config.yaml'
 DB_FILE_NAME = 'conv'
 FILE_NAME_LENGTH = 32
@@ -301,7 +300,7 @@ CONFIG_DATA = {
         'font_size': DEFAULT_FONT_SIZE,
         'font_family': DEFAULT_FONT_FAMILY,
         'API_KEY': '',
-        'llama_index_directory': LLAMA_INDEX_DEFAULT_READ_DIRECTORY,
+        'llama_index_directory': '',
         'apply_user_defined_styles': False,
     },
     'DALLE': {

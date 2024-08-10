@@ -8,8 +8,7 @@ import os.path
 
 import openai
 
-from pyqt_openai import LLAMA_INDEX_DEFAULT_READ_DIRECTORY
-from pyqt_openai.config_loader import ConfigManager, CONFIG_MANAGER
+from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.models import ChatMessageContainer
 from pyqt_openai.sqlite import SqliteDatabase
 from pyqt_openai.util.llamapage_script import GPTLLamaIndexWrapper
@@ -149,6 +148,7 @@ def form_response(response, info: ChatMessageContainer):
 
 
 def init_llama():
-    if CONFIG_MANAGER.get_general_property('llama_index_directory') and CONFIG_MANAGER.get_general_property(
+    llama_index_directory = CONFIG_MANAGER.get_general_property('llama_index_directory')
+    if llama_index_directory and CONFIG_MANAGER.get_general_property(
             'use_llama_index'):
-        LLAMAINDEX_WRAPPER.set_directory(CONFIG_MANAGER.set_general_property('llama_index_directory', LLAMA_INDEX_DEFAULT_READ_DIRECTORY))
+        LLAMAINDEX_WRAPPER.set_directory(llama_index_directory)
