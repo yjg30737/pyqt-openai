@@ -1,12 +1,10 @@
 from qtpy.QtCore import Qt
-from qtpy.QtWidgets import QStackedWidget, QHBoxLayout, QWidget, QListWidget, QListWidgetItem, QDialog, QVBoxLayout, \
+from qtpy.QtWidgets import QDialog, QVBoxLayout, \
     QDialogButtonBox, QMessageBox
 
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import SettingsParamsContainer
 from pyqt_openai.settings_dialog.generalSettingsWidget import GeneralSettingsWidget
-from pyqt_openai.settings_dialog.markdownSettingsWidget import MarkdownSettingsWidget
-from pyqt_openai.settings_dialog.shortcutSettingsWidget import ShortcutSettingsWidget
 
 
 class SettingsDialog(QDialog):
@@ -23,25 +21,6 @@ class SettingsDialog(QDialog):
         self.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.WindowCloseButtonHint)
 
         self.__generalSettingsWidget = GeneralSettingsWidget(self.__args)
-        self.__markdownSettingsWidget = MarkdownSettingsWidget(self.__args)
-        self.__shortcutSettingsWidget = ShortcutSettingsWidget(self.__args)
-
-        listWidget = QListWidget()
-        listWidget.addItem(QListWidgetItem(LangClass.TRANSLATIONS["General Settings"]))
-        listWidget.addItem(QListWidgetItem(LangClass.TRANSLATIONS["Markdown Settings"]))
-        listWidget.addItem(QListWidgetItem(LangClass.TRANSLATIONS["Shortcut Settings"]))
-
-        rightWidget = QStackedWidget()
-        rightWidget.addWidget(self.__generalSettingsWidget)
-        rightWidget.addWidget(self.__markdownSettingsWidget)
-        rightWidget.addWidget(self.__shortcutSettingsWidget)
-
-        lay = QHBoxLayout()
-        lay.addWidget(listWidget)
-        lay.addWidget(rightWidget)
-
-        mainWidget = QWidget()
-        mainWidget.setLayout(lay)
 
         # Dialog buttons
         buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
@@ -49,12 +28,10 @@ class SettingsDialog(QDialog):
         buttonBox.rejected.connect(self.reject)
 
         lay = QVBoxLayout()
-        lay.addWidget(mainWidget)
+        lay.addWidget(self.__generalSettingsWidget)
         lay.addWidget(buttonBox)
 
         self.setLayout(lay)
-
-        listWidget.clicked.connect(lambda: rightWidget.setCurrentIndex(listWidget.currentRow()))
 
     def __accept(self):
         # If DB file name is empty

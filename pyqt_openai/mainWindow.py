@@ -23,6 +23,7 @@ from pyqt_openai.models import SettingsParamsContainer, CustomizeParamsContainer
 from pyqt_openai.pyqt_openai_data import OPENAI_STRUCT, init_llama
 from pyqt_openai.replicate_widget.replicateMainWidget import ReplicateMainWidget
 from pyqt_openai.settings_dialog.settingsDialog import SettingsDialog
+from pyqt_openai.shortcutDialog import ShortcutDialog
 from pyqt_openai.util.script import restart_app, show_message_box_after_change_to_restart, goPayPal, goBuyMeCoffee
 from pyqt_openai.widgets.button import Button
 from pyqt_openai_data import setOpenAIEnabled
@@ -84,6 +85,9 @@ class MainWindow(QMainWindow):
 
         self.__aboutAction = QAction(LangClass.TRANSLATIONS['About...'], self)
         self.__aboutAction.triggered.connect(self.__showAboutDialog)
+
+        self.__viewShortcutsAction = QAction(LangClass.TRANSLATIONS['View Shortcuts'], self)
+        self.__viewShortcutsAction.triggered.connect(self.__showShortcutsDialog)
 
         self.__paypalAction = QAction('Paypal', self)
         self.__paypalAction.triggered.connect(goPayPal)
@@ -194,6 +198,7 @@ class MainWindow(QMainWindow):
         menubar.addMenu(helpMenu)
 
         helpMenu.addAction(self.__aboutAction)
+        helpMenu.addAction(self.__viewShortcutsAction)
 
         donateMenu = QMenu(LangClass.TRANSLATIONS['Donate'], self)
         donateMenu.addAction(self.__paypalAction)
@@ -291,6 +296,10 @@ class MainWindow(QMainWindow):
     def __showAboutDialog(self):
         aboutDialog = AboutDialog(self)
         aboutDialog.exec()
+
+    def __showShortcutsDialog(self):
+        shortcutListWidget = ShortcutDialog(self)
+        shortcutListWidget.exec()
 
     def __stackToggle(self, f):
         if f:

@@ -2,11 +2,16 @@
 This file is used to store the data classes that are used throughout the application.
 """
 
-from typing import List
 from dataclasses import dataclass, fields, field
+from typing import List
 
 from pyqt_openai import DB_FILE_NAME, DEFAULT_FONT_SIZE, DEFAULT_FONT_FAMILY, DEFAULT_USER_IMAGE_PATH, \
-    DEFAULT_AI_IMAGE_PATH, MESSAGE_MAXIMUM_HEIGHT, MAXIMUM_MESSAGES_IN_PARAMETER
+    DEFAULT_AI_IMAGE_PATH, MAXIMUM_MESSAGES_IN_PARAMETER,\
+    DEFAULT_SHORTCUT_FIND_PREV, DEFAULT_SHORTCUT_FIND_NEXT, DEFAULT_SHORTCUT_PROMPT_BEGINNING, \
+    DEFAULT_SHORTCUT_PROMPT_ENDING, DEFAULT_SHORTCUT_SUPPORT_PROMPT_COMMAND, DEFAULT_SHORTCUT_FULL_SCREEN, \
+    DEFAULT_SHORTCUT_FIND, DEFAULT_SHORTCUT_JSON_MODE, DEFAULT_SHORTCUT_LEFT_SIDEBAR_WINDOW, \
+    DEFAULT_SHORTCUT_RIGHT_SIDEBAR_WINDOW, DEFAULT_SHORTCUT_CONTROL_PROMPT_WINDOW, DEFAULT_SHORTCUT_SETTING, \
+    DEFAULT_SHORTCUT_SEND
 from pyqt_openai.lang.translations import LangClass
 
 
@@ -125,16 +130,6 @@ class SettingsParamsContainer(Container):
     maximum_messages_in_parameter: int = MAXIMUM_MESSAGES_IN_PARAMETER
     show_as_markdown: bool = True
     apply_user_defined_styles: bool = False
-    span_font: str = 'Courier New'
-    span_color: str = '#000'
-    ul_color: str = '#000'
-    h1_color: str = '#000'
-    h2_color: str = '#000'
-    h3_color: str = '#000'
-    h4_color: str = '#000'
-    h5_color: str = '#000'
-    h6_color: str = '#000'
-    a_color: str = '#00F'
 
 @dataclass
 class CustomizeParamsContainer(Container):
