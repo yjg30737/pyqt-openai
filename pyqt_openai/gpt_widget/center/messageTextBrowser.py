@@ -10,6 +10,8 @@ from pyqt_openai import MESSAGE_ADDITIONAL_HEIGHT, MESSAGE_MAXIMUM_HEIGHT, MESSA
 class MessageTextBrowser(QTextBrowser):
     def __init__(self):
         super().__init__()
+
+        # Make the remote links clickable
         self.anchorClicked.connect(self.on_anchor_clicked)
         self.setOpenExternalLinks(True)
         self.__initUi()
@@ -104,7 +106,6 @@ class MessageTextBrowser(QTextBrowser):
 #
 #     markdown_text = """
 # https://www.google.com
-# 이렇게 작성했습니다. 계속하실 말씀 있으시면 알려주세요!
 #     """
 #     text_browser.setMarkdown(markdown_text)
 #

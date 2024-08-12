@@ -82,6 +82,7 @@ class GeneralSettingsWidget(QWidget):
         self.__maximumMessagesInParameterSpinBox.setValue(self.maximum_messages_in_parameter)
 
         self.__show_as_markdown = QCheckBox(LangClass.TRANSLATIONS['Show as Markdown'])
+        self.__show_as_markdown.setChecked(self.show_as_markdown)
 
         lay = QFormLayout()
         lay.addRow(LangClass.TRANSLATIONS['Maximum Messages in Parameter'], self.__maximumMessagesInParameterSpinBox)

@@ -19,7 +19,9 @@ from pathlib import Path
 
 import requests
 from jinja2 import Template
-from qtpy.QtCore import QSettings, Qt
+
+from qtpy.QtGui import QDesktopServices
+from qtpy.QtCore import QSettings, Qt, QUrl
 from qtpy.QtWidgets import QMessageBox, QFrame
 
 from pyqt_openai import INI_FILE_NAME, DEFAULT_FONT_SIZE, DEFAULT_FONT_FAMILY, MAIN_INDEX, \
@@ -37,14 +39,7 @@ def get_generic_ext_out_of_qt_ext(text):
     return extension
 
 def open_directory(path):
-    if sys.platform.startswith('darwin'):  # macOS
-        os.system('open "{}"'.format(path))
-    elif sys.platform.startswith('win'):  # Windows
-        os.system('start "" "{}"'.format(path))
-    elif sys.platform.startswith('linux'):  # Linux
-        os.system('xdg-open "{}"'.format(path))
-    else:
-        print("Unsupported operating system.")
+    QDesktopServices.openUrl(QUrl(path))
 
 def message_list_to_txt(db, thread_id, title, username='User', ai_name='AI'):
     content = ''
