@@ -37,8 +37,6 @@ class UserChatUnit(QWidget):
         self.__lbl = MessageTextBrowser()
 
         self.__lbl.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        self.__lbl.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
-        self.__lbl.setOpenExternalLinks(True)
 
         lay = QVBoxLayout()
         lay.addWidget(menuWidget)

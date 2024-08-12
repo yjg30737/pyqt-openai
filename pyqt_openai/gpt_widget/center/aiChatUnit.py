@@ -141,8 +141,6 @@ class AIChatUnit(QWidget):
             self.__lbl.setText(text)
 
         self.__lbl.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        self.__lbl.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
-        self.__lbl.setOpenExternalLinks(True)
 
         self.__mainWidget.layout().addWidget(self.__lbl)
         self.__lbl.adjustBrowserHeight()

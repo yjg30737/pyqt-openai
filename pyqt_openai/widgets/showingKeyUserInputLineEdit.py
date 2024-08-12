@@ -1,3 +1,7 @@
+# TODO WILL_BE_USED AFTER v1.1.0
+
+# This works perfectly for showing the key combination in a QLineEdit widget.
+
 from qtpy.QtCore import Qt
 from qtpy.QtGui import QKeyEvent
 from qtpy.QtWidgets import QLineEdit

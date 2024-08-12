@@ -1,6 +1,7 @@
 import json
 
-from qtpy.QtGui import QPalette, QColor, QTextDocument
+# from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout
+from qtpy.QtGui import QPalette, QColor, QDesktopServices
 from qtpy.QtWidgets import QTextBrowser
 
 from pyqt_openai import MESSAGE_ADDITIONAL_HEIGHT, MESSAGE_MAXIMUM_HEIGHT, MESSAGE_PADDING, INDENT_SIZE
@@ -9,7 +10,12 @@ from pyqt_openai import MESSAGE_ADDITIONAL_HEIGHT, MESSAGE_MAXIMUM_HEIGHT, MESSA
 class MessageTextBrowser(QTextBrowser):
     def __init__(self):
         super().__init__()
+        self.anchorClicked.connect(self.on_anchor_clicked)
+        self.setOpenExternalLinks(True)
         self.__initUi()
+
+    def on_anchor_clicked(self, url):
+        QDesktopServices.openUrl(url)
 
     def __initUi(self):
         # Transparent background
@@ -43,16 +49,18 @@ class MessageTextBrowser(QTextBrowser):
             self.setMinimumHeight(int(max_height))
         self.verticalScrollBar().setSliderPosition(self.verticalScrollBar().maximum())
 
-    # def setMarkdown(self, markdown: str) -> None:
-    #     super().setMarkdown(markdown)
+    # TODO WILL_BE_IMPLEMENTED AFTER v1.1.0
+    def setMarkdown(self, markdown: str) -> None:
+        super().setMarkdown(markdown)
+        # print(markdown)
     #
-    #     # TODO
+    #
     #     # Convert markdown to HTML using QTextDocument
     #     document = QTextDocument()
     #     document.setMarkdown(markdown)
     #     html_text = document.toHtml()
-        # with open("test.html", "w") as f:
-        #     f.write(html_text)
+    #     with open("test.html", "w") as f:
+    #         f.write(html_text)
     #
     #     # Customize the converted HTML (e.g., add style tags)
     #     custom_html = f"""
@@ -84,3 +92,28 @@ class MessageTextBrowser(QTextBrowser):
     # def eventFilter(self, obj, event):
     #     print(obj, int(event.type()))
     #     return super().eventFilter(obj, event)
+
+#
+# def main():
+#     app = QApplication([])
+#
+#     window = QWidget()
+#     layout = QVBoxLayout()
+#
+#     text_browser = MessageTextBrowser()
+#
+#     markdown_text = """
+# https://www.google.com
+# 이렇게 작성했습니다. 계속하실 말씀 있으시면 알려주세요!
+#     """
+#     text_browser.setMarkdown(markdown_text)
+#
+#     layout.addWidget(text_browser)
+#     window.setLayout(layout)
+#     window.show()
+#
+#     app.exec()
+#
+#
+# if __name__ == "__main__":
+#     main()

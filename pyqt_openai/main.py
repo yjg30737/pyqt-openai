@@ -11,10 +11,10 @@ sys.path.insert(0, project_root)
 sys.path.insert(0, os.getcwd())  # Add the current directory as well
 
 # for testing pyside6
-os.environ['QT_API'] = 'pyside6'
+# os.environ['QT_API'] = 'pyside6'
 
 # for testing pyqt6
-# os.environ['QT_API'] = 'pyqt6'
+os.environ['QT_API'] = 'pyqt6'
 
 from qtpy.QtGui import QGuiApplication, QFont, QIcon, QPixmap
 from qtpy.QtWidgets import QApplication, \

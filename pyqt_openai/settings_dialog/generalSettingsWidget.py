@@ -28,6 +28,7 @@ class GeneralSettingsWidget(QWidget):
         self.chat_column_to_show = args.chat_column_to_show
         self.image_column_to_show = args.image_column_to_show
         self.maximum_messages_in_parameter = args.maximum_messages_in_parameter
+        self.show_as_markdown = args.show_as_markdown
 
     def __initUi(self):
         # Language setting
@@ -80,8 +81,11 @@ class GeneralSettingsWidget(QWidget):
         self.__maximumMessagesInParameterSpinBox.setRange(*MAXIMUM_MESSAGES_IN_PARAMETER_RANGE)
         self.__maximumMessagesInParameterSpinBox.setValue(self.maximum_messages_in_parameter)
 
+        self.__show_as_markdown = QCheckBox(LangClass.TRANSLATIONS['Show as Markdown'])
+
         lay = QFormLayout()
         lay.addRow(LangClass.TRANSLATIONS['Maximum Messages in Parameter'], self.__maximumMessagesInParameterSpinBox)
+        lay.addRow(self.__show_as_markdown)
 
         chatBrowserGrpBox = QGroupBox(LangClass.TRANSLATIONS['Chat Browser'])
         chatBrowserGrpBox.setLayout(lay)
@@ -148,5 +152,6 @@ class GeneralSettingsWidget(QWidget):
             "show_secondary_toolbar": self.__showSecondaryToolBarChkBox.isChecked(),
             "chat_column_to_show": COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_CHAT+self.__chatColCheckBoxListWidget.getCheckedItemsText(),
             "image_column_to_show": COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_IMAGE+self.__imageColCheckBoxListWidget.getCheckedItemsText(),
-            "maximum_messages_in_parameter": self.__maximumMessagesInParameterSpinBox.value()
+            "maximum_messages_in_parameter": self.__maximumMessagesInParameterSpinBox.value(),
+            "show_as_markdown": self.__show_as_markdown.isChecked(),
         }
