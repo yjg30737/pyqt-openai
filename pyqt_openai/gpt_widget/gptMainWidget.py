@@ -167,17 +167,17 @@ class GPTMainWidget(QWidget):
     def __toggle_sidebar(self, x):
         self.__chatNavWidget.setVisible(x)
         self.__show_chat_list = x
-        CONFIG_MANAGER.set_general_property('show_chat_list')
+        CONFIG_MANAGER.set_general_property('show_chat_list', self.__show_chat_list)
 
     def __toggle_setting(self, x):
         self.__gptRightSideBarWidget.setVisible(x)
         self.__show_setting = x
-        CONFIG_MANAGER.set_general_property('show_setting')
+        CONFIG_MANAGER.set_general_property('show_setting', self.__show_setting)
 
     def __toggle_prompt(self, x):
         self.__promptGeneratorWidget.setVisible(x)
         self.__show_prompt = x
-        CONFIG_MANAGER.set_general_property('show_prompt')
+        CONFIG_MANAGER.set_general_property('show_prompt', self.__show_prompt)
 
     def showThreadToolWidget(self, f):
         self.__toggleFindToolButton.setChecked(f)

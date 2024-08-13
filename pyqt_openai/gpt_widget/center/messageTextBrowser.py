@@ -1,7 +1,7 @@
 import json
 
 # from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout
-from qtpy.QtGui import QPalette, QColor, QDesktopServices
+from qtpy.QtGui import QPalette, QColor, QDesktopServices, QTextDocument
 from qtpy.QtWidgets import QTextBrowser
 
 from pyqt_openai import MESSAGE_ADDITIONAL_HEIGHT, MESSAGE_MAXIMUM_HEIGHT, MESSAGE_PADDING, INDENT_SIZE
@@ -54,17 +54,14 @@ class MessageTextBrowser(QTextBrowser):
     # TODO WILL_BE_IMPLEMENTED AFTER v1.1.0
     def setMarkdown(self, markdown: str) -> None:
         super().setMarkdown(markdown)
-        # print(markdown)
-    #
-    #
-    #     # Convert markdown to HTML using QTextDocument
+        # Convert markdown to HTML using QTextDocument
     #     document = QTextDocument()
     #     document.setMarkdown(markdown)
     #     html_text = document.toHtml()
-    #     with open("test.html", "w") as f:
-    #         f.write(html_text)
-    #
-    #     # Customize the converted HTML (e.g., add style tags)
+    #     # with open("test.html", "w") as f:
+    #     #     f.write(html_text)
+    # #
+    # #     # Customize the converted HTML (e.g., add style tags)
     #     custom_html = f"""
     #     <style>
     #     h1 {{

@@ -92,7 +92,7 @@ class FindTextWidget(QWidget):
 
         self.setLayout(lay)
 
-    # TODO REFACTORING
+    # TODO REFACTORING AFTER v1.0.0
     def __initSelections(self, text):
         # Show "bad pattern" message if text is "\"
         if self.__regexBtn.isChecked() and re.escape(text) == re.escape('\\'):
@@ -110,14 +110,14 @@ class FindTextWidget(QWidget):
                 self.__chatBrowser.clearFormatting()
             self.__btnToggled(is_exist)
 
-    # TODO REFACTORING
+    # TODO REFACTORING AFTER v1.0.0
     def clearFormatting(self):
         self.__chatBrowser.clearFormatting()
         self.__selections = []
         self.__btnToggled(False)
         self.__setCount()
 
-    # TODO REFACTORING
+    # TODO REFACTORING AFTER v1.0.0
     def initFind(self, text):
         f1 = text.strip() != ''
         self.__cur_idx = 0

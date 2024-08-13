@@ -76,16 +76,7 @@ def ini_to_yaml():
             yaml.dump(prev_yaml_data, yaml_file, default_flow_style=False)
 
 
-def load_config(file_path=INI_FILE_NAME):
-   global _config_cache
-   if _config_cache is None:
-       with open(file_path, 'r') as file:
-           _config_cache = yaml.safe_load(file)
-   return _config_cache
-
-
 class ConfigManager:
-    # TODO config.yaml -> INI_FILE_NAME
     def __init__(self, yaml_file=INI_FILE_NAME):
         self.yaml_file = yaml_file
         self.config = self._load_yaml()
