@@ -46,12 +46,15 @@ class ChatBrowser(QScrollArea):
             arg.id = DB.insertMessage(arg)
             self.__setResponseInfo(unit, arg)
 
+    def getLayout(self):
+        return self.widget().layout()
+
     def showLabelForFavorite(self, arg: ChatMessageContainer):
         unit = self.__setLabel(arg.content, False, arg.role)
         self.__setResponseInfo(unit, arg)
 
     def __getLastUnit(self) -> AIChatUnit | None:
-        item = self.widget().layout().itemAt(self.widget().layout().count() - 1)
+        item = self.getLayout().itemAt(self.getLayout().count() - 1)
         if item:
             return item.widget()
         else:
@@ -87,7 +90,7 @@ class ChatBrowser(QScrollArea):
                     return
             chatUnit.setText(text)
 
-        self.widget().layout().addWidget(chatUnit)
+        self.getLayout().addWidget(chatUnit)
         return chatUnit
 
     def event(self, event):
@@ -106,7 +109,7 @@ class ChatBrowser(QScrollArea):
         return all_text_lst
 
     def getLastResponse(self):
-        lay = self.widget().layout()
+        lay = self.getLayout()
         if lay:
             i = lay.count()-1
             if lay.itemAt(i) and lay.itemAt(i).widget():
@@ -119,7 +122,7 @@ class ChatBrowser(QScrollArea):
         """
         This method is used to clear the chat widget, not the database.
         """
-        lay = self.widget().layout()
+        lay = self.getLayout()
         if lay:
             for i in range(lay.count()-1, -1, -1):
                 item = lay.itemAt(i)
@@ -144,7 +147,7 @@ class ChatBrowser(QScrollArea):
         :param label_type: The type of label to filter by (e.g., UserChatUnit, AIChatUnit). If None, retrieves all labels.
         :return: A list of label widgets.
         """
-        lay = self.widget().layout()
+        lay = self.getLayout()
         labels = []
         for i in range(lay.count()):
             item = lay.itemAt(i)

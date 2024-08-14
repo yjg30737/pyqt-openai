@@ -1,5 +1,9 @@
-from qtpy.QtCore import Qt, Signal
+from pathlib import Path
+
+from qtpy.QtCore import Qt, Signal, QMimeData
 from qtpy.QtWidgets import QTextEdit
+
+from pyqt_openai import IMAGE_FILE_EXT_LIST
 
 
 class TextEditPrompt(QTextEdit):
@@ -16,7 +20,6 @@ class TextEditPrompt(QTextEdit):
     def __initVal(self):
         self.__commandSuggestionEnabled = False
         self.__executeEnabled = True
-        self.installEventFilter(self)
 
     def __initUi(self):
         self.setAcceptRichText(False)
@@ -74,3 +77,16 @@ class TextEditPrompt(QTextEdit):
             e.accept()
         else:
             e.ignore()
+
+    def insertFromMimeData(self, source: QMimeData):
+        if source.hasUrls():
+            paths = []
+            for url in source.urls():
+                if url.isLocalFile():
+                    file_path = url.toLocalFile()
+                    if Path(file_path).suffix in IMAGE_FILE_EXT_LIST:
+                        paths.append(file_path)
+            if paths and len(paths) > 0:
+                self.handleDrop.emit(paths)
+        else:
+            super().insertFromMimeData(source)
