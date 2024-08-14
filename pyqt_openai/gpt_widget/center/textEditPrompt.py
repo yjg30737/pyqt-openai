@@ -79,14 +79,13 @@ class TextEditPrompt(QTextEdit):
             e.ignore()
 
     def insertFromMimeData(self, source: QMimeData):
-        if source.hasUrls():
-            paths = []
-            for url in source.urls():
-                if url.isLocalFile():
-                    file_path = url.toLocalFile()
-                    if Path(file_path).suffix in IMAGE_FILE_EXT_LIST:
-                        paths.append(file_path)
-            if paths and len(paths) > 0:
-                self.handleDrop.emit(paths)
+        paths = []
+        for url in source.urls():
+            if url.isLocalFile():
+                file_path = url.toLocalFile()
+                if Path(file_path).suffix in IMAGE_FILE_EXT_LIST:
+                    paths.append(file_path)
+        if paths and len(paths) > 0:
+            self.handleDrop.emit(paths)
         else:
             super().insertFromMimeData(source)
