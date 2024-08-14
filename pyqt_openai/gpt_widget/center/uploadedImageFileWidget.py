@@ -71,8 +71,11 @@ class UploadedImageFileWidget(QWidget):
                 self.addImageBuffer(buffer)
         self.__toggle(True)
 
+    def getLayout(self):
+        return self.__imageArea.widget().layout()
+
     def addImageBuffer(self, image_buffer: QByteArray):
-        lay = self.__imageArea.widget().layout()
+        lay = self.getLayout()
         lbl = QLabel()
         lbl.installEventFilter(self)
         pixmap = QPixmap()
@@ -83,7 +86,7 @@ class UploadedImageFileWidget(QWidget):
         self.__toggle(True)
 
     def getImageBuffers(self):
-        lay = self.__imageArea.widget().layout()
+        lay = self.getLayout()
         buffers = []
         for i in range(lay.count()):
             lbl = lay.itemAt(i).widget()
@@ -112,7 +115,7 @@ class UploadedImageFileWidget(QWidget):
         self.__delete_mode = f
 
     def clear(self):
-        lay = self.__imageArea.widget().layout()
+        lay = self.getLayout()
         for i in range(lay.count()):
             lay.itemAt(i).widget().deleteLater()
         self.__toggle(False)
@@ -122,6 +125,6 @@ class UploadedImageFileWidget(QWidget):
             if event.type() == 2:
                 if self.__delete_mode:
                     obj.deleteLater()
-                    if self.__imageArea.widget().layout().count() == 1:
+                    if self.getLayout().count() == 1:
                         self.__toggle(False)
         return super().eventFilter(obj, event)

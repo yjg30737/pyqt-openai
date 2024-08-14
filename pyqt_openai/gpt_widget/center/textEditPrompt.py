@@ -6,6 +6,7 @@ class TextEditPrompt(QTextEdit):
     returnPressed = Signal()
     sendSuggestionWidget = Signal(str)
     moveCursorToOtherPrompt = Signal(str)
+    handleDrop = Signal(list)
 
     def __init__(self):
         super().__init__()
@@ -15,6 +16,7 @@ class TextEditPrompt(QTextEdit):
     def __initVal(self):
         self.__commandSuggestionEnabled = False
         self.__executeEnabled = True
+        self.installEventFilter(self)
 
     def __initUi(self):
         self.setAcceptRichText(False)
@@ -64,3 +66,11 @@ class TextEditPrompt(QTextEdit):
     def focusOutEvent(self, event):
         self.setCursorWidth(0)
         return super().focusInEvent(event)
+
+    def dropEvent(self, e):
+        if e.mimeData().hasUrls():
+            urls = [url.toLocalFile() for url in e.mimeData().urls()]
+            self.handleDrop.emit(urls)
+            e.accept()
+        else:
+            e.ignore()

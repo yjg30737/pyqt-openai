@@ -1,9 +1,11 @@
+from pathlib import Path
+
 from qtpy.QtCore import Signal, QBuffer, QByteArray
 from qtpy.QtGui import QTextCursor, QKeySequence
 from qtpy.QtWidgets import QVBoxLayout, QWidget, QApplication
 
 from pyqt_openai import PROMPT_BEGINNING_KEY_NAME, PROMPT_MAIN_KEY_NAME, PROMPT_END_KEY_NAME, \
-    PROMPT_JSON_KEY_NAME
+    PROMPT_JSON_KEY_NAME, CONTEXT_DELIMITER, IMAGE_FILE_EXT_LIST
 from pyqt_openai.gpt_widget.center.textEditPrompt import TextEditPrompt
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.widgets.jsonEditor import JSONEditor
@@ -60,8 +62,7 @@ class TextEditPromptGroup(QWidget):
         self.setVisibleTo(PROMPT_END_KEY_NAME, False)
 
         self.__textGroup[PROMPT_MAIN_KEY_NAME].installEventFilter(self)
-
-        self.setAcceptDrops(True)
+        self.__textGroup[PROMPT_MAIN_KEY_NAME].handleDrop.connect(self.handleDrop)
 
     def executeCommand(self, item, grp):
         command_key = item.text()
@@ -114,10 +115,10 @@ class TextEditPromptGroup(QWidget):
 
         content = ''
         if b:
-            content = b + '\n'*2
+            content = b + CONTEXT_DELIMITER
         content += m
         if e:
-            content += '\n'*2 + e
+            content += CONTEXT_DELIMITER + e
 
         return content
 
@@ -141,6 +142,13 @@ class TextEditPromptGroup(QWidget):
                 self.handlePaste()
                 return True
         return super().eventFilter(source, event)
+
+    def handleDrop(self, urls):
+        for url in urls:
+            if Path(url).suffix in IMAGE_FILE_EXT_LIST:
+                with open(url, 'rb') as f:
+                    data = f.read()
+                    self.onPasteFile.emit(data)
 
     def handlePaste(self):
         clipboard = QApplication.clipboard()

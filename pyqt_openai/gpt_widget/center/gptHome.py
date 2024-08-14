@@ -4,7 +4,7 @@ from qtpy.QtCore import Qt
 from qtpy.QtGui import QFont, QPixmap
 from qtpy.QtWidgets import QLabel, QWidget, QVBoxLayout, QScrollArea
 
-from pyqt_openai import DEFAULT_APP_NAME
+from pyqt_openai import DEFAULT_APP_NAME, CONTEXT_DELIMITER
 
 
 class GPTHome(QScrollArea):
@@ -17,7 +17,7 @@ class GPTHome(QScrollArea):
         title.setFont(QFont('Arial', 32))
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        description = QLabel('Enjoy convenient chatting, all day long!' + '\n'*2)
+        description = QLabel('Enjoy convenient chatting, all day long!' + CONTEXT_DELIMITER)
 
         self.__background_image = QLabel()
 

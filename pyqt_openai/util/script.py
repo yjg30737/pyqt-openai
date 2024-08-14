@@ -26,7 +26,7 @@ from qtpy.QtWidgets import QMessageBox, QFrame
 
 from pyqt_openai import INI_FILE_NAME, DEFAULT_FONT_SIZE, DEFAULT_FONT_FAMILY, MAIN_INDEX, \
     PROMPT_NAME_REGEX, PAYPAL_URL, BUYMEACOFFEE_URL, PROMPT_MAIN_KEY_NAME, PROMPT_BEGINNING_KEY_NAME, \
-    PROMPT_END_KEY_NAME, PROMPT_JSON_KEY_NAME
+    PROMPT_END_KEY_NAME, PROMPT_JSON_KEY_NAME, CONTEXT_DELIMITER
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ImagePromptContainer
 from pyqt_openai.pyqt_openai_data import DB
@@ -44,11 +44,11 @@ def open_directory(path):
 def message_list_to_txt(db, thread_id, title, username='User', ai_name='AI'):
     content = ''
     certain_thread_filename_content = db.selectCertainThreadMessagesRaw(thread_id)
-    content += f'== {title} ==' + '\n'*2
+    content += f'== {title} ==' + CONTEXT_DELIMITER
     for unit in certain_thread_filename_content:
         unit_prefix = username if unit[2] == 1 else ai_name
         unit_content = unit[3]
-        content += f'{unit_prefix}: {unit_content}' + '\n'*2
+        content += f'{unit_prefix}: {unit_content}' + CONTEXT_DELIMITER
     return content
 
 def is_valid_regex(pattern):
@@ -337,12 +337,12 @@ def get_content_of_text_file_for_send(filenames: list[str]):
     for filename in filenames:
         base_filename = os.path.basename(filename)
         source_context += f'=== {base_filename} start ==='
-        source_context += '\n'*2
+        source_context += CONTEXT_DELIMITER
         with open(filename, 'r', encoding='utf-8') as f:
             source_context += f.read()
-        source_context += '\n'*2
+        source_context += CONTEXT_DELIMITER
         source_context += f'=== {base_filename} end ==='
-        source_context += '\n'*2
+        source_context += CONTEXT_DELIMITER
     prompt_context = f'== Source Start ==\n{source_context}== Source End =='
     return prompt_context
 
