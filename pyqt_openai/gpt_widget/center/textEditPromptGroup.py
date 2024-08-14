@@ -61,6 +61,8 @@ class TextEditPromptGroup(QWidget):
 
         self.__textGroup[PROMPT_MAIN_KEY_NAME].installEventFilter(self)
 
+        self.setAcceptDrops(True)
+
     def executeCommand(self, item, grp):
         command_key = item.text()
         command = ''
@@ -112,10 +114,10 @@ class TextEditPromptGroup(QWidget):
 
         content = ''
         if b:
-            content = b + '\n'
+            content = b + '\n'*2
         content += m
         if e:
-            content += '\n' + e
+            content += '\n'*2 + e
 
         return content
 
