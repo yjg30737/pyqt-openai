@@ -3,7 +3,7 @@
   <img src="https://user-images.githubusercontent.com/55078043/229002952-9afe57de-b0b6-400f-9628-b8e0044d3f7b.png" width="240px" height="240px"><br/><br/>
 <h3>Multi-purpose Text & Image Generation Desktop Chatbot (supporting various models including GPT).</h3>
   
-Join our <a href="https://discord.gg/cHekprskVE">Discord Channel</a> for questions or discussions! 
+**Join our <a href="https://discord.gg/cHekprskVE">Discord Channel</a>** for questions or discussions! 
 Also we need contributor. Feel free to join the server !
 
 Email: yjg30737@gmail.com
@@ -33,7 +33,6 @@ If you have any questions or if you want to develop AI-related software with PyQ
 
 If you would like to support this project, please click the button below to make a donation. Your contribution will greatly assist various projects, including this one!
 
-<a href="https://www.buymeacoffee.com/yjg30737" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
 <a href="https://paypal.me/yjg30737">
   <img src="https://github.com/yjg30737/yjg30737/assets/55078043/3366b496-3e1e-491c-841e-19871da55c40" alt="Donate with PayPal" style="height: 60px; width: 170px" />
 </a>
