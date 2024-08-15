@@ -19,13 +19,12 @@ from pathlib import Path
 
 import requests
 from jinja2 import Template
-
-from qtpy.QtGui import QDesktopServices
 from qtpy.QtCore import QSettings, Qt, QUrl
+from qtpy.QtGui import QDesktopServices
 from qtpy.QtWidgets import QMessageBox, QFrame
 
 from pyqt_openai import INI_FILE_NAME, DEFAULT_FONT_SIZE, DEFAULT_FONT_FAMILY, MAIN_INDEX, \
-    PROMPT_NAME_REGEX, PAYPAL_URL, BUYMEACOFFEE_URL, PROMPT_MAIN_KEY_NAME, PROMPT_BEGINNING_KEY_NAME, \
+    PROMPT_NAME_REGEX, PAYPAL_URL, PROMPT_MAIN_KEY_NAME, PROMPT_BEGINNING_KEY_NAME, \
     PROMPT_END_KEY_NAME, PROMPT_JSON_KEY_NAME, CONTEXT_DELIMITER
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ImagePromptContainer
@@ -309,9 +308,6 @@ def get_prompt_data(prompt_type='form'):
 
 def goPayPal():
     webbrowser.open(PAYPAL_URL)
-
-def goBuyMeCoffee():
-    webbrowser.open(BUYMEACOFFEE_URL)
 
 def isUsingPyQt5():
     return os.environ['QT_API'] == 'pyqt5'

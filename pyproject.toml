@@ -52,7 +52,6 @@ homepage = "https://github.com/yjg30737/pyqt-openai.git"
 
 [tool.setuptools]
 packages = ["pyqt_openai"]
-include_package_data = true
 
 [project.gui-scripts]
 pyqt-openai = "pyqt_openai.main:main"

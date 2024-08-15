@@ -13,6 +13,7 @@ from pyqt_openai import DEFAULT_SHORTCUT_FULL_SCREEN, \
     ICON_CLOSE, \
     DEFAULT_SHORTCUT_SETTING, TRANSPARENT_RANGE, TRANSPARENT_INIT_VAL
 from pyqt_openai.aboutDialog import AboutDialog
+from pyqt_openai.apiWidget import ApiWidget
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.customizeDialog import CustomizeDialog
 from pyqt_openai.dalle_widget.dalleMainWidget import DallEMainWidget
@@ -24,7 +25,7 @@ from pyqt_openai.pyqt_openai_data import OPENAI_STRUCT, init_llama
 from pyqt_openai.replicate_widget.replicateMainWidget import ReplicateMainWidget
 from pyqt_openai.settings_dialog.settingsDialog import SettingsDialog
 from pyqt_openai.shortcutDialog import ShortcutDialog
-from pyqt_openai.util.script import restart_app, show_message_box_after_change_to_restart, goPayPal, goBuyMeCoffee
+from pyqt_openai.util.script import restart_app, show_message_box_after_change_to_restart, goPayPal
 from pyqt_openai.widgets.button import Button
 from pyqt_openai_data import setOpenAIEnabled
 
@@ -64,11 +65,11 @@ class MainWindow(QMainWindow):
 
         # check if loaded API_KEY from ini file is not empty
         if os.environ['OPENAI_API_KEY']:
-            self.__setApi()
+            self.__apiWidget.setApi()
         # if it is empty
         else:
             self.__setAIEnabled(False)
-            self.__apiCheckPreviewLbl.hide()
+            self.__apiWidget.showApiCheckPreviewLbl(False)
 
         self.setCentralWidget(self.__mainWidget)
         self.resize(*APP_INITIAL_WINDOW_SIZE)
@@ -91,9 +92,6 @@ class MainWindow(QMainWindow):
 
         self.__paypalAction = QAction('Paypal', self)
         self.__paypalAction.triggered.connect(goPayPal)
-
-        self.__buyMeCoffeeAction = QAction('Buy me a coffee!', self)
-        self.__buyMeCoffeeAction.triggered.connect(goBuyMeCoffee)
 
         # toolbar action
         self.__chooseAiAction = QWidgetAction(self)
@@ -148,31 +146,11 @@ class MainWindow(QMainWindow):
         self.__showSecondaryToolBarChkBox.toggled.connect(self.__showSecondaryToolBarChkBoxChecked)
         self.__showSecondaryToolBarAction.setDefaultWidget(self.__showSecondaryToolBarChkBox)
 
-        self.__apiCheckPreviewLbl = QLabel()
-        self.__apiCheckPreviewLbl.setFont(QFont('Arial', 10))
-
-        apiLbl = QLabel(LangClass.TRANSLATIONS['API'])
-
-        self.__apiLineEdit = QLineEdit()
-        self.__apiLineEdit.setPlaceholderText(LangClass.TRANSLATIONS['Write your API Key...'])
-        self.__apiLineEdit.returnPressed.connect(self.__setApi)
-        self.__apiLineEdit.setEchoMode(QLineEdit.EchoMode.Password)
-
-        apiBtn = QPushButton(LangClass.TRANSLATIONS['Use'])
-        apiBtn.clicked.connect(self.__setApi)
-
-        lay = QHBoxLayout()
-        lay.addWidget(apiLbl)
-        lay.addWidget(self.__apiLineEdit)
-        lay.addWidget(apiBtn)
-        lay.addWidget(self.__apiCheckPreviewLbl)
-        lay.setContentsMargins(0, 0, 0, 0)
-
-        apiWidget = QWidget(self)
-        apiWidget.setLayout(lay)
+        self.__apiWidget = ApiWidget(self)
+        self.__apiWidget.onAIEnabled.connect(self.__setAIEnabled)
 
         self.__apiAction = QWidgetAction(self)
-        self.__apiAction.setDefaultWidget(apiWidget)
+        self.__apiAction.setDefaultWidget(self.__apiWidget)
 
         self.__settingsAction = QAction(LangClass.TRANSLATIONS['Settings'], self)
         self.__settingsAction.setShortcut(DEFAULT_SHORTCUT_SETTING)
@@ -202,7 +180,6 @@ class MainWindow(QMainWindow):
 
         donateMenu = QMenu(LangClass.TRANSLATIONS['Donate'], self)
         donateMenu.addAction(self.__paypalAction)
-        donateMenu.addAction(self.__buyMeCoffeeAction)
 
         menubar.addMenu(donateMenu)
 
@@ -253,45 +230,15 @@ class MainWindow(QMainWindow):
             currentWidget = self.__mainWidget.widget(i)
             currentWidget.showSecondaryToolBar(self.__settingsParamContainer.show_secondary_toolbar)
 
-    def __setApiKeyAndClient(self, api_key):
-        # for subprocess (mostly)
-        os.environ['OPENAI_API_KEY'] = api_key
-        # for showing to the user
-        self.__apiLineEdit.setText(api_key)
-
-        OPENAI_STRUCT.api_key = os.environ['OPENAI_API_KEY']
-
     def __loadApiKeyInIni(self):
         # this api key should be yours
-        self.__setApiKeyAndClient(CONFIG_MANAGER.get_general_property('API_KEY'))
+        self.__apiWidget.setApiKeyAndClient(CONFIG_MANAGER.get_general_property('API_KEY'))
         # Set llama index directory if it exists
         init_llama()
 
     def __setAIEnabled(self, f):
         self.__gptWidget.setAIEnabled(f)
         self.__dallEWidget.setAIEnabled(f)
-
-    def __setApi(self):
-        try:
-            api_key = self.__apiLineEdit.text()
-            response = requests.get('https://api.openai.com/v1/models', headers={'Authorization': f'Bearer {api_key}'})
-            f = setOpenAIEnabled(response.status_code == 200)
-            self.__setAIEnabled(f)
-            if f:
-                self.__setApiKeyAndClient(api_key)
-                CONFIG_MANAGER.set_general_property('API_KEY', api_key)
-
-                self.__apiCheckPreviewLbl.setStyleSheet("color: {}".format(QColor(0, 200, 0).name()))
-                self.__apiCheckPreviewLbl.setText(LangClass.TRANSLATIONS['API key is valid'])
-            else:
-                raise Exception
-        except Exception as e:
-            self.__apiCheckPreviewLbl.setStyleSheet("color: {}".format(QColor(255, 0, 0).name()))
-            self.__apiCheckPreviewLbl.setText(LangClass.TRANSLATIONS['API key is invalid'])
-            self.__setAIEnabled(False)
-            print(e)
-        finally:
-            self.__apiCheckPreviewLbl.show()
 
     def __showAboutDialog(self):
         aboutDialog = AboutDialog(self)

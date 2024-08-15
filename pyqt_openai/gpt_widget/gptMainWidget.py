@@ -1,5 +1,9 @@
 import os
 
+from qtpy.QtCore import Qt
+from qtpy.QtWidgets import QHBoxLayout, QWidget, QVBoxLayout, QSplitter, \
+    QFileDialog, QMessageBox, QPushButton
+
 from pyqt_openai import THREAD_TABLE_NAME, JSON_FILE_EXT_LIST_STR, ICON_SIDEBAR, ICON_SETTING, \
     ICON_PROMPT, \
     FILE_NAME_LENGTH, DEFAULT_SHORTCUT_FIND, DEFAULT_SHORTCUT_LEFT_SIDEBAR_WINDOW, \
@@ -12,15 +16,11 @@ from pyqt_openai.gpt_widget.right_sidebar.gptRightSideBarWidget import GPTRightS
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ChatThreadContainer, ChatMessageContainer, CustomizeParamsContainer
 from pyqt_openai.pyqt_openai_data import DB, LLAMAINDEX_WRAPPER
+from pyqt_openai.pyqt_openai_data import isOpenAIEnabled
 from pyqt_openai.util.script import open_directory, get_generic_ext_out_of_qt_ext, message_list_to_txt, \
     conv_unit_to_html, \
     add_file_to_zip, getSeparator
 from pyqt_openai.widgets.button import Button
-from qtpy.QtCore import Qt
-from qtpy.QtWidgets import QHBoxLayout, QWidget, QVBoxLayout, QSplitter, \
-    QFileDialog, QMessageBox, QPushButton
-
-from pyqt_openai_data import OPENAI_API_VALID, isOpenAIEnabled
 
 
 class GPTMainWidget(QWidget):

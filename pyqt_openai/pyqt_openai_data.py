@@ -39,6 +39,11 @@ def setOpenAIEnabled(f):
 def isOpenAIEnabled():
     return OPENAI_API_VALID
 
+def setApiKeyAndClientGlobal(api_key):
+    # for subprocess (mostly)
+    os.environ['OPENAI_API_KEY'] = api_key
+    OPENAI_STRUCT.api_key = os.environ['OPENAI_API_KEY']
+
 
 # https://platform.openai.com/docs/models/model-endpoint-compatibility
 ENDPOINT_DICT = {

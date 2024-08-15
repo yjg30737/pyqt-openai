@@ -36,7 +36,6 @@ TRANSPARENT_INIT_VAL = 100
 LICENSE = pyproject_data["project"]["license"]['text']
 LICENSE_URL = 'https://github.com/yjg30737/pyqt-openai/blob/main/LICENSE'
 PAYPAL_URL = 'https://paypal.me/yjg30737'
-BUYMEACOFFEE_URL = 'https://www.buymeacoffee.com/yjg30737'
 GITHUB_URL = 'https://github.com/yjg30737/pyqt-openai'
 DISCORD_URL = 'https://discord.gg/cHekprskVE'
 COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_CHAT = ['id']
@@ -71,6 +70,9 @@ MAXIMUM_MESSAGES_IN_PARAMETER_RANGE = 2, 1000
 CONTEXT_DELIMITER = '\n'*2
 PROMPT_IMAGE_SCALE = 200, 200
 TOAST_DURATION = 3
+
+## OPENAI
+OPENAI_REQUEST_URL = 'https://api.openai.com/v1/models'
 
 ## PARAMETER - OPENAI CHAT
 OPENAI_TEMPERATURE_RANGE = 0, 2
