@@ -1,4 +1,5 @@
 import requests
+
 from qtpy.QtCore import Signal, Qt
 from qtpy.QtGui import QFont, QColor
 from qtpy.QtWidgets import QHBoxLayout, QLineEdit, QPushButton, QLabel, QWidget
@@ -30,16 +31,11 @@ class ApiWidget(QWidget):
         apiBtn = QPushButton(LangClass.TRANSLATIONS['Use'])
         apiBtn.clicked.connect(self.setApi)
 
-        # TODO LANGUAGE
-        self.__openaiApiManualLbl = QLabel('You can get your API key from https://platform.openai.com/account/api-keys')
-        self.__openaiApiManualLbl.setOpenExternalLinks(True)
-
         lay = QHBoxLayout()
         lay.addWidget(apiLbl)
         lay.addWidget(self.__apiLineEdit)
         lay.addWidget(apiBtn)
         lay.addWidget(self.__apiCheckPreviewLbl)
-        lay.addWidget(self.__openaiApiManualLbl)
         lay.setContentsMargins(0, 0, 0, 0)
         lay.setAlignment(Qt.AlignmentFlag.AlignLeft)
 

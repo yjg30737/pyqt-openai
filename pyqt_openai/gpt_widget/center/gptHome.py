@@ -5,6 +5,7 @@ from qtpy.QtGui import QFont, QPixmap
 from qtpy.QtWidgets import QLabel, QWidget, QVBoxLayout, QScrollArea
 
 from pyqt_openai import DEFAULT_APP_NAME, CONTEXT_DELIMITER
+from pyqt_openai.widgets.linkLabel import LinkLabel
 
 
 class GPTHome(QScrollArea):
@@ -17,7 +18,14 @@ class GPTHome(QScrollArea):
         title.setFont(QFont('Arial', 32))
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        description = QLabel('Enjoy convenient chatting, all day long!' + CONTEXT_DELIMITER)
+        description = QLabel('Enjoy convenient chatting, all day long!')
+
+        self.__openaiApiManualLbl = LinkLabel()
+        # TODO LANGUAGE
+        self.__openaiApiManualLbl.setText('How to get OpenAI API Key?')
+        self.__openaiApiManualLbl.setUrl('https://medium.com/@yjg30737/how-to-get-your-openai-api-key-e2193850932e')
+        self.__openaiApiManualLbl.setFont(QFont('Arial', 16))
+        self.__openaiApiManualLbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.__background_image = QLabel()
 
@@ -28,6 +36,7 @@ class GPTHome(QScrollArea):
         lay.addWidget(title)
         lay.addWidget(description)
         lay.addWidget(self.__background_image)
+        lay.addWidget(self.__openaiApiManualLbl)
         lay.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.setLayout(lay)
 
