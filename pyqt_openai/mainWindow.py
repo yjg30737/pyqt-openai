@@ -25,7 +25,7 @@ from pyqt_openai.pyqt_openai_data import OPENAI_STRUCT, init_llama
 from pyqt_openai.replicate_widget.replicateMainWidget import ReplicateMainWidget
 from pyqt_openai.settings_dialog.settingsDialog import SettingsDialog
 from pyqt_openai.shortcutDialog import ShortcutDialog
-from pyqt_openai.util.script import restart_app, show_message_box_after_change_to_restart, goPayPal
+from pyqt_openai.util.script import restart_app, show_message_box_after_change_to_restart, goPayPal, goKofi
 from pyqt_openai.widgets.button import Button
 from pyqt_openai_data import setOpenAIEnabled
 
@@ -92,6 +92,9 @@ class MainWindow(QMainWindow):
 
         self.__paypalAction = QAction('Paypal', self)
         self.__paypalAction.triggered.connect(goPayPal)
+
+        self.__kofiAction = QAction('Ko-fi ❤', self)
+        self.__kofiAction.triggered.connect(goKofi)
 
         # toolbar action
         self.__chooseAiAction = QWidgetAction(self)
@@ -180,6 +183,7 @@ class MainWindow(QMainWindow):
 
         donateMenu = QMenu(LangClass.TRANSLATIONS['Donate'], self)
         donateMenu.addAction(self.__paypalAction)
+        donateMenu.addAction(self.__kofiAction)
 
         menubar.addMenu(donateMenu)
 
