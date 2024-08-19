@@ -12,6 +12,7 @@ import random
 import re
 import string
 import sys
+import traceback
 import webbrowser
 import zipfile
 from datetime import datetime
@@ -382,3 +383,18 @@ def getSeparator(orientation='horizontal'):
         raise ValueError('Invalid orientation')
     sep.setFrameShadow(QFrame.Shadow.Sunken)
     return sep
+
+def handle_exception(exc_type, exc_value, exc_traceback):
+    """
+    Global exception handler.
+    This should be only used in release mode.
+    """
+    error_msg = "".join(traceback.format_exception(exc_type, exc_value, exc_traceback))
+    print(f"Unhandled exception: {error_msg}")
+
+    msg_box = QMessageBox()
+    msg_box.setIcon(QMessageBox.Critical)
+    msg_box.setText("An unexpected error occurred.")
+    msg_box.setInformativeText(error_msg)
+    msg_box.setWindowTitle("Error")
+    msg_box.exec_()

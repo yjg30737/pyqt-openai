@@ -25,7 +25,7 @@ from qtpy.QtSql import QSqlDatabase
 from pyqt_openai.config_loader import CONFIG_MANAGER
 
 from pyqt_openai.mainWindow import MainWindow
-from pyqt_openai.util.script import isUsingPyQt5
+from pyqt_openai.util.script import isUsingPyQt5, handle_exception
 from pyqt_openai.sqlite import get_db_filename
 
 from pyqt_openai import DEFAULT_APP_ICON
@@ -67,6 +67,9 @@ class App(QApplication):
     def __showMainWindow(self):
         self.main_window = MainWindow()
         self.main_window.show()
+
+# Set the global exception handler
+sys.excepthook = handle_exception
 
 def main():
     app = App(sys.argv)
