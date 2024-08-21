@@ -6,8 +6,8 @@ from qtpy.QtCore import Qt, Signal
 from qtpy.QtWidgets import QScrollArea, QVBoxLayout, QWidget, QLabel
 
 from pyqt_openai import MAXIMUM_MESSAGES_IN_PARAMETER, DEFAULT_FOUND_TEXT_BG_COLOR, DEFAULT_FOUND_TEXT_COLOR
-from pyqt_openai.gpt_widget.aiChatUnit import AIChatUnit
-from pyqt_openai.gpt_widget.userChatUnit import UserChatUnit
+from pyqt_openai.gpt_widget.center.aiChatUnit import AIChatUnit
+from pyqt_openai.gpt_widget.center.userChatUnit import UserChatUnit
 from pyqt_openai.models import ChatMessageContainer
 from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.util.script import is_valid_regex
@@ -24,7 +24,6 @@ class ChatBrowser(QScrollArea):
 
     def __initVal(self):
         self.__cur_id = 0
-
         self.__user_image = ''
         self.__ai_image = ''
 
@@ -47,12 +46,15 @@ class ChatBrowser(QScrollArea):
             arg.id = DB.insertMessage(arg)
             self.__setResponseInfo(unit, arg)
 
+    def getLayout(self):
+        return self.widget().layout()
+
     def showLabelForFavorite(self, arg: ChatMessageContainer):
         unit = self.__setLabel(arg.content, False, arg.role)
         self.__setResponseInfo(unit, arg)
 
     def __getLastUnit(self) -> AIChatUnit | None:
-        item = self.widget().layout().itemAt(self.widget().layout().count() - 1)
+        item = self.getLayout().itemAt(self.getLayout().count() - 1)
         if item:
             return item.widget()
         else:
@@ -83,13 +85,12 @@ class ChatBrowser(QScrollArea):
             if stream_f:
                 unit = self.__getLastUnit()
                 if isinstance(unit, AIChatUnit):
-                    # TODO 2023-11-10
                     unit.toggleGUI(False)
                     unit.addText(text)
                     return
             chatUnit.setText(text)
 
-        self.widget().layout().addWidget(chatUnit)
+        self.getLayout().addWidget(chatUnit)
         return chatUnit
 
     def event(self, event):
@@ -108,7 +109,7 @@ class ChatBrowser(QScrollArea):
         return all_text_lst
 
     def getLastResponse(self):
-        lay = self.widget().layout()
+        lay = self.getLayout()
         if lay:
             i = lay.count()-1
             if lay.itemAt(i) and lay.itemAt(i).widget():
@@ -121,7 +122,7 @@ class ChatBrowser(QScrollArea):
         """
         This method is used to clear the chat widget, not the database.
         """
-        lay = self.widget().layout()
+        lay = self.getLayout()
         if lay:
             for i in range(lay.count()-1, -1, -1):
                 item = lay.itemAt(i)
@@ -146,7 +147,7 @@ class ChatBrowser(QScrollArea):
         :param label_type: The type of label to filter by (e.g., UserChatUnit, AIChatUnit). If None, retrieves all labels.
         :return: A list of label widgets.
         """
-        lay = self.widget().layout()
+        lay = self.getLayout()
         labels = []
         for i in range(lay.count()):
             item = lay.itemAt(i)
@@ -183,14 +184,24 @@ class ChatBrowser(QScrollArea):
     def isFinishedByLength(self):
         return self.__getLastUnit().getResponseInfo().finish_reason == 'length'
 
-    def __clearFormatting(self, label):
+    def clearFormatting(self, label=None):
+        if label is None:
+            # if isinstance(lbl, AIChatUnit) or isinstance(lbl, UserChatUnit) should be added
+            # Or else AttributeError: 'QWidget' object has no attribute 'getLbl' will be raised when calling getLbl()
+            labels = [lbl.getLbl() for lbl in self.__getEveryLabels() if isinstance(lbl, AIChatUnit) or isinstance(lbl, UserChatUnit)]
+            for lbl in labels:
+                self.clearFormatting(lbl)
+            return
         cursor = label.textCursor()
         cursor.select(QTextCursor.Document)
         format = QTextCharFormat()
         cursor.setCharFormat(format)
 
-    def __highlightText(self, label, pattern, case_sensitive, word_only):
-        self.__clearFormatting(label)  # Clear any previous formatting
+    def highlightText(self, label, pattern, case_sensitive):
+        self.clearFormatting(label)  # Clear any previous formatting
+
+        if pattern == '':
+            return
 
         cursor = label.textCursor()
         format = QTextCharFormat()
@@ -200,14 +211,10 @@ class ChatBrowser(QScrollArea):
         # Ensure we start from the beginning
         cursor.setPosition(0)
 
-        # Create regex pattern for word-only search if needed
-        if word_only:
-            pattern = r'\b' + re.escape(pattern) + r'\b'
-
         # Find and highlight all occurrences of the pattern
         regex_flags = 0 if case_sensitive else re.IGNORECASE
         regex = re.compile(pattern, regex_flags)
-        text = label.getText()
+        text = label.toPlainText()
 
         for match in regex.finditer(text):
             start, end = match.span()
@@ -217,54 +224,48 @@ class ChatBrowser(QScrollArea):
 
     def setCurrentLabelIncludingTextBySliderPosition(self, text, case_sensitive=False, word_only=False, is_regex=False):
         labels = self.__getEveryLabels()
-        label_info = [{'class':label.getLbl(), 'text':label.toPlainText(), 'pos':label.y()} for label in labels]
-        res_lbl = []
+        label_info = [{'class':label.getLbl(), 'text':label.getText(), 'pos':label.y()} for label in labels if isinstance(label, AIChatUnit) or isinstance(label, UserChatUnit)]
+        selections = []
 
         for _ in label_info:
             pattern = text
+            _['pattern'] = pattern
             if is_regex:
                 if is_valid_regex(pattern):
                     if case_sensitive:
                         result = re.search(pattern, _['text'], re.IGNORECASE)
                         if result:
-                            res_lbl.append(_)
-                            self.__highlightText(_['class'], pattern, case_sensitive, word_only)
+                            selections.append(_)
                     else:
                         result = re.search(pattern, _['text'])
                         if result:
-                            res_lbl.append(_)
-                            self.__highlightText(_['class'], pattern, case_sensitive, word_only)
+                            selections.append(_)
                 else:
                     if _['text'].find(text) != -1:
-                        res_lbl.append(_)
-                        self.__highlightText(_['class'], pattern, case_sensitive, word_only)
+                        selections.append(_)
             else:
                 if case_sensitive:
                     if word_only:
                         pattern = r'\b' + re.escape(text) + r'\b'
                         result = re.search(pattern, _['text'])
                         if result:
-                            res_lbl.append(_)
-                            self.__highlightText(_['class'], pattern, case_sensitive, word_only)
+                            selections.append(_)
                     else:
                         if _['text'].find(text) != -1:
-                            res_lbl.append(_)
-                            self.__highlightText(_['class'], pattern, case_sensitive, word_only)
+                            selections.append(_)
                 else:
                     if word_only:
                         pattern = r'\b' + re.escape(text) + r'\b'
                         result = re.search(pattern, _['text'], re.IGNORECASE)
                         if result:
-                            res_lbl.append(_)
-                            self.__highlightText(_['class'], pattern, case_sensitive, word_only)
+                            selections.append(_)
                     else:
                         pattern = re.escape(text)
                         result = re.search(pattern, _['text'], re.IGNORECASE)
                         if result:
-                            res_lbl.append(_)
-                            self.__highlightText(_['class'], pattern, case_sensitive, word_only)
+                            selections.append(_)
 
-        return res_lbl
+        return selections
 
     def replaceThread(self, args: List[ChatMessageContainer], id):
         """

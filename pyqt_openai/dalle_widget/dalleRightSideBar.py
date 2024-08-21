@@ -1,59 +1,20 @@
-import base64
-import os
-
-from qtpy.QtCore import QThread, Signal, QSettings
+from qtpy.QtCore import Signal
 from qtpy.QtWidgets import QMessageBox, QScrollArea, QWidget, QCheckBox, QSpinBox, QGroupBox, QVBoxLayout, QPushButton, \
     QComboBox, \
     QPlainTextEdit, \
     QFormLayout, QLabel, QRadioButton
 
-from pyqt_openai import INI_FILE_NAME, IMAGE_DEFAULT_SAVE_DIRECTORY
+from pyqt_openai.config_loader import CONFIG_MANAGER
+from pyqt_openai.dalle_widget.dalleThread import DallEThread
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ImagePromptContainer
-from pyqt_openai.pyqt_openai_data import OPENAI_STRUCT
 from pyqt_openai.util.script import getSeparator
 from pyqt_openai.widgets.findPathWidget import FindPathWidget
 from pyqt_openai.widgets.notifier import NotifierWidget
 from pyqt_openai.widgets.toast import Toast
 
 
-class Thread(QThread):
-    replyGenerated = Signal(ImagePromptContainer)
-    errorGenerated = Signal(str)
-    allReplyGenerated = Signal()
-
-    def __init__(self, openai_arg, number_of_images, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.__openai_arg = openai_arg
-        self.__number_of_images = number_of_images
-        self.__stop = False
-
-    def stop(self):
-        self.__stop = True
-
-    def run(self):
-        try:
-            for _ in range(self.__number_of_images):
-                if self.__stop:
-                    break
-
-                response = OPENAI_STRUCT.images.generate(
-                    **self.__openai_arg
-                )
-                container = ImagePromptContainer(**self.__openai_arg)
-                for _ in response.data:
-                    image_data = base64.b64decode(_.b64_json)
-                    container.data = image_data
-                    container.revised_prompt = _.revised_prompt
-                    container.width = self.__openai_arg['size'].split('x')[0]
-                    container.height = self.__openai_arg['size'].split('x')[1]
-                    self.replyGenerated.emit(container)
-            self.allReplyGenerated.emit()
-        except Exception as e:
-            self.errorGenerated.emit(str(e))
-
-
-class DallEControlWidget(QScrollArea):
+class DallERightSideBarWidget(QScrollArea):
     submitDallE = Signal(ImagePromptContainer)
     submitDallEAllComplete = Signal()
 
@@ -63,64 +24,25 @@ class DallEControlWidget(QScrollArea):
         self.__initUi()
 
     def __initVal(self):
-        default_directory = IMAGE_DEFAULT_SAVE_DIRECTORY
-
-        self.__settings_ini = QSettings(INI_FILE_NAME, QSettings.Format.IniFormat)
-        self.__settings_ini.beginGroup('DALLE')
-
-        if not self.__settings_ini.contains('quality'):
-            self.__settings_ini.setValue('quality', 'standard')
-        if not self.__settings_ini.contains('n'):
-            self.__settings_ini.setValue('n', 1)
-        if not self.__settings_ini.contains('size'):
-            self.__settings_ini.setValue('size', '1024x1024')
-        if not self.__settings_ini.contains('directory'):
-            self.__settings_ini.setValue('directory', os.path.join(os.path.expanduser('~'), default_directory))
-        if not self.__settings_ini.contains('is_save'):
-            self.__settings_ini.setValue('is_save', True)
-        if not self.__settings_ini.contains('continue_generation'):
-            self.__settings_ini.setValue('continue_generation', False)
-        if not self.__settings_ini.contains('number_of_images_to_create'):
-            self.__settings_ini.setValue('number_of_images_to_create', 2)
-        if not self.__settings_ini.contains('style'):
-            self.__settings_ini.setValue('style', 'vivid')
-        if not self.__settings_ini.contains('response_format'):
-            self.__settings_ini.setValue('response_format', 'b64_json')
-        if not self.__settings_ini.contains('save_prompt_as_text'):
-            self.__settings_ini.setValue('save_prompt_as_text', True)
-        if not self.__settings_ini.contains('show_prompt_on_image'):
-            self.__settings_ini.setValue('show_prompt_on_image', False)
-        if not self.__settings_ini.contains('prompt_type'):
-            self.__settings_ini.setValue('prompt_type', 1)
-        if not self.__settings_ini.contains('width'):
-            self.__settings_ini.setValue('width', 1024)
-        if not self.__settings_ini.contains('height'):
-            self.__settings_ini.setValue('height', 1024)
-        if not self.__settings_ini.contains('prompt'):
-            self.__settings_ini.setValue('prompt', "Astronaut in a jungle, cold color palette, muted colors, detailed, 8k")
-
-        self.__quality = self.__settings_ini.value('quality', type=str)
-        self.__n = self.__settings_ini.value('n', type=int)
-        self.__size = self.__settings_ini.value('size', type=str)
-        self.__directory = self.__settings_ini.value('directory', type=str)
-        self.__is_save = self.__settings_ini.value('is_save', type=bool)
-        self.__continue_generation = self.__settings_ini.value('continue_generation', type=bool)
-        self.__number_of_images_to_create = self.__settings_ini.value('number_of_images_to_create', type=int)
-        self.__style = self.__settings_ini.value('style', type=str)
-        self.__response_format = self.__settings_ini.value('response_format', type=str)
-        self.__save_prompt_as_text = self.__settings_ini.value('save_prompt_as_text', type=bool)
-        self.__prompt_type = self.__settings_ini.value('prompt_type', type=int)
-        self.__width = self.__settings_ini.value('width', type=int)
-        self.__height = self.__settings_ini.value('height', type=int)
-        self.__prompt = self.__settings_ini.value('prompt', type=str)
-
-        self.__settings_ini.endGroup()
+        self.__quality = CONFIG_MANAGER.get_dalle_property('quality')
+        self.__n = CONFIG_MANAGER.get_dalle_property('n')
+        self.__size = CONFIG_MANAGER.get_dalle_property('size')
+        self.__directory = CONFIG_MANAGER.get_dalle_property('directory')
+        self.__is_save = CONFIG_MANAGER.get_dalle_property('is_save')
+        self.__continue_generation = CONFIG_MANAGER.get_dalle_property('continue_generation')
+        self.__number_of_images_to_create = CONFIG_MANAGER.get_dalle_property('number_of_images_to_create')
+        self.__style = CONFIG_MANAGER.get_dalle_property('style')
+        self.__response_format = CONFIG_MANAGER.get_dalle_property('response_format')
+        self.__save_prompt_as_text = CONFIG_MANAGER.get_dalle_property('save_prompt_as_text')
+        self.__prompt_type = CONFIG_MANAGER.get_dalle_property('prompt_type')
+        self.__width = CONFIG_MANAGER.get_dalle_property('width')
+        self.__height = CONFIG_MANAGER.get_dalle_property('height')
+        self.__prompt = CONFIG_MANAGER.get_dalle_property('prompt')
 
     def __initUi(self):
         self.__numberOfImagesToCreateSpinBox = QSpinBox()
         self.__promptTypeToShowRadioGrpBox = QGroupBox(LangClass.TRANSLATIONS['Prompt Type To Show'])
 
-        # generic settings
         self.__findPathWidget = FindPathWidget()
         self.__findPathWidget.setAsDirectory(True)
         self.__findPathWidget.getLineEdit().setPlaceholderText(LangClass.TRANSLATIONS['Choose Directory to Save...'])
@@ -174,7 +96,6 @@ class DallEControlWidget(QScrollArea):
         lay.addWidget(self.__promptTypeToShowRadioGrpBox)
         self.__generalGrpBox.setLayout(lay)
 
-        # parameter settings
         self.__qualityCmbBox = QComboBox()
         self.__qualityCmbBox.addItems(['standard', 'hd'])
         self.__qualityCmbBox.setCurrentText(self.__quality)
@@ -247,80 +168,64 @@ class DallEControlWidget(QScrollArea):
 
     def __dalleChanged(self, v):
         sender = self.sender()
-        self.__settings_ini.beginGroup('DALLE')
         if sender == self.__qualityCmbBox:
             self.__quality = v
-            self.__settings_ini.setValue('quality', self.__quality)
+            CONFIG_MANAGER.set_dalle_property('quality', self.__quality)
         elif sender == self.__nSpinBox:
             self.__n = v
-            self.__settings_ini.setValue('n', self.__n)
+            CONFIG_MANAGER.set_dalle_property('n', self.__n)
         elif sender == self.__widthCmbBox:
             if self.__widthCmbBox.currentText() == '1792' and self.__heightCmbBox.currentText() == '1792':
                 self.__heightCmbBox.setCurrentText('1024')
             self.__width = v
-            self.__settings_ini.setValue('width', self.__width)
+            CONFIG_MANAGER.set_dalle_property('width', self.__width)
         elif sender == self.__heightCmbBox:
             if self.__widthCmbBox.currentText() == '1792' and self.__heightCmbBox.currentText() == '1792':
                 self.__widthCmbBox.setCurrentText('1024')
             self.__height = v
-            self.__settings_ini.setValue('height', self.__height)
+            CONFIG_MANAGER.set_dalle_property('height', self.__height)
         elif sender == self.__styleCmbBox:
             self.__style = v
-            self.__settings_ini.setValue('style', self.__style)
-        self.__settings_ini.endGroup()
+            CONFIG_MANAGER.set_dalle_property('style', self.__style)
 
     def __dalleTextChanged(self):
         sender = self.sender()
-        self.__settings_ini.beginGroup('DALLE')
         if isinstance(sender, QPlainTextEdit):
             if sender == self.__promptWidget:
                 self.__prompt = sender.toPlainText()
-                self.__settings_ini.setValue('prompt', self.__prompt)
-        self.__settings_ini.endGroup()
+                CONFIG_MANAGER.set_dalle_property('prompt', self.__prompt)
 
     def __setSaveDirectory(self, directory):
         self.__directory = directory
-        self.__settings_ini.beginGroup('DALLE')
-        self.__settings_ini.setValue('directory', self.__directory)
-        self.__settings_ini.endGroup()
+        CONFIG_MANAGER.set_dalle_property('directory', self.__directory)
 
     def __saveChkBoxToggled(self, f):
         self.__is_save = f
-        self.__settings_ini.beginGroup('DALLE')
-        self.__settings_ini.setValue('is_save', self.__is_save)
-        self.__settings_ini.endGroup()
+        CONFIG_MANAGER.set_dalle_property('is_save', self.__is_save)
 
     def __continueGenerationChkBoxToggled(self, f):
         self.__continue_generation = f
-        self.__settings_ini.beginGroup('DALLE')
-        self.__settings_ini.setValue('continue_generation', self.__continue_generation)
-        self.__settings_ini.endGroup()
+        CONFIG_MANAGER.set_dalle_property('continue_generation', self.__continue_generation)
         self.__numberOfImagesToCreateSpinBox.setEnabled(f)
 
     def __numberOfImagesToCreateSpinBoxValueChanged(self, value):
         self.__number_of_images_to_create = value
-        self.__settings_ini.beginGroup('DALLE')
-        self.__settings_ini.setValue('number_of_images_to_create', self.__number_of_images_to_create)
-        self.__settings_ini.endGroup()
+        CONFIG_MANAGER.set_dalle_property('number_of_images_to_create', self.__number_of_images_to_create)
 
     def __savePromptAsTextChkBoxToggled(self, f):
         self.__save_prompt_as_text = f
-        self.__settings_ini.beginGroup('DALLE')
-        self.__settings_ini.setValue('save_prompt_as_text', self.__save_prompt_as_text)
-        self.__settings_ini.endGroup()
+        CONFIG_MANAGER.set_dalle_property('save_prompt_as_text', self.__save_prompt_as_text)
 
     def __promptTypeToggled(self, f):
         sender = self.sender()
-        self.__settings_ini.beginGroup('DALLE')
         # Prompt type to show on the image
         # 1 is normal, 2 is revised
         if sender == self.__normalOne:
             self.__prompt_type = 1
-            self.__settings_ini.setValue('prompt_type', self.__prompt_type)
+            CONFIG_MANAGER.set_dalle_property('prompt_type', self.__prompt_type)
         elif sender == self.__revisedOne:
             self.__prompt_type = 2
-            self.__settings_ini.setValue('prompt_type', self.__prompt_type)
-        self.__settings_ini.endGroup()
+            CONFIG_MANAGER.set_dalle_property('prompt_type', self.__prompt_type)
 
     def __submit(self):
         openai_arg = {
@@ -334,7 +239,7 @@ class DallEControlWidget(QScrollArea):
         }
         number_of_images = self.__number_of_images_to_create if self.__continue_generation else 1
 
-        self.__t = Thread(openai_arg, number_of_images)
+        self.__t = DallEThread(openai_arg, number_of_images)
         self.__t.start()
         self.__t.started.connect(self.__toggleWidget)
         self.__t.replyGenerated.connect(self.__afterGenerated)
@@ -359,16 +264,22 @@ class DallEControlWidget(QScrollArea):
             self.__t.stop()
 
     def __failToGenerate(self, event):
-        if self.isVisible():
-            toast = Toast(text=event, parent=self)
-            toast.show()
-        else:
+        if not self.isVisible() or not self.window().isActiveWindow():
             informative_text = 'Error 😥'
             detailed_text = event
             self.__notifierWidget = NotifierWidget(informative_text=informative_text, detailed_text = detailed_text)
             self.__notifierWidget.show()
-            self.__notifierWidget.doubleClicked.connect(self.window().show)
+            self.__notifierWidget.doubleClicked.connect(self.__bringWindowToFront)
             QMessageBox.critical(self, informative_text, detailed_text)
+        else:
+            toast = Toast(text=event, parent=self)
+            toast.show()
+
+    def __bringWindowToFront(self):
+        window = self.window()
+        window.showNormal()
+        window.raise_()
+        window.activateWindow()
 
     def __afterGenerated(self, arg):
         self.submitDallE.emit(arg)

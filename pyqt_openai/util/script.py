@@ -12,6 +12,7 @@ import random
 import re
 import string
 import sys
+import traceback
 import webbrowser
 import zipfile
 from datetime import datetime
@@ -19,12 +20,13 @@ from pathlib import Path
 
 import requests
 from jinja2 import Template
-from qtpy.QtCore import QSettings, Qt
+from qtpy.QtCore import QSettings, Qt, QUrl
+from qtpy.QtGui import QDesktopServices
 from qtpy.QtWidgets import QMessageBox, QFrame
 
 from pyqt_openai import INI_FILE_NAME, DEFAULT_FONT_SIZE, DEFAULT_FONT_FAMILY, MAIN_INDEX, \
-    PROMPT_NAME_REGEX, PAYPAL_URL, BUYMEACOFFEE_URL, PROMPT_MAIN_KEY_NAME, PROMPT_BEGINNING_KEY_NAME, \
-    PROMPT_END_KEY_NAME, PROMPT_JSON_KEY_NAME
+    PROMPT_NAME_REGEX, PAYPAL_URL, PROMPT_MAIN_KEY_NAME, PROMPT_BEGINNING_KEY_NAME, \
+    PROMPT_END_KEY_NAME, PROMPT_JSON_KEY_NAME, CONTEXT_DELIMITER, KOFI_URL
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ImagePromptContainer
 from pyqt_openai.pyqt_openai_data import DB
@@ -37,23 +39,16 @@ def get_generic_ext_out_of_qt_ext(text):
     return extension
 
 def open_directory(path):
-    if sys.platform.startswith('darwin'):  # macOS
-        os.system('open "{}"'.format(path))
-    elif sys.platform.startswith('win'):  # Windows
-        os.system('start "" "{}"'.format(path))
-    elif sys.platform.startswith('linux'):  # Linux
-        os.system('xdg-open "{}"'.format(path))
-    else:
-        print("Unsupported operating system.")
+    QDesktopServices.openUrl(QUrl(path))
 
 def message_list_to_txt(db, thread_id, title, username='User', ai_name='AI'):
     content = ''
     certain_thread_filename_content = db.selectCertainThreadMessagesRaw(thread_id)
-    content += f'== {title} ==' + '\n'*2
+    content += f'== {title} ==' + CONTEXT_DELIMITER
     for unit in certain_thread_filename_content:
         unit_prefix = username if unit[2] == 1 else ai_name
         unit_content = unit[3]
-        content += f'{unit_prefix}: {unit_content}' + '\n'*2
+        content += f'{unit_prefix}: {unit_content}' + CONTEXT_DELIMITER
     return content
 
 def is_valid_regex(pattern):
@@ -140,10 +135,7 @@ def get_font():
         'font_size': font_size
     }
 
-def restart_app(settings=None):
-    if settings:
-        # Save before restart
-        settings.sync()
+def restart_app():
     # Define the arguments to be passed to the executable
     args = [sys.executable, MAIN_INDEX]
     # Call os.execv() to execute the new process
@@ -315,11 +307,11 @@ def get_prompt_data(prompt_type='form'):
         data.append(group_obj)
     return data
 
+def goKofi():
+    webbrowser.open(KOFI_URL)
+
 def goPayPal():
     webbrowser.open(PAYPAL_URL)
-
-def goBuyMeCoffee():
-    webbrowser.open(BUYMEACOFFEE_URL)
 
 def isUsingPyQt5():
     return os.environ['QT_API'] == 'pyqt5'
@@ -345,12 +337,12 @@ def get_content_of_text_file_for_send(filenames: list[str]):
     for filename in filenames:
         base_filename = os.path.basename(filename)
         source_context += f'=== {base_filename} start ==='
-        source_context += '\n'*2
+        source_context += CONTEXT_DELIMITER
         with open(filename, 'r', encoding='utf-8') as f:
             source_context += f.read()
-        source_context += '\n'*2
+        source_context += CONTEXT_DELIMITER
         source_context += f'=== {base_filename} end ==='
-        source_context += '\n'*2
+        source_context += CONTEXT_DELIMITER
     prompt_context = f'== Source Start ==\n{source_context}== Source End =='
     return prompt_context
 
@@ -391,3 +383,18 @@ def getSeparator(orientation='horizontal'):
         raise ValueError('Invalid orientation')
     sep.setFrameShadow(QFrame.Shadow.Sunken)
     return sep
+
+def handle_exception(exc_type, exc_value, exc_traceback):
+    """
+    Global exception handler.
+    This should be only used in release mode.
+    """
+    error_msg = "".join(traceback.format_exception(exc_type, exc_value, exc_traceback))
+    print(f"Unhandled exception: {error_msg}")
+
+    msg_box = QMessageBox()
+    msg_box.setIcon(QMessageBox.Critical)
+    msg_box.setText("An unexpected error occurred.")
+    msg_box.setInformativeText(error_msg)
+    msg_box.setWindowTitle("Error")
+    msg_box.exec_()

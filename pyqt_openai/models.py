@@ -2,11 +2,16 @@
 This file is used to store the data classes that are used throughout the application.
 """
 
-from typing import List
 from dataclasses import dataclass, fields, field
+from typing import List
 
 from pyqt_openai import DB_FILE_NAME, DEFAULT_FONT_SIZE, DEFAULT_FONT_FAMILY, DEFAULT_USER_IMAGE_PATH, \
-    DEFAULT_AI_IMAGE_PATH, MESSAGE_MAXIMUM_HEIGHT, MAXIMUM_MESSAGES_IN_PARAMETER
+    DEFAULT_AI_IMAGE_PATH, MAXIMUM_MESSAGES_IN_PARAMETER,\
+    DEFAULT_SHORTCUT_FIND_PREV, DEFAULT_SHORTCUT_FIND_NEXT, DEFAULT_SHORTCUT_PROMPT_BEGINNING, \
+    DEFAULT_SHORTCUT_PROMPT_ENDING, DEFAULT_SHORTCUT_SUPPORT_PROMPT_COMMAND, DEFAULT_SHORTCUT_FULL_SCREEN, \
+    DEFAULT_SHORTCUT_FIND, DEFAULT_SHORTCUT_JSON_MODE, DEFAULT_SHORTCUT_LEFT_SIDEBAR_WINDOW, \
+    DEFAULT_SHORTCUT_RIGHT_SIDEBAR_WINDOW, DEFAULT_SHORTCUT_CONTROL_PROMPT_WINDOW, DEFAULT_SHORTCUT_SETTING, \
+    DEFAULT_SHORTCUT_SEND
 from pyqt_openai.lang.translations import LangClass
 
 
@@ -120,11 +125,11 @@ class SettingsParamsContainer(Container):
     notify_finish: bool = True
     show_toolbar: bool = True
     show_secondary_toolbar: bool = True
-    thread_tool_widget: bool = True
     chat_column_to_show: List[str] = field(default_factory=ChatThreadContainer.get_keys)
     image_column_to_show: List[str] = field(default_factory=ImagePromptContainer.get_keys)
     maximum_messages_in_parameter: int = MAXIMUM_MESSAGES_IN_PARAMETER
     show_as_markdown: bool = True
+    apply_user_defined_styles: bool = False
 
 @dataclass
 class CustomizeParamsContainer(Container):

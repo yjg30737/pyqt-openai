@@ -8,6 +8,7 @@ import os.path
 
 import openai
 
+from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.models import ChatMessageContainer
 from pyqt_openai.sqlite import SqliteDatabase
 from pyqt_openai.util.llamapage_script import GPTLLamaIndexWrapper
@@ -28,10 +29,25 @@ from openai import OpenAI
 # initialize
 OPENAI_STRUCT = OpenAI(api_key='')
 
+OPENAI_API_VALID = False
+
+def setOpenAIEnabled(f):
+    global OPENAI_API_VALID
+    OPENAI_API_VALID = f
+    return OPENAI_API_VALID
+
+def isOpenAIEnabled():
+    return OPENAI_API_VALID
+
+def setApiKeyAndClientGlobal(api_key):
+    # for subprocess (mostly)
+    os.environ['OPENAI_API_KEY'] = api_key
+    OPENAI_STRUCT.api_key = os.environ['OPENAI_API_KEY']
+
+
 # https://platform.openai.com/docs/models/model-endpoint-compatibility
 ENDPOINT_DICT = {
-    '/v1/chat/completions': ['gpt-4o', 'gpt-4o-mini', 'gpt-4-turbo',
-                             'gpt-3.5-turbo'],
+    '/v1/chat/completions': ['gpt-4o', 'gpt-4o-mini'],
     '/v1/completions': [
         'text-davinci-003', 'text-davinci-002', 'text-curie-001', 'text-babbage-001', 'text-ada-001', 'davinci',
         'curie', 'babbage', 'ada'
@@ -134,3 +150,10 @@ def form_response(response, info: ChatMessageContainer):
     info.total_tokens = response.usage.total_tokens
     info.finish_reason = response.choices[0].finish_reason
     return info
+
+
+def init_llama():
+    llama_index_directory = CONFIG_MANAGER.get_general_property('llama_index_directory')
+    if llama_index_directory and CONFIG_MANAGER.get_general_property(
+            'use_llama_index'):
+        LLAMAINDEX_WRAPPER.set_directory(llama_index_directory)

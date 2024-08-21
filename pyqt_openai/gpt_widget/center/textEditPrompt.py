@@ -1,11 +1,16 @@
-from qtpy.QtCore import Qt, Signal
+from pathlib import Path
+
+from qtpy.QtCore import Qt, Signal, QMimeData
 from qtpy.QtWidgets import QTextEdit
+
+from pyqt_openai import IMAGE_FILE_EXT_LIST
 
 
 class TextEditPrompt(QTextEdit):
     returnPressed = Signal()
     sendSuggestionWidget = Signal(str)
     moveCursorToOtherPrompt = Signal(str)
+    handleDrop = Signal(list)
 
     def __init__(self):
         super().__init__()
@@ -64,3 +69,23 @@ class TextEditPrompt(QTextEdit):
     def focusOutEvent(self, event):
         self.setCursorWidth(0)
         return super().focusInEvent(event)
+
+    def dropEvent(self, e):
+        if e.mimeData().hasUrls():
+            urls = [url.toLocalFile() for url in e.mimeData().urls()]
+            self.handleDrop.emit(urls)
+            e.accept()
+        else:
+            e.ignore()
+
+    def insertFromMimeData(self, source: QMimeData):
+        paths = []
+        for url in source.urls():
+            if url.isLocalFile():
+                file_path = url.toLocalFile()
+                if Path(file_path).suffix in IMAGE_FILE_EXT_LIST:
+                    paths.append(file_path)
+        if paths and len(paths) > 0:
+            self.handleDrop.emit(paths)
+        else:
+            super().insertFromMimeData(source)

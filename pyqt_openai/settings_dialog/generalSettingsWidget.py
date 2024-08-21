@@ -1,56 +1,40 @@
-import os
-import sys
-
-from pyqt_openai import COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_CHAT, COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_IMAGE, LANGUAGE_DICT, DB_NAME_REGEX, \
+from pyqt_openai import COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_CHAT, COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_IMAGE, LANGUAGE_DICT, \
+    DB_NAME_REGEX, \
     MAXIMUM_MESSAGES_IN_PARAMETER_RANGE
 from pyqt_openai.widgets.checkBoxListWidget import CheckBoxListWidget
 
-# Get the absolute path of the current script file
-
-script_path = os.path.abspath(__file__)
-
-# Get the root directory by going up one level from the script directory
-project_root = os.path.dirname(os.path.dirname(script_path))
-
-sys.path.insert(0, project_root)
-sys.path.insert(0, os.getcwd())  # Add the current directory as well
-
-from qtpy.QtCore import Qt, QRegularExpression
+from qtpy.QtCore import QRegularExpression
 from qtpy.QtGui import QRegularExpressionValidator
-from qtpy.QtWidgets import QFrame, QDialog, QComboBox, QFormLayout, QLineEdit, QCheckBox, QSizePolicy, \
-    QVBoxLayout, QHBoxLayout, QGroupBox, QSplitter, QLabel, QDialogButtonBox, QWidget, QMessageBox, QSpinBox
+from qtpy.QtWidgets import QComboBox, QFormLayout, QLineEdit, QCheckBox, QSizePolicy, \
+    QVBoxLayout, QHBoxLayout, QGroupBox, QSplitter, QLabel, QWidget, QSpinBox
 
-from pyqt_openai.models import SettingsParamsContainer, ImagePromptContainer, ChatThreadContainer
+from pyqt_openai.models import ImagePromptContainer, ChatThreadContainer, SettingsParamsContainer
 from pyqt_openai.lang.translations import LangClass
 
 
-class SettingsDialog(QDialog):
+class GeneralSettingsWidget(QWidget):
     def __init__(self, args: SettingsParamsContainer, parent=None):
         super().__init__(parent)
         self.__initVal(args)
         self.__initUi()
 
     def __initVal(self, args):
-        self.__lang = args.lang
-        self.__db = args.db
-        self.__do_not_ask_again = args.do_not_ask_again
-        self.__notify_finish = args.notify_finish
-        self.__show_toolbar = args.show_toolbar
-        self.__show_secondary_toolbar = args.show_secondary_toolbar
-        self.__thread_tool_widget = args.thread_tool_widget
-        self.__chat_column_to_show = args.chat_column_to_show
-        self.__image_column_to_show = args.image_column_to_show
-        self.__maximum_messages_in_parameter = args.maximum_messages_in_parameter
-        self.__show_as_markdown = args.show_as_markdown
+        self.lang = args.lang
+        self.db = args.db
+        self.do_not_ask_again = args.do_not_ask_again
+        self.notify_finish = args.notify_finish
+        self.show_toolbar = args.show_toolbar
+        self.show_secondary_toolbar = args.show_secondary_toolbar
+        self.chat_column_to_show = args.chat_column_to_show
+        self.image_column_to_show = args.image_column_to_show
+        self.maximum_messages_in_parameter = args.maximum_messages_in_parameter
+        self.show_as_markdown = args.show_as_markdown
 
     def __initUi(self):
-        self.setWindowTitle(LangClass.TRANSLATIONS["Settings"])
-        self.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.WindowCloseButtonHint)
-
         # Language setting
         self.__langCmbBox = QComboBox()
         self.__langCmbBox.addItems(list(LANGUAGE_DICT.keys()))
-        self.__langCmbBox.setCurrentText(self.__lang)
+        self.__langCmbBox.setCurrentText(self.lang)
         self.__langCmbBox.setSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.MinimumExpanding)
 
         lay = QHBoxLayout()
@@ -63,7 +47,7 @@ class SettingsDialog(QDialog):
 
         # Database setting
         dbLayout = QHBoxLayout()
-        self.__dbLineEdit = QLineEdit(self.__db)
+        self.__dbLineEdit = QLineEdit(self.db)
         self.__validator = QRegularExpressionValidator()
         re = QRegularExpression(DB_NAME_REGEX)
         self.__validator.setRegularExpression(re)
@@ -73,19 +57,14 @@ class SettingsDialog(QDialog):
 
         # Checkboxes
         self.__doNotAskAgainCheckBox = QCheckBox(f'{LangClass.TRANSLATIONS["Do not ask again when closing"]} ({LangClass.TRANSLATIONS["Always close the application"]})')
-        self.__doNotAskAgainCheckBox.setChecked(self.__do_not_ask_again)
+        self.__doNotAskAgainCheckBox.setChecked(self.do_not_ask_again)
 
         self.__notifyFinishCheckBox = QCheckBox(LangClass.TRANSLATIONS["Notify when finish processing any task (Conversion, etc.)"])
-        self.__notifyFinishCheckBox.setChecked(self.__notify_finish)
+        self.__notifyFinishCheckBox.setChecked(self.notify_finish)
         self.__showToolbarCheckBox = QCheckBox(LangClass.TRANSLATIONS["Show Toolbar"])
-        self.__showToolbarCheckBox.setChecked(self.__show_toolbar)
+        self.__showToolbarCheckBox.setChecked(self.show_toolbar)
         self.__showSecondaryToolBarChkBox = QCheckBox(LangClass.TRANSLATIONS['Show Secondary Toolbar'])
-        self.__showSecondaryToolBarChkBox.setChecked(self.__show_secondary_toolbar)
-
-        # Dialog buttons
-        buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
-        buttonBox.accepted.connect(self.__accept)
-        buttonBox.rejected.connect(self.reject)
+        self.__showSecondaryToolBarChkBox.setChecked(self.show_secondary_toolbar)
 
         lay = QVBoxLayout()
         lay.addWidget(langWidget)
@@ -98,21 +77,16 @@ class SettingsDialog(QDialog):
         generalGrpBox = QGroupBox(LangClass.TRANSLATIONS['General'])
         generalGrpBox.setLayout(lay)
 
-        self.__showThreadToolWidgetChkBox = QCheckBox()
-        self.__showThreadToolWidgetChkBox.setChecked(self.__thread_tool_widget)
-
         self.__maximumMessagesInParameterSpinBox = QSpinBox()
         self.__maximumMessagesInParameterSpinBox.setRange(*MAXIMUM_MESSAGES_IN_PARAMETER_RANGE)
-        self.__maximumMessagesInParameterSpinBox.setValue(self.__maximum_messages_in_parameter)
+        self.__maximumMessagesInParameterSpinBox.setValue(self.maximum_messages_in_parameter)
 
-        self.__showAsMarkdownCheckBox = QCheckBox()
-        self.__showAsMarkdownCheckBox.setChecked(self.__show_as_markdown)
+        self.__show_as_markdown = QCheckBox(LangClass.TRANSLATIONS['Show as Markdown'])
+        self.__show_as_markdown.setChecked(self.show_as_markdown)
 
         lay = QFormLayout()
-        lay.addRow(LangClass.TRANSLATIONS['Show Find Tool'], self.__showThreadToolWidgetChkBox)
         lay.addRow(LangClass.TRANSLATIONS['Maximum Messages in Parameter'], self.__maximumMessagesInParameterSpinBox)
-
-        lay.addRow(LangClass.TRANSLATIONS['Show as Markdown'], self.__showAsMarkdownCheckBox)
+        lay.addRow(self.__show_as_markdown)
 
         chatBrowserGrpBox = QGroupBox(LangClass.TRANSLATIONS['Chat Browser'])
         chatBrowserGrpBox.setLayout(lay)
@@ -120,7 +94,7 @@ class SettingsDialog(QDialog):
         chatColAllCheckBox = QCheckBox(LangClass.TRANSLATIONS['Check All'])
         self.__chatColCheckBoxListWidget = CheckBoxListWidget()
         for k in ChatThreadContainer.get_keys(excludes=COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_CHAT):
-            self.__chatColCheckBoxListWidget.addItem(k, checked=k in self.__chat_column_to_show)
+            self.__chatColCheckBoxListWidget.addItem(k, checked=k in self.chat_column_to_show)
 
         chatColAllCheckBox.stateChanged.connect(self.__chatColCheckBoxListWidget.toggleState)
 
@@ -135,7 +109,7 @@ class SettingsDialog(QDialog):
         imageColAllCheckBox = QCheckBox(LangClass.TRANSLATIONS['Check all'])
         self.__imageColCheckBoxListWidget = CheckBoxListWidget()
         for k in ImagePromptContainer.get_keys(excludes=COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_IMAGE):
-            self.__imageColCheckBoxListWidget.addItem(k, checked=k in self.__image_column_to_show)
+            self.__imageColCheckBoxListWidget.addItem(k, checked=k in self.image_column_to_show)
 
         imageColAllCheckBox.stateChanged.connect(self.__imageColCheckBoxListWidget.toggleState)
 
@@ -166,28 +140,19 @@ class SettingsDialog(QDialog):
         lay.addWidget(generalGrpBox)
         lay.addWidget(chatBrowserGrpBox)
         lay.addWidget(columnGrpBox)
-        lay.addWidget(buttonBox)
 
         self.setLayout(lay)
 
-    def __accept(self):
-        # If DB file name is empty
-        if self.__dbLineEdit.text().strip() == '':
-            QMessageBox.critical(self, LangClass.TRANSLATIONS['Error'], LangClass.TRANSLATIONS['Database name cannot be empty.'])
-        else:
-            self.accept()
-
     def getParam(self):
-        return SettingsParamsContainer(
-            lang=self.__langCmbBox.currentText(),
-            db=self.__dbLineEdit.text(),
-            do_not_ask_again=self.__doNotAskAgainCheckBox.isChecked(),
-            notify_finish=self.__notifyFinishCheckBox.isChecked(),
-            show_toolbar=self.__showToolbarCheckBox.isChecked(),
-            show_secondary_toolbar=self.__showSecondaryToolBarChkBox.isChecked(),
-            thread_tool_widget=self.__showThreadToolWidgetChkBox.isChecked(),
-            chat_column_to_show=COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_CHAT+self.__chatColCheckBoxListWidget.getCheckedItemsText(),
-            image_column_to_show=COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_IMAGE+self.__imageColCheckBoxListWidget.getCheckedItemsText(),
-            maximum_messages_in_parameter=self.__maximumMessagesInParameterSpinBox.value(),
-            show_as_markdown=self.__showAsMarkdownCheckBox.isChecked()
-        )
+        return {
+            "lang": self.__langCmbBox.currentText(),
+            "db": self.__dbLineEdit.text(),
+            "do_not_ask_again": self.__doNotAskAgainCheckBox.isChecked(),
+            "notify_finish": self.__notifyFinishCheckBox.isChecked(),
+            "show_toolbar": self.__showToolbarCheckBox.isChecked(),
+            "show_secondary_toolbar": self.__showSecondaryToolBarChkBox.isChecked(),
+            "chat_column_to_show": COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_CHAT+self.__chatColCheckBoxListWidget.getCheckedItemsText(),
+            "image_column_to_show": COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_IMAGE+self.__imageColCheckBoxListWidget.getCheckedItemsText(),
+            "maximum_messages_in_parameter": self.__maximumMessagesInParameterSpinBox.value(),
+            "show_as_markdown": self.__show_as_markdown.isChecked(),
+        }

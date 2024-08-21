@@ -132,11 +132,11 @@ class ImageNavWidget(QWidget):
         lay.addWidget(self.__tableView)
         self.setLayout(lay)
 
-        # show default result (which means "show all")
+        # Show default result (which means "show all")
         self.__showResult('')
 
     def __updated(self, i, r):
-        # send updated signal
+        # Send updated signal
         self.__model.updated.emit(r.value('id'), r.value('name'))
 
     def refresh(self):
@@ -176,8 +176,15 @@ class ImageNavWidget(QWidget):
         self.__model.select()
 
     def __clear(self):
-        DB.removeImage()
-        self.__model.select()
+        '''
+        Clear all data in the table
+        '''
+        # Before clearing, confirm the action
+        reply = QMessageBox.question(self, LangClass.TRANSLATIONS['Confirm'], LangClass.TRANSLATIONS['Are you sure to clear all data?'], QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+        if reply == QMessageBox.StandardButton.Yes:
+            DB.removeImage()
+            self.__model.select()
+            # self.cleared.emit()
 
     def setColumns(self, columns):
         self.__columns = columns

@@ -1,18 +1,17 @@
-from qtpy.QtCore import Qt, Signal, QSettings
+from pyqt_openai.config_loader import CONFIG_MANAGER
+from pyqt_openai.gpt_widget.right_sidebar.llama_widget.listWidget import FileListWidget
+from pyqt_openai.lang.translations import LangClass
+from qtpy.QtCore import Qt, Signal
 from qtpy.QtGui import QFont
 from qtpy.QtWidgets import QTextBrowser
 from qtpy.QtWidgets import QWidget, QLabel, QVBoxLayout
-
-from pyqt_openai import INI_FILE_NAME
-from pyqt_openai.gpt_widget.right_sidebar.llama_widget.listWidget import FileListWidget
-from pyqt_openai.lang.translations import LangClass
 
 
 class LlamaPage(QWidget):
     onDirectorySelected = Signal(str)
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None):
+        super().__init__(parent)
         self.__initUi()
 
     def __initUi(self):
@@ -45,7 +44,5 @@ class LlamaPage(QWidget):
             self.__txtBrowser.setText(f.read())
 
     def setDirectory(self):
-        self.__settings_ini = QSettings(INI_FILE_NAME, QSettings.Format.IniFormat)
-        if self.__settings_ini.contains('llama_index_directory'):
-            directory = self.__settings_ini.value('llama_index_directory', type=str)
-            self.__listWidget.setDirectory(directory)
+        directory = CONFIG_MANAGER.get_general_property('llama_index_directory')
+        self.__listWidget.setDirectory(directory, called_from_btn=False)

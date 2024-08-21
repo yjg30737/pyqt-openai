@@ -1,12 +1,13 @@
-from qtpy.QtCore import Qt, Signal, QSettings
+from qtpy.QtCore import Qt, Signal
 from qtpy.QtWidgets import QWidget, QDoubleSpinBox, QSpinBox, QFormLayout, QSizePolicy, QComboBox, QTextEdit, \
     QLabel, QVBoxLayout, QCheckBox, QPushButton, QScrollArea, QGroupBox
 
-from pyqt_openai import INI_FILE_NAME, DEFAULT_SHORTCUT_JSON_MODE, OPENAI_TEMPERATURE_RANGE, OPENAI_TEMPERATURE_STEP, \
+from pyqt_openai import DEFAULT_SHORTCUT_JSON_MODE, OPENAI_TEMPERATURE_RANGE, OPENAI_TEMPERATURE_STEP, \
     MAX_TOKENS_RANGE, TOP_P_RANGE, TOP_P_STEP, FREQUENCY_PENALTY_RANGE, PRESENCE_PENALTY_STEP, PRESENCE_PENALTY_RANGE, \
     FREQUENCY_PENALTY_STEP
+from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.lang.translations import LangClass
-from pyqt_openai.pyqt_openai_data import get_chat_model, LLAMAINDEX_WRAPPER
+from pyqt_openai.pyqt_openai_data import get_chat_model, init_llama
 from pyqt_openai.util.script import getSeparator
 
 
@@ -20,47 +21,18 @@ class ChatPage(QWidget):
         self.__initUi()
 
     def __initVal(self):
-        self.__settings_ini = QSettings(INI_FILE_NAME, QSettings.Format.IniFormat)
+        self.__stream = CONFIG_MANAGER.get_general_property('stream')
+        self.__model = CONFIG_MANAGER.get_general_property('model')
+        self.__system = CONFIG_MANAGER.get_general_property('system')
+        self.__temperature = CONFIG_MANAGER.get_general_property('temperature')
+        self.__max_tokens = CONFIG_MANAGER.get_general_property('max_tokens')
+        self.__top_p = CONFIG_MANAGER.get_general_property('top_p')
+        self.__frequency_penalty = CONFIG_MANAGER.get_general_property('frequency_penalty')
+        self.__presence_penalty = CONFIG_MANAGER.get_general_property('presence_penalty')
+        self.__json_object = CONFIG_MANAGER.get_general_property('json_object')
 
-        # default value of each properties based on https://platform.openai.com/docs/api-reference/chat/create
-        # param
-        if not self.__settings_ini.contains('stream'):
-            self.__settings_ini.setValue('stream', True)
-        if not self.__settings_ini.contains('model'):
-            self.__settings_ini.setValue('model', 'gpt-4o')
-        if not self.__settings_ini.contains('system'):
-            self.__settings_ini.setValue('system', 'You are a helpful assistant.')
-        if not self.__settings_ini.contains('temperature'):
-            self.__settings_ini.setValue('temperature', 1)
-        if not self.__settings_ini.contains('max_tokens'):
-            self.__settings_ini.setValue('max_tokens', -1)
-        if not self.__settings_ini.contains('top_p'):
-            self.__settings_ini.setValue('top_p', 1)
-        if not self.__settings_ini.contains('frequency_penalty'):
-            self.__settings_ini.setValue('frequency_penalty', 0)
-        if not self.__settings_ini.contains('presence_penalty'):
-            self.__settings_ini.setValue('presence_penalty', 0)
-        if not self.__settings_ini.contains('json_object'):
-            self.__settings_ini.setValue('json_object', False)
-
-        # etc
-        if not self.__settings_ini.contains('use_max_tokens'):
-            self.__settings_ini.setValue('use_max_tokens', False)
-        if not self.__settings_ini.contains('use_llama_index'):
-            self.__settings_ini.setValue('use_llama_index', False)
-
-        self.__stream = self.__settings_ini.value('stream', type=bool)
-        self.__model = self.__settings_ini.value('model', type=str)
-        self.__system = self.__settings_ini.value('system', type=str)
-        self.__temperature = self.__settings_ini.value('temperature', type=float)
-        self.__max_tokens = self.__settings_ini.value('max_tokens', type=int)
-        self.__top_p = self.__settings_ini.value('top_p', type=float)
-        self.__frequency_penalty = self.__settings_ini.value('frequency_penalty', type=float)
-        self.__presence_penalty = self.__settings_ini.value('presence_penalty', type=float)
-        self.__json_object = self.__settings_ini.value('json_object', type=bool)
-
-        self.__use_max_tokens = self.__settings_ini.value('use_max_tokens', type=bool)
-        self.__use_llama_index = self.__settings_ini.value('use_llama_index', type=bool)
+        self.__use_max_tokens = CONFIG_MANAGER.get_general_property('use_max_tokens')
+        self.__use_llama_index = CONFIG_MANAGER.get_general_property('use_llama_index')
 
     def __initUi(self):
         systemlbl = QLabel(LangClass.TRANSLATIONS['System'])
@@ -176,50 +148,48 @@ class ChatPage(QWidget):
 
     def __saveSystem(self):
         self.__system = self.__systemTextEdit.toPlainText()
-        self.__settings_ini.setValue('system', self.__system)
+        CONFIG_MANAGER.set_general_property('system', self.__system)
 
     def __modelChanged(self, v):
         self.__model = v
-        self.__settings_ini.setValue('model', v)
+        CONFIG_MANAGER.set_general_property('model', v)
 
     def __streamChecked(self, f):
         self.__stream = f
-        self.__settings_ini.setValue('stream', f)
+        CONFIG_MANAGER.set_general_property('stream', f)
 
     def __jsonObjectChecked(self, f):
         self.__json_object = f
-        self.__settings_ini.setValue('json_object', f)
+        CONFIG_MANAGER.set_general_property('json_object', f)
         self.onToggleJSON.emit(f)
 
     def __use_llama_indexChecked(self, f):
         self.__use_llama_index = f
-        self.__settings_ini.setValue('use_llama_index', f)
+        CONFIG_MANAGER.set_general_property('use_llama_index', f)
         if f:
             # Set llama index directory if it exists
-            if self.__settings_ini.contains('llama_index_directory') and self.__settings_ini.value(
-                    'use_llama_index', False, type=bool):
-                LLAMAINDEX_WRAPPER.set_directory(self.__settings_ini.value('llama_index_directory'))
+            init_llama()
         self.onToggleLlama.emit(f)
 
     def __useMaxChecked(self, f):
         self.__use_max_tokens = f
-        self.__settings_ini.setValue('use_max_tokens', f)
+        CONFIG_MANAGER.set_general_property('use_max_tokens', f)
         self.__maxTokensSpinBox.setEnabled(f)
 
     def __valueChanged(self, v):
         sender = self.sender()
         if sender == self.__temperatureSpinBox:
             self.__temperature = v
-            self.__settings_ini.setValue('temperature', v)
+            CONFIG_MANAGER.set_general_property('temperature', v)
         elif sender == self.__maxTokensSpinBox:
             self.__max_tokens = v
-            self.__settings_ini.setValue('max_tokens', v)
+            CONFIG_MANAGER.set_general_property('max_tokens', v)
         elif sender == self.__toppSpinBox:
             self.__top_p = v
-            self.__settings_ini.setValue('top_p', v)
+            CONFIG_MANAGER.set_general_property('top_p', v)
         elif sender == self.__frequencyPenaltySpinBox:
             self.__frequency_penalty = v
-            self.__settings_ini.setValue('frequency_penalty', v)
+            CONFIG_MANAGER.set_general_property('frequency_penalty', v)
         elif sender == self.__presencePenaltySpinBox:
             self.__presence_penalty = v
-            self.__settings_ini.setValue('presence_penalty', v)
+            CONFIG_MANAGER.set_general_property('presence_penalty', v)

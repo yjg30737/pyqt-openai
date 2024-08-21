@@ -171,7 +171,8 @@ class FontItemWidget(QWidget):
         # Set each item to each font family
         for f in fm:
             item = QListWidgetItem(f)
-            item.setFont(QFont(f))
+            # FIXME This makes the font list widget too slow
+            # item.setFont(QFont(f))
             self.__fontListWidget.addItem(item)
 
     def setCurrentFont(self, font: QFont):

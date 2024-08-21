@@ -1,28 +1,33 @@
 import os
 
 import requests
-from qtpy.QtCore import Qt, QSettings
+from qtpy.QtCore import Qt
 from qtpy.QtGui import QFont, QIcon, QColor
 from qtpy.QtWidgets import QMainWindow, QToolBar, QHBoxLayout, QDialog, QLineEdit, QPushButton, QWidgetAction, QSpinBox, \
     QLabel, QWidget, QApplication, \
     QComboBox, QSizePolicy, QStackedWidget, QMenu, QSystemTrayIcon, \
     QMessageBox, QCheckBox, QAction
 
-from pyqt_openai import INI_FILE_NAME, DEFAULT_SHORTCUT_FULL_SCREEN, \
-    APP_INITIAL_WINDOW_SIZE, APP_NAME, APP_ICON, ICON_STACKONTOP, ICON_CUSTOMIZE, ICON_FULLSCREEN, ICON_CLOSE, \
+from pyqt_openai import DEFAULT_SHORTCUT_FULL_SCREEN, \
+    APP_INITIAL_WINDOW_SIZE, DEFAULT_APP_NAME, DEFAULT_APP_ICON, ICON_STACKONTOP, ICON_CUSTOMIZE, ICON_FULLSCREEN, \
+    ICON_CLOSE, \
     DEFAULT_SHORTCUT_SETTING, TRANSPARENT_RANGE, TRANSPARENT_INIT_VAL
 from pyqt_openai.aboutDialog import AboutDialog
-from pyqt_openai.gpt_widget.openAiChatBotWidget import OpenAIChatBotWidget
+from pyqt_openai.apiWidget import ApiWidget
+from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.customizeDialog import CustomizeDialog
-from pyqt_openai.dalle_widget.dallEWidget import DallEWidget
+from pyqt_openai.dalle_widget.dalleMainWidget import DallEMainWidget
 from pyqt_openai.doNotAskAgainDialog import DoNotAskAgainDialog
+from pyqt_openai.gpt_widget.gptMainWidget import GPTMainWidget
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import SettingsParamsContainer, CustomizeParamsContainer
-from pyqt_openai.pyqt_openai_data import OPENAI_STRUCT, LLAMAINDEX_WRAPPER
-from pyqt_openai.replicate_widget.replicateWidget import ReplicateWidget
-from pyqt_openai.settingsDialog import SettingsDialog
-from pyqt_openai.util.script import restart_app, show_message_box_after_change_to_restart, goPayPal, goBuyMeCoffee
+from pyqt_openai.pyqt_openai_data import OPENAI_STRUCT, init_llama
+from pyqt_openai.replicate_widget.replicateMainWidget import ReplicateMainWidget
+from pyqt_openai.settings_dialog.settingsDialog import SettingsDialog
+from pyqt_openai.shortcutDialog import ShortcutDialog
+from pyqt_openai.util.script import restart_app, show_message_box_after_change_to_restart, goPayPal, goKofi
 from pyqt_openai.widgets.button import Button
+from pyqt_openai_data import setOpenAIEnabled
 
 
 class MainWindow(QMainWindow):
@@ -32,7 +37,6 @@ class MainWindow(QMainWindow):
         self.__initUi()
 
     def __initVal(self):
-        self.__settings_struct = QSettings(INI_FILE_NAME, QSettings.Format.IniFormat)
         self.__settingsParamContainer = SettingsParamsContainer()
         self.__customizeParamsContainer = CustomizeParamsContainer()
 
@@ -40,14 +44,14 @@ class MainWindow(QMainWindow):
         self.__initContainer(self.__customizeParamsContainer)
 
     def __initUi(self):
-        self.setWindowTitle(APP_NAME)
+        self.setWindowTitle(DEFAULT_APP_NAME)
 
-        self.__openAiChatBotWidget = OpenAIChatBotWidget(self)
-        self.__dallEWidget = DallEWidget(self)
-        self.__replicateWidget = ReplicateWidget(self)
+        self.__gptWidget = GPTMainWidget(self)
+        self.__dallEWidget = DallEMainWidget(self)
+        self.__replicateWidget = ReplicateMainWidget(self)
 
         self.__mainWidget = QStackedWidget()
-        self.__mainWidget.addWidget(self.__openAiChatBotWidget)
+        self.__mainWidget.addWidget(self.__gptWidget)
         self.__mainWidget.addWidget(self.__dallEWidget)
         self.__mainWidget.addWidget(self.__replicateWidget)
 
@@ -61,16 +65,17 @@ class MainWindow(QMainWindow):
 
         # check if loaded API_KEY from ini file is not empty
         if os.environ['OPENAI_API_KEY']:
-            self.__setApi()
+            self.__apiWidget.setApi()
         # if it is empty
         else:
             self.__setAIEnabled(False)
-            self.__apiCheckPreviewLbl.hide()
+            self.__apiWidget.showApiCheckPreviewLbl(False)
 
         self.setCentralWidget(self.__mainWidget)
         self.resize(*APP_INITIAL_WINDOW_SIZE)
 
         self.__refreshColumns()
+        self.__gptWidget.refreshCustomizedInformation(self.__customizeParamsContainer)
 
     def __setActions(self):
         self.__langAction = QAction()
@@ -82,11 +87,14 @@ class MainWindow(QMainWindow):
         self.__aboutAction = QAction(LangClass.TRANSLATIONS['About...'], self)
         self.__aboutAction.triggered.connect(self.__showAboutDialog)
 
+        self.__viewShortcutsAction = QAction(LangClass.TRANSLATIONS['View Shortcuts'], self)
+        self.__viewShortcutsAction.triggered.connect(self.__showShortcutsDialog)
+
         self.__paypalAction = QAction('Paypal', self)
         self.__paypalAction.triggered.connect(goPayPal)
 
-        self.__buyMeCoffeeAction = QAction('Buy me a coffee!', self)
-        self.__buyMeCoffeeAction.triggered.connect(goBuyMeCoffee)
+        self.__kofiAction = QAction('Ko-fi ❤', self)
+        self.__kofiAction.triggered.connect(goKofi)
 
         # toolbar action
         self.__chooseAiAction = QWidgetAction(self)
@@ -135,37 +143,17 @@ class MainWindow(QMainWindow):
         transparencyActionWidget.setLayout(lay)
         self.__transparentAction.setDefaultWidget(transparencyActionWidget)
 
-        self.__showAiToolBarAction = QWidgetAction(self)
-        self.__showAiToolBarChkBox = QCheckBox(LangClass.TRANSLATIONS['Show Secondary Toolbar'])
-        self.__showAiToolBarChkBox.setChecked(self.__settingsParamContainer.show_secondary_toolbar)
-        self.__showAiToolBarChkBox.toggled.connect(self.__showAiToolBarChkBoxChecked)
-        self.__showAiToolBarAction.setDefaultWidget(self.__showAiToolBarChkBox)
+        self.__showSecondaryToolBarAction = QWidgetAction(self)
+        self.__showSecondaryToolBarChkBox = QCheckBox(LangClass.TRANSLATIONS['Show Secondary Toolbar'])
+        self.__showSecondaryToolBarChkBox.setChecked(self.__settingsParamContainer.show_secondary_toolbar)
+        self.__showSecondaryToolBarChkBox.toggled.connect(self.__showSecondaryToolBarChkBoxChecked)
+        self.__showSecondaryToolBarAction.setDefaultWidget(self.__showSecondaryToolBarChkBox)
 
-        self.__apiCheckPreviewLbl = QLabel()
-        self.__apiCheckPreviewLbl.setFont(QFont('Arial', 10))
-
-        apiLbl = QLabel(LangClass.TRANSLATIONS['API'])
-
-        self.__apiLineEdit = QLineEdit()
-        self.__apiLineEdit.setPlaceholderText(LangClass.TRANSLATIONS['Write your API Key...'])
-        self.__apiLineEdit.returnPressed.connect(self.__setApi)
-        self.__apiLineEdit.setEchoMode(QLineEdit.EchoMode.Password)
-
-        apiBtn = QPushButton(LangClass.TRANSLATIONS['Use'])
-        apiBtn.clicked.connect(self.__setApi)
-
-        lay = QHBoxLayout()
-        lay.addWidget(apiLbl)
-        lay.addWidget(self.__apiLineEdit)
-        lay.addWidget(apiBtn)
-        lay.addWidget(self.__apiCheckPreviewLbl)
-        lay.setContentsMargins(0, 0, 0, 0)
-
-        apiWidget = QWidget(self)
-        apiWidget.setLayout(lay)
+        self.__apiWidget = ApiWidget(self)
+        self.__apiWidget.onAIEnabled.connect(self.__setAIEnabled)
 
         self.__apiAction = QWidgetAction(self)
-        self.__apiAction.setDefaultWidget(apiWidget)
+        self.__apiAction.setDefaultWidget(self.__apiWidget)
 
         self.__settingsAction = QAction(LangClass.TRANSLATIONS['Settings'], self)
         self.__settingsAction.setShortcut(DEFAULT_SHORTCUT_SETTING)
@@ -191,10 +179,11 @@ class MainWindow(QMainWindow):
         menubar.addMenu(helpMenu)
 
         helpMenu.addAction(self.__aboutAction)
+        helpMenu.addAction(self.__viewShortcutsAction)
 
         donateMenu = QMenu(LangClass.TRANSLATIONS['Donate'], self)
         donateMenu.addAction(self.__paypalAction)
-        donateMenu.addAction(self.__buyMeCoffeeAction)
+        donateMenu.addAction(self.__kofiAction)
 
         menubar.addMenu(donateMenu)
 
@@ -211,7 +200,7 @@ class MainWindow(QMainWindow):
         menu.addAction(action)
 
         tray_icon = QSystemTrayIcon(app)
-        tray_icon.setIcon(QIcon(APP_ICON))
+        tray_icon.setIcon(QIcon(DEFAULT_APP_ICON))
         tray_icon.activated.connect(self.__activated)
 
         tray_icon.setContextMenu(menu)
@@ -230,7 +219,7 @@ class MainWindow(QMainWindow):
         self.__toolbar.addAction(self.__customizeAction)
         self.__toolbar.addAction(self.__fullScreenAction)
         self.__toolbar.addAction(self.__transparentAction)
-        self.__toolbar.addAction(self.__showAiToolBarAction)
+        self.__toolbar.addAction(self.__showSecondaryToolBarAction)
         self.__toolbar.addAction(self.__apiAction)
         self.__toolbar.setLayout(lay)
         self.__toolbar.setMovable(False)
@@ -244,56 +233,24 @@ class MainWindow(QMainWindow):
         for i in range(self.__mainWidget.count()):
             currentWidget = self.__mainWidget.widget(i)
             currentWidget.showSecondaryToolBar(self.__settingsParamContainer.show_secondary_toolbar)
-        self.__mainWidget.currentWidget().showThreadToolWidget(self.__settingsParamContainer.thread_tool_widget)
-
-    def __setApiKeyAndClient(self, api_key):
-        # for subprocess (mostly)
-        os.environ['OPENAI_API_KEY'] = api_key
-        # for showing to the user
-        self.__apiLineEdit.setText(api_key)
-
-        OPENAI_STRUCT.api_key = os.environ['OPENAI_API_KEY']
 
     def __loadApiKeyInIni(self):
         # this api key should be yours
-        if self.__settings_struct.contains('API_KEY'):
-            self.__setApiKeyAndClient(self.__settings_struct.value('API_KEY'))
-        else:
-            self.__settings_struct.setValue('API_KEY', '')
-
+        self.__apiWidget.setApiKeyAndClient(CONFIG_MANAGER.get_general_property('API_KEY'))
         # Set llama index directory if it exists
-        if self.__settings_struct.contains('llama_index_directory') and self.__settings_struct.value('use_llama_index', False, type=bool):
-            LLAMAINDEX_WRAPPER.set_directory(self.__settings_struct.value('llama_index_directory'))
+        init_llama()
 
     def __setAIEnabled(self, f):
-        self.__openAiChatBotWidget.setAIEnabled(f)
+        self.__gptWidget.setAIEnabled(f)
         self.__dallEWidget.setAIEnabled(f)
-
-    def __setApi(self):
-        try:
-            api_key = self.__apiLineEdit.text()
-            response = requests.get('https://api.openai.com/v1/models', headers={'Authorization': f'Bearer {api_key}'})
-            f = response.status_code == 200
-            self.__setAIEnabled(f)
-            if f:
-                self.__setApiKeyAndClient(api_key)
-                self.__settings_struct.setValue('API_KEY', api_key)
-
-                self.__apiCheckPreviewLbl.setStyleSheet("color: {}".format(QColor(0, 200, 0).name()))
-                self.__apiCheckPreviewLbl.setText(LangClass.TRANSLATIONS['API key is valid'])
-            else:
-                raise Exception
-        except Exception as e:
-            self.__apiCheckPreviewLbl.setStyleSheet("color: {}".format(QColor(255, 0, 0).name()))
-            self.__apiCheckPreviewLbl.setText(LangClass.TRANSLATIONS['API key is invalid'])
-            self.__setAIEnabled(False)
-            print(e)
-        finally:
-            self.__apiCheckPreviewLbl.show()
 
     def __showAboutDialog(self):
         aboutDialog = AboutDialog(self)
         aboutDialog.exec()
+
+    def __showShortcutsDialog(self):
+        shortcutListWidget = ShortcutDialog(self)
+        shortcutListWidget.exec()
 
     def __stackToggle(self, f):
         if f:
@@ -305,7 +262,7 @@ class MainWindow(QMainWindow):
     def __setTransparency(self, v):
         self.setWindowOpacity(v / 100)
 
-    def __showAiToolBarChkBoxChecked(self, f):
+    def __showSecondaryToolBarChkBoxChecked(self, f):
         self.__mainWidget.currentWidget().showSecondaryToolBar(f)
         self.__settingsParamContainer.show_secondary_toolbar = f
 
@@ -316,7 +273,7 @@ class MainWindow(QMainWindow):
             container = dialog.getParam()
             self.__customizeParamsContainer = container
             self.__refreshContainer(container)
-            self.__openAiChatBotWidget.refreshCustomizedInformation()
+            self.__gptWidget.refreshCustomizedInformation(container)
 
     def __aiTypeChanged(self, i):
         self.__mainWidget.setCurrentIndex(i)
@@ -328,23 +285,19 @@ class MainWindow(QMainWindow):
         Initialize the container with the values in the settings file
         """
         for k, v in container.get_items():
-            if not self.__settings_struct.contains(k):
-                self.__settings_struct.setValue(k, v)
-            else:
-                setattr(container, k, self.__settings_struct.value(k, type=type(v)))
+            setattr(container, k, CONFIG_MANAGER.get_general_property(k))
         if isinstance(container, SettingsParamsContainer):
             self.__lang = LangClass.lang_changed(container.lang)
 
     def __refreshContainer(self, container):
         if isinstance(container, SettingsParamsContainer):
-            prev_db = self.__settings_struct.value('db')
-            prev_show_toolbar = self.__settings_struct.value('show_toolbar', type=bool)
-            prev_show_secondary_toolbar = self.__settings_struct.value('show_secondary_toolbar', type=bool)
-            prev_thread_tool_widget = self.__settings_struct.value('thread_tool_widget', type=bool)
-            prev_show_as_markdown = self.__settings_struct.value('show_as_markdown', type=bool)
+            prev_db = CONFIG_MANAGER.get_general_property('db')
+            prev_show_toolbar = CONFIG_MANAGER.get_general_property('show_toolbar')
+            prev_show_secondary_toolbar = CONFIG_MANAGER.get_general_property('show_secondary_toolbar')
+            prev_show_as_markdown = CONFIG_MANAGER.get_general_property('show_as_markdown')
 
             for k, v in container.get_items():
-                self.__settings_struct.setValue(k, v)
+                CONFIG_MANAGER.set_general_property(k, v)
 
             # If db name is changed
             if container.db != prev_db:
@@ -357,10 +310,6 @@ class MainWindow(QMainWindow):
                 for i in range(self.__mainWidget.count()):
                     currentWidget = self.__mainWidget.widget(i)
                     currentWidget.showSecondaryToolBar(container.show_secondary_toolbar)
-            # If thread_tool_widget is changed
-            if container.thread_tool_widget != prev_thread_tool_widget:
-                if isinstance(self.__mainWidget.currentWidget(), OpenAIChatBotWidget):
-                    self.__mainWidget.currentWidget().showThreadToolWidget(container.thread_tool_widget)
             # If properties that require a restart are changed
             if container.lang != self.__lang or container.show_as_markdown != prev_show_as_markdown:
                 change_list = []
@@ -370,14 +319,14 @@ class MainWindow(QMainWindow):
                     change_list.append(LangClass.TRANSLATIONS["Show as Markdown"])
                 result = show_message_box_after_change_to_restart(change_list)
                 if result == QMessageBox.StandardButton.Yes:
-                    restart_app(settings=self.__settings_struct)
+                    restart_app()
 
         elif isinstance(container, CustomizeParamsContainer):
-            prev_font_family = self.__settings_struct.value('font_family')
-            prev_font_size = self.__settings_struct.value('font_size', type=int)
+            prev_font_family = CONFIG_MANAGER.get_general_property('font_family')
+            prev_font_size = CONFIG_MANAGER.get_general_property('font_size')
 
             for k, v in container.get_items():
-                self.__settings_struct.setValue(k, v)
+                CONFIG_MANAGER.set_general_property(k, v)
 
             if container.font_family != prev_font_family or container.font_size != prev_font_size:
                 change_list = [
@@ -385,10 +334,10 @@ class MainWindow(QMainWindow):
                 ]
                 result = show_message_box_after_change_to_restart(change_list)
                 if result == QMessageBox.StandardButton.Yes:
-                    restart_app(settings=self.__settings_struct)
+                    restart_app()
 
     def __refreshColumns(self):
-        self.__openAiChatBotWidget.setColumns(self.__settingsParamContainer.chat_column_to_show)
+        self.__gptWidget.setColumns(self.__settingsParamContainer.chat_column_to_show)
         image_column_to_show = self.__settingsParamContainer.image_column_to_show
         if image_column_to_show.__contains__('data'):
             image_column_to_show.remove('data')

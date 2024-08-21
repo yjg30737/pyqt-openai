@@ -1,6 +1,6 @@
 import os
 
-from qtpy.QtCore import QByteArray, QBuffer
+from qtpy.QtCore import QByteArray, QBuffer, Qt
 from qtpy.QtGui import QPixmap
 from qtpy.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QHBoxLayout, QSpacerItem, QSizePolicy, \
     QScrollArea
@@ -40,6 +40,7 @@ class UploadedImageFileWidget(QWidget):
         imageWidget = QWidget()
 
         lay = QHBoxLayout()
+        lay.setAlignment(Qt.AlignmentFlag.AlignLeft)
         imageWidget.setLayout(lay)
 
         self.__imageArea = QScrollArea()
@@ -70,8 +71,11 @@ class UploadedImageFileWidget(QWidget):
                 self.addImageBuffer(buffer)
         self.__toggle(True)
 
+    def getLayout(self):
+        return self.__imageArea.widget().layout()
+
     def addImageBuffer(self, image_buffer: QByteArray):
-        lay = self.__imageArea.widget().layout()
+        lay = self.getLayout()
         lbl = QLabel()
         lbl.installEventFilter(self)
         pixmap = QPixmap()
@@ -82,7 +86,7 @@ class UploadedImageFileWidget(QWidget):
         self.__toggle(True)
 
     def getImageBuffers(self):
-        lay = self.__imageArea.widget().layout()
+        lay = self.getLayout()
         buffers = []
         for i in range(lay.count()):
             lbl = lay.itemAt(i).widget()
@@ -95,9 +99,6 @@ class UploadedImageFileWidget(QWidget):
 
             # Save the pixmap to the buffer in PNG format
             pixmap.save(buffer, "PNG")
-
-            # At this point, byte_array contains the image data
-            print("Byte array length:", byte_array.size())
 
             # Convert QByteArray to bytes (if needed)
             image_bytes = byte_array.data()
@@ -114,7 +115,7 @@ class UploadedImageFileWidget(QWidget):
         self.__delete_mode = f
 
     def clear(self):
-        lay = self.__imageArea.widget().layout()
+        lay = self.getLayout()
         for i in range(lay.count()):
             lay.itemAt(i).widget().deleteLater()
         self.__toggle(False)
@@ -124,22 +125,6 @@ class UploadedImageFileWidget(QWidget):
             if event.type() == 2:
                 if self.__delete_mode:
                     obj.deleteLater()
+                    if self.getLayout().count() == 1:
+                        self.__toggle(False)
         return super().eventFilter(obj, event)
-
-
-
-# if __name__ == "__main__":
-#     import sys
-#
-#     app = QApplication(sys.argv)
-#     w = UploadedImageFileWidget()
-#     import pathlib
-#
-#     w.addFile([str(pathlib.Path(__file__).parent / 'a (1).png'),
-#                str(pathlib.Path(__file__).parent / 'a (2).png'),
-#                str(pathlib.Path(__file__).parent / 'a (3).png'),
-#                 str(pathlib.Path(__file__).parent / 'a (4).png'),
-#                 str(pathlib.Path(__file__).parent / 'a (5).png'),
-#    ])
-#     w.show()
-#     sys.exit(app.exec())

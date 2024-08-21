@@ -25,9 +25,9 @@ __author__ = pyproject_data["project"]["authors"][0]['name']
 # Constants
 # ----------------------------
 # APP
-APP_NAME = pyproject_data["project"]["name"]
+DEFAULT_APP_NAME = pyproject_data["project"]["name"]
 CONTACT = pyproject_data["project"]["authors"][0]['email']
-APP_ICON = 'icon.ico'
+DEFAULT_APP_ICON = 'icon.ico'
 APP_INITIAL_WINDOW_SIZE = (1280, 768)
 
 TRANSPARENT_RANGE = 20, 100
@@ -35,10 +35,11 @@ TRANSPARENT_INIT_VAL = 100
 
 LICENSE = pyproject_data["project"]["license"]['text']
 LICENSE_URL = 'https://github.com/yjg30737/pyqt-openai/blob/main/LICENSE'
+KOFI_URL = 'https://ko-fi.com/junggyuyoon'
 PAYPAL_URL = 'https://paypal.me/yjg30737'
-BUYMEACOFFEE_URL = 'https://www.buymeacoffee.com/yjg30737'
 GITHUB_URL = 'https://github.com/yjg30737/pyqt-openai'
 DISCORD_URL = 'https://discord.gg/cHekprskVE'
+HOW_TO_GET_OPENAI_API_KEY_URL = 'https://medium.com/@yjg30737/how-to-get-your-openai-api-key-e2193850932e'
 COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_CHAT = ['id']
 COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_IMAGE = ['id', 'data']
 DEFAULT_LANGUAGE = 'en_US'
@@ -68,8 +69,12 @@ MAXIMUM_MESSAGES_IN_PARAMETER = 20
 MESSAGE_MAXIMUM_HEIGHT_RANGE = 300, 1000
 MAXIMUM_MESSAGES_IN_PARAMETER_RANGE = 2, 1000
 
+CONTEXT_DELIMITER = '\n'*2
 PROMPT_IMAGE_SCALE = 200, 200
 TOAST_DURATION = 3
+
+## OPENAI
+OPENAI_REQUEST_URL = 'https://api.openai.com/v1/models'
 
 ## PARAMETER - OPENAI CHAT
 OPENAI_TEMPERATURE_RANGE = 0, 2
@@ -135,8 +140,21 @@ DEFAULT_SOURCE_ERROR_COLOR = '#FF0000'
 DEFAULT_FOUND_TEXT_COLOR = '#00A2E8'
 DEFAULT_FOUND_TEXT_BG_COLOR = '#FFF200'
 
+## MARKDOWN
+# I am not planning to use it at the moment.
+# DEFAULT_MARKDOWN_span_font = 'Courier New'
+# DEFAULT_MARKDOWN_span_color = '#000'
+# DEFAULT_MARKDOWN_ul_color = '#000'
+# DEFAULT_MARKDOWN_h1_color = '#000'
+# DEFAULT_MARKDOWN_h2_color = '#000'
+# DEFAULT_MARKDOWN_h3_color = '#000'
+# DEFAULT_MARKDOWN_h4_color = '#000'
+# DEFAULT_MARKDOWN_h5_color = '#000'
+# DEFAULT_MARKDOWN_h6_color = '#000'
+# DEFAULT_MARKDOWN_a_color = '#000'
+
 ## SHORTCUT
-DEFAULT_SHORTCUT_GENERAL_ACTION = 'Enter'
+DEFAULT_SHORTCUT_GENERAL_ACTION = 'Return'
 DEFAULT_SHORTCUT_FIND_PREV = 'Ctrl+Shift+D'
 DEFAULT_SHORTCUT_FIND_NEXT = 'Ctrl+D'
 DEFAULT_SHORTCUT_FIND_CLOSE = 'Escape'
@@ -150,13 +168,12 @@ DEFAULT_SHORTCUT_LEFT_SIDEBAR_WINDOW = 'Ctrl+L'
 DEFAULT_SHORTCUT_RIGHT_SIDEBAR_WINDOW = 'Ctrl+R'
 DEFAULT_SHORTCUT_CONTROL_PROMPT_WINDOW = 'Ctrl+Shift+C'
 DEFAULT_SHORTCUT_SETTING = 'Ctrl+Alt+S'
-DEFAULT_SHORTCUT_SEND = 'Ctrl+Enter'
+DEFAULT_SHORTCUT_SEND = 'Ctrl+Return'
 
 ## DIRECTORY PATH & FILE'S NAME
 MAIN_INDEX = 'main.py'
 IMAGE_DEFAULT_SAVE_DIRECTORY = 'image_result'
-LLAMA_INDEX_DEFAULT_READ_DIRECTORY = './example'
-INI_FILE_NAME = 'pyqt_openai.ini'
+INI_FILE_NAME = 'config.yaml'
 DB_FILE_NAME = 'conv'
 FILE_NAME_LENGTH = 32
 QFILEDIALOG_DEFAULT_DIRECTORY = os.path.expanduser('~')
@@ -179,6 +196,7 @@ PROMPT_MAIN_KEY_NAME = 'prompt_main'
 PROMPT_END_KEY_NAME = 'prompt_ending'
 PROMPT_NAME_REGEX = '^[a-zA-Z_0-9]+$'
 INDENT_SIZE = 4
+NOTIFIER_MAX_CHAR = 100
 
 # DB
 DB_NAME_REGEX = '[a-zA-Z0-9]{1,20}'
@@ -263,6 +281,82 @@ if os.path.exists(AWESOME_CHATGPT_PROMPTS_FILENAME):
     AWESOME_CHATGPT_PROMPTS = json.load(open(AWESOME_CHATGPT_PROMPTS_FILENAME))[0]
 if os.path.exists(ALEX_BROGAN_PROMPT_FILENAME):
     ALEX_BROGAN_PROMPT = json.load(open(ALEX_BROGAN_PROMPT_FILENAME))[0]
+
+# DEFAULT Configuration data for the application settings
+# Initialize here to avoid circular import
+# ----------------------------
+CONFIG_DATA = {
+    'General': {
+        'TAB_IDX': 0,
+        'lang': 'English',
+        'show_chat_list': True,
+        'stream': True,
+        'db': 'conv',
+        'model': 'gpt-4o',
+        'show_setting': True,
+        'use_llama_index': False,
+        'do_not_ask_again': False,
+        'show_prompt': True,
+        'system': 'You are a helpful assistant.',
+        'notify_finish': True,
+        'temperature': 1,
+        'max_tokens': -1,
+        'show_toolbar': True,
+        'show_secondary_toolbar': True,
+        'top_p': 1,
+        'chat_column_to_show': ['id', 'name', 'insert_dt', 'update_dt'],
+        'frequency_penalty': 0,
+        'image_column_to_show': ['id', 'model', 'width', 'height', 'prompt', 'negative_prompt', 'n', 'quality', 'data', 'style', 'revised_prompt', 'update_dt', 'insert_dt'],
+        'presence_penalty': 0,
+        'json_object': False,
+        'maximum_messages_in_parameter': MAXIMUM_MESSAGES_IN_PARAMETER,
+        'show_as_markdown': True,
+        'use_max_tokens': False,
+        'background_image': '',
+        'user_image': DEFAULT_USER_IMAGE_PATH,
+        'ai_image': DEFAULT_AI_IMAGE_PATH,
+        'font_size': DEFAULT_FONT_SIZE,
+        'font_family': DEFAULT_FONT_FAMILY,
+        'API_KEY': '',
+        'llama_index_directory': '',
+        'apply_user_defined_styles': False,
+    },
+    'DALLE': {
+        'quality': 'standard',
+        'show_history': True,
+        'n': 1,
+        'show_setting': True,
+        'size': '1024x1024',
+        'directory': QFILEDIALOG_DEFAULT_DIRECTORY,
+        'is_save': True,
+        'continue_generation': False,
+        'number_of_images_to_create': 2,
+        'style': 'vivid',
+        'response_format': 'b64_json',
+        'save_prompt_as_text': True,
+        'show_prompt_on_image': False,
+        'prompt_type': 1,
+        'width': 1024,
+        'height': 1024,
+        'prompt': "Astronaut in a jungle, cold color palette, muted colors, detailed, 8k"
+    },
+    'REPLICATE': {
+        'REPLICATE_API_TOKEN': '',
+        'show_history': True,
+        'model': 'stability-ai/sdxl:39ed52f2a78e934b3ba6e2a89f5b1c712de7dfea535525255b1aa35c5565e08b',
+        'show_setting': True,
+        'width': 768,
+        'height': 768,
+        'prompt': "Astronaut in a jungle, cold color palette, muted colors, detailed, 8k",
+        'negative_prompt': "ugly, deformed, noisy, blurry, distorted",
+        'directory': QFILEDIALOG_DEFAULT_DIRECTORY,
+        'is_save': True,
+        'continue_generation': False,
+        'number_of_images_to_create': 2,
+        'save_prompt_as_text': True,
+        'show_prompt_on_image': False
+    }
+}
 
 # Update the __all__ list with the PEP8 standard dunder names
 __all__ = ['__version__',

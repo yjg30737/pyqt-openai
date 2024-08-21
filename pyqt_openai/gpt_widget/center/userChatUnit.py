@@ -4,7 +4,7 @@ from qtpy.QtGui import QPalette
 from qtpy.QtWidgets import QSpacerItem, QSizePolicy, QWidget, QVBoxLayout, QHBoxLayout
 
 from pyqt_openai import DEFAULT_ICON_SIZE, ICON_COPY
-from pyqt_openai.gpt_widget.messageTextBrowser import MessageTextBrowser
+from pyqt_openai.gpt_widget.center.messageTextBrowser import MessageTextBrowser
 from pyqt_openai.widgets.button import Button
 from pyqt_openai.widgets.circleProfileImage import RoundedImage
 
@@ -37,8 +37,6 @@ class UserChatUnit(QWidget):
         self.__lbl = MessageTextBrowser()
 
         self.__lbl.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        self.__lbl.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
-        self.__lbl.setOpenExternalLinks(True)
 
         lay = QVBoxLayout()
         lay.addWidget(menuWidget)
@@ -68,3 +66,6 @@ class UserChatUnit(QWidget):
 
     def setIcon(self, filename):
         self.__icon.setImage(filename)
+
+    def getLbl(self):
+        return self.__lbl

@@ -2,10 +2,11 @@ from qtpy.QtCore import Qt
 from qtpy.QtGui import QFont
 from qtpy.QtWidgets import QLabel, QWidget, QVBoxLayout, QScrollArea
 
+from pyqt_openai import CONTEXT_DELIMITER
 from pyqt_openai.widgets.linkLabel import LinkLabel
 
 
-class HomePage(QScrollArea):
+class ReplicateHome(QScrollArea):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.__initUi()
@@ -16,7 +17,7 @@ class HomePage(QScrollArea):
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         description = QLabel('Generate images with Replicate API. \n'
-                             'You can use a lot of models to generate images, only you need to have an API key. ' + '\n'*2)
+                             'You can use a lot of models to generate images, only you need to have an API key. ' + CONTEXT_DELIMITER)
 
         description.setFont(QFont('Arial', 16))
         description.setAlignment(Qt.AlignmentFlag.AlignCenter)

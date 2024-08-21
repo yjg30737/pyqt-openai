@@ -1,14 +1,13 @@
-import os
-
-from qtpy.QtCore import QThread, Signal, QSettings, Qt
+from qtpy.QtCore import Signal, Qt
 from qtpy.QtWidgets import QLineEdit, QScrollArea, QMessageBox, QWidget, QCheckBox, QSpinBox, QGroupBox, QVBoxLayout, \
     QPushButton, \
     QPlainTextEdit, \
     QFormLayout, QLabel, QSplitter
 
-from pyqt_openai import INI_FILE_NAME, IMAGE_DEFAULT_SAVE_DIRECTORY
+from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ImagePromptContainer
+from pyqt_openai.replicate_widget.replicateThread import ReplicateThread
 from pyqt_openai.util.replicate_script import ReplicateWrapper
 from pyqt_openai.util.script import getSeparator
 from pyqt_openai.widgets.findPathWidget import FindPathWidget
@@ -16,35 +15,7 @@ from pyqt_openai.widgets.notifier import NotifierWidget
 from pyqt_openai.widgets.toast import Toast
 
 
-class Thread(QThread):
-    replyGenerated = Signal(ImagePromptContainer)
-    errorGenerated = Signal(str)
-    allReplyGenerated = Signal()
-
-    def __init__(self, wrapper, model, input_args, number_of_images):
-        super().__init__()
-        self.__wrapper = wrapper
-        self.__model = model
-        self.__input_args = input_args
-        self.__number_of_images = number_of_images
-        self.__stop = False
-
-    def stop(self):
-        self.__stop = True
-
-    def run(self):
-        try:
-            for _ in range(self.__number_of_images):
-                if self.__stop:
-                    break
-                result = self.__wrapper.get_image_response(model=self.__model, input_args=self.__input_args)
-                self.replyGenerated.emit(result)
-            self.allReplyGenerated.emit()
-        except Exception as e:
-            self.errorGenerated.emit(str(e))
-
-
-class ReplicateControlWidget(QScrollArea):
+class ReplicateRightSideBarWidget(QScrollArea):
     submitReplicate = Signal(ImagePromptContainer)
     submitReplicateAllComplete = Signal()
 
@@ -54,49 +25,19 @@ class ReplicateControlWidget(QScrollArea):
         self.__initUi()
 
     def __initVal(self):
-        default_directory = IMAGE_DEFAULT_SAVE_DIRECTORY
-
-        self.__settings_ini = QSettings(INI_FILE_NAME, QSettings.Format.IniFormat)
-        self.__settings_ini.beginGroup('REPLICATE')
-        if not self.__settings_ini.contains('REPLICATE_API_TOKEN'):
-            self.__settings_ini.setValue('REPLICATE_API_TOKEN', '')
-        if not self.__settings_ini.contains('model'):
-            self.__settings_ini.setValue('model', 'stability-ai/sdxl:39ed52f2a78e934b3ba6e2a89f5b1c712de7dfea535525255b1aa35c5565e08b')
-        if not self.__settings_ini.contains('width'):
-            self.__settings_ini.setValue('width', 768)
-        if not self.__settings_ini.contains('height'):
-            self.__settings_ini.setValue('height', 768)
-        if not self.__settings_ini.contains('prompt'):
-            self.__settings_ini.setValue('prompt', "Astronaut in a jungle, cold color palette, muted colors, detailed, 8k")
-        if not self.__settings_ini.contains('negative_prompt'):
-            self.__settings_ini.setValue('negative_prompt', "ugly, deformed, noisy, blurry, distorted")
-        if not self.__settings_ini.contains('directory'):
-            self.__settings_ini.setValue('directory', os.path.join(os.path.expanduser('~'), default_directory))
-        if not self.__settings_ini.contains('is_save'):
-            self.__settings_ini.setValue('is_save', True)
-        if not self.__settings_ini.contains('continue_generation'):
-            self.__settings_ini.setValue('continue_generation', False)
-        if not self.__settings_ini.contains('number_of_images_to_create'):
-            self.__settings_ini.setValue('number_of_images_to_create', 2)
-        if not self.__settings_ini.contains('save_prompt_as_text'):
-            self.__settings_ini.setValue('save_prompt_as_text', True)
-        if not self.__settings_ini.contains('show_prompt_on_image'):
-            self.__settings_ini.setValue('show_prompt_on_image', False)
-
-        self.__directory = self.__settings_ini.value('directory', type=str)
-        self.__api_key = self.__settings_ini.value('REPLICATE_API_TOKEN', type=str)
-        self.__model = self.__settings_ini.value('model', type=str)
-        self.__width = self.__settings_ini.value('width', type=int)
-        self.__height = self.__settings_ini.value('height', type=int)
-        self.__prompt = self.__settings_ini.value('prompt', type=str)
-        self.__negative_prompt = self.__settings_ini.value('negative_prompt', type=str)
-        self.__is_save = self.__settings_ini.value('is_save', type=bool)
-        self.__continue_generation = self.__settings_ini.value('continue_generation', type=bool)
-        self.__number_of_images_to_create = self.__settings_ini.value('number_of_images_to_create', type=int)
-        self.__save_prompt_as_text = self.__settings_ini.value('save_prompt_as_text', type=bool)
+        self.__directory = CONFIG_MANAGER.get_replicate_property('directory')
+        self.__api_key = CONFIG_MANAGER.get_replicate_property('REPLICATE_API_TOKEN')
+        self.__model = CONFIG_MANAGER.get_replicate_property('model')
+        self.__width = CONFIG_MANAGER.get_replicate_property('width')
+        self.__height = CONFIG_MANAGER.get_replicate_property('height')
+        self.__prompt = CONFIG_MANAGER.get_replicate_property('prompt')
+        self.__negative_prompt = CONFIG_MANAGER.get_replicate_property('negative_prompt')
+        self.__is_save = CONFIG_MANAGER.get_replicate_property('is_save')
+        self.__continue_generation = CONFIG_MANAGER.get_replicate_property('continue_generation')
+        self.__number_of_images_to_create = CONFIG_MANAGER.get_replicate_property('number_of_images_to_create')
+        self.__save_prompt_as_text = CONFIG_MANAGER.get_replicate_property('save_prompt_as_text')
 
         self.__wrapper = ReplicateWrapper(self.__api_key)
-        self.__settings_ini.endGroup()
 
     def __initUi(self):
         self.__apiKeyLineEdit = QLineEdit()
@@ -107,7 +48,6 @@ class ReplicateControlWidget(QScrollArea):
 
         self.__numberOfImagesToCreateSpinBox = QSpinBox()
 
-        # generic settings
         self.__findPathWidget = FindPathWidget()
         self.__findPathWidget.setAsDirectory(True)
         self.__findPathWidget.getLineEdit().setPlaceholderText(LangClass.TRANSLATIONS['Choose Directory to Save...'])
@@ -225,63 +165,49 @@ class ReplicateControlWidget(QScrollArea):
 
     def __replicateChanged(self, v):
         sender = self.sender()
-        self.__settings_ini.beginGroup('REPLICATE')
         if sender == self.__apiKeyLineEdit:
             self.__api_key = v
-            self.__settings_ini.setValue('REPLICATE_API_TOKEN', self.__api_key)
+            CONFIG_MANAGER.set_replicate_property('REPLICATE_API_TOKEN', v)
         elif sender == self.__widthSpinBox:
             self.__width = v
-            self.__settings_ini.setValue('width', self.__width)
+            CONFIG_MANAGER.set_replicate_property('width', v)
         elif sender == self.__heightSpinBox:
             self.__height = v
-            self.__settings_ini.setValue('height', self.__height)
-        self.__settings_ini.endGroup()
+            CONFIG_MANAGER.set_replicate_property('height', v)
 
     def __replicateTextChanged(self):
         sender = self.sender()
-        self.__settings_ini.beginGroup('REPLICATE')
         if isinstance(sender, QPlainTextEdit):
             if sender == self.__modelTextEdit:
                 self.__model = sender.toPlainText()
-                self.__settings_ini.setValue('model', self.__model)
+                CONFIG_MANAGER.set_replicate_property('model', self.__model)
             elif sender == self.__promptWidget:
                 self.__prompt = sender.toPlainText()
-                self.__settings_ini.setValue('prompt', self.__prompt)
+                CONFIG_MANAGER.set_replicate_property('prompt', self.__prompt)
             elif sender == self.__negativePromptWidget:
                 self.__negative_prompt = sender.toPlainText()
-                self.__settings_ini.setValue('negative_prompt', self.__negative_prompt)
-        self.__settings_ini.endGroup()
+                CONFIG_MANAGER.set_replicate_property('negative_prompt', self.__negative_prompt)
 
     def __setSaveDirectory(self, directory):
         self.__directory = directory
-        self.__settings_ini.beginGroup('REPLICATE')
-        self.__settings_ini.setValue('directory', self.__directory)
-        self.__settings_ini.endGroup()
+        CONFIG_MANAGER.set_replicate_property('directory', directory)
 
     def __saveChkBoxToggled(self, f):
         self.__is_save = f
-        self.__settings_ini.beginGroup('REPLICATE')
-        self.__settings_ini.setValue('is_save', self.__is_save)
-        self.__settings_ini.endGroup()
+        CONFIG_MANAGER.set_replicate_property('is_save', f)
 
     def __continueGenerationChkBoxToggled(self, f):
         self.__continue_generation = f
-        self.__settings_ini.beginGroup('REPLICATE')
-        self.__settings_ini.setValue('continue_generation', self.__continue_generation)
-        self.__settings_ini.endGroup()
+        CONFIG_MANAGER.set_replicate_property('continue_generation', f)
         self.__numberOfImagesToCreateSpinBox.setEnabled(f)
 
     def __numberOfImagesToCreateSpinBoxValueChanged(self, value):
         self.__number_of_images_to_create = value
-        self.__settings_ini.beginGroup('REPLICATE')
-        self.__settings_ini.setValue('number_of_images_to_create', self.__number_of_images_to_create)
-        self.__settings_ini.endGroup()
+        CONFIG_MANAGER.set_replicate_property('number_of_images_to_create', value)
 
     def __savePromptAsTextChkBoxToggled(self, f):
         self.__save_prompt_as_text = f
-        self.__settings_ini.beginGroup('REPLICATE')
-        self.__settings_ini.setValue('save_prompt_as_text', self.__save_prompt_as_text)
-        self.__settings_ini.endGroup()
+        CONFIG_MANAGER.set_replicate_property('save_prompt_as_text', f)
 
     def __submit(self):
         arg = {
@@ -296,7 +222,7 @@ class ReplicateControlWidget(QScrollArea):
         self.__api_key = self.__apiKeyLineEdit.text().strip()
         self.__wrapper.set_api(self.__api_key)
 
-        self.__t = Thread(self.__wrapper, self.__model, arg, number_of_images)
+        self.__t = ReplicateThread(self.__wrapper, self.__model, arg, number_of_images)
         self.__t.start()
         self.__t.started.connect(self.__toggleWidget)
         self.__t.replyGenerated.connect(self.__afterGenerated)
@@ -318,7 +244,7 @@ class ReplicateControlWidget(QScrollArea):
             self.__t.stop()
 
     def __failToGenerate(self, event):
-        if self.isVisible():
+        if self.isVisible() and self.window().isActiveWindow():
             toast = Toast(text=event, parent=self)
             toast.show()
         else:
@@ -326,8 +252,14 @@ class ReplicateControlWidget(QScrollArea):
             detailed_text = event
             self.__notifierWidget = NotifierWidget(informative_text=informative_text, detailed_text = detailed_text)
             self.__notifierWidget.show()
-            self.__notifierWidget.doubleClicked.connect(self.window().show)
+            self.__notifierWidget.doubleClicked.connect(self.__bringWindowToFront)
             QMessageBox.critical(self, informative_text, detailed_text)
+
+    def __bringWindowToFront(self):
+        window = self.window()
+        window.showNormal()
+        window.raise_()
+        window.activateWindow()
 
     def __afterGenerated(self, result):
         self.submitReplicate.emit(result)

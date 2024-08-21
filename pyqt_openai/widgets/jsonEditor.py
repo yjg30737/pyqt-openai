@@ -169,7 +169,7 @@ class JSONEditor(QTextEdit):
         return super().focusInEvent(event)
 
 # # Usage
-# class MainWindow(QWidget):
+# class AIWidget(QWidget):
 #     def __init__(self):
 #         super().__init__()
 #         self.init_ui()
@@ -193,6 +193,6 @@ class JSONEditor(QTextEdit):
 #
 # if __name__ == '__main__':
 #     app = QApplication(sys.argv)
-#     window = MainWindow()
+#     window = AIWidget()
 #     window.show()
 #     sys.exit(app.exec_())

@@ -4,8 +4,9 @@ from qtpy.QtGui import QPalette
 from qtpy.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QSpacerItem, QSizePolicy
 
 from pyqt_openai import DEFAULT_ICON_SIZE, ICON_FAVORITE_NO, ICON_INFO, ICON_COPY, ICON_FAVORITE_YES
-from pyqt_openai.gpt_widget.responseInfoDialog import ResponseInfoDialog
-from pyqt_openai.gpt_widget.messageTextBrowser import MessageTextBrowser
+from pyqt_openai.config_loader import CONFIG_MANAGER
+from pyqt_openai.gpt_widget.center.responseInfoDialog import ResponseInfoDialog
+from pyqt_openai.gpt_widget.center.messageTextBrowser import MessageTextBrowser
 from pyqt_openai.models import ChatMessageContainer
 from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.widgets.button import Button
@@ -21,8 +22,7 @@ class AIChatUnit(QWidget):
     def __initVal(self):
         self.__lbl = ''
         self.__result_info = ''
-        app = QApplication.instance()
-        self.__show_markdown = app.show_as_markdown
+        self.__show_as_markdown = CONFIG_MANAGER.get_general_property('show_as_markdown')
 
     def __initUi(self):
         menuWidget = QWidget()
@@ -127,7 +127,7 @@ class AIChatUnit(QWidget):
             if arg.is_json_response_available:
                 self.__lbl.setJson(arg.content)
             else:
-                if self.__show_markdown:
+                if self.__show_as_markdown:
                     self.__lbl.setMarkdown(arg.content)
                 else:
                     self.__lbl.setText(arg.content)
@@ -135,14 +135,12 @@ class AIChatUnit(QWidget):
 
     def setText(self, text: str):
         self.__lbl = MessageTextBrowser()
-        if self.__show_markdown:
+        if self.__show_as_markdown:
             self.__lbl.setMarkdown(text)
         else:
             self.__lbl.setText(text)
 
         self.__lbl.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        self.__lbl.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
-        self.__lbl.setOpenExternalLinks(True)
 
         self.__mainWidget.layout().addWidget(self.__lbl)
         self.__lbl.adjustBrowserHeight()
@@ -161,3 +159,6 @@ class AIChatUnit(QWidget):
 
     def getText(self):
         return self.__lbl.toPlainText()
+
+    def getLbl(self):
+        return self.__lbl

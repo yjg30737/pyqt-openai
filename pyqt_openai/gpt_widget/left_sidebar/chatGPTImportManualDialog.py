@@ -6,7 +6,7 @@ from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.widgets.normalImageView import NormalImageView
 
 
-# TODO WILL_BE_REPLACED_WITH_ONLINE_MANUAL
+# TODO WILL_REMOVE_AFTER v1.2.X> - WILL BE REPLACED WITH ONLINE MANUAL
 class ChatGPTImportManualDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)

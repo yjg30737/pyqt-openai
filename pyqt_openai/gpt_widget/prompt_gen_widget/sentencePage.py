@@ -3,16 +3,17 @@ import os
 
 from qtpy.QtCore import Signal, Qt
 from qtpy.QtWidgets import QWidget, QDialog, QTableWidget, QVBoxLayout, QHBoxLayout, QHeaderView, QTableWidgetItem, \
-    QAbstractItemView, QFileDialog, QLabel, QSpacerItem, QListWidget, QListWidgetItem, QSizePolicy, QSplitter, QMessageBox
+    QAbstractItemView, QFileDialog, QLabel, QSpacerItem, QListWidget, QListWidgetItem, QSizePolicy, QSplitter, \
+    QMessageBox
 
 from pyqt_openai import JSON_FILE_EXT_LIST_STR, ICON_ADD, ICON_DELETE, ICON_IMPORT, ICON_EXPORT, \
-    QFILEDIALOG_DEFAULT_DIRECTORY
-from pyqt_openai.gpt_widget.prompt_gen_widget.promptGroupDirectInputDialog import PromptGroupDirectInputDialog
+    QFILEDIALOG_DEFAULT_DIRECTORY, INDENT_SIZE
 from pyqt_openai.gpt_widget.prompt_gen_widget.promptEntryDirectInputDialog import PromptEntryDirectInputDialog
+from pyqt_openai.gpt_widget.prompt_gen_widget.promptGroupDirectInputDialog import PromptGroupDirectInputDialog
 from pyqt_openai.gpt_widget.prompt_gen_widget.promptGroupExportDialog import PromptGroupExportDialog
 from pyqt_openai.gpt_widget.prompt_gen_widget.promptGroupImportDialog import PromptGroupImportDialog
-from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.lang.translations import LangClass
+from pyqt_openai.pyqt_openai_data import DB
 from pyqt_openai.util.script import open_directory, get_prompt_data
 from pyqt_openai.widgets.button import Button
 
@@ -143,7 +144,7 @@ class SentenceGroupList(QWidget):
                     data = dialog.getSelected()
                     # Save the data
                     with open(filename, 'w') as f:
-                        json.dump(data, f, indent=4)
+                        json.dump(data, f, indent=INDENT_SIZE)
                     open_directory(os.path.dirname(filename))
         except Exception as e:
             QMessageBox.critical(self, LangClass.TRANSLATIONS['Error'], str(e))

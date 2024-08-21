@@ -3,14 +3,14 @@ import os
 from qtpy.QtCore import Qt, QSettings
 from qtpy.QtWidgets import QStackedWidget, QHBoxLayout, QVBoxLayout, QWidget, QSplitter
 
-from pyqt_openai import IMAGE_TABLE_NAME, INI_FILE_NAME, ICON_HISTORY, ICON_SETTING, \
-    DEFAULT_SHORTCUT_LEFT_SIDEBAR_WINDOW, \
+from pyqt_openai import INI_FILE_NAME, ICON_HISTORY, ICON_SETTING, DEFAULT_SHORTCUT_LEFT_SIDEBAR_WINDOW, \
     DEFAULT_SHORTCUT_RIGHT_SIDEBAR_WINDOW
-from pyqt_openai.dalle_widget.dallEControlWidget import DallEControlWidget
-from pyqt_openai.dalle_widget.home import HomePage
+from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ImagePromptContainer
 from pyqt_openai.pyqt_openai_data import DB
+from pyqt_openai.replicate_widget.replicateHome import ReplicateHome
+from pyqt_openai.replicate_widget.replicateRightSideBar import ReplicateRightSideBarWidget
 from pyqt_openai.util.script import get_image_filename_for_saving, open_directory, get_image_prompt_filename_for_saving, \
     getSeparator
 from pyqt_openai.widgets.button import Button
@@ -19,7 +19,7 @@ from pyqt_openai.widgets.notifier import NotifierWidget
 from pyqt_openai.widgets.thumbnailView import ThumbnailView
 
 
-class DallEWidget(QWidget):
+class ReplicateMainWidget(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -27,42 +27,29 @@ class DallEWidget(QWidget):
         self.__initUi()
 
     def __initVal(self):
-        # ini
-        self.__settings_ini = QSettings(INI_FILE_NAME, QSettings.Format.IniFormat)
-        self.__notify_finish = self.__settings_ini.value('notify_finish', type=bool)
-
-        self.__settings_ini.beginGroup('DALLE')
-
-        if not self.__settings_ini.contains('show_history'):
-            self.__settings_ini.setValue('show_history', True)
-        if not self.__settings_ini.contains('show_setting'):
-            self.__settings_ini.setValue('show_setting', True)
-
-        self.__show_history = self.__settings_ini.value('show_history', type=bool)
-        self.__show_setting = self.__settings_ini.value('show_setting', type=bool)
-
-        self.__settings_ini.endGroup()
+        self.__show_history = CONFIG_MANAGER.get_replicate_property('show_history')
+        self.__show_setting = CONFIG_MANAGER.get_replicate_property('show_setting')
 
     def __initUi(self):
-        self.__imageNavWidget = ImageNavWidget(ImagePromptContainer.get_keys(), IMAGE_TABLE_NAME)
+        self.__imageNavWidget = ImageNavWidget(ImagePromptContainer.get_keys(), 'image_tb')
 
         # Main widget
         # This contains home page (at the beginning of the stack) and
         # widget for main view
         self.__mainWidget = QStackedWidget()
 
-        self.__homePage = HomePage()
+        self.__homePage = ReplicateHome()
         self.__viewWidget = ThumbnailView()
 
         self.__mainWidget.addWidget(self.__homePage)
         self.__mainWidget.addWidget(self.__viewWidget)
 
-        self.__rightSideBarWidget = DallEControlWidget()
+        self.__rightSideBarWidget = ReplicateRightSideBarWidget()
 
         self.__imageNavWidget.getContent.connect(lambda x: self.__updateCenterWidget(1, x))
 
-        self.__rightSideBarWidget.submitDallE.connect(self.__setResult)
-        self.__rightSideBarWidget.submitDallEAllComplete.connect(self.__imageGenerationAllComplete)
+        self.__rightSideBarWidget.submitReplicate.connect(self.__setResult)
+        self.__rightSideBarWidget.submitReplicateAllComplete.connect(self.__imageGenerationAllComplete)
 
         self.__historyBtn = Button()
         self.__historyBtn.setStyleAndIcon(ICON_HISTORY)
@@ -161,13 +148,19 @@ class DallEWidget(QWidget):
                 f.write(result.prompt)
 
     def __imageGenerationAllComplete(self):
-        if not self.isVisible():
-            if self.__settings_ini.value('notify_finish', type=bool):
+        if not self.isVisible() or not self.window().isActiveWindow():
+            if CONFIG_MANAGER.get_general_property('notify_finish'):
                 self.__notifierWidget = NotifierWidget(informative_text=LangClass.TRANSLATIONS['Response 👌'], detailed_text = LangClass.TRANSLATIONS['Image Generation complete.'])
                 self.__notifierWidget.show()
-                self.__notifierWidget.doubleClicked.connect(self.window().show)
+                self.__notifierWidget.doubleClicked.connect(self.__bringWindowToFront)
 
                 open_directory(self.__rightSideBarWidget.getDirectory())
+
+    def __bringWindowToFront(self):
+        window = self.window()
+        window.showNormal()
+        window.raise_()
+        window.activateWindow()
 
     def showEvent(self, event):
         self.__imageNavWidget.refresh()
@@ -179,13 +172,9 @@ class DallEWidget(QWidget):
     def __toggle_history(self, f):
         self.__imageNavWidget.setVisible(f)
         self.__show_history = f
-        self.__settings_ini.beginGroup('DALLE')
-        self.__settings_ini.setValue('show_history', f)
-        self.__settings_ini.endGroup()
+        CONFIG_MANAGER.set_replicate_property('show_history', f)
 
     def __toggle_setting(self, f):
         self.__rightSideBarWidget.setVisible(f)
         self.__show_setting = f
-        self.__settings_ini.beginGroup('DALLE')
-        self.__settings_ini.setValue('show_setting', f)
-        self.__settings_ini.endGroup()
+        CONFIG_MANAGER.set_replicate_property('show_setting', f)

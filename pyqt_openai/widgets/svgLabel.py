@@ -8,8 +8,8 @@ from pyqt_openai import SRC_DIR
 
 
 class SvgLabel(QLabel):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None):
+        super().__init__(parent)
         self.__renderer = ''
 
     def paintEvent(self, event):

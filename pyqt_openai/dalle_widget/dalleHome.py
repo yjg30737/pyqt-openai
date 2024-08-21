@@ -2,10 +2,11 @@ from qtpy.QtCore import Qt
 from qtpy.QtGui import QFont
 from qtpy.QtWidgets import QLabel, QWidget, QVBoxLayout, QScrollArea
 
+from pyqt_openai import CONTEXT_DELIMITER
 from pyqt_openai.widgets.linkLabel import LinkLabel
 
 
-class HomePage(QScrollArea):
+class DallEHome(QScrollArea):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.__initUi()
@@ -15,7 +16,7 @@ class HomePage(QScrollArea):
         title.setFont(QFont('Arial', 32))
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        description = QLabel('Generate images with DALL-E.' + '\n'*2)
+        description = QLabel('Generate images with DALL-E.' + CONTEXT_DELIMITER)
 
         description.setFont(QFont('Arial', 16))
         description.setAlignment(Qt.AlignmentFlag.AlignCenter)

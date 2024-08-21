@@ -8,8 +8,8 @@ from pyqt_openai.widgets.svgLabel import SvgLabel
 
 
 class LinkLabel(SvgLabel):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None):
+        super().__init__(parent)
         self.__url = '127.0.0.1'
         self.setStyleSheet('QLabel { color: blue;  } QLabel:hover { color: red; }')
 
