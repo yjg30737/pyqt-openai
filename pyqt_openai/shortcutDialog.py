@@ -29,8 +29,8 @@ class ShortcutDialog(QDialog):
         self.__initUi()
 
     def __initUi(self):
-        # TODO LANGUAGE
-        self.setWindowTitle('Shortcuts')
+        self.setWindowTitle(LangClass.TRANSLATIONS['Shortcuts'])
+
         lay = QFormLayout()
 
         shortcutGroupBox = QGroupBox(LangClass.TRANSLATIONS['Shortcuts'])
