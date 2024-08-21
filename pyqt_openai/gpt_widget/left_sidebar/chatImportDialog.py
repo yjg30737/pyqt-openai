@@ -1,7 +1,7 @@
 import json
 
-from qtpy.QtCore import Qt
-from qtpy.QtWidgets import QWidget, QAbstractItemView, QSpinBox, QTableWidgetItem, QMessageBox, QGroupBox, QLabel, \
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QWidget, QAbstractItemView, QSpinBox, QTableWidgetItem, QMessageBox, QGroupBox, QLabel, \
     QDialogButtonBox, \
     QCheckBox, QDialog, QVBoxLayout, QPushButton
 

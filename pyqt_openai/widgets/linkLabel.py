@@ -1,9 +1,8 @@
 import os
 
-from qtpy.QtCore import Qt, QUrl
-from qtpy.QtGui import QDesktopServices
+from PySide6.QtCore import Qt, QUrl
+from PySide6.QtGui import QDesktopServices
 
-from pyqt_openai.util.script import isUsingPyQt5
 from pyqt_openai.widgets.svgLabel import SvgLabel
 
 
@@ -17,6 +16,6 @@ class LinkLabel(SvgLabel):
         self.__url = url
 
     def mouseReleaseEvent(self, QMouseEvent):
-        v = 1 if isUsingPyQt5() else Qt.MouseButton.LeftButton
+        v = Qt.MouseButton.LeftButton
         if QMouseEvent.button() == v:
             QDesktopServices.openUrl(QUrl(self.__url))

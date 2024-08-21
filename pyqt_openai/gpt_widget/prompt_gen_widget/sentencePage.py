@@ -1,8 +1,8 @@
 import json
 import os
 
-from qtpy.QtCore import Signal, Qt
-from qtpy.QtWidgets import QWidget, QDialog, QTableWidget, QVBoxLayout, QHBoxLayout, QHeaderView, QTableWidgetItem, \
+from PySide6.QtCore import Signal, Qt
+from PySide6.QtWidgets import QWidget, QDialog, QTableWidget, QVBoxLayout, QHBoxLayout, QHeaderView, QTableWidgetItem, \
     QAbstractItemView, QFileDialog, QLabel, QSpacerItem, QListWidget, QListWidgetItem, QSizePolicy, QSplitter, \
     QMessageBox
 

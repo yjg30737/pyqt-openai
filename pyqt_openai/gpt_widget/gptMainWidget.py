@@ -1,7 +1,7 @@
 import os
 
-from qtpy.QtCore import Qt
-from qtpy.QtWidgets import QHBoxLayout, QWidget, QVBoxLayout, QSplitter, \
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QHBoxLayout, QWidget, QVBoxLayout, QSplitter, \
     QFileDialog, QMessageBox, QPushButton
 
 from pyqt_openai import THREAD_TABLE_NAME, JSON_FILE_EXT_LIST_STR, ICON_SIDEBAR, ICON_SETTING, \

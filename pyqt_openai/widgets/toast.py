@@ -1,6 +1,6 @@
-from qtpy.QtWidgets import QLabel, QWidget, QHBoxLayout, QGraphicsOpacityEffect
-from qtpy.QtCore import Qt, QTimer, QPropertyAnimation, QAbstractAnimation, QPoint
-from qtpy.QtGui import QFont, QColor
+from PySide6.QtWidgets import QLabel, QWidget, QHBoxLayout, QGraphicsOpacityEffect
+from PySide6.QtCore import Qt, QTimer, QPropertyAnimation, QAbstractAnimation, QPoint
+from PySide6.QtGui import QFont, QColor
 
 from pyqt_openai import TOAST_DURATION
 

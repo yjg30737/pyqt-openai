@@ -1,5 +1,5 @@
-from qtpy.QtCore import Signal, Qt
-from qtpy.QtWidgets import QLineEdit, QScrollArea, QMessageBox, QWidget, QCheckBox, QSpinBox, QGroupBox, QVBoxLayout, \
+from PySide6.QtCore import Signal, Qt
+from PySide6.QtWidgets import QLineEdit, QScrollArea, QMessageBox, QWidget, QCheckBox, QSpinBox, QGroupBox, QVBoxLayout, \
     QPushButton, \
     QPlainTextEdit, \
     QFormLayout, QLabel, QSplitter

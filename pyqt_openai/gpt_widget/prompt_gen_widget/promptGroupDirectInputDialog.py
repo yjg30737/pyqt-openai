@@ -1,5 +1,5 @@
-from qtpy.QtCore import Qt
-from qtpy.QtWidgets import QDialog, QVBoxLayout, QMessageBox, QLineEdit, QPushButton, QHBoxLayout, QWidget
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QDialog, QVBoxLayout, QMessageBox, QLineEdit, QPushButton, QHBoxLayout, QWidget
 
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.util.script import is_prompt_group_name_valid, getSeparator

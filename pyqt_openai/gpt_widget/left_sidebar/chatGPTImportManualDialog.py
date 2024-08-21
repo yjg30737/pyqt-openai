@@ -1,5 +1,5 @@
-from qtpy.QtCore import Qt
-from qtpy.QtWidgets import QDialog, QLabel, QVBoxLayout
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QDialog, QLabel, QVBoxLayout
 
 from pyqt_openai import IMAGE_CHATGPT_IMPORT_MANUAL
 from pyqt_openai.lang.translations import LangClass

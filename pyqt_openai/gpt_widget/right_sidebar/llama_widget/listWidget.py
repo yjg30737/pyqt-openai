@@ -1,7 +1,7 @@
 import os
 
-from qtpy.QtCore import Signal
-from qtpy.QtWidgets import QListWidget, QWidget, QVBoxLayout, QLabel, QHBoxLayout, QSpacerItem, QPushButton, \
+from PySide6.QtCore import Signal
+from PySide6.QtWidgets import QListWidget, QWidget, QVBoxLayout, QLabel, QHBoxLayout, QSpacerItem, QPushButton, \
     QSizePolicy, QFileDialog
 
 from pyqt_openai import TEXT_FILE_EXT_LIST, QFILEDIALOG_DEFAULT_DIRECTORY

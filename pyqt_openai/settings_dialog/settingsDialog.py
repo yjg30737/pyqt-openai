@@ -1,5 +1,5 @@
-from qtpy.QtCore import Qt
-from qtpy.QtWidgets import QDialog, QVBoxLayout, \
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QDialog, QVBoxLayout, \
     QDialogButtonBox, QMessageBox
 
 from pyqt_openai.lang.translations import LangClass

@@ -1,6 +1,6 @@
-from qtpy.QtCore import Signal, QSortFilterProxyModel, Qt
-from qtpy.QtSql import QSqlTableModel, QSqlQuery
-from qtpy.QtWidgets import QWidget, QVBoxLayout, QMessageBox, QPushButton, QStyledItemDelegate, QTableView, \
+from PySide6.QtCore import Signal, QSortFilterProxyModel, Qt
+from PySide6.QtSql import QSqlTableModel, QSqlQuery
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QMessageBox, QPushButton, QStyledItemDelegate, QTableView, \
     QAbstractItemView, \
     QHBoxLayout, \
     QLabel, QSpacerItem, QSizePolicy, QComboBox, QDialog

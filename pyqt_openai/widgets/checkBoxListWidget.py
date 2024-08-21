@@ -1,5 +1,5 @@
-from qtpy.QtCore import Qt, Signal
-from qtpy.QtWidgets import QListWidgetItem, QListWidget
+from PySide6.QtCore import Qt, Signal
+from PySide6.QtWidgets import QListWidgetItem, QListWidget
 
 
 class CheckBoxListWidget(QListWidget):

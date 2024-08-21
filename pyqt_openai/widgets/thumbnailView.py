@@ -1,8 +1,8 @@
 import os
 
-from qtpy.QtCore import Qt, QPointF, Signal
-from qtpy.QtGui import QPixmap, QColor, QBrush, QLinearGradient
-from qtpy.QtWidgets import QGraphicsScene, QGraphicsPixmapItem, QGraphicsView, QApplication, QWidget, QHBoxLayout, \
+from PySide6.QtCore import Qt, QPointF, Signal
+from PySide6.QtGui import QPixmap, QColor, QBrush, QLinearGradient
+from PySide6.QtWidgets import QGraphicsScene, QGraphicsPixmapItem, QGraphicsView, QApplication, QWidget, QHBoxLayout, \
     QFileDialog
 
 from pyqt_openai import ICON_SAVE, ICON_ADD, ICON_DELETE

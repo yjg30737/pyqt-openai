@@ -1,8 +1,8 @@
 import requests
 
-from qtpy.QtCore import Signal, Qt
-from qtpy.QtGui import QFont, QColor
-from qtpy.QtWidgets import QHBoxLayout, QLineEdit, QPushButton, QLabel, QWidget
+from PySide6.QtCore import Signal, Qt
+from PySide6.QtGui import QFont, QColor
+from PySide6.QtWidgets import QHBoxLayout, QLineEdit, QPushButton, QLabel, QWidget
 
 from pyqt_openai import OPENAI_REQUEST_URL
 from pyqt_openai.config_loader import CONFIG_MANAGER

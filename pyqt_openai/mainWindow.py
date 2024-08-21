@@ -1,12 +1,11 @@
 import os
 
-import requests
-from qtpy.QtCore import Qt
-from qtpy.QtGui import QFont, QIcon, QColor
-from qtpy.QtWidgets import QMainWindow, QToolBar, QHBoxLayout, QDialog, QLineEdit, QPushButton, QWidgetAction, QSpinBox, \
-    QLabel, QWidget, QApplication, \
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QAction, QIcon
+from PySide6.QtWidgets import QMainWindow, QToolBar, QHBoxLayout, QDialog, QWidgetAction, QSpinBox, \
+    QWidget, QApplication, \
     QComboBox, QSizePolicy, QStackedWidget, QMenu, QSystemTrayIcon, \
-    QMessageBox, QCheckBox, QAction
+    QMessageBox, QCheckBox
 
 from pyqt_openai import DEFAULT_SHORTCUT_FULL_SCREEN, \
     APP_INITIAL_WINDOW_SIZE, DEFAULT_APP_NAME, DEFAULT_APP_ICON, ICON_STACKONTOP, ICON_CUSTOMIZE, ICON_FULLSCREEN, \
@@ -21,13 +20,12 @@ from pyqt_openai.doNotAskAgainDialog import DoNotAskAgainDialog
 from pyqt_openai.gpt_widget.gptMainWidget import GPTMainWidget
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import SettingsParamsContainer, CustomizeParamsContainer
-from pyqt_openai.pyqt_openai_data import OPENAI_STRUCT, init_llama
+from pyqt_openai.pyqt_openai_data import init_llama
 from pyqt_openai.replicate_widget.replicateMainWidget import ReplicateMainWidget
 from pyqt_openai.settings_dialog.settingsDialog import SettingsDialog
 from pyqt_openai.shortcutDialog import ShortcutDialog
 from pyqt_openai.util.script import restart_app, show_message_box_after_change_to_restart, goPayPal, goKofi
 from pyqt_openai.widgets.button import Button
-from pyqt_openai_data import setOpenAIEnabled
 
 
 class MainWindow(QMainWindow):

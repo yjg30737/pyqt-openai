@@ -3,9 +3,9 @@ from pyqt_openai import COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_CHAT, COLUMN_TO_EXCLUDE
     MAXIMUM_MESSAGES_IN_PARAMETER_RANGE
 from pyqt_openai.widgets.checkBoxListWidget import CheckBoxListWidget
 
-from qtpy.QtCore import QRegularExpression
-from qtpy.QtGui import QRegularExpressionValidator
-from qtpy.QtWidgets import QComboBox, QFormLayout, QLineEdit, QCheckBox, QSizePolicy, \
+from PySide6.QtCore import QRegularExpression
+from PySide6.QtGui import QRegularExpressionValidator
+from PySide6.QtWidgets import QComboBox, QFormLayout, QLineEdit, QCheckBox, QSizePolicy, \
     QVBoxLayout, QHBoxLayout, QGroupBox, QSplitter, QLabel, QWidget, QSpinBox
 
 from pyqt_openai.models import ImagePromptContainer, ChatThreadContainer, SettingsParamsContainer

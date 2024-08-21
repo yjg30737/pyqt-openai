@@ -1,9 +1,9 @@
 import re
 from typing import List
 
-from qtpy.QtGui import QTextCharFormat, QColor, QTextCursor
-from qtpy.QtCore import Qt, Signal
-from qtpy.QtWidgets import QScrollArea, QVBoxLayout, QWidget, QLabel
+from PySide6.QtGui import QTextCharFormat, QColor, QTextCursor
+from PySide6.QtCore import Qt, Signal
+from PySide6.QtWidgets import QScrollArea, QVBoxLayout, QWidget, QLabel
 
 from pyqt_openai import MAXIMUM_MESSAGES_IN_PARAMETER, DEFAULT_FOUND_TEXT_BG_COLOR, DEFAULT_FOUND_TEXT_COLOR
 from pyqt_openai.gpt_widget.center.aiChatUnit import AIChatUnit

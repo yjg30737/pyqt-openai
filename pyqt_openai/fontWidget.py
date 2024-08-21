@@ -1,12 +1,11 @@
-from qtpy.QtCore import Signal, Qt, QThread
-from qtpy.QtGui import QFontDatabase, QFont
-from qtpy.QtWidgets import QListWidget, QWidget, QVBoxLayout, QLabel, QLineEdit, QListWidgetItem
-from qtpy.QtWidgets import QSizePolicy, \
+from PySide6.QtCore import Signal, Qt, QThread
+from PySide6.QtGui import QFontDatabase, QFont
+from PySide6.QtWidgets import QListWidget, QWidget, QVBoxLayout, QLabel, QLineEdit, QListWidgetItem
+from PySide6.QtWidgets import QSizePolicy, \
     QTextEdit, QHBoxLayout
 
 from pyqt_openai import DEFAULT_FONT_FAMILY
 from pyqt_openai.lang.translations import LangClass
-from pyqt_openai.util.script import isUsingPyQt5
 
 
 class FontLoaderThread(QThread):
@@ -18,11 +17,7 @@ class FontLoaderThread(QThread):
         self.font = font
 
     def run(self):
-        if isUsingPyQt5():
-            fd = QFontDatabase()
-            fm = fd.families(QFontDatabase.Any)
-        else:
-            fm = QFontDatabase.families(QFontDatabase.Any)
+        fm = QFontDatabase.families(QFontDatabase.Any)
         self.fonts_loaded.emit(fm)
         self.afterFinished.emit(self.font)
 
@@ -65,21 +60,13 @@ class SizeWidget(QWidget):
 
     def __initSizesList(self, font: QFont):
         font_name = font.family()
-        if isUsingPyQt5():
-            fd = QFontDatabase()
-            style_name = fd.styles(font_name)
-        else:
-            style_name = QFontDatabase.styles(font_name)
+        style_name = QFontDatabase.styles(font_name)
         # In case of font is not in the font list
         if style_name:
             pass
         else:
             font_name = 'Arial'
-        if isUsingPyQt5():
-            fd = QFontDatabase()
-            sizes = fd.pointSizes(font_name)
-        else:
-            sizes = QFontDatabase.pointSizes(font_name)
+        sizes = QFontDatabase.pointSizes(font_name)
         sizes = list(map(str, sizes))
         self.__sizeListWidget.addItems(sizes)
 
@@ -189,13 +176,8 @@ class FontItemWidget(QWidget):
     def __fontItemChanged(self):
         font_name = self.__fontListWidget.currentItem().text()
         self.__fontLineEdit.setText(font_name)
-        if isUsingPyQt5():
-            fd = QFontDatabase()
-            styles = fd.styles(font_name)
-            pointSizes = fd.pointSizes(font_name, fd.styles(font_name)[0])
-        else:
-            styles = QFontDatabase.styles(font_name)
-            pointSizes = QFontDatabase.pointSizes(font_name, QFontDatabase.styles(font_name)[0])
+        styles = QFontDatabase.styles(font_name)
+        pointSizes = QFontDatabase.pointSizes(font_name, QFontDatabase.styles(font_name)[0])
         self.fontItemChanged.emit(font_name, styles, pointSizes)
 
     def __textEdited(self):

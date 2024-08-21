@@ -1,4 +1,4 @@
-from qtpy.QtGui import QPixmap
+from PySide6.QtGui import QPixmap
 
 from pyqt_openai import ICON_QUESTION
 from pyqt_openai.widgets.svgLabel import SvgLabel

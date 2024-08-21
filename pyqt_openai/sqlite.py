@@ -3,7 +3,7 @@ import sqlite3
 from datetime import datetime
 from typing import List
 
-from qtpy.QtCore import QSettings
+from PySide6.QtCore import QSettings
 
 from pyqt_openai import THREAD_TABLE_NAME, THREAD_TRIGGER_NAME, \
     THREAD_TABLE_NAME_OLD, \

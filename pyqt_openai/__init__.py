@@ -4,17 +4,18 @@ This file is used to store the constants and the global variables that are used 
 
 import json
 import os
-from pathlib import Path
 
-import toml
+import tomllib  # Python 3.11 built-in module
+from pathlib import Path
 
 # Load the pyproject.toml file
 SRC_DIR = Path(__file__).resolve().parent
 ROOT_DIR = SRC_DIR.parent
 SETUP_FILENAME = ROOT_DIR / "pyproject.toml"
 
-with open(SETUP_FILENAME, "r") as file:
-    pyproject_data = toml.load(file)
+# Read the TOML file using tomllib (Python 3.11+)
+with open(SETUP_FILENAME, "rb") as file:
+    pyproject_data = tomllib.load(file)
 
 # For the sake of following the PEP8 standard, we will declare module-level dunder names.
 # PEP8 standard about dunder names: https://peps.python.org/pep-0008/#module-level-dunder-names

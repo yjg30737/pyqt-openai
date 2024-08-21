@@ -1,7 +1,7 @@
 from pathlib import Path
 
-from qtpy.QtCore import Qt, Signal, QMimeData
-from qtpy.QtWidgets import QTextEdit
+from PySide6.QtCore import Qt, Signal, QMimeData
+from PySide6.QtWidgets import QTextEdit
 
 from pyqt_openai import IMAGE_FILE_EXT_LIST
 

@@ -1,6 +1,6 @@
-from qtpy.QtCore import Qt
-from qtpy.QtGui import QFont
-from qtpy.QtWidgets import QLabel, QWidget, QVBoxLayout, QScrollArea
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QFont
+from PySide6.QtWidgets import QLabel, QWidget, QVBoxLayout, QScrollArea
 
 from pyqt_openai import CONTEXT_DELIMITER
 from pyqt_openai.widgets.linkLabel import LinkLabel

@@ -1,8 +1,8 @@
 # Currently this page is home page of the application.
 
-from qtpy.QtCore import Qt
-from qtpy.QtGui import QFont, QPixmap
-from qtpy.QtWidgets import QLabel, QWidget, QVBoxLayout, QScrollArea
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QFont, QPixmap
+from PySide6.QtWidgets import QLabel, QWidget, QVBoxLayout, QScrollArea
 
 from pyqt_openai import DEFAULT_APP_NAME, HOW_TO_GET_OPENAI_API_KEY_URL
 from pyqt_openai.lang.translations import LangClass

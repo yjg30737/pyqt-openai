@@ -1,14 +1,14 @@
 import os
 
-from qtpy.QtCore import Qt, QSettings
-from qtpy.QtWidgets import QStackedWidget, QHBoxLayout, QVBoxLayout, QWidget, QSplitter
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QStackedWidget, QHBoxLayout, QVBoxLayout, QWidget, QSplitter
 
-from pyqt_openai import IMAGE_TABLE_NAME, INI_FILE_NAME, ICON_HISTORY, ICON_SETTING, \
+from pyqt_openai import IMAGE_TABLE_NAME, ICON_HISTORY, ICON_SETTING, \
     DEFAULT_SHORTCUT_LEFT_SIDEBAR_WINDOW, \
     DEFAULT_SHORTCUT_RIGHT_SIDEBAR_WINDOW
 from pyqt_openai.config_loader import CONFIG_MANAGER
-from pyqt_openai.dalle_widget.dalleRightSideBar import DallERightSideBarWidget
 from pyqt_openai.dalle_widget.dalleHome import DallEHome
+from pyqt_openai.dalle_widget.dalleRightSideBar import DallERightSideBarWidget
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ImagePromptContainer
 from pyqt_openai.pyqt_openai_data import DB
@@ -29,7 +29,6 @@ class DallEMainWidget(QWidget):
 
     def __initVal(self):
         # ini
-        self.__notify_finish = CONFIG_MANAGER.get_dalle_property('notify_finish')
         self.__show_history = CONFIG_MANAGER.get_dalle_property('show_history')
         self.__show_setting = CONFIG_MANAGER.get_dalle_property('show_setting')
 
@@ -152,7 +151,7 @@ class DallEMainWidget(QWidget):
 
     def __imageGenerationAllComplete(self):
         if not self.isVisible() or not self.window().isActiveWindow():
-            if self.__notify_finish:
+            if CONFIG_MANAGER.get_general_property('notify_finish'):
                 self.__notifierWidget = NotifierWidget(informative_text=LangClass.TRANSLATIONS['Response 👌'], detailed_text = LangClass.TRANSLATIONS['Image Generation complete.'])
                 self.__notifierWidget.show()
                 self.__notifierWidget.doubleClicked.connect(self.__bringWindowToFront)

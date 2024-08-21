@@ -1,6 +1,6 @@
 # TODO WILL_BE_IMPLEMENTED AFTER v1.1.0
 
-# from qtpy.QtWidgets import QDialog, QVBoxLayout
+# from PySide6.QtWidgets import QDialog, QVBoxLayout
 #
 # from pyqt_openai.apiWidget import ApiWidget
 #

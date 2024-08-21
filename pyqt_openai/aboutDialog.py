@@ -1,9 +1,9 @@
 import datetime
 import pyqt_openai
 
-from qtpy.QtCore import Qt
-from qtpy.QtGui import QPixmap
-from qtpy.QtWidgets import QDialog, QPushButton, QHBoxLayout, QWidget, QVBoxLayout, QLabel
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QPixmap
+from PySide6.QtWidgets import QDialog, QPushButton, QHBoxLayout, QWidget, QVBoxLayout, QLabel
 
 from pyqt_openai import DEFAULT_APP_ICON, LICENSE_URL, GITHUB_URL, DISCORD_URL, DEFAULT_APP_NAME, CONTACT
 from pyqt_openai.lang.translations import LangClass
@@ -41,7 +41,7 @@ class AboutDialog(QDialog):
         descWidget3 = QLabel()
         descWidget3.setText(f'''
         <br/><br/>Contact: {CONTACT}<br/>
-        <p>Powered by qtpy</p>
+        <p>Powered by PySide6</p>
         ''')
 
         descWidget1.setAlignment(Qt.AlignmentFlag.AlignTop)

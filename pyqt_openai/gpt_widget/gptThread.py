@@ -1,6 +1,6 @@
 import openai
 from llama_index.core.base.response.schema import StreamingResponse
-from qtpy.QtCore import QThread, Signal
+from PySide6.QtCore import QThread, Signal
 
 from pyqt_openai.models import ChatMessageContainer
 from pyqt_openai.pyqt_openai_data import OPENAI_STRUCT

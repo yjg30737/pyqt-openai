@@ -1,7 +1,7 @@
 import pyperclip
 
-from qtpy.QtWidgets import QTextBrowser, QSplitter, QWidget, QLabel, QVBoxLayout, QPushButton, QTabWidget, QScrollArea
-from qtpy.QtCore import Qt
+from PySide6.QtWidgets import QTextBrowser, QSplitter, QWidget, QLabel, QVBoxLayout, QPushButton, QTabWidget, QScrollArea
+from PySide6.QtCore import Qt
 
 from pyqt_openai.gpt_widget.prompt_gen_widget.formPage import FormPage
 from pyqt_openai.gpt_widget.prompt_gen_widget.sentencePage import SentencePage

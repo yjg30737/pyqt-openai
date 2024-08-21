@@ -1,6 +1,6 @@
-from qtpy.QtCore import Qt
-from qtpy.QtGui import QFont
-from qtpy.QtWidgets import QDialog, QPushButton, QHBoxLayout, QVBoxLayout, QWidget, QFormLayout, QSplitter, \
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QFont
+from PySide6.QtWidgets import QDialog, QPushButton, QHBoxLayout, QVBoxLayout, QWidget, QFormLayout, QSplitter, \
     QSizePolicy
 
 from pyqt_openai import IMAGE_FILE_EXT_LIST_STR, DEFAULT_ICON_SIZE

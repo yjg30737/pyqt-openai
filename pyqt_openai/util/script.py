@@ -20,9 +20,9 @@ from pathlib import Path
 
 import requests
 from jinja2 import Template
-from qtpy.QtCore import QSettings, Qt, QUrl
-from qtpy.QtGui import QDesktopServices
-from qtpy.QtWidgets import QMessageBox, QFrame
+from PySide6.QtCore import QSettings, Qt, QUrl
+from PySide6.QtGui import QDesktopServices
+from PySide6.QtWidgets import QMessageBox, QFrame
 
 from pyqt_openai import INI_FILE_NAME, DEFAULT_FONT_SIZE, DEFAULT_FONT_FAMILY, MAIN_INDEX, \
     PROMPT_NAME_REGEX, PAYPAL_URL, PROMPT_MAIN_KEY_NAME, PROMPT_BEGINNING_KEY_NAME, \
@@ -312,9 +312,6 @@ def goKofi():
 
 def goPayPal():
     webbrowser.open(PAYPAL_URL)
-
-def isUsingPyQt5():
-    return os.environ['QT_API'] == 'pyqt5'
 
 def showJsonSample(json_sample_widget, json_sample):
     json_sample_widget.setText(json_sample)

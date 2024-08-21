@@ -1,8 +1,8 @@
 import typing
 
-from qtpy.QtCore import Signal, Qt
-from qtpy.QtWidgets import QHeaderView, QTableWidget, QCheckBox
-from qtpy.QtWidgets import QWidget, QGridLayout
+from PySide6.QtCore import Signal, Qt
+from PySide6.QtWidgets import QHeaderView, QTableWidget, QCheckBox
+from PySide6.QtWidgets import QWidget, QGridLayout
 
 
 class CheckBox(QWidget):
