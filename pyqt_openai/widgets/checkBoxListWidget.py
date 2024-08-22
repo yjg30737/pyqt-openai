@@ -5,8 +5,8 @@ from PySide6.QtWidgets import QListWidgetItem, QListWidget
 class CheckBoxListWidget(QListWidget):
     checkedSignal = Signal(int, Qt.CheckState)
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None):
+        super().__init__(parent)
         self.itemChanged.connect(self.__sendCheckedSignal)
 
     def __sendCheckedSignal(self, item):

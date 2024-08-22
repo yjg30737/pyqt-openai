@@ -12,8 +12,8 @@ from pyqt_openai import SRC_DIR, ICON_CLOSE, NOTIFIER_MAX_CHAR
 class NotifierWidget(QWidget):
     doubleClicked = Signal()
 
-    def __init__(self, informative_text='', detailed_text=''):
-        super().__init__()
+    def __init__(self, informative_text='', detailed_text='', parent=None):
+        super().__init__(parent)
         self.__timerVal = 10000
         self.__initUi(informative_text, detailed_text)
         self.__repositionWidget()

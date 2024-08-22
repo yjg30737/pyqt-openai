@@ -18,8 +18,8 @@ class DallERightSideBarWidget(QScrollArea):
     submitDallE = Signal(ImagePromptContainer)
     submitDallEAllComplete = Signal()
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None):
+        super().__init__(parent)
         self.__initVal()
         self.__initUi()
 

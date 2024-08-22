@@ -13,8 +13,8 @@ class GPTRightSideBarWidget(QScrollArea):
     onDirectorySelected = Signal(str)
     onToggleJSON = Signal(bool)
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None):
+        super().__init__(parent)
         self.__initVal()
         self.__initUi()
 

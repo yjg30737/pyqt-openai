@@ -48,8 +48,8 @@ class SqlTableModel(QSqlTableModel):
 class ImageNavWidget(QWidget):
     getContent = Signal(bytes)
 
-    def __init__(self, columns, table_nm):
-        super().__init__()
+    def __init__(self, columns, table_nm, parent=None):
+        super().__init__(parent)
         self.__initVal(columns, table_nm)
         self.__initUi()
 

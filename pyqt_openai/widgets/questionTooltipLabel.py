@@ -5,7 +5,7 @@ from pyqt_openai.widgets.svgLabel import SvgLabel
 
 
 class QuestionTooltipLabel(SvgLabel):
-    def __init__(self, parent=None, tooltip="Click for more information"):
-        super().__init__()
+    def __init__(self, tooltip="Click for more information", parent=None):
+        super().__init__(parent)
         self.setPixmap(QPixmap(ICON_QUESTION))
         self.setToolTip(tooltip)

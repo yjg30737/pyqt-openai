@@ -15,8 +15,8 @@ class ChatPage(QWidget):
     onToggleLlama = Signal(bool)
     onToggleJSON = Signal(bool)
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None):
+        super().__init__(parent)
         self.__initVal()
         self.__initUi()
 
@@ -36,6 +36,7 @@ class ChatPage(QWidget):
 
     def __initUi(self):
         systemlbl = QLabel(LangClass.TRANSLATIONS['System'])
+        systemlbl.setToolTip(LangClass.TRANSLATIONS['Basically system means instructions or rules that the model should follow.'] + '\n' + LangClass.TRANSLATIONS['You can write your own system instructions here.'])
 
         self.__systemTextEdit = QTextEdit()
         self.__systemTextEdit.setText(self.__system)
@@ -50,18 +51,24 @@ class ChatPage(QWidget):
 
         advancedSettingsScrollArea = QScrollArea()
 
+        # TODO LANGUAGE
+
         self.__temperatureSpinBox = QDoubleSpinBox()
         self.__temperatureSpinBox.setRange(*OPENAI_TEMPERATURE_RANGE)
         self.__temperatureSpinBox.setAccelerated(True)
         self.__temperatureSpinBox.setSingleStep(OPENAI_TEMPERATURE_STEP)
         self.__temperatureSpinBox.setValue(self.__temperature)
         self.__temperatureSpinBox.valueChanged.connect(self.__valueChanged)
+        self.__temperatureSpinBox.setToolTip(LangClass.TRANSLATIONS['To control the randomness of responses, you adjust the temperature parameter.'] + '\n' + LangClass.TRANSLATIONS[
+                                                                    'A lower value results in less random completions.'])
 
         self.__maxTokensSpinBox = QSpinBox()
         self.__maxTokensSpinBox.setRange(*MAX_TOKENS_RANGE)
         self.__maxTokensSpinBox.setAccelerated(True)
         self.__maxTokensSpinBox.setValue(self.__max_tokens)
         self.__maxTokensSpinBox.valueChanged.connect(self.__valueChanged)
+        self.__maxTokensSpinBox.setToolTip(LangClass.TRANSLATIONS['To set a limit on the number of tokens to generate, you use the max tokens parameter.'] + '\n' + LangClass.TRANSLATIONS[
+                                                                  'The model will stop generating tokens once it reaches the limit.'])
 
         self.__toppSpinBox = QDoubleSpinBox()
         self.__toppSpinBox.setRange(*TOP_P_RANGE)
@@ -69,6 +76,8 @@ class ChatPage(QWidget):
         self.__toppSpinBox.setSingleStep(TOP_P_STEP)
         self.__toppSpinBox.setValue(self.__top_p)
         self.__toppSpinBox.valueChanged.connect(self.__valueChanged)
+        self.__toppSpinBox.setToolTip(LangClass.TRANSLATIONS['To set a threshold for nucleus sampling, you use the top p parameter.'] + '\n' + LangClass.TRANSLATIONS[
+                                                             'The model will stop generating tokens once the cumulative probability of the generated tokens exceeds the threshold.'])
 
         self.__frequencyPenaltySpinBox = QDoubleSpinBox()
         self.__frequencyPenaltySpinBox.setRange(*FREQUENCY_PENALTY_RANGE)
@@ -76,6 +85,8 @@ class ChatPage(QWidget):
         self.__frequencyPenaltySpinBox.setSingleStep(FREQUENCY_PENALTY_STEP)
         self.__frequencyPenaltySpinBox.setValue(self.__frequency_penalty)
         self.__frequencyPenaltySpinBox.valueChanged.connect(self.__valueChanged)
+        self.__frequencyPenaltySpinBox.setToolTip(LangClass.TRANSLATIONS['To penalize the model from repeating the same tokens, you use the frequency penalty parameter.'] + '\n' + LangClass.TRANSLATIONS[
+                                                                         'The model will be less likely to generate tokens that have already been generated.'])
 
         self.__presencePenaltySpinBox = QDoubleSpinBox()
         self.__presencePenaltySpinBox.setRange(*PRESENCE_PENALTY_RANGE)
@@ -83,6 +94,8 @@ class ChatPage(QWidget):
         self.__presencePenaltySpinBox.setSingleStep(PRESENCE_PENALTY_STEP)
         self.__presencePenaltySpinBox.setValue(self.__presence_penalty)
         self.__presencePenaltySpinBox.valueChanged.connect(self.__valueChanged)
+        self.__presencePenaltySpinBox.setToolTip(LangClass.TRANSLATIONS['To penalize the model from generating tokens that are not present in the input, you use the presence penalty parameter.'] + '\n' + LangClass.TRANSLATIONS[
+                                                                        'The model will be less likely to generate tokens that are not present in the input.'])
 
         useMaxTokenChkBox = QCheckBox()
         useMaxTokenChkBox.toggled.connect(self.__useMaxChecked)
@@ -94,11 +107,11 @@ class ChatPage(QWidget):
         lay = QFormLayout()
 
         lay.addRow(useMaxTokenChkBox)
-        lay.addRow('temperature', self.__temperatureSpinBox)
-        lay.addRow('maxTokens', self.__maxTokensSpinBox)
-        lay.addRow('topp', self.__toppSpinBox)
-        lay.addRow('frequencyPenalty', self.__frequencyPenaltySpinBox)
-        lay.addRow('presencePenalty', self.__presencePenaltySpinBox)
+        lay.addRow('Temperature', self.__temperatureSpinBox)
+        lay.addRow('Max Tokens', self.__maxTokensSpinBox)
+        lay.addRow('Top p', self.__toppSpinBox)
+        lay.addRow('Frequency Penalty', self.__frequencyPenaltySpinBox)
+        lay.addRow('Presence Penalty', self.__presencePenaltySpinBox)
 
         paramWidget = QWidget()
         paramWidget.setLayout(lay)

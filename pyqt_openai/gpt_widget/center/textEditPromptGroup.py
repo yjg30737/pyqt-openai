@@ -17,8 +17,8 @@ class TextEditPromptGroup(QWidget):
     onSendKeySignalToSuggestion = Signal(str)
     onPasteFile = Signal(QByteArray)
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None):
+        super().__init__(parent)
         self.__initUi()
 
     def __initUi(self):

@@ -17,8 +17,8 @@ class FindTextWidget(QWidget):
     nextClicked = Signal(str)
     closeSignal = Signal()
 
-    def __init__(self, chatBrowser: ChatBrowser):
-        super().__init__()
+    def __init__(self, chatBrowser: ChatBrowser, parent=None):
+        super().__init__(parent)
         self.__chatBrowser = chatBrowser
         self.__initVal()
         self.__initUi()

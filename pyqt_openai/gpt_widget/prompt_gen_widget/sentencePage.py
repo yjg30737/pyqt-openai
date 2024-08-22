@@ -24,8 +24,8 @@ class SentenceGroupList(QWidget):
     currentRowChanged = Signal(int)
     itemChanged = Signal(int)
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None):
+        super().__init__(parent)
         self.__initUi()
 
     def __initUi(self):
@@ -165,8 +165,8 @@ class SentenceGroupList(QWidget):
 class PromptTable(QWidget):
     updated = Signal(str)
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None):
+        super().__init__(parent)
         self.__initVal()
         self.__initUi()
 
@@ -303,8 +303,8 @@ class PromptTable(QWidget):
 class SentencePage(QWidget):
     updated = Signal(str)
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None):
+        super().__init__(parent)
         self.__initUi()
 
     def __initUi(self):

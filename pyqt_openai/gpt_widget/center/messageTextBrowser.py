@@ -8,8 +8,8 @@ from pyqt_openai import MESSAGE_ADDITIONAL_HEIGHT, MESSAGE_MAXIMUM_HEIGHT, MESSA
 
 
 class MessageTextBrowser(QTextBrowser):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None):
+        super().__init__(parent)
 
         # Make the remote links clickable
         self.anchorClicked.connect(self.on_anchor_clicked)

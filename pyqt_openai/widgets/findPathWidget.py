@@ -11,8 +11,8 @@ from pyqt_openai.lang.translations import LangClass
 
 
 class FindPathLineEdit(QLineEdit):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None):
+        super().__init__(parent)
         self.__initUi()
 
     def __initUi(self):
@@ -52,8 +52,8 @@ class FindPathWidget(QWidget):
     findClicked = Signal()
     added = Signal(str)
 
-    def __init__(self, default_filename: str = ''):
-        super().__init__()
+    def __init__(self, default_filename: str = '', parent=None):
+        super().__init__(parent)
         self.__initVal()
         self.__initUi(default_filename)
 

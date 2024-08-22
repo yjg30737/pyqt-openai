@@ -16,10 +16,9 @@ sys.path.insert(0, os.getcwd())  # Add the current directory as well
 # for testing pyqt6
 # os.environ['QT_API'] = 'pyqt6'
 
-from PySide6.QtGui import QGuiApplication, QFont, QIcon, QPixmap
+from PySide6.QtGui import QFont, QIcon, QPixmap
 from PySide6.QtWidgets import QApplication, \
     QSplashScreen
-from PySide6.QtCore import Qt, QCoreApplication
 from PySide6.QtSql import QSqlDatabase
 
 from pyqt_openai.config_loader import CONFIG_MANAGER

@@ -63,8 +63,8 @@ class ChatNavWidget(QWidget):
     onExport = Signal(list)
     onFavoriteClicked = Signal(bool)
 
-    def __init__(self, columns, table_nm):
-        super().__init__()
+    def __init__(self, columns, table_nm, parent=None):
+        super().__init__(parent)
         self.__initVal(columns, table_nm)
         self.__initUi()
 
@@ -93,7 +93,7 @@ class ChatNavWidget(QWidget):
         self.__addBtn.setToolTip(LangClass.TRANSLATIONS['Add'])
         self.__delBtn.setToolTip(LangClass.TRANSLATIONS['Delete'])
         self.__importBtn.setToolTip(LangClass.TRANSLATIONS['Import'])
-        self.__saveBtn.setToolTip(LangClass.TRANSLATIONS['Save'])
+        self.__saveBtn.setToolTip(LangClass.TRANSLATIONS['Export'])
         self.__clearBtn.setToolTip(LangClass.TRANSLATIONS['Remove All'])
         self.__refreshBtn.setToolTip(LangClass.TRANSLATIONS['Refresh'])
 

@@ -11,8 +11,8 @@ from pyqt_openai.widgets.button import Button
 class MenuWidget(QWidget):
     onMenuCloseClicked = Signal()
 
-    def __init__(self, widget: ChatBrowser):
-        super().__init__()
+    def __init__(self, widget: ChatBrowser, parent=None):
+        super().__init__(parent)
         self.__initUi(widget=widget)
 
     def __initUi(self, widget):

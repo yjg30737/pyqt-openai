@@ -14,8 +14,8 @@ class FileListWidget(QWidget):
     onDirectorySelected = Signal()
     clicked = Signal(str)
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None):
+        super().__init__(parent)
         self.__initVal()
         self.__initUi()
 

@@ -25,8 +25,8 @@ class FontLoaderThread(QThread):
 class SizeWidget(QWidget):
     sizeItemChanged = Signal(int)
 
-    def __init__(self, font: QFont):
-        super().__init__()
+    def __init__(self, font: QFont, parent=None):
+        super().__init__(parent)
         self.__initUi(font=font)
 
     def __initUi(self, font: QFont):
@@ -117,8 +117,8 @@ class SizeWidget(QWidget):
 class FontItemWidget(QWidget):
     fontItemChanged = Signal(str, list, list)
 
-    def __init__(self, font):
-        super().__init__()
+    def __init__(self, font, parent=None):
+        super().__init__(parent)
         self.__font_families = []
         self.__initUi(font=font)
 
@@ -206,13 +206,13 @@ class FontItemWidget(QWidget):
 class FontWidget(QWidget):
     fontChanged = Signal(QFont)
 
-    def __init__(self, font):
-        super().__init__()
+    def __init__(self, font, parent=None):
+        super().__init__(parent)
         self.__current_font = font
         self.__initUi(font=font)
 
     def __initUi(self, font: QFont):
-        self.__previewTextEdit = QTextEdit()
+        self.__previewTextEdit = QTextEdit(self)
         self.__previewTextEdit.textChanged.connect(self.__textChanged)
 
         self.__fontItemWidget = FontItemWidget(font)

@@ -19,8 +19,8 @@ class ReplicateRightSideBarWidget(QScrollArea):
     submitReplicate = Signal(ImagePromptContainer)
     submitReplicateAllComplete = Signal()
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None):
+        super().__init__(parent)
         self.__initVal()
         self.__initUi()
 
