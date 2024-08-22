@@ -17,6 +17,7 @@ class UploadedImageFileWidget(QWidget):
 
     def __initVal(self):
         self.__delete_mode = False
+        self.__original_pixmaps = []  # Array of original images
 
     def __initUi(self):
         lbl = QLabel(LangClass.TRANSLATIONS['Uploaded Files (Only Images)'])
@@ -80,29 +81,30 @@ class UploadedImageFileWidget(QWidget):
         lbl.installEventFilter(self)
         pixmap = QPixmap()
         pixmap.loadFromData(image_buffer)
+        self.__original_pixmaps.append(pixmap)
         pixmap = pixmap.scaled(*PROMPT_IMAGE_SCALE)
         lbl.setPixmap(pixmap)
         lay.addWidget(lbl)
         self.__toggle(True)
 
+
     def getImageBuffers(self):
-        lay = self.getLayout()
         buffers = []
-        for i in range(lay.count()):
-            lbl = lay.itemAt(i).widget()
-            if not isinstance(lbl, QLabel):
-                continue
-            pixmap = lbl.pixmap()
+        # Make a copy of the original images
+        for pixmap in self.__original_pixmaps:
             byte_array = QByteArray()
             buffer = QBuffer(byte_array)
             buffer.open(QBuffer.WriteOnly)
 
-            # Save the pixmap to the buffer in PNG format
+            # Save the pixmap to the buffer
             pixmap.save(buffer, "PNG")
 
-            # Convert QByteArray to bytes (if needed)
+            # Convert the buffer to bytes
             image_bytes = byte_array.data()
             buffers.append(image_bytes)
+
+        self.__original_pixmaps = []
+
         return buffers
 
     def __activateDelete(self):

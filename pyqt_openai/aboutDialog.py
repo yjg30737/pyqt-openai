@@ -1,11 +1,11 @@
 import datetime
-import pyqt_openai
 
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QDialog, QPushButton, QHBoxLayout, QWidget, QVBoxLayout, QLabel
 
-from pyqt_openai import DEFAULT_APP_ICON, LICENSE_URL, GITHUB_URL, DISCORD_URL, DEFAULT_APP_NAME, CONTACT
+import pyqt_openai
+from pyqt_openai import DEFAULT_APP_ICON, LICENSE_URL, DEFAULT_APP_NAME, CONTACT
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.widgets.linkLabel import LinkLabel
 
@@ -48,29 +48,10 @@ class AboutDialog(QDialog):
         descWidget2.setAlignment(Qt.AlignmentFlag.AlignTop)
         descWidget3.setAlignment(Qt.AlignmentFlag.AlignTop)
 
-        self.__githubLbl = LinkLabel()
-        self.__githubLbl.setSvgFile(pyqt_openai.ICON_GITHUB)
-        self.__githubLbl.setUrl(GITHUB_URL)
-
-        self.__discordLbl = LinkLabel()
-        self.__discordLbl.setSvgFile(pyqt_openai.ICON_DISCORD)
-        self.__discordLbl.setUrl(DISCORD_URL)
-        self.__discordLbl.setFixedSize(22, 19)
-
-        lay = QHBoxLayout()
-        lay.addWidget(self.__githubLbl)
-        lay.addWidget(self.__discordLbl)
-        lay.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        lay.setContentsMargins(0, 0, 0, 0)
-
-        linkWidget = QWidget()
-        linkWidget.setLayout(lay)
-
         lay = QVBoxLayout()
         lay.addWidget(descWidget1)
         lay.addWidget(descWidget2)
         lay.addWidget(descWidget3)
-        lay.addWidget(linkWidget)
         lay.setAlignment(Qt.AlignmentFlag.AlignTop)
         lay.setContentsMargins(0, 0, 0, 0)
 

@@ -13,20 +13,19 @@ import re
 import string
 import sys
 import traceback
-import webbrowser
 import zipfile
 from datetime import datetime
 from pathlib import Path
 
 import requests
-from jinja2 import Template
 from PySide6.QtCore import QSettings, Qt, QUrl
 from PySide6.QtGui import QDesktopServices
 from PySide6.QtWidgets import QMessageBox, QFrame
+from jinja2 import Template
 
 from pyqt_openai import INI_FILE_NAME, DEFAULT_FONT_SIZE, DEFAULT_FONT_FAMILY, MAIN_INDEX, \
-    PROMPT_NAME_REGEX, PAYPAL_URL, PROMPT_MAIN_KEY_NAME, PROMPT_BEGINNING_KEY_NAME, \
-    PROMPT_END_KEY_NAME, PROMPT_JSON_KEY_NAME, CONTEXT_DELIMITER, KOFI_URL
+    PROMPT_NAME_REGEX, PROMPT_MAIN_KEY_NAME, PROMPT_BEGINNING_KEY_NAME, \
+    PROMPT_END_KEY_NAME, PROMPT_JSON_KEY_NAME, CONTEXT_DELIMITER
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ImagePromptContainer
 from pyqt_openai.pyqt_openai_data import DB
@@ -306,12 +305,6 @@ def get_prompt_data(prompt_type='form'):
             })
         data.append(group_obj)
     return data
-
-def goKofi():
-    webbrowser.open(KOFI_URL)
-
-def goPayPal():
-    webbrowser.open(PAYPAL_URL)
 
 def showJsonSample(json_sample_widget, json_sample):
     json_sample_widget.setText(json_sample)

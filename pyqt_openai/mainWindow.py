@@ -1,4 +1,5 @@
 import os
+import webbrowser
 
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QAction, QIcon
@@ -10,7 +11,8 @@ from PySide6.QtWidgets import QMainWindow, QToolBar, QHBoxLayout, QDialog, QWidg
 from pyqt_openai import DEFAULT_SHORTCUT_FULL_SCREEN, \
     APP_INITIAL_WINDOW_SIZE, DEFAULT_APP_NAME, DEFAULT_APP_ICON, ICON_STACKONTOP, ICON_CUSTOMIZE, ICON_FULLSCREEN, \
     ICON_CLOSE, \
-    DEFAULT_SHORTCUT_SETTING, TRANSPARENT_RANGE, TRANSPARENT_INIT_VAL
+    DEFAULT_SHORTCUT_SETTING, TRANSPARENT_RANGE, TRANSPARENT_INIT_VAL, ICON_GITHUB, ICON_DISCORD, PAYPAL_URL, KOFI_URL, \
+    DISCORD_URL, GITHUB_URL
 from pyqt_openai.aboutDialog import AboutDialog
 from pyqt_openai.apiWidget import ApiWidget
 from pyqt_openai.config_loader import CONFIG_MANAGER
@@ -24,7 +26,7 @@ from pyqt_openai.pyqt_openai_data import init_llama
 from pyqt_openai.replicate_widget.replicateMainWidget import ReplicateMainWidget
 from pyqt_openai.settings_dialog.settingsDialog import SettingsDialog
 from pyqt_openai.shortcutDialog import ShortcutDialog
-from pyqt_openai.util.script import restart_app, show_message_box_after_change_to_restart, goPayPal, goKofi
+from pyqt_openai.util.script import restart_app, show_message_box_after_change_to_restart
 from pyqt_openai.widgets.button import Button
 
 
@@ -88,11 +90,19 @@ class MainWindow(QMainWindow):
         self.__viewShortcutsAction = QAction(LangClass.TRANSLATIONS['View Shortcuts'], self)
         self.__viewShortcutsAction.triggered.connect(self.__showShortcutsDialog)
 
+        self.__githubAction = QAction('Github', self)
+        self.__githubAction.setIcon(QIcon(ICON_GITHUB))
+        self.__githubAction.triggered.connect(lambda: webbrowser.open(GITHUB_URL))
+
+        self.__discordAction = QAction('Discord', self)
+        self.__discordAction.setIcon(QIcon(ICON_DISCORD))
+        self.__discordAction.triggered.connect(lambda: webbrowser.open(DISCORD_URL))
+
         self.__paypalAction = QAction('Paypal', self)
-        self.__paypalAction.triggered.connect(goPayPal)
+        self.__paypalAction.triggered.connect(lambda: webbrowser.open(PAYPAL_URL))
 
         self.__kofiAction = QAction('Ko-fi ❤', self)
-        self.__kofiAction.triggered.connect(goKofi)
+        self.__kofiAction.triggered.connect(lambda: webbrowser.open(KOFI_URL))
 
         # toolbar action
         self.__chooseAiAction = QWidgetAction(self)
@@ -170,19 +180,20 @@ class MainWindow(QMainWindow):
         fileMenu = QMenu(LangClass.TRANSLATIONS['File'], self)
         fileMenu.addAction(self.__settingsAction)
         fileMenu.addAction(self.__exitAction)
-        menubar.addMenu(fileMenu)
 
         # create the "Help" menu
         helpMenu = QMenu(LangClass.TRANSLATIONS['Help'], self)
-        menubar.addMenu(helpMenu)
-
         helpMenu.addAction(self.__aboutAction)
         helpMenu.addAction(self.__viewShortcutsAction)
+        helpMenu.addAction(self.__githubAction)
+        helpMenu.addAction(self.__discordAction)
 
         donateMenu = QMenu(LangClass.TRANSLATIONS['Donate'], self)
         donateMenu.addAction(self.__paypalAction)
         donateMenu.addAction(self.__kofiAction)
 
+        menubar.addMenu(fileMenu)
+        menubar.addMenu(helpMenu)
         menubar.addMenu(donateMenu)
 
     def __setTrayMenu(self):
