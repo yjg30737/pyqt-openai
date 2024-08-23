@@ -38,7 +38,7 @@ def get_generic_ext_out_of_qt_ext(text):
     return extension
 
 def open_directory(path):
-    QDesktopServices.openUrl(QUrl(path))
+    QDesktopServices.openUrl(QUrl.fromLocalFile(path))
 
 def message_list_to_txt(db, thread_id, title, username='User', ai_name='AI'):
     content = ''

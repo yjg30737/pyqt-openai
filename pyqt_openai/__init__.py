@@ -40,7 +40,10 @@ KOFI_URL = 'https://ko-fi.com/junggyuyoon'
 PAYPAL_URL = 'https://paypal.me/yjg30737'
 GITHUB_URL = 'https://github.com/yjg30737/pyqt-openai'
 DISCORD_URL = 'https://discord.gg/cHekprskVE'
+
 HOW_TO_GET_OPENAI_API_KEY_URL = 'https://medium.com/@yjg30737/how-to-get-your-openai-api-key-e2193850932e'
+HOW_TO_EXPORT_CHATGPT_CONVERSATION_HISTORY_URL = 'https://medium.com/@yjg30737/how-to-export-your-chatgpt-conversation-history-caa0946d6349'
+
 COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_CHAT = ['id']
 COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_IMAGE = ['id', 'data']
 DEFAULT_LANGUAGE = 'en_US'
@@ -143,6 +146,9 @@ DEFAULT_FOUND_TEXT_BG_COLOR = '#FFF200'
 
 DEFAULT_LINK_COLOR = '#4F93FF'
 DEFAULT_LINK_HOVER_COLOR = '#FF0000'
+
+DEFAULT_TOAST_BACKGROUND_COLOR = '#444444'
+DEFAULT_TOAST_FOREGROUND_COLOR = '#EEEEEE'
 
 ## MARKDOWN
 # I am not planning to use it at the moment.

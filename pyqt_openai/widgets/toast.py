@@ -2,7 +2,7 @@ from PySide6.QtWidgets import QLabel, QWidget, QHBoxLayout, QGraphicsOpacityEffe
 from PySide6.QtCore import Qt, QTimer, QPropertyAnimation, QAbstractAnimation, QPoint
 from PySide6.QtGui import QFont, QColor
 
-from pyqt_openai import TOAST_DURATION
+from pyqt_openai import TOAST_DURATION, DEFAULT_TOAST_BACKGROUND_COLOR, DEFAULT_TOAST_FOREGROUND_COLOR
 
 
 class Toast(QWidget):
@@ -18,8 +18,8 @@ class Toast(QWidget):
         self.__timer = QTimer(self)
         self.__duration = duration
         self.__opacity = 0.5
-        self.__foregroundColor = '#EEEEEE'
-        self.__backgroundColor = '#444444'
+        self.__foregroundColor = DEFAULT_TOAST_FOREGROUND_COLOR
+        self.__backgroundColor = DEFAULT_TOAST_BACKGROUND_COLOR
 
     def __initUi(self, text):
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint | Qt.WindowType.SubWindow)
@@ -28,7 +28,7 @@ class Toast(QWidget):
         # text in toast (toast foreground)
         self.__lbl = QLabel(text)
         self.__lbl.setObjectName('popupLbl')
-        self.__lbl.setStyleSheet('QLabel#popupLbl { color: #EEEEEE; padding: 5px; }')
+        self.__lbl.setStyleSheet(f'QLabel#popupLbl {{ color: {self.__foregroundColor}; padding: 5px; }}')
 
         self.__lbl.setMinimumWidth(min(200, self.__lbl.fontMetrics().boundingRect(text).width() * 2))
         self.__lbl.setMinimumHeight(self.__lbl.fontMetrics().boundingRect(text).height() * 2)
@@ -42,7 +42,7 @@ class Toast(QWidget):
         lay.addWidget(self.__lbl)
         lay.setAlignment(Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignVCenter)
 
-        self.setStyleSheet('QWidget { background: #444444; border-radius: 5px; }')
+        self.setStyleSheet(f'QWidget {{ background: {self.__backgroundColor}; border-radius: 5px; }}')
         self.__setToastSizeBasedOnTextSize()
         self.setLayout(lay)
 
