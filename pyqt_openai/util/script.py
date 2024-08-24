@@ -25,7 +25,7 @@ from jinja2 import Template
 
 from pyqt_openai import INI_FILE_NAME, DEFAULT_FONT_SIZE, DEFAULT_FONT_FAMILY, MAIN_INDEX, \
     PROMPT_NAME_REGEX, PROMPT_MAIN_KEY_NAME, PROMPT_BEGINNING_KEY_NAME, \
-    PROMPT_END_KEY_NAME, PROMPT_JSON_KEY_NAME, CONTEXT_DELIMITER
+    PROMPT_END_KEY_NAME, PROMPT_JSON_KEY_NAME, CONTEXT_DELIMITER, THREAD_ORDERBY
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ImagePromptContainer
 from pyqt_openai.pyqt_openai_data import DB
@@ -158,8 +158,7 @@ def show_message_box_after_change_to_restart(change_list):
 def get_chatgpt_data_for_preview(filename, most_recent_n:int = None):
     data = json.load(open(filename, 'r'))
     conv_arr = []
-    count = len(data) if most_recent_n is None else most_recent_n
-    for i in range(count):
+    for i in range(len(data)):
         conv = data[i]
         conv_dict = {}
         name = conv['title']
@@ -171,6 +170,11 @@ def get_chatgpt_data_for_preview(filename, most_recent_n:int = None):
         conv_dict['update_dt'] = update_dt
         conv_dict['mapping'] = conv['mapping']
         conv_arr.append(conv_dict)
+
+    conv_arr = sorted(conv_arr, key=lambda x: x[THREAD_ORDERBY], reverse=True)
+    if most_recent_n is not None:
+        conv_arr = conv_arr[:most_recent_n]
+
     return {
         'columns': ['id', 'name', 'insert_dt', 'update_dt'],
         'data': conv_arr

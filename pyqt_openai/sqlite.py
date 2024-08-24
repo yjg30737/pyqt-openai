@@ -356,7 +356,7 @@ class SqliteDatabase:
                 self.__c.execute(f'''CREATE TABLE {THREAD_TABLE_NAME}
                              (id INTEGER PRIMARY KEY,
                               name TEXT,
-                              update_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
+                              update_dt DATETIME,
                               insert_dt DATETIME DEFAULT CURRENT_TIMESTAMP)''')
                 # Create message table
                 self.__createMessage()
@@ -413,12 +413,12 @@ class SqliteDatabase:
             query = f'INSERT INTO {THREAD_TABLE_NAME} (name) VALUES (?)'
             params = (name,)
 
-            if insert_dt:
-                query = f'INSERT INTO {THREAD_TABLE_NAME} (name, insert_dt) VALUES (?, ?)'
-                params = (name, insert_dt)
-            if update_dt:
+            if insert_dt and update_dt:
                 query = f'INSERT INTO {THREAD_TABLE_NAME} (name, insert_dt, update_dt) VALUES (?, ?, ?)'
                 params = (name, insert_dt, update_dt)
+            elif insert_dt:
+                query = f'INSERT INTO {THREAD_TABLE_NAME} (name, insert_dt) VALUES (?, ?)'
+                params = (name, insert_dt)
 
             # Insert a row into the table
             self.__c.execute(query, params)
@@ -528,36 +528,40 @@ class SqliteDatabase:
             self.__c.execute(f'DROP TRIGGER {name[0]}')
         self.__conn.commit()
 
-    def __createMessageTrigger(self):
+    def __createMessageTrigger(self, insert_trigger=True, update_trigger=True, delete_trigger=True):
         """
         Create message trigger
         """
-        # Create insert trigger
-        self.__c.execute(f'''
-            CREATE TRIGGER {THREAD_MESSAGE_INSERTED_TR_NAME}
-            AFTER INSERT ON {MESSAGE_TABLE_NAME}
-            BEGIN
-              UPDATE {THREAD_TABLE_NAME} SET update_dt = CURRENT_TIMESTAMP WHERE id = NEW.thread_id;
-            END
-        ''')
+        if insert_trigger:
+            # Create insert trigger
+            self.__c.execute(f'''
+                CREATE TRIGGER {THREAD_MESSAGE_INSERTED_TR_NAME}
+                AFTER INSERT ON {MESSAGE_TABLE_NAME}
+                BEGIN
+                  UPDATE {THREAD_TABLE_NAME} SET update_dt = CURRENT_TIMESTAMP WHERE id = NEW.thread_id;
+                END
+            ''')
 
-        # Create update trigger
-        self.__c.execute(f'''
-            CREATE TRIGGER {THREAD_MESSAGE_UPDATED_TR_NAME}
-            AFTER UPDATE ON {MESSAGE_TABLE_NAME}
-            BEGIN
-              UPDATE {THREAD_TABLE_NAME} SET update_dt = CURRENT_TIMESTAMP WHERE id = NEW.thread_id;
-            END
-        ''')
+        if update_trigger:
+            # Create update trigger
+            self.__c.execute(f'''
+                CREATE TRIGGER {THREAD_MESSAGE_UPDATED_TR_NAME}
+                AFTER UPDATE ON {MESSAGE_TABLE_NAME}
+                BEGIN
+                  UPDATE {THREAD_TABLE_NAME} SET update_dt = CURRENT_TIMESTAMP WHERE id = NEW.thread_id;
+                END
+            ''')
 
-        # Create delete trigger
-        self.__c.execute(f'''
-            CREATE TRIGGER {THREAD_MESSAGE_DELETED_TR_NAME}
-            AFTER DELETE ON {MESSAGE_TABLE_NAME}
-            BEGIN
-              UPDATE {THREAD_TABLE_NAME} SET update_dt = CURRENT_TIMESTAMP WHERE id = OLD.thread_id;
-            END
-        ''')
+        if delete_trigger:
+            # Create delete trigger
+            self.__c.execute(f'''
+                CREATE TRIGGER {THREAD_MESSAGE_DELETED_TR_NAME}
+                AFTER DELETE ON {MESSAGE_TABLE_NAME}
+                BEGIN
+                  UPDATE {THREAD_TABLE_NAME} SET update_dt = CURRENT_TIMESTAMP WHERE id = OLD.thread_id;
+                END
+            ''')
+
         # Commit the transaction
         self.__conn.commit()
 
@@ -631,12 +635,19 @@ class SqliteDatabase:
                 arr.append((_id, result))
         return arr
 
-    def insertMessage(self, arg: ChatMessageContainer):
+    def insertMessage(self, arg: ChatMessageContainer, deactivate_trigger=False):
         try:
+            if deactivate_trigger:
+             # Remove the trigger
+                self.__c.execute(f'DROP TRIGGER {THREAD_MESSAGE_INSERTED_TR_NAME}')
             excludes = ['id', 'update_dt', 'insert_dt']
             insert_query = arg.create_insert_query(table_name=MESSAGE_TABLE_NAME, excludes=excludes)
             self.__c.execute(insert_query, arg.get_values_for_insert(excludes=excludes))
             new_id = self.__c.lastrowid
+            if deactivate_trigger:
+                # Create the trigger
+                self.__createMessageTrigger(insert_trigger=True, update_trigger=False, delete_trigger=False)
+
             # Commit the transaction
             self.__conn.commit()
             return new_id

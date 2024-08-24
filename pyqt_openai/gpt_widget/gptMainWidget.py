@@ -225,7 +225,7 @@ class GPTMainWidget(QWidget):
                 for message in messages:
                     message['thread_id'] = cur_id
                     container = ChatMessageContainer(**message)
-                    DB.insertMessage(container)
+                    DB.insertMessage(container, deactivate_trigger=True)
             self.__chatNavWidget.refreshData()
         except Exception as e:
             QMessageBox.critical(self, LangClass.TRANSLATIONS["Error"],
