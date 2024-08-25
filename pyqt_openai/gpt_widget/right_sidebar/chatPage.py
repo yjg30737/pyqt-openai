@@ -51,8 +51,6 @@ class ChatPage(QWidget):
 
         advancedSettingsScrollArea = QScrollArea()
 
-        # TODO LANGUAGE
-
         self.__temperatureSpinBox = QDoubleSpinBox()
         self.__temperatureSpinBox.setRange(*OPENAI_TEMPERATURE_RANGE)
         self.__temperatureSpinBox.setAccelerated(True)

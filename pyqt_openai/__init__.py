@@ -43,6 +43,7 @@ DISCORD_URL = 'https://discord.gg/cHekprskVE'
 
 HOW_TO_GET_OPENAI_API_KEY_URL = 'https://medium.com/@yjg30737/how-to-get-your-openai-api-key-e2193850932e'
 HOW_TO_EXPORT_CHATGPT_CONVERSATION_HISTORY_URL = 'https://medium.com/@yjg30737/how-to-export-your-chatgpt-conversation-history-caa0946d6349'
+HOW_TO_REPLICATE = 'https://medium.com/@yjg30737/10a2cb983ceb'
 
 COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_CHAT = ['id']
 COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_IMAGE = ['id', 'data']
