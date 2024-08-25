@@ -610,10 +610,19 @@ class SqliteDatabase:
         This is for selecting all messages in a thread with a specific thread_id.
         The format of the result is a list of sqlite Rows.
         """
-        query = f'SELECT * FROM {MESSAGE_TABLE_NAME} WHERE thread_id = {thread_id}'
+        # Begin the query with the thread_id filter
+        query = f'SELECT * FROM {MESSAGE_TABLE_NAME} WHERE thread_id = ?'
+        params = [thread_id]  # Start the parameter list with the thread_id
+
+        # If content_to_select is provided, append to the query
         if content_to_select:
-            query += f' AND content LIKE "%{content_to_select}%"'
-        self.__c.execute(query)
+            query += ' AND LOWER(content) LIKE LOWER(?)'  # Modify for case-insensitive
+            params.append(f'%{content_to_select}%')  # Use parameterized placeholder
+
+        # Execute the query with parameters
+        self.__c.execute(query, params)
+
+        # Fetch all results and return
         return self.__c.fetchall()
 
     def selectCertainThreadMessages(self, thread_id, content_to_select=None) -> List[ChatMessageContainer]:

@@ -26,7 +26,7 @@ __author__ = pyproject_data["project"]["authors"][0]['name']
 # Constants
 # ----------------------------
 # APP
-DEFAULT_APP_NAME = pyproject_data["project"]["name"]
+DEFAULT_APP_NAME = 'VividNode'
 CONTACT = pyproject_data["project"]["authors"][0]['email']
 DEFAULT_APP_ICON = 'icon.ico'
 APP_INITIAL_WINDOW_SIZE = (1280, 768)

@@ -19,7 +19,7 @@ class NotifierWidget(QWidget):
         self.__repositionWidget()
 
     def __initUi(self, informative_text='', detailed_text=''):
-        self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.SubWindow)
+        self.setWindowFlags(Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowStaysOnTopHint | Qt.WindowType.SubWindow)
 
         self.__informativeTextLabel = QLabel(informative_text) if informative_text else QLabel('Informative')
         self.__detailedTextLabel = QLabel(detailed_text) if detailed_text else QLabel('Detailed')
@@ -38,7 +38,7 @@ class NotifierWidget(QWidget):
         self.__btnWidget.setLayout(lay)
 
         lay = QHBoxLayout()
-        lay.setAlignment(Qt.AlignTop | Qt.AlignRight)
+        lay.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignRight)
         lay.addWidget(closeBtn)
         lay.setContentsMargins(0, 0, 0, 0)
 
@@ -65,7 +65,7 @@ class NotifierWidget(QWidget):
         self.move(bottom_right_x, bottom_right_y)
 
     def keyPressEvent(self, event):
-        if event.key() == Qt.Key_Escape:
+        if event.key() == Qt.Key.Key_Escape:
             self.close()
 
         return super().keyPressEvent(event)

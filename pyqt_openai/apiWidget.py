@@ -21,10 +21,10 @@ class ApiWidget(QWidget):
         self.__apiCheckPreviewLbl = QLabel()
         self.__apiCheckPreviewLbl.setFont(QFont('Arial', 10))
 
-        apiLbl = QLabel(LangClass.TRANSLATIONS['API'])
+        apiLbl = QLabel(LangClass.TRANSLATIONS['OpenAI API Key'])
 
         self.__apiLineEdit = QLineEdit()
-        self.__apiLineEdit.setPlaceholderText(LangClass.TRANSLATIONS['Write your API Key...'])
+        self.__apiLineEdit.setPlaceholderText(LangClass.TRANSLATIONS['Write your OpenAI API Key...'])
         self.__apiLineEdit.returnPressed.connect(self.setApi)
         self.__apiLineEdit.setEchoMode(QLineEdit.EchoMode.Password)
 

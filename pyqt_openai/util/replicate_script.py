@@ -43,6 +43,8 @@ class ReplicateWrapper:
             input_args["num_inference_steps"] = 50 if "num_inference_steps" not in input_args else input_args["num_inference_steps"]
             input_args["refine"] = "expert_ensemble_refiner" if "refine" not in input_args else input_args["refine"]
 
+            print(input_args)
+
             output = replicate.run(
                 model,
                 input=input_args
