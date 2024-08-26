@@ -48,7 +48,7 @@ HOW_TO_REPLICATE = 'https://medium.com/@yjg30737/10a2cb983ceb'
 COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_CHAT = ['id']
 COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_IMAGE = ['id', 'data']
 DEFAULT_LANGUAGE = 'en_US'
-LANGUAGE_FILE = 'translations.json'
+LANGUAGE_FILE = 'lang/translations.json'
 LANGUAGE_DICT = {
     "English": "en_US",
     "Spanish": "es_ES",

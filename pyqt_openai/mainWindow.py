@@ -12,7 +12,7 @@ from pyqt_openai import DEFAULT_SHORTCUT_FULL_SCREEN, \
     APP_INITIAL_WINDOW_SIZE, DEFAULT_APP_NAME, DEFAULT_APP_ICON, ICON_STACKONTOP, ICON_CUSTOMIZE, ICON_FULLSCREEN, \
     ICON_CLOSE, \
     DEFAULT_SHORTCUT_SETTING, TRANSPARENT_RANGE, TRANSPARENT_INIT_VAL, ICON_GITHUB, ICON_DISCORD, PAYPAL_URL, KOFI_URL, \
-    DISCORD_URL, GITHUB_URL, DEFAULT_SHORTCUT_FOCUS_MODE, ICON_FOCUS_MODE
+    DISCORD_URL, GITHUB_URL, DEFAULT_SHORTCUT_FOCUS_MODE, ICON_FOCUS_MODE, ICON_SETTING
 from pyqt_openai.aboutDialog import AboutDialog
 from pyqt_openai.apiWidget import ApiWidget
 from pyqt_openai.config_loader import CONFIG_MANAGER
@@ -166,6 +166,7 @@ class MainWindow(QMainWindow):
         self.__apiAction.setDefaultWidget(self.__apiWidget)
 
         self.__settingsAction = QAction(LangClass.TRANSLATIONS['Settings'], self)
+        self.__settingsAction.setIcon(QIcon(ICON_SETTING))
         self.__settingsAction.setShortcut(DEFAULT_SHORTCUT_SETTING)
         self.__settingsAction.triggered.connect(self.__showSettingsDialog)
 

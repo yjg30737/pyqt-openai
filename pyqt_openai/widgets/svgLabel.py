@@ -19,7 +19,6 @@ class SvgLabel(QLabel):
         return super().paintEvent(event)
 
     def setSvgFile(self, filename: str):
-        filename = os.path.join(SRC_DIR, filename)
         self.__renderer = QSvgRenderer(filename)
         self.resize(self.__renderer.defaultSize())
         length = max(self.sizeHint().width(), self.sizeHint().height())
