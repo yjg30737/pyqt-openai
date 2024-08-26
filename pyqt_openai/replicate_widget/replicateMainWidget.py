@@ -111,6 +111,10 @@ class ReplicateMainWidget(QWidget):
         self.__menuWidget.setVisible(f)
         CONFIG_MANAGER.set_general_property('show_secondary_toolbar', f)
 
+    def toggleButtons(self, x):
+        self.__historyBtn.setChecked(x)
+        self.__settingBtn.setChecked(x)
+
     def __updateCenterWidget(self, idx, data=None):
         """
         0 is home page, 1 is the main view

@@ -187,13 +187,7 @@ class MainWindow(QMainWindow):
         for i in range(self.__mainWidget.count()):
             currentWidget = self.__mainWidget.widget(i)
             currentWidget.showSecondaryToolBar(f)
-            if isinstance(currentWidget, GPTMainWidget):
-                currentWidget.toggleSideBar(f)
-                currentWidget.toggleSetting(f)
-                currentWidget.togglePrompt(f)
-            else:
-                currentWidget.toggleHistory(f)
-                currentWidget.toggleSetting(f)
+            currentWidget.toggleButtons(f)
         self.__toggleToolbar(f)
 
         # Toggle container

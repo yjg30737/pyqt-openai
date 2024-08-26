@@ -179,6 +179,11 @@ class GPTMainWidget(QWidget):
         self.__show_prompt = x
         CONFIG_MANAGER.set_general_property('show_prompt', self.__show_prompt)
 
+    def toggleButtons(self, x):
+        self.__sideBarBtn.setChecked(x)
+        self.__settingBtn.setChecked(x)
+        self.__promptBtn.setChecked(x)
+
     def showThreadToolWidget(self, f):
         self.__toggleFindToolButton.setChecked(f)
 
