@@ -36,8 +36,8 @@ class GPTHome(QScrollArea):
         lay = QVBoxLayout()
         lay.addWidget(title)
         lay.addWidget(description)
-        lay.addWidget(self.__background_image)
         lay.addWidget(self.__openaiApiManualLbl)
+        lay.addWidget(self.__background_image)
         lay.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.setLayout(lay)
 

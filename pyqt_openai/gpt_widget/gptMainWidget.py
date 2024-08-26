@@ -66,7 +66,7 @@ class GPTMainWidget(QWidget):
         self.__sideBarBtn.setCheckable(True)
         self.__sideBarBtn.setToolTip(LangClass.TRANSLATIONS['Chat List'] + f' ({DEFAULT_SHORTCUT_LEFT_SIDEBAR_WINDOW})')
         self.__sideBarBtn.setChecked(self.__show_chat_list)
-        self.__sideBarBtn.toggled.connect(self.__toggle_sidebar)
+        self.__sideBarBtn.toggled.connect(self.toggleSideBar)
         self.__sideBarBtn.setShortcut(DEFAULT_SHORTCUT_LEFT_SIDEBAR_WINDOW)
 
         self.__settingBtn = Button()
@@ -75,7 +75,7 @@ class GPTMainWidget(QWidget):
             LangClass.TRANSLATIONS['Chat Settings'] + f' ({DEFAULT_SHORTCUT_RIGHT_SIDEBAR_WINDOW})')
         self.__settingBtn.setCheckable(True)
         self.__settingBtn.setChecked(self.__show_setting)
-        self.__settingBtn.toggled.connect(self.__toggle_setting)
+        self.__settingBtn.toggled.connect(self.toggleSetting)
         self.__settingBtn.setShortcut(DEFAULT_SHORTCUT_RIGHT_SIDEBAR_WINDOW)
 
         self.__promptBtn = Button()
@@ -84,7 +84,7 @@ class GPTMainWidget(QWidget):
             LangClass.TRANSLATIONS['Prompt Generator'] + f' ({DEFAULT_SHORTCUT_CONTROL_PROMPT_WINDOW})')
         self.__promptBtn.setCheckable(True)
         self.__promptBtn.setChecked(self.__show_prompt)
-        self.__promptBtn.toggled.connect(self.__toggle_prompt)
+        self.__promptBtn.toggled.connect(self.togglePrompt)
         self.__promptBtn.setShortcut(DEFAULT_SHORTCUT_CONTROL_PROMPT_WINDOW)
 
         sep = getSeparator('vertical')
@@ -164,17 +164,17 @@ class GPTMainWidget(QWidget):
         self.__gptRightSideBarWidget.setVisible(self.__show_setting)
         self.__promptGeneratorWidget.setVisible(self.__show_prompt)
 
-    def __toggle_sidebar(self, x):
+    def toggleSideBar(self, x):
         self.__chatNavWidget.setVisible(x)
         self.__show_chat_list = x
         CONFIG_MANAGER.set_general_property('show_chat_list', self.__show_chat_list)
 
-    def __toggle_setting(self, x):
+    def toggleSetting(self, x):
         self.__gptRightSideBarWidget.setVisible(x)
         self.__show_setting = x
         CONFIG_MANAGER.set_general_property('show_setting', self.__show_setting)
 
-    def __toggle_prompt(self, x):
+    def togglePrompt(self, x):
         self.__promptGeneratorWidget.setVisible(x)
         self.__show_prompt = x
         CONFIG_MANAGER.set_general_property('show_prompt', self.__show_prompt)
@@ -187,6 +187,7 @@ class GPTMainWidget(QWidget):
 
     def showSecondaryToolBar(self, f):
         self.__menuWidget.setVisible(f)
+        CONFIG_MANAGER.set_general_property('show_secondary_toolbar', f)
 
     def setAIEnabled(self, f):
         self.__chatWidget.setAIEnabled(f)

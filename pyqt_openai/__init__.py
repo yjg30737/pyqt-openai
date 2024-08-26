@@ -106,6 +106,7 @@ ICON_DISCORD = 'ico/discord.svg'
 ICON_EXPORT = 'ico/export.svg'
 ICON_FAVORITE_NO = 'ico/favorite_no.svg'
 ICON_FAVORITE_YES = 'ico/favorite_yes.svg'
+ICON_FOCUS_MODE = 'ico/focus_mode.svg'
 ICON_FULLSCREEN = 'ico/fullscreen.svg'
 ICON_GITHUB = 'ico/github.svg'
 ICON_HELP = 'ico/help.svg'
@@ -171,6 +172,7 @@ DEFAULT_SHORTCUT_FIND_CLOSE = 'Escape'
 DEFAULT_SHORTCUT_PROMPT_BEGINNING = 'Ctrl+B'
 DEFAULT_SHORTCUT_PROMPT_ENDING = 'Ctrl+E'
 DEFAULT_SHORTCUT_SUPPORT_PROMPT_COMMAND = 'Ctrl+Shift+P'
+DEFAULT_SHORTCUT_FOCUS_MODE = 'F10'
 DEFAULT_SHORTCUT_FULL_SCREEN = 'F11'
 DEFAULT_SHORTCUT_FIND = 'Ctrl+F'
 DEFAULT_SHORTCUT_JSON_MODE = 'Ctrl+J'
@@ -330,6 +332,7 @@ CONFIG_DATA = {
         'API_KEY': '',
         'llama_index_directory': '',
         'apply_user_defined_styles': False,
+        'focus_mode': False,
     },
     'DALLE': {
         'quality': 'standard',

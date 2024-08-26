@@ -1,6 +1,7 @@
 from pyqt_openai import COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_CHAT, COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_IMAGE, LANGUAGE_DICT, \
     DB_NAME_REGEX, \
     MAXIMUM_MESSAGES_IN_PARAMETER_RANGE
+from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.widgets.checkBoxListWidget import CheckBoxListWidget
 
 from PySide6.QtCore import QRegularExpression
@@ -13,22 +14,22 @@ from pyqt_openai.lang.translations import LangClass
 
 
 class GeneralSettingsWidget(QWidget):
-    def __init__(self, args: SettingsParamsContainer, parent=None):
+    def __init__(self, parent=None):
         super().__init__(parent)
-        self.__initVal(args)
+        self.__initVal()
         self.__initUi()
 
-    def __initVal(self, args):
-        self.lang = args.lang
-        self.db = args.db
-        self.do_not_ask_again = args.do_not_ask_again
-        self.notify_finish = args.notify_finish
-        self.show_toolbar = args.show_toolbar
-        self.show_secondary_toolbar = args.show_secondary_toolbar
-        self.chat_column_to_show = args.chat_column_to_show
-        self.image_column_to_show = args.image_column_to_show
-        self.maximum_messages_in_parameter = args.maximum_messages_in_parameter
-        self.show_as_markdown = args.show_as_markdown
+    def __initVal(self):
+        self.lang = CONFIG_MANAGER.get_general_property('lang')
+        self.db = CONFIG_MANAGER.get_general_property('db')
+        self.do_not_ask_again = CONFIG_MANAGER.get_general_property('do_not_ask_again')
+        self.notify_finish = CONFIG_MANAGER.get_general_property('notify_finish')
+        self.show_toolbar = CONFIG_MANAGER.get_general_property('show_toolbar')
+        self.show_secondary_toolbar = CONFIG_MANAGER.get_general_property('show_secondary_toolbar')
+        self.chat_column_to_show = CONFIG_MANAGER.get_general_property('chat_column_to_show')
+        self.image_column_to_show = CONFIG_MANAGER.get_general_property('image_column_to_show')
+        self.maximum_messages_in_parameter = CONFIG_MANAGER.get_general_property('maximum_messages_in_parameter')
+        self.show_as_markdown = CONFIG_MANAGER.get_general_property('show_as_markdown')
 
     def __initUi(self):
         # Language setting
