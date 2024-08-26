@@ -1,10 +1,10 @@
 import json
 
 # from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout
-from PySide6.QtGui import QPalette, QColor, QDesktopServices, QTextDocument
+from PySide6.QtGui import QPalette, QColor, QDesktopServices
 from PySide6.QtWidgets import QTextBrowser
 
-from pyqt_openai import MESSAGE_ADDITIONAL_HEIGHT, MESSAGE_MAXIMUM_HEIGHT, MESSAGE_PADDING, INDENT_SIZE
+from pyqt_openai import MESSAGE_MAXIMUM_HEIGHT, MESSAGE_PADDING, INDENT_SIZE
 
 
 class MessageTextBrowser(QTextBrowser):
@@ -42,7 +42,7 @@ class MessageTextBrowser(QTextBrowser):
             self.setPlainText(f"Error decoding JSON: {e}")
 
     def adjustBrowserHeight(self):
-        document_height = self.document().size().height() + MESSAGE_ADDITIONAL_HEIGHT
+        document_height = self.document().size().height()
         max_height = MESSAGE_MAXIMUM_HEIGHT
 
         if document_height < max_height:
