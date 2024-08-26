@@ -1,17 +1,18 @@
 import os
+import webbrowser
 
-import requests
-from qtpy.QtCore import Qt
-from qtpy.QtGui import QFont, QIcon, QColor
-from qtpy.QtWidgets import QMainWindow, QToolBar, QHBoxLayout, QDialog, QLineEdit, QPushButton, QWidgetAction, QSpinBox, \
-    QLabel, QWidget, QApplication, \
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QAction, QIcon
+from PySide6.QtWidgets import QMainWindow, QToolBar, QHBoxLayout, QDialog, QWidgetAction, QSpinBox, \
+    QWidget, QApplication, \
     QComboBox, QSizePolicy, QStackedWidget, QMenu, QSystemTrayIcon, \
-    QMessageBox, QCheckBox, QAction
+    QMessageBox, QCheckBox
 
 from pyqt_openai import DEFAULT_SHORTCUT_FULL_SCREEN, \
     APP_INITIAL_WINDOW_SIZE, DEFAULT_APP_NAME, DEFAULT_APP_ICON, ICON_STACKONTOP, ICON_CUSTOMIZE, ICON_FULLSCREEN, \
     ICON_CLOSE, \
-    DEFAULT_SHORTCUT_SETTING, TRANSPARENT_RANGE, TRANSPARENT_INIT_VAL
+    DEFAULT_SHORTCUT_SETTING, TRANSPARENT_RANGE, TRANSPARENT_INIT_VAL, ICON_GITHUB, ICON_DISCORD, PAYPAL_URL, KOFI_URL, \
+    DISCORD_URL, GITHUB_URL, DEFAULT_SHORTCUT_FOCUS_MODE, ICON_FOCUS_MODE
 from pyqt_openai.aboutDialog import AboutDialog
 from pyqt_openai.apiWidget import ApiWidget
 from pyqt_openai.config_loader import CONFIG_MANAGER
@@ -21,13 +22,12 @@ from pyqt_openai.doNotAskAgainDialog import DoNotAskAgainDialog
 from pyqt_openai.gpt_widget.gptMainWidget import GPTMainWidget
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import SettingsParamsContainer, CustomizeParamsContainer
-from pyqt_openai.pyqt_openai_data import OPENAI_STRUCT, init_llama
+from pyqt_openai.pyqt_openai_data import init_llama
 from pyqt_openai.replicate_widget.replicateMainWidget import ReplicateMainWidget
 from pyqt_openai.settings_dialog.settingsDialog import SettingsDialog
 from pyqt_openai.shortcutDialog import ShortcutDialog
-from pyqt_openai.util.script import restart_app, show_message_box_after_change_to_restart, goPayPal, goKofi
+from pyqt_openai.util.script import restart_app, show_message_box_after_change_to_restart
 from pyqt_openai.widgets.button import Button
-from pyqt_openai_data import setOpenAIEnabled
 
 
 class MainWindow(QMainWindow):
@@ -84,17 +84,44 @@ class MainWindow(QMainWindow):
         self.__exitAction = QAction(LangClass.TRANSLATIONS['Exit'], self)
         self.__exitAction.triggered.connect(self.__beforeClose)
 
+        self.__stackAction = QAction(LangClass.TRANSLATIONS['Stack on Top'], self)
+        self.__stackAction.setIcon(QIcon(ICON_STACKONTOP))
+        self.__stackAction.setCheckable(True)
+        self.__stackAction.toggled.connect(self.__stackToggle)
+
+        self.__focusModeAction = QAction(LangClass.TRANSLATIONS['Focus Mode'], self)
+        self.__focusModeAction.setShortcut(DEFAULT_SHORTCUT_FOCUS_MODE)
+        self.__focusModeAction.setIcon(QIcon(ICON_FOCUS_MODE))
+        self.__focusModeAction.setCheckable(True)
+        self.__focusModeAction.setChecked(CONFIG_MANAGER.get_general_property('focus_mode'))
+        self.__focusModeAction.triggered.connect(self.__activateFocusMode)
+
+        self.__fullScreenAction = QAction(LangClass.TRANSLATIONS['Full Screen'], self)
+        self.__fullScreenAction.setShortcut(DEFAULT_SHORTCUT_FULL_SCREEN)
+        self.__fullScreenAction.setIcon(QIcon(ICON_FULLSCREEN))
+        self.__fullScreenAction.setCheckable(True)
+        self.__fullScreenAction.setChecked(False)
+        self.__fullScreenAction.triggered.connect(self.__fullScreenToggle)
+
         self.__aboutAction = QAction(LangClass.TRANSLATIONS['About...'], self)
         self.__aboutAction.triggered.connect(self.__showAboutDialog)
 
         self.__viewShortcutsAction = QAction(LangClass.TRANSLATIONS['View Shortcuts'], self)
         self.__viewShortcutsAction.triggered.connect(self.__showShortcutsDialog)
 
+        self.__githubAction = QAction('Github', self)
+        self.__githubAction.setIcon(QIcon(ICON_GITHUB))
+        self.__githubAction.triggered.connect(lambda: webbrowser.open(GITHUB_URL))
+
+        self.__discordAction = QAction('Discord', self)
+        self.__discordAction.setIcon(QIcon(ICON_DISCORD))
+        self.__discordAction.triggered.connect(lambda: webbrowser.open(DISCORD_URL))
+
         self.__paypalAction = QAction('Paypal', self)
-        self.__paypalAction.triggered.connect(goPayPal)
+        self.__paypalAction.triggered.connect(lambda: webbrowser.open(PAYPAL_URL))
 
         self.__kofiAction = QAction('Ko-fi ❤', self)
-        self.__kofiAction.triggered.connect(goKofi)
+        self.__kofiAction.triggered.connect(lambda: webbrowser.open(KOFI_URL))
 
         # toolbar action
         self.__chooseAiAction = QWidgetAction(self)
@@ -103,14 +130,6 @@ class MainWindow(QMainWindow):
         self.__chooseAiCmbBox.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.MinimumExpanding)
         self.__chooseAiCmbBox.currentIndexChanged.connect(self.__aiTypeChanged)
         self.__chooseAiAction.setDefaultWidget(self.__chooseAiCmbBox)
-
-        self.__stackAction = QWidgetAction(self)
-        self.__stackBtn = Button()
-        self.__stackBtn.setStyleAndIcon(ICON_STACKONTOP)
-        self.__stackBtn.setCheckable(True)
-        self.__stackBtn.toggled.connect(self.__stackToggle)
-        self.__stackAction.setDefaultWidget(self.__stackBtn)
-        self.__stackBtn.setToolTip(LangClass.TRANSLATIONS['Stack on Top'])
 
         self.__customizeAction = QWidgetAction(self)
         self.__customizeBtn = Button()
@@ -126,15 +145,6 @@ class MainWindow(QMainWindow):
         self.__transparentSpinBox.valueChanged.connect(self.__setTransparency)
         self.__transparentSpinBox.setToolTip(LangClass.TRANSLATIONS['Set Transparency of Window'])
         self.__transparentSpinBox.setMinimumWidth(100)
-
-        self.__fullScreenAction = QWidgetAction(self)
-        self.__fullScreenBtn = Button()
-        self.__fullScreenBtn.setStyleAndIcon(ICON_FULLSCREEN)
-        self.__fullScreenBtn.setCheckable(True)
-        self.__fullScreenBtn.toggled.connect(self.__fullScreenToggle)
-        self.__fullScreenAction.setDefaultWidget(self.__fullScreenBtn)
-        self.__fullScreenBtn.setToolTip(LangClass.TRANSLATIONS['Full Screen'] + f' ({DEFAULT_SHORTCUT_FULL_SCREEN})')
-        self.__fullScreenBtn.setShortcut(DEFAULT_SHORTCUT_FULL_SCREEN)
 
         lay = QHBoxLayout()
         lay.addWidget(self.__transparentSpinBox)
@@ -165,26 +175,56 @@ class MainWindow(QMainWindow):
         else:
             self.showNormal()
 
+    def __toggleToolbar(self, f):
+        self.__toolbar.setVisible(f)
+        CONFIG_MANAGER.set_general_property('show_toolbar', f)
+        self.__showSecondaryToolBarChkBox.setChecked(CONFIG_MANAGER.get_general_property('show_secondary_toolbar'))
+
+    def __activateFocusMode(self, f):
+        f = not f
+        # Toggle GUI
+        for i in range(self.__mainWidget.count()):
+            currentWidget = self.__mainWidget.widget(i)
+            currentWidget.showSecondaryToolBar(f)
+            if isinstance(currentWidget, GPTMainWidget):
+                currentWidget.toggleSideBar(f)
+                currentWidget.toggleSetting(f)
+                currentWidget.togglePrompt(f)
+            else:
+                currentWidget.toggleHistory(f)
+                currentWidget.toggleSetting(f)
+        self.__toggleToolbar(f)
+
+        # Toggle container
+        self.__settingsParamContainer.show_toolbar = f
+        self.__settingsParamContainer.show_secondary_toolbar = f
+        CONFIG_MANAGER.set_general_property('focus_mode', not f)
+
     def __setMenuBar(self):
         menubar = self.menuBar()
 
-        # create the "File" menu
         fileMenu = QMenu(LangClass.TRANSLATIONS['File'], self)
         fileMenu.addAction(self.__settingsAction)
         fileMenu.addAction(self.__exitAction)
-        menubar.addMenu(fileMenu)
 
-        # create the "Help" menu
+        viewMenu = QMenu(LangClass.TRANSLATIONS['View'], self)
+        viewMenu.addAction(self.__focusModeAction)
+        viewMenu.addAction(self.__fullScreenAction)
+        viewMenu.addAction(self.__stackAction)
+
         helpMenu = QMenu(LangClass.TRANSLATIONS['Help'], self)
-        menubar.addMenu(helpMenu)
-
         helpMenu.addAction(self.__aboutAction)
         helpMenu.addAction(self.__viewShortcutsAction)
+        helpMenu.addAction(self.__githubAction)
+        helpMenu.addAction(self.__discordAction)
 
         donateMenu = QMenu(LangClass.TRANSLATIONS['Donate'], self)
         donateMenu.addAction(self.__paypalAction)
         donateMenu.addAction(self.__kofiAction)
 
+        menubar.addMenu(fileMenu)
+        menubar.addMenu(viewMenu)
+        menubar.addMenu(helpMenu)
         menubar.addMenu(donateMenu)
 
     def __setTrayMenu(self):
@@ -215,9 +255,7 @@ class MainWindow(QMainWindow):
         self.__toolbar = QToolBar()
         lay = self.__toolbar.layout()
         self.__toolbar.addAction(self.__chooseAiAction)
-        self.__toolbar.addAction(self.__stackAction)
         self.__toolbar.addAction(self.__customizeAction)
-        self.__toolbar.addAction(self.__fullScreenAction)
         self.__toolbar.addAction(self.__transparentAction)
         self.__toolbar.addAction(self.__showSecondaryToolBarAction)
         self.__toolbar.addAction(self.__apiAction)
@@ -229,7 +267,7 @@ class MainWindow(QMainWindow):
         # QToolbar's layout can't be set spacing with lay.setSpacing so i've just did this instead
         self.__toolbar.setStyleSheet('QToolBar { spacing: 2px; }')
 
-        self.__toolbar.setVisible(self.__settingsParamContainer.show_toolbar)
+        self.__toggleToolbar(self.__settingsParamContainer.show_toolbar)
         for i in range(self.__mainWidget.count()):
             currentWidget = self.__mainWidget.widget(i)
             currentWidget.showSecondaryToolBar(self.__settingsParamContainer.show_secondary_toolbar)
@@ -304,7 +342,7 @@ class MainWindow(QMainWindow):
                 QMessageBox.information(self, LangClass.TRANSLATIONS['Info'], LangClass.TRANSLATIONS["The name of the reference target database has been changed. The changes will take effect after a restart."])
             # If show_toolbar is changed
             if container.show_toolbar != prev_show_toolbar:
-                self.__toolbar.setVisible(container.show_toolbar)
+                self.__toggleToolbar(container.show_toolbar)
             # If show_secondary_toolbar is changed
             if container.show_secondary_toolbar != prev_show_secondary_toolbar:
                 for i in range(self.__mainWidget.count()):
@@ -345,7 +383,7 @@ class MainWindow(QMainWindow):
         self.__replicateWidget.setColumns(self.__settingsParamContainer.image_column_to_show)
 
     def __showSettingsDialog(self):
-        dialog = SettingsDialog(self.__settingsParamContainer, parent=self)
+        dialog = SettingsDialog(parent=self)
         reply = dialog.exec()
         if reply == QDialog.DialogCode.Accepted:
             container = dialog.getParam()

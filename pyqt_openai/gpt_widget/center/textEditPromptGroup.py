@@ -1,8 +1,8 @@
 from pathlib import Path
 
-from qtpy.QtCore import Signal, QBuffer, QByteArray
-from qtpy.QtGui import QTextCursor, QKeySequence
-from qtpy.QtWidgets import QVBoxLayout, QWidget, QApplication
+from PySide6.QtCore import Signal, QBuffer, QByteArray
+from PySide6.QtGui import QTextCursor, QKeySequence
+from PySide6.QtWidgets import QVBoxLayout, QWidget, QApplication
 
 from pyqt_openai import PROMPT_BEGINNING_KEY_NAME, PROMPT_MAIN_KEY_NAME, PROMPT_END_KEY_NAME, \
     PROMPT_JSON_KEY_NAME, CONTEXT_DELIMITER, IMAGE_FILE_EXT_LIST
@@ -17,8 +17,8 @@ class TextEditPromptGroup(QWidget):
     onSendKeySignalToSuggestion = Signal(str)
     onPasteFile = Signal(QByteArray)
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None):
+        super().__init__(parent)
         self.__initUi()
 
     def __initUi(self):

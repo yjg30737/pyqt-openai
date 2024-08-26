@@ -1,5 +1,5 @@
-from qtpy.QtCore import Signal
-from qtpy.QtWidgets import QMessageBox, QScrollArea, QWidget, QCheckBox, QSpinBox, QGroupBox, QVBoxLayout, QPushButton, \
+from PySide6.QtCore import Signal
+from PySide6.QtWidgets import QMessageBox, QScrollArea, QWidget, QCheckBox, QSpinBox, QGroupBox, QVBoxLayout, QPushButton, \
     QComboBox, \
     QPlainTextEdit, \
     QFormLayout, QLabel, QRadioButton
@@ -11,15 +11,14 @@ from pyqt_openai.models import ImagePromptContainer
 from pyqt_openai.util.script import getSeparator
 from pyqt_openai.widgets.findPathWidget import FindPathWidget
 from pyqt_openai.widgets.notifier import NotifierWidget
-from pyqt_openai.widgets.toast import Toast
 
 
 class DallERightSideBarWidget(QScrollArea):
     submitDallE = Signal(ImagePromptContainer)
     submitDallEAllComplete = Signal()
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None):
+        super().__init__(parent)
         self.__initVal()
         self.__initUi()
 
@@ -264,16 +263,14 @@ class DallERightSideBarWidget(QScrollArea):
             self.__t.stop()
 
     def __failToGenerate(self, event):
+        informative_text = 'Error 😥'
+        detailed_text = event
         if not self.isVisible() or not self.window().isActiveWindow():
-            informative_text = 'Error 😥'
-            detailed_text = event
             self.__notifierWidget = NotifierWidget(informative_text=informative_text, detailed_text = detailed_text)
             self.__notifierWidget.show()
             self.__notifierWidget.doubleClicked.connect(self.__bringWindowToFront)
-            QMessageBox.critical(self, informative_text, detailed_text)
         else:
-            toast = Toast(text=event, parent=self)
-            toast.show()
+            QMessageBox.critical(self, informative_text, detailed_text)
 
     def __bringWindowToFront(self):
         window = self.window()

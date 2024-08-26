@@ -1,6 +1,6 @@
-from qtpy.QtCore import Qt
-from qtpy.QtGui import QPixmap
-from qtpy.QtWidgets import QGraphicsScene, QGraphicsView
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QPixmap
+from PySide6.QtWidgets import QGraphicsScene, QGraphicsView
 
 
 class NormalImageView(QGraphicsView):

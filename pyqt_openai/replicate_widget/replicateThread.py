@@ -1,4 +1,4 @@
-from qtpy.QtCore import QThread, Signal
+from PySide6.QtCore import QThread, Signal
 
 from pyqt_openai.models import ImagePromptContainer
 

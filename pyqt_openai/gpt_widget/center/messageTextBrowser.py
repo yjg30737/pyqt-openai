@@ -1,15 +1,15 @@
 import json
 
 # from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout
-from qtpy.QtGui import QPalette, QColor, QDesktopServices, QTextDocument
-from qtpy.QtWidgets import QTextBrowser
+from PySide6.QtGui import QPalette, QColor, QDesktopServices
+from PySide6.QtWidgets import QTextBrowser
 
-from pyqt_openai import MESSAGE_ADDITIONAL_HEIGHT, MESSAGE_MAXIMUM_HEIGHT, MESSAGE_PADDING, INDENT_SIZE
+from pyqt_openai import MESSAGE_MAXIMUM_HEIGHT, MESSAGE_PADDING, INDENT_SIZE
 
 
 class MessageTextBrowser(QTextBrowser):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None):
+        super().__init__(parent)
 
         # Make the remote links clickable
         self.anchorClicked.connect(self.on_anchor_clicked)
@@ -42,7 +42,7 @@ class MessageTextBrowser(QTextBrowser):
             self.setPlainText(f"Error decoding JSON: {e}")
 
     def adjustBrowserHeight(self):
-        document_height = self.document().size().height() + MESSAGE_ADDITIONAL_HEIGHT
+        document_height = self.document().size().height()
         max_height = MESSAGE_MAXIMUM_HEIGHT
 
         if document_height < max_height:

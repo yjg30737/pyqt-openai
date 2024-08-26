@@ -2,9 +2,9 @@
 
 # This works perfectly for showing the key combination in a QLineEdit widget.
 
-from qtpy.QtCore import Qt
-from qtpy.QtGui import QKeyEvent
-from qtpy.QtWidgets import QLineEdit
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QKeyEvent
+from PySide6.QtWidgets import QLineEdit
 
 
 class ShowingKeyUserInputLineEdit(QLineEdit):

@@ -11,8 +11,8 @@ from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ChatMessageContainer
 from pyqt_openai.pyqt_openai_data import LLAMAINDEX_WRAPPER, get_argument, DB
 from pyqt_openai.widgets.notifier import NotifierWidget
-from qtpy.QtCore import Signal
-from qtpy.QtWidgets import QStackedWidget, QWidget, QSizePolicy, QHBoxLayout, QVBoxLayout, QMessageBox
+from PySide6.QtCore import Signal
+from PySide6.QtWidgets import QStackedWidget, QWidget, QSizePolicy, QHBoxLayout, QVBoxLayout, QMessageBox
 
 
 class ChatWidget(QWidget):

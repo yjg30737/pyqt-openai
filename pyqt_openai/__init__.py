@@ -4,17 +4,18 @@ This file is used to store the constants and the global variables that are used 
 
 import json
 import os
-from pathlib import Path
 
-import toml
+import tomllib  # Python 3.11 built-in module
+from pathlib import Path
 
 # Load the pyproject.toml file
 SRC_DIR = Path(__file__).resolve().parent
 ROOT_DIR = SRC_DIR.parent
 SETUP_FILENAME = ROOT_DIR / "pyproject.toml"
 
-with open(SETUP_FILENAME, "r") as file:
-    pyproject_data = toml.load(file)
+# Read the TOML file using tomllib (Python 3.11+)
+with open(SETUP_FILENAME, "rb") as file:
+    pyproject_data = tomllib.load(file)
 
 # For the sake of following the PEP8 standard, we will declare module-level dunder names.
 # PEP8 standard about dunder names: https://peps.python.org/pep-0008/#module-level-dunder-names
@@ -25,7 +26,7 @@ __author__ = pyproject_data["project"]["authors"][0]['name']
 # Constants
 # ----------------------------
 # APP
-DEFAULT_APP_NAME = pyproject_data["project"]["name"]
+DEFAULT_APP_NAME = 'VividNode'
 CONTACT = pyproject_data["project"]["authors"][0]['email']
 DEFAULT_APP_ICON = 'icon.ico'
 APP_INITIAL_WINDOW_SIZE = (1280, 768)
@@ -39,7 +40,11 @@ KOFI_URL = 'https://ko-fi.com/junggyuyoon'
 PAYPAL_URL = 'https://paypal.me/yjg30737'
 GITHUB_URL = 'https://github.com/yjg30737/pyqt-openai'
 DISCORD_URL = 'https://discord.gg/cHekprskVE'
+
 HOW_TO_GET_OPENAI_API_KEY_URL = 'https://medium.com/@yjg30737/how-to-get-your-openai-api-key-e2193850932e'
+HOW_TO_EXPORT_CHATGPT_CONVERSATION_HISTORY_URL = 'https://medium.com/@yjg30737/how-to-export-your-chatgpt-conversation-history-caa0946d6349'
+HOW_TO_REPLICATE = 'https://medium.com/@yjg30737/10a2cb983ceb'
+
 COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_CHAT = ['id']
 COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_IMAGE = ['id', 'data']
 DEFAULT_LANGUAGE = 'en_US'
@@ -62,7 +67,6 @@ LANGUAGE_DICT = {
     "Portuguese": "pt_BR"
 }
 
-MESSAGE_ADDITIONAL_HEIGHT = 40
 MESSAGE_PADDING = 16
 MESSAGE_MAXIMUM_HEIGHT = 800
 MAXIMUM_MESSAGES_IN_PARAMETER = 20
@@ -102,6 +106,7 @@ ICON_DISCORD = 'ico/discord.svg'
 ICON_EXPORT = 'ico/export.svg'
 ICON_FAVORITE_NO = 'ico/favorite_no.svg'
 ICON_FAVORITE_YES = 'ico/favorite_yes.svg'
+ICON_FOCUS_MODE = 'ico/focus_mode.svg'
 ICON_FULLSCREEN = 'ico/fullscreen.svg'
 ICON_GITHUB = 'ico/github.svg'
 ICON_HELP = 'ico/help.svg'
@@ -140,6 +145,12 @@ DEFAULT_SOURCE_ERROR_COLOR = '#FF0000'
 DEFAULT_FOUND_TEXT_COLOR = '#00A2E8'
 DEFAULT_FOUND_TEXT_BG_COLOR = '#FFF200'
 
+DEFAULT_LINK_COLOR = '#4F93FF'
+DEFAULT_LINK_HOVER_COLOR = '#FF0000'
+
+DEFAULT_TOAST_BACKGROUND_COLOR = '#444444'
+DEFAULT_TOAST_FOREGROUND_COLOR = '#EEEEEE'
+
 ## MARKDOWN
 # I am not planning to use it at the moment.
 # DEFAULT_MARKDOWN_span_font = 'Courier New'
@@ -161,6 +172,7 @@ DEFAULT_SHORTCUT_FIND_CLOSE = 'Escape'
 DEFAULT_SHORTCUT_PROMPT_BEGINNING = 'Ctrl+B'
 DEFAULT_SHORTCUT_PROMPT_ENDING = 'Ctrl+E'
 DEFAULT_SHORTCUT_SUPPORT_PROMPT_COMMAND = 'Ctrl+Shift+P'
+DEFAULT_SHORTCUT_FOCUS_MODE = 'F10'
 DEFAULT_SHORTCUT_FULL_SCREEN = 'F11'
 DEFAULT_SHORTCUT_FIND = 'Ctrl+F'
 DEFAULT_SHORTCUT_JSON_MODE = 'Ctrl+J'
@@ -320,6 +332,7 @@ CONFIG_DATA = {
         'API_KEY': '',
         'llama_index_directory': '',
         'apply_user_defined_styles': False,
+        'focus_mode': False,
     },
     'DALLE': {
         'quality': 'standard',

@@ -6,7 +6,7 @@ Also this checks the version of the OpenAI package and raises an exception if th
 import base64
 import os.path
 
-import openai
+from openai import OpenAI
 
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.models import ChatMessageContainer
@@ -18,13 +18,6 @@ os.environ['OPENAI_API_KEY'] = ''
 DB = SqliteDatabase()
 
 LLAMAINDEX_WRAPPER = GPTLLamaIndexWrapper()
-
-MIN_VERSION = 1.0
-# if openai version is below 1.0, exit the program and suggest to upgrade
-if openai.__version__ < str(MIN_VERSION):
-    raise Exception(f'Please upgrade openai package to version {MIN_VERSION} or higher')
-
-from openai import OpenAI
 
 # initialize
 OPENAI_STRUCT = OpenAI(api_key='')
@@ -118,7 +111,7 @@ def get_argument(model, system, messages, cur_text, temperature, top_p, frequenc
                     {
                         'type': 'image_url',
                         'image_url': {
-                            'url': get_image_url_from_local(image)
+                            'url': get_image_url_from_local(image),
                         }
                     }
                 )

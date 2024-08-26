@@ -1,6 +1,6 @@
-from qtpy.QtWidgets import QWidget, QLineEdit, QGridLayout, QLabel, \
+from PySide6.QtWidgets import QWidget, QLineEdit, QGridLayout, QLabel, \
     QHBoxLayout, QApplication, QSizePolicy
-from qtpy.QtCore import Signal
+from PySide6.QtCore import Signal
 
 from pyqt_openai import ICON_SEARCH
 from pyqt_openai.widgets.svgLabel import SvgLabel

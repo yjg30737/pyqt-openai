@@ -1,9 +1,9 @@
 import json
 import re
 
-from qtpy.QtCore import Qt, QTimer, Signal
-from qtpy.QtGui import QTextCursor, QTextCharFormat, QColor
-from qtpy.QtWidgets import QTextEdit, QMessageBox
+from PySide6.QtCore import Qt, QTimer, Signal
+from PySide6.QtGui import QTextCursor, QTextCharFormat, QColor
+from PySide6.QtWidgets import QTextEdit, QMessageBox
 
 from pyqt_openai import INDENT_SIZE, DEFAULT_SOURCE_HIGHLIGHT_COLOR, DEFAULT_SOURCE_ERROR_COLOR
 from pyqt_openai.lang.translations import LangClass

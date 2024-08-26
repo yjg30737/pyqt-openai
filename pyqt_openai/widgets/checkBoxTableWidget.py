@@ -1,15 +1,15 @@
 import typing
 
-from qtpy.QtCore import Signal, Qt
-from qtpy.QtWidgets import QHeaderView, QTableWidget, QCheckBox
-from qtpy.QtWidgets import QWidget, QGridLayout
+from PySide6.QtCore import Signal, Qt
+from PySide6.QtWidgets import QHeaderView, QTableWidget, QCheckBox
+from PySide6.QtWidgets import QWidget, QGridLayout
 
 
 class CheckBox(QWidget):
     checkedSignal = Signal(int, Qt.CheckState)
 
-    def __init__(self, r_idx, flag):
-        super().__init__()
+    def __init__(self, r_idx, flag, parent=None):
+        super().__init__(parent)
         self.__r_idx = r_idx
         self.__initUi(flag)
 

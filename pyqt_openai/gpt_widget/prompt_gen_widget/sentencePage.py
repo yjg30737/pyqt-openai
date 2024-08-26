@@ -1,8 +1,8 @@
 import json
 import os
 
-from qtpy.QtCore import Signal, Qt
-from qtpy.QtWidgets import QWidget, QDialog, QTableWidget, QVBoxLayout, QHBoxLayout, QHeaderView, QTableWidgetItem, \
+from PySide6.QtCore import Signal, Qt
+from PySide6.QtWidgets import QWidget, QDialog, QTableWidget, QVBoxLayout, QHBoxLayout, QHeaderView, QTableWidgetItem, \
     QAbstractItemView, QFileDialog, QLabel, QSpacerItem, QListWidget, QListWidgetItem, QSizePolicy, QSplitter, \
     QMessageBox
 
@@ -24,8 +24,8 @@ class SentenceGroupList(QWidget):
     currentRowChanged = Signal(int)
     itemChanged = Signal(int)
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None):
+        super().__init__(parent)
         self.__initUi()
 
     def __initUi(self):
@@ -165,8 +165,8 @@ class SentenceGroupList(QWidget):
 class PromptTable(QWidget):
     updated = Signal(str)
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None):
+        super().__init__(parent)
         self.__initVal()
         self.__initUi()
 
@@ -303,8 +303,8 @@ class PromptTable(QWidget):
 class SentencePage(QWidget):
     updated = Signal(str)
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None):
+        super().__init__(parent)
         self.__initUi()
 
     def __initUi(self):

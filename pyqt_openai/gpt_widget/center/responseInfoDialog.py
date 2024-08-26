@@ -1,5 +1,5 @@
-from qtpy.QtCore import Qt
-from qtpy.QtWidgets import QDialog, QFormLayout, QLabel, QPushButton
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QDialog, QFormLayout, QLabel, QPushButton
 
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ChatMessageContainer

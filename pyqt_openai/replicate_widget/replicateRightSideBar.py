@@ -1,5 +1,5 @@
-from qtpy.QtCore import Signal, Qt
-from qtpy.QtWidgets import QLineEdit, QScrollArea, QMessageBox, QWidget, QCheckBox, QSpinBox, QGroupBox, QVBoxLayout, \
+from PySide6.QtCore import Signal, Qt
+from PySide6.QtWidgets import QLineEdit, QScrollArea, QMessageBox, QWidget, QCheckBox, QSpinBox, QGroupBox, QVBoxLayout, \
     QPushButton, \
     QPlainTextEdit, \
     QFormLayout, QLabel, QSplitter
@@ -12,15 +12,14 @@ from pyqt_openai.util.replicate_script import ReplicateWrapper
 from pyqt_openai.util.script import getSeparator
 from pyqt_openai.widgets.findPathWidget import FindPathWidget
 from pyqt_openai.widgets.notifier import NotifierWidget
-from pyqt_openai.widgets.toast import Toast
 
 
 class ReplicateRightSideBarWidget(QScrollArea):
     submitReplicate = Signal(ImagePromptContainer)
     submitReplicateAllComplete = Signal()
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None):
+        super().__init__(parent)
         self.__initVal()
         self.__initUi()
 
@@ -211,7 +210,6 @@ class ReplicateRightSideBarWidget(QScrollArea):
 
     def __submit(self):
         arg = {
-            "model": self.__model,
             "prompt": self.__promptWidget.toPlainText(),
             "negative_prompt": self.__negativePromptWidget.toPlainText(),
             "width": self.__width,
@@ -244,15 +242,13 @@ class ReplicateRightSideBarWidget(QScrollArea):
             self.__t.stop()
 
     def __failToGenerate(self, event):
-        if self.isVisible() and self.window().isActiveWindow():
-            toast = Toast(text=event, parent=self)
-            toast.show()
-        else:
-            informative_text = 'Error 😥'
-            detailed_text = event
+        informative_text = 'Error 😥'
+        detailed_text = event
+        if not self.isVisible() or not self.window().isActiveWindow():
             self.__notifierWidget = NotifierWidget(informative_text=informative_text, detailed_text = detailed_text)
             self.__notifierWidget.show()
             self.__notifierWidget.doubleClicked.connect(self.__bringWindowToFront)
+        else:
             QMessageBox.critical(self, informative_text, detailed_text)
 
     def __bringWindowToFront(self):

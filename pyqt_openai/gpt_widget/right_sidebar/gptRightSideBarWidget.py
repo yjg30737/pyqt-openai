@@ -1,21 +1,20 @@
 from functools import partial
 
-from qtpy.QtCore import QSettings, Signal
-from qtpy.QtWidgets import QScrollArea, QWidget, QTabWidget, QGridLayout
+from PySide6.QtCore import Signal
+from PySide6.QtWidgets import QScrollArea, QWidget, QTabWidget, QGridLayout
 
-from pyqt_openai import INI_FILE_NAME
 from pyqt_openai.config_loader import CONFIG_MANAGER
-from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.gpt_widget.right_sidebar.chatPage import ChatPage
 from pyqt_openai.gpt_widget.right_sidebar.llama_widget.llamaPage import LlamaPage
+from pyqt_openai.lang.translations import LangClass
 
 
 class GPTRightSideBarWidget(QScrollArea):
     onDirectorySelected = Signal(str)
     onToggleJSON = Signal(bool)
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None):
+        super().__init__(parent)
         self.__initVal()
         self.__initUi()
 

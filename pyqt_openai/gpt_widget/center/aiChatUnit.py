@@ -1,7 +1,7 @@
 import pyperclip
-from qtpy.QtCore import Qt
-from qtpy.QtGui import QPalette
-from qtpy.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QSpacerItem, QSizePolicy
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QPalette
+from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QSpacerItem, QSizePolicy
 
 from pyqt_openai import DEFAULT_ICON_SIZE, ICON_FAVORITE_NO, ICON_INFO, ICON_COPY, ICON_FAVORITE_YES
 from pyqt_openai.config_loader import CONFIG_MANAGER

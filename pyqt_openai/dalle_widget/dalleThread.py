@@ -1,6 +1,6 @@
 import base64
 
-from qtpy.QtCore import QThread, Signal
+from PySide6.QtCore import QThread, Signal
 
 from pyqt_openai.models import ImagePromptContainer
 from pyqt_openai.pyqt_openai_data import OPENAI_STRUCT

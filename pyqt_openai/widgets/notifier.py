@@ -1,10 +1,10 @@
 import os
 import posixpath
 
-from qtpy import QtGui
-from qtpy.QtCore import Qt, Signal, QTimer, QPropertyAnimation
-from qtpy.QtGui import QIcon
-from qtpy.QtWidgets import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QPushButton, QApplication, QSizePolicy
+from PySide6 import QtGui
+from PySide6.QtCore import Qt, Signal, QTimer, QPropertyAnimation
+from PySide6.QtGui import QIcon
+from PySide6.QtWidgets import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QPushButton, QApplication, QSizePolicy
 
 from pyqt_openai import SRC_DIR, ICON_CLOSE, NOTIFIER_MAX_CHAR
 
@@ -12,14 +12,14 @@ from pyqt_openai import SRC_DIR, ICON_CLOSE, NOTIFIER_MAX_CHAR
 class NotifierWidget(QWidget):
     doubleClicked = Signal()
 
-    def __init__(self, informative_text='', detailed_text=''):
-        super().__init__()
+    def __init__(self, informative_text='', detailed_text='', parent=None):
+        super().__init__(parent)
         self.__timerVal = 10000
         self.__initUi(informative_text, detailed_text)
         self.__repositionWidget()
 
     def __initUi(self, informative_text='', detailed_text=''):
-        self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.SubWindow)
+        self.setWindowFlags(Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowStaysOnTopHint | Qt.WindowType.SubWindow)
 
         self.__informativeTextLabel = QLabel(informative_text) if informative_text else QLabel('Informative')
         self.__detailedTextLabel = QLabel(detailed_text) if detailed_text else QLabel('Detailed')
@@ -38,7 +38,7 @@ class NotifierWidget(QWidget):
         self.__btnWidget.setLayout(lay)
 
         lay = QHBoxLayout()
-        lay.setAlignment(Qt.AlignTop | Qt.AlignRight)
+        lay.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignRight)
         lay.addWidget(closeBtn)
         lay.setContentsMargins(0, 0, 0, 0)
 
@@ -65,7 +65,7 @@ class NotifierWidget(QWidget):
         self.move(bottom_right_x, bottom_right_y)
 
     def keyPressEvent(self, event):
-        if event.key() == Qt.Key_Escape:
+        if event.key() == Qt.Key.Key_Escape:
             self.close()
 
         return super().keyPressEvent(event)

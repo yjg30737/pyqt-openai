@@ -16,26 +16,18 @@ sys.path.insert(0, os.getcwd())  # Add the current directory as well
 # for testing pyqt6
 # os.environ['QT_API'] = 'pyqt6'
 
-from qtpy.QtGui import QGuiApplication, QFont, QIcon, QPixmap
-from qtpy.QtWidgets import QApplication, \
+from PySide6.QtGui import QFont, QIcon, QPixmap
+from PySide6.QtWidgets import QApplication, \
     QSplashScreen
-from qtpy.QtCore import Qt, QCoreApplication
-from qtpy.QtSql import QSqlDatabase
+from PySide6.QtSql import QSqlDatabase
 
 from pyqt_openai.config_loader import CONFIG_MANAGER
 
 from pyqt_openai.mainWindow import MainWindow
-from pyqt_openai.util.script import isUsingPyQt5, handle_exception
+from pyqt_openai.util.script import handle_exception
 from pyqt_openai.sqlite import get_db_filename
 
 from pyqt_openai import DEFAULT_APP_ICON
-
-# HighDPI support
-# Qt version should be above 5.14
-if isUsingPyQt5():
-    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
-    QCoreApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
-    QGuiApplication.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
 
 
 # Application

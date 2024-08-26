@@ -1,5 +1,5 @@
-from qtpy.QtCore import Qt
-from qtpy.QtWidgets import QDialog, QVBoxLayout, \
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QDialog, QVBoxLayout, \
     QDialogButtonBox, QMessageBox
 
 from pyqt_openai.lang.translations import LangClass
@@ -8,19 +8,15 @@ from pyqt_openai.settings_dialog.generalSettingsWidget import GeneralSettingsWid
 
 
 class SettingsDialog(QDialog):
-    def __init__(self, args: SettingsParamsContainer, parent=None):
+    def __init__(self, parent=None):
         super().__init__(parent)
-        self.__initVal(args)
         self.__initUi()
-
-    def __initVal(self, args):
-        self.__args = args
 
     def __initUi(self):
         self.setWindowTitle(LangClass.TRANSLATIONS["Settings"])
         self.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.WindowCloseButtonHint)
 
-        self.__generalSettingsWidget = GeneralSettingsWidget(self.__args)
+        self.__generalSettingsWidget = GeneralSettingsWidget()
 
         # Dialog buttons
         buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)

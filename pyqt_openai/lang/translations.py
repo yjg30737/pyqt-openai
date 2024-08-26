@@ -1,7 +1,7 @@
 import json
 import os.path
 
-from qtpy.QtCore import QLocale
+from PySide6.QtCore import QLocale
 
 from pyqt_openai import DEFAULT_LANGUAGE, LANGUAGE_FILE, LANGUAGE_DICT
 

@@ -1,10 +1,10 @@
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.gpt_widget.right_sidebar.llama_widget.listWidget import FileListWidget
 from pyqt_openai.lang.translations import LangClass
-from qtpy.QtCore import Qt, Signal
-from qtpy.QtGui import QFont
-from qtpy.QtWidgets import QTextBrowser
-from qtpy.QtWidgets import QWidget, QLabel, QVBoxLayout
+from PySide6.QtCore import Qt, Signal
+from PySide6.QtGui import QFont
+from PySide6.QtWidgets import QTextBrowser
+from PySide6.QtWidgets import QWidget, QLabel, QVBoxLayout
 
 
 class LlamaPage(QWidget):

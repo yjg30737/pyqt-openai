@@ -1,5 +1,5 @@
-from qtpy.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QLabel
-from qtpy.QtCore import Signal
+from PySide6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QLabel
+from PySide6.QtCore import Signal
 
 from pyqt_openai import DEFAULT_SHORTCUT_FIND_CLOSE, ICON_CLOSE
 from pyqt_openai.gpt_widget.center.findTextWidget import FindTextWidget
@@ -11,8 +11,8 @@ from pyqt_openai.widgets.button import Button
 class MenuWidget(QWidget):
     onMenuCloseClicked = Signal()
 
-    def __init__(self, widget: ChatBrowser):
-        super().__init__()
+    def __init__(self, widget: ChatBrowser, parent=None):
+        super().__init__(parent)
         self.__initUi(widget=widget)
 
     def __initUi(self, widget):

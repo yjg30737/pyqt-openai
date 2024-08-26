@@ -1,7 +1,7 @@
 import os
 
-from qtpy.QtCore import Qt, QSettings
-from qtpy.QtWidgets import QStackedWidget, QHBoxLayout, QVBoxLayout, QWidget, QSplitter
+from PySide6.QtCore import Qt, QSettings
+from PySide6.QtWidgets import QStackedWidget, QHBoxLayout, QVBoxLayout, QWidget, QSplitter
 
 from pyqt_openai import INI_FILE_NAME, ICON_HISTORY, ICON_SETTING, DEFAULT_SHORTCUT_LEFT_SIDEBAR_WINDOW, \
     DEFAULT_SHORTCUT_RIGHT_SIDEBAR_WINDOW
@@ -56,7 +56,7 @@ class ReplicateMainWidget(QWidget):
         self.__historyBtn.setCheckable(True)
         self.__historyBtn.setToolTip(LangClass.TRANSLATIONS['History'] + f' ({DEFAULT_SHORTCUT_LEFT_SIDEBAR_WINDOW})')
         self.__historyBtn.setChecked(self.__show_history)
-        self.__historyBtn.toggled.connect(self.__toggle_history)
+        self.__historyBtn.toggled.connect(self.toggleHistory)
         self.__historyBtn.setShortcut(DEFAULT_SHORTCUT_LEFT_SIDEBAR_WINDOW)
 
         self.__settingBtn = Button()
@@ -64,7 +64,7 @@ class ReplicateMainWidget(QWidget):
         self.__settingBtn.setCheckable(True)
         self.__settingBtn.setToolTip(LangClass.TRANSLATIONS['Settings'] + f' ({DEFAULT_SHORTCUT_RIGHT_SIDEBAR_WINDOW})')
         self.__settingBtn.setChecked(self.__show_setting)
-        self.__settingBtn.toggled.connect(self.__toggle_setting)
+        self.__settingBtn.toggled.connect(self.toggleSetting)
         self.__settingBtn.setShortcut(DEFAULT_SHORTCUT_RIGHT_SIDEBAR_WINDOW)
 
         lay = QHBoxLayout()
@@ -109,6 +109,7 @@ class ReplicateMainWidget(QWidget):
 
     def showSecondaryToolBar(self, f):
         self.__menuWidget.setVisible(f)
+        CONFIG_MANAGER.set_general_property('show_secondary_toolbar', f)
 
     def __updateCenterWidget(self, idx, data=None):
         """
@@ -169,12 +170,12 @@ class ReplicateMainWidget(QWidget):
     def setColumns(self, columns):
         self.__imageNavWidget.setColumns(columns)
 
-    def __toggle_history(self, f):
+    def toggleHistory(self, f):
         self.__imageNavWidget.setVisible(f)
         self.__show_history = f
         CONFIG_MANAGER.set_replicate_property('show_history', f)
 
-    def __toggle_setting(self, f):
+    def toggleSetting(self, f):
         self.__rightSideBarWidget.setVisible(f)
         self.__show_setting = f
         CONFIG_MANAGER.set_replicate_property('show_setting', f)

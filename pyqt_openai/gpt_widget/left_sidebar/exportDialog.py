@@ -2,8 +2,8 @@
 This dialog is for exporting conversation threads selected by the user from the history.
 """
 
-from qtpy.QtCore import Qt
-from qtpy.QtWidgets import QTableWidgetItem, QLabel, QDialogButtonBox, QCheckBox, QDialog, QVBoxLayout
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QTableWidgetItem, QLabel, QDialogButtonBox, QCheckBox, QDialog, QVBoxLayout
 
 from pyqt_openai import THREAD_ORDERBY
 from pyqt_openai.lang.translations import LangClass

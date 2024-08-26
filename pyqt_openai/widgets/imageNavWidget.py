@@ -1,6 +1,6 @@
-from qtpy.QtCore import Signal, QSortFilterProxyModel, Qt, QByteArray
-from qtpy.QtSql import QSqlTableModel, QSqlQuery
-from qtpy.QtWidgets import QWidget, QVBoxLayout, QStyledItemDelegate, QTableView, QAbstractItemView, QHBoxLayout, \
+from PySide6.QtCore import Signal, QSortFilterProxyModel, Qt, QByteArray
+from PySide6.QtSql import QSqlTableModel, QSqlQuery
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QStyledItemDelegate, QTableView, QAbstractItemView, QHBoxLayout, \
     QMessageBox, QLabel
 
 from pyqt_openai import ICON_DELETE, ICON_CLOSE
@@ -48,8 +48,8 @@ class SqlTableModel(QSqlTableModel):
 class ImageNavWidget(QWidget):
     getContent = Signal(bytes)
 
-    def __init__(self, columns, table_nm):
-        super().__init__()
+    def __init__(self, columns, table_nm, parent=None):
+        super().__init__(parent)
         self.__initVal(columns, table_nm)
         self.__initUi()
 

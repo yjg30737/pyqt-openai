@@ -1,7 +1,7 @@
 import re
 
-from qtpy.QtCore import Signal, Qt
-from qtpy.QtWidgets import QWidget, QLabel, \
+from PySide6.QtCore import Signal, Qt
+from PySide6.QtWidgets import QWidget, QLabel, \
     QHBoxLayout, QGridLayout, QLineEdit, QMessageBox
 
 from pyqt_openai.gpt_widget.center.chatBrowser import ChatBrowser
@@ -17,8 +17,8 @@ class FindTextWidget(QWidget):
     nextClicked = Signal(str)
     closeSignal = Signal()
 
-    def __init__(self, chatBrowser: ChatBrowser):
-        super().__init__()
+    def __init__(self, chatBrowser: ChatBrowser, parent=None):
+        super().__init__(parent)
         self.__chatBrowser = chatBrowser
         self.__initVal()
         self.__initUi()

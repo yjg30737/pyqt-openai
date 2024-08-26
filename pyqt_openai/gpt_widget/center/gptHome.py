@@ -1,8 +1,8 @@
 # Currently this page is home page of the application.
 
-from qtpy.QtCore import Qt
-from qtpy.QtGui import QFont, QPixmap
-from qtpy.QtWidgets import QLabel, QWidget, QVBoxLayout, QScrollArea
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QFont, QPixmap
+from PySide6.QtWidgets import QLabel, QWidget, QVBoxLayout, QScrollArea
 
 from pyqt_openai import DEFAULT_APP_NAME, HOW_TO_GET_OPENAI_API_KEY_URL
 from pyqt_openai.lang.translations import LangClass
@@ -15,7 +15,8 @@ class GPTHome(QScrollArea):
         self.__initUi()
 
     def __initUi(self):
-        title = QLabel(f"Welcome to {DEFAULT_APP_NAME} main page!", self)
+        title = QLabel(f"Welcome to {DEFAULT_APP_NAME}\n"
+                       f"main page!", self)
         title.setFont(QFont('Arial', 32))
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
@@ -35,8 +36,8 @@ class GPTHome(QScrollArea):
         lay = QVBoxLayout()
         lay.addWidget(title)
         lay.addWidget(description)
-        lay.addWidget(self.__background_image)
         lay.addWidget(self.__openaiApiManualLbl)
+        lay.addWidget(self.__background_image)
         lay.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.setLayout(lay)
 
