@@ -41,6 +41,7 @@ class ChatWidget(QWidget):
 
         self.__menuWidget = MenuWidget(self.__browser)
         self.__menuWidget.onMenuCloseClicked.connect(self.__onMenuCloseClicked)
+        self.__menuWidget.setVisible(False)
 
         lay = QVBoxLayout()
         lay.addWidget(self.__menuWidget)

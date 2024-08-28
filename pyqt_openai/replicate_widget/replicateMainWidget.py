@@ -68,8 +68,8 @@ class ReplicateMainWidget(QWidget):
         self.__settingBtn.setShortcut(DEFAULT_SHORTCUT_RIGHT_SIDEBAR_WINDOW)
 
         lay = QHBoxLayout()
-        lay.addWidget(self.__settingBtn)
         lay.addWidget(self.__historyBtn)
+        lay.addWidget(self.__settingBtn)
         lay.setContentsMargins(2, 2, 2, 2)
         lay.setAlignment(Qt.AlignmentFlag.AlignLeft)
 
