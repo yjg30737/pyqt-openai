@@ -173,11 +173,15 @@ class GPTMainWidget(QWidget):
         self.__gptRightSideBarWidget.setVisible(x)
         self.__show_setting = x
         CONFIG_MANAGER.set_general_property('show_setting', self.__show_setting)
+        if not self.__promptGeneratorWidget.isVisible():
+            self.__rightSideBar.setVisible(x)
 
     def togglePrompt(self, x):
         self.__promptGeneratorWidget.setVisible(x)
         self.__show_prompt = x
         CONFIG_MANAGER.set_general_property('show_prompt', self.__show_prompt)
+        if not self.__gptRightSideBarWidget.isVisible():
+            self.__rightSideBar.setVisible(x)
 
     def toggleButtons(self, x):
         self.__sideBarBtn.setChecked(x)
