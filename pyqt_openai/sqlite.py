@@ -3,8 +3,7 @@ import sqlite3
 from datetime import datetime
 from typing import List
 
-from PySide6.QtCore import QSettings
-
+from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai import THREAD_TABLE_NAME, THREAD_TRIGGER_NAME, \
     THREAD_TABLE_NAME_OLD, \
     THREAD_TRIGGER_NAME_OLD, MESSAGE_TABLE_NAME_OLD, MESSAGE_TABLE_NAME, THREAD_MESSAGE_INSERTED_TR_NAME, \
@@ -19,8 +18,7 @@ def get_db_filename():
     """
     Get the database file's name from the settings.
     """
-    settings = QSettings(INI_FILE_NAME, QSettings.Format.IniFormat)
-    db_path = settings.value("db", DB_FILE_NAME) + ".db"
+    db_path = CONFIG_MANAGER.get_general_property('db') + '.db'
     return db_path
 
 
