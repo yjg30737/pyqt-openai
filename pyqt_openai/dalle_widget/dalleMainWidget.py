@@ -70,8 +70,8 @@ class DallEMainWidget(QWidget):
         self.__settingBtn.setShortcut(DEFAULT_SHORTCUT_RIGHT_SIDEBAR_WINDOW)
 
         lay = QHBoxLayout()
-        lay.addWidget(self.__settingBtn)
         lay.addWidget(self.__historyBtn)
+        lay.addWidget(self.__settingBtn)
         lay.setContentsMargins(2, 2, 2, 2)
         lay.setAlignment(Qt.AlignmentFlag.AlignLeft)
 
@@ -112,6 +112,10 @@ class DallEMainWidget(QWidget):
     def showSecondaryToolBar(self, f):
         self.__menuWidget.setVisible(f)
         CONFIG_MANAGER.set_general_property('show_secondary_toolbar', f)
+
+    def toggleButtons(self, x):
+        self.__historyBtn.setChecked(x)
+        self.__settingBtn.setChecked(x)
 
     def __updateCenterWidget(self, idx, data=None):
         """

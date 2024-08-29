@@ -91,8 +91,6 @@ class SqliteDatabase:
 
                 # Commit the transaction
                 self.__conn.commit()
-
-                # self.insertPropPromptGroup('Default')
         except sqlite3.Error as e:
             print(f"An error occurred while creating the table: {e}")
             raise

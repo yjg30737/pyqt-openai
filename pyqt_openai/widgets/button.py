@@ -99,7 +99,7 @@ class Button(QPushButton):
         self.setStyleSheet(self.__btn_style)
 
     def setStyleAndIcon(self, icon: str):
-        self.__icon = os.path.join(SRC_DIR, icon).replace(os.sep, posixpath.sep)
+        self.__icon = icon
         self.__styleInit()
         self.setIcon(QIcon(self.__icon))
 

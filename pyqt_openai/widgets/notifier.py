@@ -28,8 +28,7 @@ class NotifierWidget(QWidget):
 
         closeBtn = QPushButton()
         closeBtn.clicked.connect(self.close)
-        close_icon_path = os.path.join(SRC_DIR, ICON_CLOSE).replace(os.sep, posixpath.sep)
-        closeBtn.setIcon(QIcon(close_icon_path))
+        closeBtn.setIcon(QIcon(ICON_CLOSE))
 
         lay = QHBoxLayout()
         lay.setContentsMargins(0, 0, 0, 0)
