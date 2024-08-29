@@ -18,6 +18,7 @@ class ReplicateWrapper:
         :param api_key:
         :return:
         """
+        print("API KEY", api_key)
         self.__api_key = api_key
         os.environ['REPLICATE_API_TOKEN'] = self.__api_key
         return True
@@ -42,6 +43,8 @@ class ReplicateWrapper:
             input_args["prompt_strength"] = 0.8 if "prompt_strength" not in input_args else input_args["prompt_strength"]
             input_args["num_inference_steps"] = 50 if "num_inference_steps" not in input_args else input_args["num_inference_steps"]
             input_args["refine"] = "expert_ensemble_refiner" if "refine" not in input_args else input_args["refine"]
+
+            print(input_args)
 
             output = replicate.run(
                 model,

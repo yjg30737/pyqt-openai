@@ -1,9 +1,9 @@
 import os.path, posixpath
 
-from qtpy.QtGui import QColor, QPalette, qGray, QIcon
-from qtpy.QtWidgets import QGraphicsColorizeEffect, QWidget, QApplication, QToolButton
+from PySide6.QtGui import QColor, QPalette, qGray, QIcon
+from PySide6.QtWidgets import QGraphicsColorizeEffect, QWidget, QApplication, QToolButton
 
-from pyqt_openai import SRC_DIR
+from pyqt_openai import SRC_DIR, DEFAULT_BUTTON_HOVER_COLOR, DEFAULT_BUTTON_PRESSED_COLOR, DEFAULT_BUTTON_CHECKED_COLOR
 
 
 class ToolButton(QToolButton):
@@ -27,9 +27,9 @@ class ToolButton(QToolButton):
             self.__baseWidget.installEventFilter(self)
             self.__initColorByBaseWidget()
         else:
-            self.__hover_color = '#A2D0DD'
-            self.__pressed_color = '#B3E0FF'
-            self.__checked_color = '#B3E0FF'
+            self.__hover_color = DEFAULT_BUTTON_HOVER_COLOR
+            self.__pressed_color = DEFAULT_BUTTON_PRESSED_COLOR
+            self.__checked_color = DEFAULT_BUTTON_CHECKED_COLOR
 
     def __initColorByBaseWidget(self):
         self.__base_color = self.__baseWidget.palette().color(QPalette.ColorRole.Base)
@@ -99,7 +99,7 @@ class ToolButton(QToolButton):
         self.setStyleSheet(self.__btn_style)
 
     def setStyleAndIcon(self, icon: str):
-        self.__icon = os.path.join(SRC_DIR, icon).replace(os.sep, posixpath.sep)
+        self.__icon = icon
         self.__styleInit()
         self.setIcon(QIcon(self.__icon))
 

@@ -1,7 +1,7 @@
 import json
 import os.path
 
-from qtpy.QtCore import QLocale
+from PySide6.QtCore import QLocale
 
 from pyqt_openai import DEFAULT_LANGUAGE, LANGUAGE_FILE, LANGUAGE_DICT
 
@@ -24,7 +24,7 @@ class LangClass:
 
     @classmethod
     def lang_changed(cls, lang=None):
-        with open(os.path.join(os.path.dirname(__file__), LANGUAGE_FILE), 'r', encoding='utf-8') as file:
+        with open(LANGUAGE_FILE, 'r', encoding='utf-8') as file:
             translations_data = json.load(file)
 
         if not lang:

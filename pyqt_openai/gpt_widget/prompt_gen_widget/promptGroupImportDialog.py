@@ -1,7 +1,7 @@
 import json
 
-from qtpy.QtCore import Qt
-from qtpy.QtWidgets import QPushButton, QDialogButtonBox, QMessageBox, QDialog, QVBoxLayout, QTableWidget, QSplitter, \
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QPushButton, QDialogButtonBox, QMessageBox, QDialog, QVBoxLayout, QTableWidget, QSplitter, \
     QWidget, QLabel, QAbstractItemView, QTableWidgetItem, QCheckBox
 
 from pyqt_openai import JSON_FILE_EXT_LIST_STR, SENTENCE_PROMPT_GROUP_SAMPLE, FORM_PROMPT_GROUP_SAMPLE

@@ -1,5 +1,5 @@
-from qtpy.QtCore import Qt
-from qtpy.QtWidgets import QPushButton, QCheckBox, QDialogButtonBox, QDialog, QVBoxLayout, \
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QPushButton, QCheckBox, QDialogButtonBox, QDialog, QVBoxLayout, \
     QLabel
 
 from pyqt_openai import SENTENCE_PROMPT_GROUP_SAMPLE, FORM_PROMPT_GROUP_SAMPLE

@@ -1,12 +1,13 @@
-from qtpy.QtCore import Qt, Signal, QSettings
-from qtpy.QtWidgets import QWidget, QDoubleSpinBox, QSpinBox, QFormLayout, QSizePolicy, QComboBox, QTextEdit, \
+from PySide6.QtCore import Qt, Signal
+from PySide6.QtWidgets import QWidget, QDoubleSpinBox, QSpinBox, QFormLayout, QSizePolicy, QComboBox, QTextEdit, \
     QLabel, QVBoxLayout, QCheckBox, QPushButton, QScrollArea, QGroupBox
 
-from pyqt_openai import INI_FILE_NAME, DEFAULT_SHORTCUT_JSON_MODE, OPENAI_TEMPERATURE_RANGE, OPENAI_TEMPERATURE_STEP, \
+from pyqt_openai import DEFAULT_SHORTCUT_JSON_MODE, OPENAI_TEMPERATURE_RANGE, OPENAI_TEMPERATURE_STEP, \
     MAX_TOKENS_RANGE, TOP_P_RANGE, TOP_P_STEP, FREQUENCY_PENALTY_RANGE, PRESENCE_PENALTY_STEP, PRESENCE_PENALTY_RANGE, \
     FREQUENCY_PENALTY_STEP
+from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.lang.translations import LangClass
-from pyqt_openai.pyqt_openai_data import get_chat_model, LLAMAINDEX_WRAPPER
+from pyqt_openai.pyqt_openai_data import get_chat_model, init_llama
 from pyqt_openai.util.script import getSeparator
 
 
@@ -14,56 +15,28 @@ class ChatPage(QWidget):
     onToggleLlama = Signal(bool)
     onToggleJSON = Signal(bool)
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None):
+        super().__init__(parent)
         self.__initVal()
         self.__initUi()
 
     def __initVal(self):
-        self.__settings_ini = QSettings(INI_FILE_NAME, QSettings.Format.IniFormat)
+        self.__stream = CONFIG_MANAGER.get_general_property('stream')
+        self.__model = CONFIG_MANAGER.get_general_property('model')
+        self.__system = CONFIG_MANAGER.get_general_property('system')
+        self.__temperature = CONFIG_MANAGER.get_general_property('temperature')
+        self.__max_tokens = CONFIG_MANAGER.get_general_property('max_tokens')
+        self.__top_p = CONFIG_MANAGER.get_general_property('top_p')
+        self.__frequency_penalty = CONFIG_MANAGER.get_general_property('frequency_penalty')
+        self.__presence_penalty = CONFIG_MANAGER.get_general_property('presence_penalty')
+        self.__json_object = CONFIG_MANAGER.get_general_property('json_object')
 
-        # default value of each properties based on https://platform.openai.com/docs/api-reference/chat/create
-        # param
-        if not self.__settings_ini.contains('stream'):
-            self.__settings_ini.setValue('stream', True)
-        if not self.__settings_ini.contains('model'):
-            self.__settings_ini.setValue('model', 'gpt-4o')
-        if not self.__settings_ini.contains('system'):
-            self.__settings_ini.setValue('system', 'You are a helpful assistant.')
-        if not self.__settings_ini.contains('temperature'):
-            self.__settings_ini.setValue('temperature', 1)
-        if not self.__settings_ini.contains('max_tokens'):
-            self.__settings_ini.setValue('max_tokens', -1)
-        if not self.__settings_ini.contains('top_p'):
-            self.__settings_ini.setValue('top_p', 1)
-        if not self.__settings_ini.contains('frequency_penalty'):
-            self.__settings_ini.setValue('frequency_penalty', 0)
-        if not self.__settings_ini.contains('presence_penalty'):
-            self.__settings_ini.setValue('presence_penalty', 0)
-        if not self.__settings_ini.contains('json_object'):
-            self.__settings_ini.setValue('json_object', False)
-
-        # etc
-        if not self.__settings_ini.contains('use_max_tokens'):
-            self.__settings_ini.setValue('use_max_tokens', False)
-        if not self.__settings_ini.contains('use_llama_index'):
-            self.__settings_ini.setValue('use_llama_index', False)
-
-        self.__stream = self.__settings_ini.value('stream', type=bool)
-        self.__model = self.__settings_ini.value('model', type=str)
-        self.__system = self.__settings_ini.value('system', type=str)
-        self.__temperature = self.__settings_ini.value('temperature', type=float)
-        self.__max_tokens = self.__settings_ini.value('max_tokens', type=int)
-        self.__top_p = self.__settings_ini.value('top_p', type=float)
-        self.__frequency_penalty = self.__settings_ini.value('frequency_penalty', type=float)
-        self.__presence_penalty = self.__settings_ini.value('presence_penalty', type=float)
-        self.__json_object = self.__settings_ini.value('json_object', type=bool)
-
-        self.__use_max_tokens = self.__settings_ini.value('use_max_tokens', type=bool)
-        self.__use_llama_index = self.__settings_ini.value('use_llama_index', type=bool)
+        self.__use_max_tokens = CONFIG_MANAGER.get_general_property('use_max_tokens')
+        self.__use_llama_index = CONFIG_MANAGER.get_general_property('use_llama_index')
 
     def __initUi(self):
         systemlbl = QLabel(LangClass.TRANSLATIONS['System'])
+        systemlbl.setToolTip(LangClass.TRANSLATIONS['Basically system means instructions or rules that the model should follow.'] + '\n' + LangClass.TRANSLATIONS['You can write your own system instructions here.'])
 
         self.__systemTextEdit = QTextEdit()
         self.__systemTextEdit.setText(self.__system)
@@ -84,12 +57,16 @@ class ChatPage(QWidget):
         self.__temperatureSpinBox.setSingleStep(OPENAI_TEMPERATURE_STEP)
         self.__temperatureSpinBox.setValue(self.__temperature)
         self.__temperatureSpinBox.valueChanged.connect(self.__valueChanged)
+        self.__temperatureSpinBox.setToolTip(LangClass.TRANSLATIONS['To control the randomness of responses, you adjust the temperature parameter.'] + '\n' + LangClass.TRANSLATIONS[
+                                                                    'A lower value results in less random completions.'])
 
         self.__maxTokensSpinBox = QSpinBox()
         self.__maxTokensSpinBox.setRange(*MAX_TOKENS_RANGE)
         self.__maxTokensSpinBox.setAccelerated(True)
         self.__maxTokensSpinBox.setValue(self.__max_tokens)
         self.__maxTokensSpinBox.valueChanged.connect(self.__valueChanged)
+        self.__maxTokensSpinBox.setToolTip(LangClass.TRANSLATIONS['To set a limit on the number of tokens to generate, you use the max tokens parameter.'] + '\n' + LangClass.TRANSLATIONS[
+                                                                  'The model will stop generating tokens once it reaches the limit.'])
 
         self.__toppSpinBox = QDoubleSpinBox()
         self.__toppSpinBox.setRange(*TOP_P_RANGE)
@@ -97,6 +74,8 @@ class ChatPage(QWidget):
         self.__toppSpinBox.setSingleStep(TOP_P_STEP)
         self.__toppSpinBox.setValue(self.__top_p)
         self.__toppSpinBox.valueChanged.connect(self.__valueChanged)
+        self.__toppSpinBox.setToolTip(LangClass.TRANSLATIONS['To set a threshold for nucleus sampling, you use the top p parameter.'] + '\n' + LangClass.TRANSLATIONS[
+                                                             'The model will stop generating tokens once the cumulative probability of the generated tokens exceeds the threshold.'])
 
         self.__frequencyPenaltySpinBox = QDoubleSpinBox()
         self.__frequencyPenaltySpinBox.setRange(*FREQUENCY_PENALTY_RANGE)
@@ -104,6 +83,8 @@ class ChatPage(QWidget):
         self.__frequencyPenaltySpinBox.setSingleStep(FREQUENCY_PENALTY_STEP)
         self.__frequencyPenaltySpinBox.setValue(self.__frequency_penalty)
         self.__frequencyPenaltySpinBox.valueChanged.connect(self.__valueChanged)
+        self.__frequencyPenaltySpinBox.setToolTip(LangClass.TRANSLATIONS['To penalize the model from repeating the same tokens, you use the frequency penalty parameter.'] + '\n' + LangClass.TRANSLATIONS[
+                                                                         'The model will be less likely to generate tokens that have already been generated.'])
 
         self.__presencePenaltySpinBox = QDoubleSpinBox()
         self.__presencePenaltySpinBox.setRange(*PRESENCE_PENALTY_RANGE)
@@ -111,6 +92,8 @@ class ChatPage(QWidget):
         self.__presencePenaltySpinBox.setSingleStep(PRESENCE_PENALTY_STEP)
         self.__presencePenaltySpinBox.setValue(self.__presence_penalty)
         self.__presencePenaltySpinBox.valueChanged.connect(self.__valueChanged)
+        self.__presencePenaltySpinBox.setToolTip(LangClass.TRANSLATIONS['To penalize the model from generating tokens that are not present in the input, you use the presence penalty parameter.'] + '\n' + LangClass.TRANSLATIONS[
+                                                                        'The model will be less likely to generate tokens that are not present in the input.'])
 
         useMaxTokenChkBox = QCheckBox()
         useMaxTokenChkBox.toggled.connect(self.__useMaxChecked)
@@ -122,11 +105,11 @@ class ChatPage(QWidget):
         lay = QFormLayout()
 
         lay.addRow(useMaxTokenChkBox)
-        lay.addRow('temperature', self.__temperatureSpinBox)
-        lay.addRow('maxTokens', self.__maxTokensSpinBox)
-        lay.addRow('topp', self.__toppSpinBox)
-        lay.addRow('frequencyPenalty', self.__frequencyPenaltySpinBox)
-        lay.addRow('presencePenalty', self.__presencePenaltySpinBox)
+        lay.addRow('Temperature', self.__temperatureSpinBox)
+        lay.addRow('Max Tokens', self.__maxTokensSpinBox)
+        lay.addRow('Top p', self.__toppSpinBox)
+        lay.addRow('Frequency Penalty', self.__frequencyPenaltySpinBox)
+        lay.addRow('Presence Penalty', self.__presencePenaltySpinBox)
 
         paramWidget = QWidget()
         paramWidget.setLayout(lay)
@@ -176,50 +159,48 @@ class ChatPage(QWidget):
 
     def __saveSystem(self):
         self.__system = self.__systemTextEdit.toPlainText()
-        self.__settings_ini.setValue('system', self.__system)
+        CONFIG_MANAGER.set_general_property('system', self.__system)
 
     def __modelChanged(self, v):
         self.__model = v
-        self.__settings_ini.setValue('model', v)
+        CONFIG_MANAGER.set_general_property('model', v)
 
     def __streamChecked(self, f):
         self.__stream = f
-        self.__settings_ini.setValue('stream', f)
+        CONFIG_MANAGER.set_general_property('stream', f)
 
     def __jsonObjectChecked(self, f):
         self.__json_object = f
-        self.__settings_ini.setValue('json_object', f)
+        CONFIG_MANAGER.set_general_property('json_object', f)
         self.onToggleJSON.emit(f)
 
     def __use_llama_indexChecked(self, f):
         self.__use_llama_index = f
-        self.__settings_ini.setValue('use_llama_index', f)
+        CONFIG_MANAGER.set_general_property('use_llama_index', f)
         if f:
             # Set llama index directory if it exists
-            if self.__settings_ini.contains('llama_index_directory') and self.__settings_ini.value(
-                    'use_llama_index', False, type=bool):
-                LLAMAINDEX_WRAPPER.set_directory(self.__settings_ini.value('llama_index_directory'))
+            init_llama()
         self.onToggleLlama.emit(f)
 
     def __useMaxChecked(self, f):
         self.__use_max_tokens = f
-        self.__settings_ini.setValue('use_max_tokens', f)
+        CONFIG_MANAGER.set_general_property('use_max_tokens', f)
         self.__maxTokensSpinBox.setEnabled(f)
 
     def __valueChanged(self, v):
         sender = self.sender()
         if sender == self.__temperatureSpinBox:
             self.__temperature = v
-            self.__settings_ini.setValue('temperature', v)
+            CONFIG_MANAGER.set_general_property('temperature', v)
         elif sender == self.__maxTokensSpinBox:
             self.__max_tokens = v
-            self.__settings_ini.setValue('max_tokens', v)
+            CONFIG_MANAGER.set_general_property('max_tokens', v)
         elif sender == self.__toppSpinBox:
             self.__top_p = v
-            self.__settings_ini.setValue('top_p', v)
+            CONFIG_MANAGER.set_general_property('top_p', v)
         elif sender == self.__frequencyPenaltySpinBox:
             self.__frequency_penalty = v
-            self.__settings_ini.setValue('frequency_penalty', v)
+            CONFIG_MANAGER.set_general_property('frequency_penalty', v)
         elif sender == self.__presencePenaltySpinBox:
             self.__presence_penalty = v
-            self.__settings_ini.setValue('presence_penalty', v)
+            CONFIG_MANAGER.set_general_property('presence_penalty', v)

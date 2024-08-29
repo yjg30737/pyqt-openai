@@ -12,19 +12,20 @@ import random
 import re
 import string
 import sys
-import webbrowser
+import traceback
 import zipfile
 from datetime import datetime
 from pathlib import Path
 
 import requests
+from PySide6.QtCore import Qt, QUrl
+from PySide6.QtGui import QDesktopServices
+from PySide6.QtWidgets import QMessageBox, QFrame
 from jinja2 import Template
-from qtpy.QtCore import QSettings, Qt
-from qtpy.QtWidgets import QMessageBox, QFrame
 
 from pyqt_openai import INI_FILE_NAME, DEFAULT_FONT_SIZE, DEFAULT_FONT_FAMILY, MAIN_INDEX, \
-    PROMPT_NAME_REGEX, PAYPAL_URL, BUYMEACOFFEE_URL, PROMPT_MAIN_KEY_NAME, PROMPT_BEGINNING_KEY_NAME, \
-    PROMPT_END_KEY_NAME, PROMPT_JSON_KEY_NAME
+    PROMPT_NAME_REGEX, PROMPT_MAIN_KEY_NAME, PROMPT_BEGINNING_KEY_NAME, \
+    PROMPT_END_KEY_NAME, PROMPT_JSON_KEY_NAME, CONTEXT_DELIMITER, THREAD_ORDERBY
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ImagePromptContainer
 from pyqt_openai.pyqt_openai_data import DB
@@ -37,23 +38,16 @@ def get_generic_ext_out_of_qt_ext(text):
     return extension
 
 def open_directory(path):
-    if sys.platform.startswith('darwin'):  # macOS
-        os.system('open "{}"'.format(path))
-    elif sys.platform.startswith('win'):  # Windows
-        os.system('start "" "{}"'.format(path))
-    elif sys.platform.startswith('linux'):  # Linux
-        os.system('xdg-open "{}"'.format(path))
-    else:
-        print("Unsupported operating system.")
+    QDesktopServices.openUrl(QUrl.fromLocalFile(path))
 
 def message_list_to_txt(db, thread_id, title, username='User', ai_name='AI'):
     content = ''
     certain_thread_filename_content = db.selectCertainThreadMessagesRaw(thread_id)
-    content += f'== {title} ==' + '\n'*2
+    content += f'== {title} ==' + CONTEXT_DELIMITER
     for unit in certain_thread_filename_content:
         unit_prefix = username if unit[2] == 1 else ai_name
         unit_content = unit[3]
-        content += f'{unit_prefix}: {unit_content}' + '\n'*2
+        content += f'{unit_prefix}: {unit_content}' + CONTEXT_DELIMITER
     return content
 
 def is_valid_regex(pattern):
@@ -131,19 +125,7 @@ def download_image_as_base64(url: str):
     base64_encoded = base64.b64decode(base64.b64encode(image_data).decode('utf-8'))
     return base64_encoded
 
-def get_font():
-    settings = QSettings(INI_FILE_NAME, QSettings.Format.IniFormat)
-    font_family = settings.value("font_family", DEFAULT_FONT_FAMILY, type=str)
-    font_size = settings.value("font_size", DEFAULT_FONT_SIZE, type=int)
-    return {
-        'font_family': font_family,
-        'font_size': font_size
-    }
-
-def restart_app(settings=None):
-    if settings:
-        # Save before restart
-        settings.sync()
+def restart_app():
     # Define the arguments to be passed to the executable
     args = [sys.executable, MAIN_INDEX]
     # Call os.execv() to execute the new process
@@ -167,8 +149,7 @@ def show_message_box_after_change_to_restart(change_list):
 def get_chatgpt_data_for_preview(filename, most_recent_n:int = None):
     data = json.load(open(filename, 'r'))
     conv_arr = []
-    count = len(data) if most_recent_n is None else most_recent_n
-    for i in range(count):
+    for i in range(len(data)):
         conv = data[i]
         conv_dict = {}
         name = conv['title']
@@ -180,6 +161,11 @@ def get_chatgpt_data_for_preview(filename, most_recent_n:int = None):
         conv_dict['update_dt'] = update_dt
         conv_dict['mapping'] = conv['mapping']
         conv_arr.append(conv_dict)
+
+    conv_arr = sorted(conv_arr, key=lambda x: x[THREAD_ORDERBY], reverse=True)
+    if most_recent_n is not None:
+        conv_arr = conv_arr[:most_recent_n]
+
     return {
         'columns': ['id', 'name', 'insert_dt', 'update_dt'],
         'data': conv_arr
@@ -315,15 +301,6 @@ def get_prompt_data(prompt_type='form'):
         data.append(group_obj)
     return data
 
-def goPayPal():
-    webbrowser.open(PAYPAL_URL)
-
-def goBuyMeCoffee():
-    webbrowser.open(BUYMEACOFFEE_URL)
-
-def isUsingPyQt5():
-    return os.environ['QT_API'] == 'pyqt5'
-
 def showJsonSample(json_sample_widget, json_sample):
     json_sample_widget.setText(json_sample)
     json_sample_widget.setReadOnly(True)
@@ -345,12 +322,12 @@ def get_content_of_text_file_for_send(filenames: list[str]):
     for filename in filenames:
         base_filename = os.path.basename(filename)
         source_context += f'=== {base_filename} start ==='
-        source_context += '\n'*2
+        source_context += CONTEXT_DELIMITER
         with open(filename, 'r', encoding='utf-8') as f:
             source_context += f.read()
-        source_context += '\n'*2
+        source_context += CONTEXT_DELIMITER
         source_context += f'=== {base_filename} end ==='
-        source_context += '\n'*2
+        source_context += CONTEXT_DELIMITER
     prompt_context = f'== Source Start ==\n{source_context}== Source End =='
     return prompt_context
 
@@ -391,3 +368,18 @@ def getSeparator(orientation='horizontal'):
         raise ValueError('Invalid orientation')
     sep.setFrameShadow(QFrame.Shadow.Sunken)
     return sep
+
+def handle_exception(exc_type, exc_value, exc_traceback):
+    """
+    Global exception handler.
+    This should be only used in release mode.
+    """
+    error_msg = "".join(traceback.format_exception(exc_type, exc_value, exc_traceback))
+    print(f"Unhandled exception: {error_msg}")
+
+    msg_box = QMessageBox()
+    msg_box.setIcon(QMessageBox.Critical)
+    msg_box.setText("An unexpected error occurred.")
+    msg_box.setInformativeText(error_msg)
+    msg_box.setWindowTitle("Error")
+    msg_box.exec_()

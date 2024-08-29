@@ -1,12 +1,12 @@
 import json, os
 
-from qtpy.QtCore import Signal, Qt
-from qtpy.QtWidgets import QFileDialog, QTableWidget, QMessageBox, QSizePolicy, QSpacerItem, QStackedWidget, QLabel, \
+from PySide6.QtCore import Signal, Qt
+from PySide6.QtWidgets import QFileDialog, QTableWidget, QMessageBox, QSizePolicy, QSpacerItem, QStackedWidget, QLabel, \
     QAbstractItemView, QTableWidgetItem, QHeaderView, QHBoxLayout, \
     QVBoxLayout, QWidget, QDialog, QListWidget, QListWidgetItem, QSplitter
 
 from pyqt_openai import JSON_FILE_EXT_LIST_STR, ICON_ADD, ICON_DELETE, ICON_IMPORT, ICON_EXPORT, \
-    QFILEDIALOG_DEFAULT_DIRECTORY
+    QFILEDIALOG_DEFAULT_DIRECTORY, INDENT_SIZE
 from pyqt_openai.gpt_widget.prompt_gen_widget.promptGroupDirectInputDialog import PromptGroupDirectInputDialog
 from pyqt_openai.gpt_widget.prompt_gen_widget.promptEntryDirectInputDialog import PromptEntryDirectInputDialog
 from pyqt_openai.gpt_widget.prompt_gen_widget.promptGroupExportDialog import PromptGroupExportDialog
@@ -22,8 +22,8 @@ class FormGroupList(QWidget):
     deleted = Signal(int)
     currentRowChanged = Signal(int)
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None):
+        super().__init__(parent)
         self.__initUi()
 
     def __initUi(self):
@@ -130,7 +130,7 @@ class FormGroupList(QWidget):
                     data = dialog.getSelected()
                     # Save the data
                     with open(filename, 'w') as f:
-                        json.dump(data, f, indent=4)
+                        json.dump(data, f, indent=INDENT_SIZE)
                     open_directory(os.path.dirname(filename))
         except Exception as e:
             QMessageBox.critical(self, LangClass.TRANSLATIONS['Error'], str(e))
@@ -147,8 +147,8 @@ class PromptTable(QWidget):
     """
     updated = Signal(str)
 
-    def __init__(self, id):
-        super().__init__()
+    def __init__(self, id, parent=None):
+        super().__init__(parent)
         self.__initVal(id)
         self.__initUi()
 
@@ -262,8 +262,8 @@ class PromptTable(QWidget):
 class FormPage(QWidget):
     updated = Signal(str)
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None):
+        super().__init__(parent)
         self.__initVal()
         self.__initUi()
 

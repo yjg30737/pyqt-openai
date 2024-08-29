@@ -5,30 +5,22 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "pyqt-openai"
 version = "0.9.0"
-description = "PyQt/PySide multipurpose chatbot that user can use GPT, other AI models altogether"
+description = "Python multipurpose chatbot that user can use GPT, other AI models altogether"
 authors = [{ name = "Jung Gyu Yoon", email = "yjg30737@gmail.com" }]
 license = { text = "MIT" }
 readme = "README.md"
 dependencies = [
-    "PyQt5 >= 5.14",
-    "PyQt6",
-    "qtpy",
-    "aiohttp",
+    "PySide6",
     "openai",
     "pyperclip",
     "jinja2",
     "llama-index",
     "requests",
-    "langchain",
-    "pillow",
-    "replicate",
-    "toml"
+    "replicate"
 ]
 keywords = ['openai', 'pyqt', 'pyqt5', 'pyqt6', 'pyside6', 'chatbot', 'gpt', 'replicate']
 
-requires-python = ">= 3.9"
-# 3.9
-# 3.10
+requires-python = ">= 3.11"
 # 3.11
 # 3.12
 
@@ -39,8 +31,6 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Topic :: Software Development :: Libraries :: Application Frameworks",
@@ -52,7 +42,6 @@ homepage = "https://github.com/yjg30737/pyqt-openai.git"
 
 [tool.setuptools]
 packages = ["pyqt_openai"]
-include_package_data = true
 
 [project.gui-scripts]
 pyqt-openai = "pyqt_openai.main:main"

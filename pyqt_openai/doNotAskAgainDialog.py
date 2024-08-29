@@ -1,5 +1,5 @@
-from qtpy.QtCore import Qt, Signal
-from qtpy.QtWidgets import QDialog, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QWidget, \
+from PySide6.QtCore import Qt, Signal
+from PySide6.QtWidgets import QDialog, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QWidget, \
     QCheckBox, QSpacerItem, QSizePolicy
 
 from pyqt_openai.lang.translations import LangClass

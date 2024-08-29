@@ -1,7 +1,7 @@
 import os.path, posixpath
 
-from qtpy.QtGui import QColor, QPalette, qGray, QIcon
-from qtpy.QtWidgets import QGraphicsColorizeEffect, QWidget, QApplication, QPushButton
+from PySide6.QtGui import QColor, QPalette, qGray, QIcon
+from PySide6.QtWidgets import QGraphicsColorizeEffect, QWidget, QApplication, QPushButton
 
 from pyqt_openai import SRC_DIR, DEFAULT_BUTTON_HOVER_COLOR, DEFAULT_BUTTON_PRESSED_COLOR, DEFAULT_BUTTON_CHECKED_COLOR
 
@@ -99,7 +99,7 @@ class Button(QPushButton):
         self.setStyleSheet(self.__btn_style)
 
     def setStyleAndIcon(self, icon: str):
-        self.__icon = os.path.join(SRC_DIR, icon).replace(os.sep, posixpath.sep)
+        self.__icon = icon
         self.__styleInit()
         self.setIcon(QIcon(self.__icon))
 
