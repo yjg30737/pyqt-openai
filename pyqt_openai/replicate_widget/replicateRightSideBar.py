@@ -36,7 +36,7 @@ class ReplicateRightSideBarWidget(QScrollArea):
         self.__number_of_images_to_create = CONFIG_MANAGER.get_replicate_property('number_of_images_to_create')
         self.__save_prompt_as_text = CONFIG_MANAGER.get_replicate_property('save_prompt_as_text')
 
-        self.__wrapper = ReplicateWrapper(self.__api_key)
+        self.__wrapper = ReplicateWrapper(self.__api_key.strip() if self.__api_key else '')
 
     def __initUi(self):
         self.__apiKeyLineEdit = QLineEdit()
@@ -165,8 +165,10 @@ class ReplicateRightSideBarWidget(QScrollArea):
     def __replicateChanged(self, v):
         sender = self.sender()
         if sender == self.__apiKeyLineEdit:
+            v = v.strip() if v else ''
             self.__api_key = v
             CONFIG_MANAGER.set_replicate_property('REPLICATE_API_TOKEN', v)
+            self.__wrapper.set_api(v)
         elif sender == self.__widthSpinBox:
             self.__width = v
             CONFIG_MANAGER.set_replicate_property('width', v)

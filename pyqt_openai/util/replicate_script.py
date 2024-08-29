@@ -18,6 +18,7 @@ class ReplicateWrapper:
         :param api_key:
         :return:
         """
+        print("API KEY", api_key)
         self.__api_key = api_key
         os.environ['REPLICATE_API_TOKEN'] = self.__api_key
         return True
