@@ -18,7 +18,7 @@ from datetime import datetime
 from pathlib import Path
 
 import requests
-from PySide6.QtCore import QSettings, Qt, QUrl
+from PySide6.QtCore import Qt, QUrl
 from PySide6.QtGui import QDesktopServices
 from PySide6.QtWidgets import QMessageBox, QFrame
 from jinja2 import Template
@@ -124,15 +124,6 @@ def download_image_as_base64(url: str):
     image_data = response.content
     base64_encoded = base64.b64decode(base64.b64encode(image_data).decode('utf-8'))
     return base64_encoded
-
-def get_font():
-    settings = QSettings(INI_FILE_NAME, QSettings.Format.IniFormat)
-    font_family = settings.value("font_family", DEFAULT_FONT_FAMILY, type=str)
-    font_size = settings.value("font_size", DEFAULT_FONT_SIZE, type=int)
-    return {
-        'font_family': font_family,
-        'font_size': font_size
-    }
 
 def restart_app():
     # Define the arguments to be passed to the executable
