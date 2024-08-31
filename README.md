@@ -25,6 +25,9 @@ With VividNode, you can experience a more powerful and resource-efficient altern
 
 <hr>
 
+## Sidenote 🗒️
+Although this is named 'pyqt-openai', the model does not use only OpenAI-related models, and the GUI is created using PySide6, not PyQt. 'pyqt-openai' was the package name decided initially, and we are still using it as changing the package name now would likely result in a huge disaster.
+
 ## How to Install
 
 ### Install with traditional way
