@@ -24,10 +24,12 @@ from PySide6.QtSql import QSqlDatabase
 from pyqt_openai.config_loader import CONFIG_MANAGER
 
 from pyqt_openai.mainWindow import MainWindow
-from pyqt_openai.util.script import handle_exception
+from pyqt_openai.util.script import handle_exception, check_for_updates
 from pyqt_openai.sqlite import get_db_filename
 
-from pyqt_openai import DEFAULT_APP_ICON
+from pyqt_openai.updateSoftwareDialog import UpdateSoftwareDialog
+
+from pyqt_openai import DEFAULT_APP_ICON, __version__, OWNER, PACKAGE_NAME
 
 
 # Application
@@ -45,6 +47,8 @@ class App(QApplication):
         self.__showMainWindow()
         self.splash.finish(self.main_window)
 
+        self.__check_for_updates()
+
     def __initQSqlDb(self):
         # Set up the database and table model (you'll need to configure this part based on your database)
         self.__imageDb = QSqlDatabase.addDatabase('QSQLITE')  # Replace with your database type
@@ -59,6 +63,19 @@ class App(QApplication):
     def __showMainWindow(self):
         self.main_window = MainWindow()
         self.main_window.show()
+
+    def __check_for_updates(self):
+        # Replace with actual values
+        current_version = __version__
+        owner = OWNER
+        repo = PACKAGE_NAME
+
+        release_notes = check_for_updates(current_version, owner, repo)
+        if release_notes:
+            # If updates are available, show the update dialog
+            update_dialog = UpdateSoftwareDialog()
+            update_dialog.releaseNoteBrowser.setHtml(release_notes)
+            update_dialog.exec()
 
 # Set the global exception handler
 sys.excepthook = handle_exception

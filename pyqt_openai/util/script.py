@@ -23,7 +23,7 @@ from PySide6.QtGui import QDesktopServices
 from PySide6.QtWidgets import QMessageBox, QFrame
 from jinja2 import Template
 
-from pyqt_openai import INI_FILE_NAME, DEFAULT_FONT_SIZE, DEFAULT_FONT_FAMILY, MAIN_INDEX, \
+from pyqt_openai import MAIN_INDEX, \
     PROMPT_NAME_REGEX, PROMPT_MAIN_KEY_NAME, PROMPT_BEGINNING_KEY_NAME, \
     PROMPT_END_KEY_NAME, PROMPT_JSON_KEY_NAME, CONTEXT_DELIMITER, THREAD_ORDERBY
 from pyqt_openai.lang.translations import LangClass
@@ -383,3 +383,27 @@ def handle_exception(exc_type, exc_value, exc_traceback):
     msg_box.setInformativeText(error_msg)
     msg_box.setWindowTitle("Error")
     msg_box.exec_()
+
+def check_for_updates(current_version, owner, repo):
+    try:
+        url = f"https://api.github.com/repos/{owner}/{repo}/releases"
+
+        response = requests.get(url)
+        releases = response.json()
+
+        update_available = False
+        release_notes_html = "<ul>"
+        for release in releases:
+            release_version = release['tag_name'].lstrip('v')
+            if release_version > current_version:
+                update_available = True
+                release_notes_html += f'<li><a href="{release["html_url"]}" target="_blank">{release["tag_name"]}</a></li>'
+        release_notes_html += "</ul>"
+
+        if update_available:
+            return release_notes_html
+        else:
+            return None
+
+    except Exception as e:
+        return f"<p>Error fetching release notes: {str(e)}</p>"
