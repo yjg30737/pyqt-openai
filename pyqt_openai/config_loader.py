@@ -3,7 +3,7 @@ import os
 
 import yaml
 
-from pyqt_openai import CONFIG_DATA, INI_FILE_NAME
+from pyqt_openai import CONFIG_DATA, INI_FILE_NAME, get_config_directory
 
 _config_cache = None
 
@@ -23,45 +23,22 @@ def parse_value(value):
     # Default: return the value as is (string)
     return value
 
-
 def convert_list(value):
     # Convert comma-separated string to list
     return [item.strip() for item in value.split(',')]
 
+def init_yaml():
+    yaml_data = CONFIG_DATA
 
-def ini_to_yaml():
-    ini_old_filename = 'pyqt_openai.ini'
-    if os.path.exists(ini_old_filename):
-        ini_new_filename = 'config.ini'
-        if os.path.exists(ini_old_filename):
-            os.rename(ini_old_filename, ini_new_filename)
+    config_dir = get_config_directory()
+    config_path = os.path.join(config_dir, INI_FILE_NAME)
 
-        # Open INI file
-        config = configparser.ConfigParser()
-        config.optionxform = str
-        config.read(ini_new_filename)
-
-        # Convert to yaml data
-        yaml_data = {}
-        for section in config.sections():
-            yaml_data[section] = {}
-            for key, value in config.items(section):
-                if key in ['chat_column_to_show', 'image_column_to_show']:
-                    yaml_data[section][key] = convert_list(value)
-                else:
-                    yaml_data[section][key] = parse_value(value)
-
-        os.remove(ini_new_filename)
-    else:
-        yaml_data = CONFIG_DATA
-
-    yaml_filename = INI_FILE_NAME
-    if not os.path.exists(yaml_filename):
+    if not os.path.exists(config_path):
         # Save as YAML file
-        with open(yaml_filename, 'w') as yaml_file:
+        with open(config_path, 'w') as yaml_file:
             yaml.dump(yaml_data, yaml_file, default_flow_style=False)
     else:
-        with open(yaml_filename, 'r') as yaml_file:
+        with open(config_path, 'r') as yaml_file:
             prev_yaml_data = yaml.safe_load(yaml_file)
         # Add new keys
         for section, values in yaml_data.items():
@@ -72,7 +49,7 @@ def ini_to_yaml():
                     if key not in prev_yaml_data[section]:
                         prev_yaml_data[section][key] = value
         # Save as YAML file
-        with open(yaml_filename, 'w') as yaml_file:
+        with open(config_path, 'w') as yaml_file:
             yaml.dump(prev_yaml_data, yaml_file, default_flow_style=False)
 
 
@@ -128,6 +105,6 @@ class ConfigManager:
         self._save_yaml()
 
 
-ini_to_yaml()
+init_yaml()
 CONFIG_MANAGER = ConfigManager()
 # print(CONFIG_MANAGER.get_general_property('API_KEY'))

@@ -9,10 +9,10 @@ from pyqt_openai.util.script import getSeparator
 class DoNotAskAgainDialog(QDialog):
     doNotAskAgainChanged = Signal(bool)
 
-    def __init__(self, do_not_ask_again: bool = False,
-                 do_not_ask_again_message: str = LangClass.TRANSLATIONS["Would you like to exit the application? If you won't, it will be running in the background."],
-                do_not_ask_again_checkbox_message: str = LangClass.TRANSLATIONS['Do not ask again'], parent=None):
+    def __init__(self, do_not_ask_again: bool = False, parent=None):
         super().__init__(parent)
+        do_not_ask_again_message = LangClass.TRANSLATIONS["Would you like to exit the application? If you won't, it will be running in the background."]
+        do_not_ask_again_checkbox_message = LangClass.TRANSLATIONS['Do not ask again']
         self.__initVal(do_not_ask_again, do_not_ask_again_message, do_not_ask_again_checkbox_message)
         self.__initUi()
 

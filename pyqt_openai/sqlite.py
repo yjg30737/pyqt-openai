@@ -1,3 +1,4 @@
+import os
 import json
 import sqlite3
 from datetime import datetime
@@ -10,7 +11,7 @@ from pyqt_openai import THREAD_TABLE_NAME, THREAD_TRIGGER_NAME, \
     THREAD_MESSAGE_UPDATED_TR_NAME, THREAD_MESSAGE_DELETED_TR_NAME, THREAD_MESSAGE_INSERTED_TR_NAME_OLD, \
     THREAD_MESSAGE_UPDATED_TR_NAME_OLD, THREAD_MESSAGE_DELETED_TR_NAME_OLD, IMAGE_TABLE_NAME, \
     PROPERTY_PROMPT_UNIT_TABLE_NAME_OLD, PROPERTY_PROMPT_GROUP_TABLE_NAME_OLD, TEMPLATE_PROMPT_GROUP_TABLE_NAME_OLD, \
-    TEMPLATE_PROMPT_TABLE_NAME_OLD, PROMPT_GROUP_TABLE_NAME, PROMPT_ENTRY_TABLE_NAME, INI_FILE_NAME, DB_FILE_NAME
+    TEMPLATE_PROMPT_TABLE_NAME_OLD, PROMPT_GROUP_TABLE_NAME, PROMPT_ENTRY_TABLE_NAME, get_config_directory
 from pyqt_openai.models import ImagePromptContainer, ChatMessageContainer, PromptEntryContainer, PromptGroupContainer
 
 
@@ -18,7 +19,9 @@ def get_db_filename():
     """
     Get the database file's name from the settings.
     """
-    db_path = CONFIG_MANAGER.get_general_property('db') + '.db'
+    config_dir = get_config_directory()
+    db_filename = CONFIG_MANAGER.get_general_property('db') + '.db'
+    db_path = os.path.join(config_dir, db_filename)
     return db_path
 
 

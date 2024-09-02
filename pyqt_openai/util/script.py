@@ -16,8 +16,8 @@ import traceback
 import zipfile
 from datetime import datetime
 from pathlib import Path
-
 import requests
+
 from PySide6.QtCore import Qt, QUrl
 from PySide6.QtGui import QDesktopServices
 from PySide6.QtWidgets import QMessageBox, QFrame
@@ -393,17 +393,24 @@ def check_for_updates(current_version, owner, repo):
 
         update_available = False
         release_notes_html = "<ul>"
+        recent_version = current_version
         for release in releases:
             release_version = release['tag_name'].lstrip('v')
             if release_version > current_version:
+                recent_version = release_version if recent_version < release_version else recent_version
                 update_available = True
                 release_notes_html += f'<li><a href="{release["html_url"]}" target="_blank">{release["tag_name"]}</a></li>'
         release_notes_html += "</ul>"
 
         if update_available:
-            return release_notes_html
+            return {'release_notes': release_notes_html, 'recent_version': recent_version}
         else:
             return None
 
     except Exception as e:
         return f"<p>Error fetching release notes: {str(e)}</p>"
+
+def update_software():
+    print('update')
+    # subprocess.Popen(['updater.exe'])
+    sys.exit()

@@ -20,7 +20,7 @@ with open(SETUP_FILENAME, "rb") as file:
 # For the sake of following the PEP8 standard, we will declare module-level dunder names.
 # PEP8 standard about dunder names: https://peps.python.org/pep-0008/#module-level-dunder-names
 
-__version__ = pyproject_data["project"]["version"]
+__version__ = '0.7.2'
 __author__ = pyproject_data["project"]["authors"][0]['name']
 
 # Constants
@@ -28,6 +28,20 @@ __author__ = pyproject_data["project"]["authors"][0]['name']
 # APP
 PACKAGE_NAME = pyproject_data["project"]["name"]
 OWNER = 'yjg30737'
+
+def get_config_directory():
+    if os.name == 'nt':  # Windows
+        config_dir = os.path.join(os.getenv('APPDATA'), DEFAULT_APP_NAME)
+    elif os.name == 'posix':  # macOS/Linux
+        config_dir = os.path.join(os.getenv('XDG_CONFIG_HOME', os.path.expanduser('~/.config')), DEFAULT_APP_NAME)
+    else:
+        config_dir = os.path.expanduser(f'~/.{DEFAULT_APP_NAME}')  # Fallback
+
+    # Ensure the directory exists
+    if not os.path.exists(config_dir):
+        os.makedirs(config_dir)
+
+    return config_dir
 
 DEFAULT_APP_NAME = 'VividNode'
 CONTACT = pyproject_data["project"]["authors"][0]['email']
@@ -45,6 +59,7 @@ GITHUB_URL = 'https://github.com/yjg30737/pyqt-openai'
 DISCORD_URL = 'https://discord.gg/cHekprskVE'
 
 QUICKSTART_MANUAL_URL = 'https://medium.com/@yjg30737/what-is-vividnode-how-to-use-it-4d8a9269a3c0'
+LLAMAINDEX_URL = 'https://medium.com/@yjg30737/what-is-llamaindex-9b821d66568f'
 HOW_TO_GET_OPENAI_API_KEY_URL = 'https://medium.com/@yjg30737/how-to-get-your-openai-api-key-e2193850932e'
 HOW_TO_EXPORT_CHATGPT_CONVERSATION_HISTORY_URL = 'https://medium.com/@yjg30737/how-to-export-your-chatgpt-conversation-history-caa0946d6349'
 HOW_TO_REPLICATE = 'https://medium.com/@yjg30737/10a2cb983ceb'
@@ -191,7 +206,7 @@ DEFAULT_SHORTCUT_SEND = 'Ctrl+Return'
 ## DIRECTORY PATH & FILE'S NAME
 MAIN_INDEX = 'main.py'
 IMAGE_DEFAULT_SAVE_DIRECTORY = 'image_result'
-INI_FILE_NAME = 'config.yaml'
+INI_FILE_NAME = os.path.join(get_config_directory(), 'config.yaml')
 DB_FILE_NAME = 'conv'
 FILE_NAME_LENGTH = 32
 QFILEDIALOG_DEFAULT_DIRECTORY = os.path.expanduser('~')

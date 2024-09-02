@@ -51,8 +51,8 @@ class App(QApplication):
 
     def __initQSqlDb(self):
         # Set up the database and table model (you'll need to configure this part based on your database)
-        self.__imageDb = QSqlDatabase.addDatabase('QSQLITE')  # Replace with your database type
-        self.__imageDb.setDatabaseName(get_db_filename())  # Replace with your database name
+        self.__imageDb = QSqlDatabase.addDatabase('QSQLITE')
+        self.__imageDb.setDatabaseName(get_db_filename())
         self.__imageDb.open()
 
     def __initFont(self):
@@ -70,12 +70,15 @@ class App(QApplication):
         owner = OWNER
         repo = PACKAGE_NAME
 
-        release_notes = check_for_updates(current_version, owner, repo)
-        if release_notes:
-            # If updates are available, show the update dialog
-            update_dialog = UpdateSoftwareDialog()
-            update_dialog.releaseNoteBrowser.setHtml(release_notes)
-            update_dialog.exec()
+        result_dict = check_for_updates(current_version, owner, repo)
+        if result_dict:
+            release_notes = result_dict['release_notes']
+            recent_version = result_dict['recent_version']
+            if release_notes:
+                # If updates are available, show the update dialog
+                update_dialog = UpdateSoftwareDialog(owner, repo, recent_version)
+                update_dialog.releaseNoteBrowser.setHtml(release_notes)
+                update_dialog.exec()
 
 # Set the global exception handler
 sys.excepthook = handle_exception

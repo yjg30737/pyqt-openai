@@ -1,15 +1,22 @@
-import sys
+import sys, requests, zipfile
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QLabel, QApplication, QTextBrowser, QDialogButtonBox
 
 from pyqt_openai import __version__
+from pyqt_openai.util.script import update_software
 
 
 class UpdateSoftwareDialog(QDialog):
-    def __init__(self, parent=None):
+    def __init__(self, owner, repo, recent_version, parent=None):
         super().__init__(parent)
+        self.__initVal(owner, repo, recent_version)
         self.__initUi()
+
+    def __initVal(self, owner, repo, recent_version):
+        self.__owner = owner
+        self.__repo = repo
+        self.__recent_version = f'v{recent_version}'
 
     def __initUi(self):
         # TODO LANGUAGE
@@ -27,7 +34,7 @@ class UpdateSoftwareDialog(QDialog):
         self.releaseNoteBrowser.setOpenExternalLinks(True)
 
         buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
-        buttonBox.accepted.connect(self.updateSoftware)
+        buttonBox.accepted.connect(lambda: update_software())
         buttonBox.rejected.connect(self.reject)
 
         askLbl = QLabel("Do you want to update?")
@@ -36,13 +43,5 @@ class UpdateSoftwareDialog(QDialog):
         lay.addWidget(askLbl)
         lay.addWidget(buttonBox)
 
-    def updateSoftware(self):
-        print("Starting software update...")
-        self.accept()
 
 
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    w = UpdateSoftwareDialog(__version__)
-    w.show()
-    sys.exit(app.exec())
