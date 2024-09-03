@@ -92,40 +92,52 @@ class FindTextWidget(QWidget):
 
         self.setLayout(lay)
 
-    # TODO REFACTORING AFTER v1.0.0
     def __initSelections(self, text):
-        # Show "bad pattern" message if text is "\"
-        if self.__regexBtn.isChecked() and re.escape(text) == re.escape('\\'):
-            QMessageBox.warning(self, LangClass.TRANSLATIONS['Warning'], LangClass.TRANSLATIONS['Bad pattern'])
+        # Check for "bad pattern" when using regex
+        if self.__isBadPattern(text):
+            self.__showWarning()
+            return
+
+        self.__selections = self.__getSelections(text)
+        is_exist = self.__isSelectionExist(text)
+
+        if is_exist:
+            self.__setCurrentPosition()
         else:
-            self.__selections = self.__chatBrowser.setCurrentLabelIncludingTextBySliderPosition(text,
-                                                                                                case_sensitive=self.__caseBtn.isChecked(),
-                                                                                                word_only=self.__wordBtn.isChecked(),
-                                                                                                is_regex=self.__regexBtn.isChecked())
-            is_exist = len(list(map(lambda x: x['pattern'], self.__selections))) > 0 and text.strip() != ''
+            self.__chatBrowser.clearFormatting()
 
-            if is_exist:
-                self.__setCurrentPosition()
-            else:
-                self.__chatBrowser.clearFormatting()
-            self.__btnToggled(is_exist)
+        self.__btnToggled(is_exist)
 
-    # TODO REFACTORING AFTER v1.0.0
+    def __isBadPattern(self, text):
+        return self.__regexBtn.isChecked() and re.escape(text) == re.escape('\\')
+
+    def __showWarning(self):
+        QMessageBox.warning(self, LangClass.TRANSLATIONS['Warning'], LangClass.TRANSLATIONS['Bad pattern'])
+
+    def __getSelections(self, text):
+        return self.__chatBrowser.setCurrentLabelIncludingTextBySliderPosition(
+            text,
+            case_sensitive=self.__caseBtn.isChecked(),
+            word_only=self.__wordBtn.isChecked(),
+            is_regex=self.__regexBtn.isChecked()
+        )
+
+    def __isSelectionExist(self, text):
+        return len(list(map(lambda x: x['pattern'], self.__selections))) > 0 and text.strip() != ''
+
     def clearFormatting(self):
         self.__chatBrowser.clearFormatting()
         self.__selections = []
         self.__btnToggled(False)
         self.__setCount()
 
-    # TODO REFACTORING AFTER v1.0.0
     def initFind(self, text):
-        f1 = text.strip() != ''
+        self.__cur_text = text.strip()
         self.__cur_idx = 0
-        self.__cur_text = text
-        self.__initSelections(text)
-        if not f1:
-            self.__selections = []
-            self.__btnToggled(False)
+        if self.__cur_text:
+            self.__initSelections(self.__cur_text)
+        else:
+            self.clearFormatting()
         self.__setCount()
 
     def __setCount(self):
