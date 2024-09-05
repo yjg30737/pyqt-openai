@@ -26,6 +26,7 @@ from pyqt_openai.pyqt_openai_data import init_llama
 from pyqt_openai.replicate_widget.replicateMainWidget import ReplicateMainWidget
 from pyqt_openai.settings_dialog.settingsDialog import SettingsDialog
 from pyqt_openai.shortcutDialog import ShortcutDialog
+from pyqt_openai.updateSoftwareDialog import update_software
 from pyqt_openai.util.script import restart_app, show_message_box_after_change_to_restart
 from pyqt_openai.widgets.button import Button
 
@@ -117,6 +118,10 @@ class MainWindow(QMainWindow):
 
         self.__aboutAction = QAction(LangClass.TRANSLATIONS['About...'], self)
         self.__aboutAction.triggered.connect(self.__showAboutDialog)
+
+        # TODO LANGAUGE
+        self.__checkUpdateAction = QAction(LangClass.TRANSLATIONS['Check for Updates...'], self)
+        self.__checkUpdateAction.triggered.connect(self.__checkUpdate)
 
         self.__viewShortcutsAction = QAction(LangClass.TRANSLATIONS['View Shortcuts'], self)
         self.__viewShortcutsAction.triggered.connect(self.__showShortcutsDialog)
@@ -218,6 +223,7 @@ class MainWindow(QMainWindow):
 
         helpMenu = QMenu(LangClass.TRANSLATIONS['Help'], self)
         helpMenu.addAction(self.__aboutAction)
+        helpMenu.addAction(self.__checkUpdateAction)
         helpMenu.addAction(self.__viewShortcutsAction)
         helpMenu.addAction(self.__githubAction)
         helpMenu.addAction(self.__discordAction)
@@ -288,6 +294,9 @@ class MainWindow(QMainWindow):
     def __showAboutDialog(self):
         aboutDialog = AboutDialog(self)
         aboutDialog.exec()
+
+    def __checkUpdate(self):
+        update_software()
 
     def __showShortcutsDialog(self):
         shortcutListWidget = ShortcutDialog(self)

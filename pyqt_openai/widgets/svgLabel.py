@@ -4,8 +4,6 @@ from PySide6.QtGui import QPainter
 from PySide6.QtSvg import QSvgRenderer
 from PySide6.QtWidgets import QLabel
 
-from pyqt_openai import SRC_DIR
-
 
 class SvgLabel(QLabel):
     def __init__(self, parent=None):

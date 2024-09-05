@@ -1,9 +1,6 @@
-import os.path, posixpath
+from PySide6.QtGui import QColor, QIcon
+from PySide6.QtWidgets import QGraphicsColorizeEffect, QWidget, QPushButton
 
-from PySide6.QtGui import QColor, QPalette, qGray, QIcon
-from PySide6.QtWidgets import QGraphicsColorizeEffect, QWidget, QApplication, QPushButton
-
-from pyqt_openai import SRC_DIR, DEFAULT_BUTTON_HOVER_COLOR, DEFAULT_BUTTON_PRESSED_COLOR, DEFAULT_BUTTON_CHECKED_COLOR
 from pyqt_openai.util.button_style_helper import ButtonStyleHelper
 
 

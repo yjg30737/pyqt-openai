@@ -7,7 +7,7 @@ from PySide6.QtWidgets import QHBoxLayout, QLineEdit, QPushButton, QLabel, QWidg
 from pyqt_openai import OPENAI_REQUEST_URL
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.lang.translations import LangClass
-from pyqt_openai.pyqt_openai_data import setOpenAIEnabled, setApiKeyAndClientGlobal
+from pyqt_openai.pyqt_openai_data import set_openai_enabled, set_api_key_and_client_global
 
 
 class ApiWidget(QWidget):
@@ -42,7 +42,7 @@ class ApiWidget(QWidget):
         self.setLayout(lay)
 
     def setApiKeyAndClient(self, api_key):
-        setApiKeyAndClientGlobal(api_key)
+        set_api_key_and_client_global(api_key)
 
         # for showing to the user
         self.__apiLineEdit.setText(api_key)
@@ -51,7 +51,7 @@ class ApiWidget(QWidget):
         try:
             api_key = self.__apiLineEdit.text()
             response = requests.get(OPENAI_REQUEST_URL, headers={'Authorization': f'Bearer {api_key}'})
-            f = setOpenAIEnabled(response.status_code == 200)
+            f = set_openai_enabled(response.status_code == 200)
             self.onAIEnabled.emit(f)
             if f:
                 self.setApiKeyAndClient(api_key)

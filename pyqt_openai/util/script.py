@@ -383,34 +383,3 @@ def handle_exception(exc_type, exc_value, exc_traceback):
     msg_box.setInformativeText(error_msg)
     msg_box.setWindowTitle("Error")
     msg_box.exec_()
-
-def check_for_updates(current_version, owner, repo):
-    try:
-        url = f"https://api.github.com/repos/{owner}/{repo}/releases"
-
-        response = requests.get(url)
-        releases = response.json()
-
-        update_available = False
-        release_notes_html = "<ul>"
-        recent_version = current_version
-        for release in releases:
-            release_version = release['tag_name'].lstrip('v')
-            if release_version > current_version:
-                recent_version = release_version if recent_version < release_version else recent_version
-                update_available = True
-                release_notes_html += f'<li><a href="{release["html_url"]}" target="_blank">{release["tag_name"]}</a></li>'
-        release_notes_html += "</ul>"
-
-        if update_available:
-            return {'release_notes': release_notes_html, 'recent_version': recent_version}
-        else:
-            return None
-
-    except Exception as e:
-        return f"<p>Error fetching release notes: {str(e)}</p>"
-
-def update_software():
-    print('update')
-    # subprocess.Popen(['updater.exe'])
-    sys.exit()

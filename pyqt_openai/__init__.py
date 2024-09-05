@@ -29,6 +29,17 @@ __author__ = pyproject_data["project"]["authors"][0]['name']
 PACKAGE_NAME = pyproject_data["project"]["name"]
 OWNER = 'yjg30737'
 
+UPDATE_DIR = ROOT_DIR.parent
+
+# Temporary compressed file name for updating
+UPDATE_FILENAME = os.path.join(UPDATE_DIR, 'update.zip')
+
+# The current filename of the application
+CURRENT_FILENAME = 'VividNode.exe'
+
+# The default updater path (relative to the application's root directory)
+UPDATER_PATH = os.path.join(UPDATE_DIR, 'Updater.exe')
+
 def get_config_directory():
     if os.name == 'nt':  # Windows
         config_dir = os.path.join(os.getenv('APPDATA'), DEFAULT_APP_NAME)
