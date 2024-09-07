@@ -20,7 +20,7 @@ with open(SETUP_FILENAME, "rb") as file:
 # For the sake of following the PEP8 standard, we will declare module-level dunder names.
 # PEP8 standard about dunder names: https://peps.python.org/pep-0008/#module-level-dunder-names
 
-__version__ = '0.7.2'
+__version__ = '1.1.0'
 __author__ = pyproject_data["project"]["authors"][0]['name']
 
 # Constants
@@ -34,8 +34,12 @@ UPDATE_DIR = ROOT_DIR.parent
 # Temporary compressed file name for updating
 UPDATE_FILENAME = os.path.join(UPDATE_DIR, 'update.zip')
 
+DEFAULT_APP_NAME = 'VividNode'
+
+AUTOSTART_REGISTRY_KEY = r"Software\Microsoft\Windows\CurrentVersion\Run"
+
 # The current filename of the application
-CURRENT_FILENAME = 'VividNode.exe'
+CURRENT_FILENAME = f'{DEFAULT_APP_NAME}.exe'
 
 # The default updater path (relative to the application's root directory)
 UPDATER_PATH = os.path.join(UPDATE_DIR, 'Updater.exe')
@@ -54,7 +58,6 @@ def get_config_directory():
 
     return config_dir
 
-DEFAULT_APP_NAME = 'VividNode'
 CONTACT = pyproject_data["project"]["authors"][0]['email']
 DEFAULT_APP_ICON = 'icon.ico'
 APP_INITIAL_WINDOW_SIZE = (1280, 768)
@@ -78,7 +81,6 @@ HOW_TO_REPLICATE = 'https://medium.com/@yjg30737/10a2cb983ceb'
 COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_CHAT = ['id']
 COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_IMAGE = ['id', 'data']
 DEFAULT_LANGUAGE = 'en_US'
-LANGUAGE_FILE = 'lang/translations.json'
 LANGUAGE_DICT = {
     "English": "en_US",
     "Spanish": "es_ES",
@@ -218,6 +220,7 @@ DEFAULT_SHORTCUT_SEND = 'Ctrl+Return'
 MAIN_INDEX = 'main.py'
 IMAGE_DEFAULT_SAVE_DIRECTORY = 'image_result'
 INI_FILE_NAME = os.path.join(get_config_directory(), 'config.yaml')
+LANGUAGE_FILE = os.path.join(get_config_directory(), 'translations.json')
 DB_FILE_NAME = 'conv'
 FILE_NAME_LENGTH = 32
 QFILEDIALOG_DEFAULT_DIRECTORY = os.path.expanduser('~')
@@ -355,6 +358,7 @@ CONFIG_DATA = {
         'json_object': False,
         'maximum_messages_in_parameter': MAXIMUM_MESSAGES_IN_PARAMETER,
         'show_as_markdown': True,
+        'run_at_startup': True,
         'use_max_tokens': False,
         'background_image': '',
         'user_image': DEFAULT_USER_IMAGE_PATH,

@@ -16,6 +16,7 @@ import traceback
 import zipfile
 from datetime import datetime
 from pathlib import Path
+import winreg
 import requests
 
 from PySide6.QtCore import Qt, QUrl
@@ -25,7 +26,8 @@ from jinja2 import Template
 
 from pyqt_openai import MAIN_INDEX, \
     PROMPT_NAME_REGEX, PROMPT_MAIN_KEY_NAME, PROMPT_BEGINNING_KEY_NAME, \
-    PROMPT_END_KEY_NAME, PROMPT_JSON_KEY_NAME, CONTEXT_DELIMITER, THREAD_ORDERBY
+    PROMPT_END_KEY_NAME, PROMPT_JSON_KEY_NAME, CONTEXT_DELIMITER, THREAD_ORDERBY, DEFAULT_APP_NAME, \
+    AUTOSTART_REGISTRY_KEY
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ImagePromptContainer
 from pyqt_openai.pyqt_openai_data import DB
@@ -383,3 +385,27 @@ def handle_exception(exc_type, exc_value, exc_traceback):
     msg_box.setInformativeText(error_msg)
     msg_box.setWindowTitle("Error")
     msg_box.exec_()
+
+
+# Set auto start on Windows
+def is_auto_start_enabled_windows():
+    import winreg
+    key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, AUTOSTART_REGISTRY_KEY, 0,
+                         winreg.KEY_READ)
+    try:
+        winreg.QueryValueEx(key, DEFAULT_APP_NAME)
+        return True
+    except FileNotFoundError:
+        return False
+
+def set_auto_start_windows(enable: bool):
+    key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, AUTOSTART_REGISTRY_KEY, 0, winreg.KEY_WRITE)
+
+    if enable:
+        exe_path = sys.executable  # 현재 실행 파일 경로
+        winreg.SetValueEx(key, DEFAULT_APP_NAME, 0, winreg.REG_SZ, exe_path)
+    else:
+        try:
+            winreg.DeleteValue(key, DEFAULT_APP_NAME)
+        except FileNotFoundError:
+            pass

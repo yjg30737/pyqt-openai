@@ -27,7 +27,7 @@ from pyqt_openai.replicate_widget.replicateMainWidget import ReplicateMainWidget
 from pyqt_openai.settings_dialog.settingsDialog import SettingsDialog
 from pyqt_openai.shortcutDialog import ShortcutDialog
 from pyqt_openai.updateSoftwareDialog import update_software
-from pyqt_openai.util.script import restart_app, show_message_box_after_change_to_restart
+from pyqt_openai.util.script import restart_app, show_message_box_after_change_to_restart, set_auto_start_windows
 from pyqt_openai.widgets.button import Button
 
 
@@ -356,6 +356,8 @@ class MainWindow(QMainWindow):
             # If show_toolbar is changed
             if container.show_toolbar != prev_show_toolbar:
                 self.__toggleToolbar(container.show_toolbar)
+            if container.run_at_startup != CONFIG_MANAGER.get_general_property('run_at_startup'):
+                set_auto_start_windows(container.run_at_startup)
             # If show_secondary_toolbar is changed
             if container.show_secondary_toolbar != prev_show_secondary_toolbar:
                 for i in range(self.__mainWidget.count()):

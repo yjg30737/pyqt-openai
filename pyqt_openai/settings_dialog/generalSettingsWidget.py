@@ -30,6 +30,7 @@ class GeneralSettingsWidget(QWidget):
         self.image_column_to_show = CONFIG_MANAGER.get_general_property('image_column_to_show')
         self.maximum_messages_in_parameter = CONFIG_MANAGER.get_general_property('maximum_messages_in_parameter')
         self.show_as_markdown = CONFIG_MANAGER.get_general_property('show_as_markdown')
+        self.run_at_startup = CONFIG_MANAGER.get_general_property('run_at_startup')
 
     def __initUi(self):
         # Language setting
@@ -66,6 +67,9 @@ class GeneralSettingsWidget(QWidget):
         self.__showToolbarCheckBox.setChecked(self.show_toolbar)
         self.__showSecondaryToolBarChkBox = QCheckBox(LangClass.TRANSLATIONS['Show Secondary Toolbar'])
         self.__showSecondaryToolBarChkBox.setChecked(self.show_secondary_toolbar)
+        # TODO LANGUAGE
+        self.__runAtStartupCheckBox = QCheckBox(LangClass.TRANSLATIONS['Run at startup (Windows only)'])
+        self.__runAtStartupCheckBox.setChecked(self.run_at_startup)
 
         lay = QVBoxLayout()
         lay.addWidget(langWidget)
@@ -74,6 +78,7 @@ class GeneralSettingsWidget(QWidget):
         lay.addWidget(self.__notifyFinishCheckBox)
         lay.addWidget(self.__showToolbarCheckBox)
         lay.addWidget(self.__showSecondaryToolBarChkBox)
+        lay.addWidget(self.__runAtStartupCheckBox)
 
         generalGrpBox = QGroupBox(LangClass.TRANSLATIONS['General'])
         generalGrpBox.setLayout(lay)
@@ -129,7 +134,7 @@ class GeneralSettingsWidget(QWidget):
         self.__splitter.setChildrenCollapsible(False)
         self.__splitter.setSizes([500, 500])
         self.__splitter.setStyleSheet("QSplitterHandle {background-color: lightgray;}")
-        self.__splitter.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
+        self.__splitter.setSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.MinimumExpanding)
 
         lay = QVBoxLayout()
         lay.addWidget(self.__splitter)
@@ -156,4 +161,5 @@ class GeneralSettingsWidget(QWidget):
             "image_column_to_show": COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_IMAGE+self.__imageColCheckBoxListWidget.getCheckedItemsText(),
             "maximum_messages_in_parameter": self.__maximumMessagesInParameterSpinBox.value(),
             "show_as_markdown": self.__show_as_markdown.isChecked(),
+            "run_at_startup": self.__runAtStartupCheckBox.isChecked(),
         }
