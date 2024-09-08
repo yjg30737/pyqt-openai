@@ -86,6 +86,7 @@ class MainWindow(QMainWindow):
         self.__exitAction.triggered.connect(self.__beforeClose)
 
         self.__stackAction = QAction(LangClass.TRANSLATIONS['Stack on Top'], self)
+        self.__stackAction.setShortcut(DEFAULT_SHORTCUT_STACK_ON_TOP)
         self.__stackAction.setIcon(QIcon(ICON_STACKONTOP))
         self.__stackAction.setCheckable(True)
         self.__stackAction.toggled.connect(self.__stackToggle)
