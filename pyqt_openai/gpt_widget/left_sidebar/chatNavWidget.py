@@ -94,7 +94,6 @@ class ChatNavWidget(BaseNavWidget):
         self.__saveBtn.clicked.connect(self.__export)
         self.__refreshBtn.clicked.connect(self.__refresh)
 
-        self._clearBtn.clicked.connect(self._clear)
         self._delBtn.clicked.connect(self._delete)
 
         lay = QHBoxLayout()
@@ -212,8 +211,9 @@ class ChatNavWidget(BaseNavWidget):
         self._model.select()
         self.cleared.emit()
 
-    def _clear(self):
-        super()._clear()
+    def _clear(self, table_type='chat'):
+        table_type = table_type or 'chat'
+        super()._clear(table_type=table_type)
         self.cleared.emit()
 
     def __refresh(self):

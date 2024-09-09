@@ -14,8 +14,8 @@ from pyqt_openai.widgets.notifier import NotifierWidget
 
 
 class DallERightSideBarWidget(QScrollArea):
-    submitDallE = Signal(ImagePromptContainer)
-    submitDallEAllComplete = Signal()
+    submit = Signal(ImagePromptContainer)
+    submitAllComplete = Signal()
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -120,9 +120,9 @@ class DallERightSideBarWidget(QScrollArea):
         self.__heightCmbBox.currentTextChanged.connect(self.__dalleChanged)
 
         self.__promptWidget = QPlainTextEdit()
-        self.__promptWidget.setPlaceholderText(LangClass.TRANSLATIONS['Enter prompt here...'])
         self.__promptWidget.setPlainText(self.__prompt)
         self.__promptWidget.textChanged.connect(self.__dalleTextChanged)
+        self.__promptWidget.setPlaceholderText(LangClass.TRANSLATIONS['Enter prompt here...'])
 
         self.__styleCmbBox = QComboBox()
         self.__styleCmbBox.addItems(['vivid', 'natural'])
@@ -204,16 +204,16 @@ class DallERightSideBarWidget(QScrollArea):
 
     def __continueGenerationChkBoxToggled(self, f):
         self.__continue_generation = f
-        CONFIG_MANAGER.set_dalle_property('continue_generation', self.__continue_generation)
+        CONFIG_MANAGER.set_dalle_property('continue_generation', f)
         self.__numberOfImagesToCreateSpinBox.setEnabled(f)
 
     def __numberOfImagesToCreateSpinBoxValueChanged(self, value):
         self.__number_of_images_to_create = value
-        CONFIG_MANAGER.set_dalle_property('number_of_images_to_create', self.__number_of_images_to_create)
+        CONFIG_MANAGER.set_dalle_property('number_of_images_to_create', value)
 
     def __savePromptAsTextChkBoxToggled(self, f):
         self.__save_prompt_as_text = f
-        CONFIG_MANAGER.set_dalle_property('save_prompt_as_text', self.__save_prompt_as_text)
+        CONFIG_MANAGER.set_dalle_property('save_prompt_as_text', f)
 
     def __promptTypeToggled(self, f):
         sender = self.sender()
@@ -244,7 +244,7 @@ class DallERightSideBarWidget(QScrollArea):
         self.__t.replyGenerated.connect(self.__afterGenerated)
         self.__t.errorGenerated.connect(self.__failToGenerate)
         self.__t.finished.connect(self.__toggleWidget)
-        self.__t.allReplyGenerated.connect(self.submitDallEAllComplete)
+        self.__t.allReplyGenerated.connect(self.submitAllComplete)
 
     def __toggleWidget(self):
         f = not self.__t.isRunning()
@@ -279,7 +279,7 @@ class DallERightSideBarWidget(QScrollArea):
         window.activateWindow()
 
     def __afterGenerated(self, arg):
-        self.submitDallE.emit(arg)
+        self.submit.emit(arg)
 
     def getArgument(self):
         return {

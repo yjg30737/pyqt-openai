@@ -15,8 +15,8 @@ from pyqt_openai.widgets.notifier import NotifierWidget
 
 
 class ReplicateRightSideBarWidget(QScrollArea):
-    submitReplicate = Signal(ImagePromptContainer)
-    submitReplicateAllComplete = Signal()
+    submit = Signal(ImagePromptContainer)
+    submitAllComplete = Signal()
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -103,6 +103,7 @@ class ReplicateRightSideBarWidget(QScrollArea):
         self.__promptWidget = QPlainTextEdit()
         self.__promptWidget.setPlainText(self.__prompt)
         self.__promptWidget.textChanged.connect(self.__replicateTextChanged)
+        self.__promptWidget.setPlaceholderText(LangClass.TRANSLATIONS['Enter prompt here...'])
 
         self.__negativePromptWidget = QPlainTextEdit()
         self.__negativePromptWidget.setPlaceholderText('ugly, deformed, noisy, blurry, distorted')
@@ -228,7 +229,7 @@ class ReplicateRightSideBarWidget(QScrollArea):
         self.__t.replyGenerated.connect(self.__afterGenerated)
         self.__t.errorGenerated.connect(self.__failToGenerate)
         self.__t.finished.connect(self.__toggleWidget)
-        self.__t.allReplyGenerated.connect(self.submitReplicateAllComplete)
+        self.__t.allReplyGenerated.connect(self.submitAllComplete)
 
     def __toggleWidget(self):
         f = not self.__t.isRunning()
@@ -260,7 +261,7 @@ class ReplicateRightSideBarWidget(QScrollArea):
         window.activateWindow()
 
     def __afterGenerated(self, result):
-        self.submitReplicate.emit(result)
+        self.submit.emit(result)
 
     def getArgument(self):
         return {

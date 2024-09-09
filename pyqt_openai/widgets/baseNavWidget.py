@@ -150,7 +150,7 @@ class BaseNavWidget(QWidget):
     def _search(self, text):
         pass
 
-    def _clear(self):
+    def _clear(self, table_type='chat'):
         '''
         Clear all data in the table
         '''
@@ -159,7 +159,10 @@ class BaseNavWidget(QWidget):
                                      LangClass.TRANSLATIONS['Are you sure to clear all data?'],
                                      QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
         if reply == QMessageBox.StandardButton.Yes:
-            DB.deleteThread()
+            if table_type == 'chat':
+                DB.deleteThread()
+            elif table_type == 'image':
+                DB.removeImage()
             self._model.select()
 
     def setColumns(self, columns, table_type='chat'):

@@ -80,6 +80,10 @@ class ImageNavWidget(BaseNavWidget):
         # Show default result (which means "show all")
         self._search('')
 
+    def _clear(self, table_type='image'):
+        table_type = table_type or 'image'
+        super()._clear(table_type=table_type)
+
     def refresh(self):
         self._model.select()
 
