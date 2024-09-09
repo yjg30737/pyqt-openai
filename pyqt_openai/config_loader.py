@@ -1,9 +1,10 @@
 import configparser
 import os
+import shutil
 
 import yaml
 
-from pyqt_openai import CONFIG_DATA, INI_FILE_NAME, get_config_directory
+from pyqt_openai import CONFIG_DATA, INI_FILE_NAME, get_config_directory, ROOT_DIR, SRC_DIR
 
 _config_cache = None
 
@@ -104,6 +105,12 @@ class ConfigManager:
         self.config['REPLICATE'][key] = value
         self._save_yaml()
 
+# TODO WILL_REMOVE_AFTER v1.2.0
+prev_config_path = os.path.join(ROOT_DIR, 'config.yaml')
+if os.path.exists(prev_config_path) or os.path.exists(os.path.join(SRC_DIR, 'config.yaml')):
+    new_config_path = os.path.join(get_config_directory(), INI_FILE_NAME)
+    if not os.path.exists(new_config_path):
+        shutil.move(prev_config_path, new_config_path)
 
 init_yaml()
 CONFIG_MANAGER = ConfigManager()

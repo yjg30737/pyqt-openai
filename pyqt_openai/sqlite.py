@@ -3,6 +3,7 @@ import json
 import sqlite3
 from datetime import datetime
 from typing import List
+import shutil
 
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai import THREAD_TABLE_NAME, THREAD_TRIGGER_NAME, \
@@ -11,16 +12,25 @@ from pyqt_openai import THREAD_TABLE_NAME, THREAD_TRIGGER_NAME, \
     THREAD_MESSAGE_UPDATED_TR_NAME, THREAD_MESSAGE_DELETED_TR_NAME, THREAD_MESSAGE_INSERTED_TR_NAME_OLD, \
     THREAD_MESSAGE_UPDATED_TR_NAME_OLD, THREAD_MESSAGE_DELETED_TR_NAME_OLD, IMAGE_TABLE_NAME, \
     PROPERTY_PROMPT_UNIT_TABLE_NAME_OLD, PROPERTY_PROMPT_GROUP_TABLE_NAME_OLD, TEMPLATE_PROMPT_GROUP_TABLE_NAME_OLD, \
-    TEMPLATE_PROMPT_TABLE_NAME_OLD, PROMPT_GROUP_TABLE_NAME, PROMPT_ENTRY_TABLE_NAME, get_config_directory
+    TEMPLATE_PROMPT_TABLE_NAME_OLD, PROMPT_GROUP_TABLE_NAME, PROMPT_ENTRY_TABLE_NAME, get_config_directory, ROOT_DIR, \
+    SRC_DIR
 from pyqt_openai.models import ImagePromptContainer, ChatMessageContainer, PromptEntryContainer, PromptGroupContainer
 
 
 def get_db_filename():
+    db_filename = CONFIG_MANAGER.get_general_property('db') + '.db'
+
+    # TODO WILL_REMOVE_AFTER v1.2.0
+    prev_config_path = os.path.join(ROOT_DIR, db_filename)
+    if os.path.exists(prev_config_path) or os.path.exists(os.path.join(SRC_DIR, db_filename)):
+        new_path = os.path.join(get_config_directory(), db_filename)
+        if not os.path.exists(new_path):
+            shutil.move(prev_config_path, new_path)
+
     """
     Get the database file's name from the settings.
     """
     config_dir = get_config_directory()
-    db_filename = CONFIG_MANAGER.get_general_property('db') + '.db'
     db_path = os.path.join(config_dir, db_filename)
     return db_path
 
