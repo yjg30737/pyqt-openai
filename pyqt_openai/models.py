@@ -130,6 +130,7 @@ class SettingsParamsContainer(Container):
     maximum_messages_in_parameter: int = MAXIMUM_MESSAGES_IN_PARAMETER
     show_as_markdown: bool = True
     apply_user_defined_styles: bool = False
+    run_at_startup: bool = True
 
 @dataclass
 class CustomizeParamsContainer(Container):

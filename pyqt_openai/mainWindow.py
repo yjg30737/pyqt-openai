@@ -12,7 +12,8 @@ from pyqt_openai import DEFAULT_SHORTCUT_FULL_SCREEN, \
     APP_INITIAL_WINDOW_SIZE, DEFAULT_APP_NAME, DEFAULT_APP_ICON, ICON_STACKONTOP, ICON_CUSTOMIZE, ICON_FULLSCREEN, \
     ICON_CLOSE, \
     DEFAULT_SHORTCUT_SETTING, TRANSPARENT_RANGE, TRANSPARENT_INIT_VAL, ICON_GITHUB, ICON_DISCORD, PAYPAL_URL, KOFI_URL, \
-    DISCORD_URL, GITHUB_URL, DEFAULT_SHORTCUT_FOCUS_MODE, ICON_FOCUS_MODE, ICON_SETTING, DEFAULT_SHORTCUT_SHOW_TOOLBAR, DEFAULT_SHORTCUT_SHOW_SECONDARY_TOOLBAR
+    DISCORD_URL, GITHUB_URL, DEFAULT_SHORTCUT_FOCUS_MODE, ICON_FOCUS_MODE, ICON_SETTING, DEFAULT_SHORTCUT_SHOW_TOOLBAR, \
+    DEFAULT_SHORTCUT_SHOW_SECONDARY_TOOLBAR, DEFAULT_SHORTCUT_STACK_ON_TOP
 from pyqt_openai.aboutDialog import AboutDialog
 from pyqt_openai.apiWidget import ApiWidget
 from pyqt_openai.config_loader import CONFIG_MANAGER
@@ -26,7 +27,8 @@ from pyqt_openai.pyqt_openai_data import init_llama
 from pyqt_openai.replicate_widget.replicateMainWidget import ReplicateMainWidget
 from pyqt_openai.settings_dialog.settingsDialog import SettingsDialog
 from pyqt_openai.shortcutDialog import ShortcutDialog
-from pyqt_openai.util.script import restart_app, show_message_box_after_change_to_restart
+from pyqt_openai.updateSoftwareDialog import update_software
+from pyqt_openai.util.script import restart_app, show_message_box_after_change_to_restart, set_auto_start_windows
 from pyqt_openai.widgets.button import Button
 
 
@@ -85,6 +87,7 @@ class MainWindow(QMainWindow):
         self.__exitAction.triggered.connect(self.__beforeClose)
 
         self.__stackAction = QAction(LangClass.TRANSLATIONS['Stack on Top'], self)
+        self.__stackAction.setShortcut(DEFAULT_SHORTCUT_STACK_ON_TOP)
         self.__stackAction.setIcon(QIcon(ICON_STACKONTOP))
         self.__stackAction.setCheckable(True)
         self.__stackAction.toggled.connect(self.__stackToggle)
@@ -117,6 +120,10 @@ class MainWindow(QMainWindow):
 
         self.__aboutAction = QAction(LangClass.TRANSLATIONS['About...'], self)
         self.__aboutAction.triggered.connect(self.__showAboutDialog)
+
+        # TODO LANGAUGE
+        self.__checkUpdateAction = QAction(LangClass.TRANSLATIONS['Check for Updates...'], self)
+        self.__checkUpdateAction.triggered.connect(self.__checkUpdate)
 
         self.__viewShortcutsAction = QAction(LangClass.TRANSLATIONS['View Shortcuts'], self)
         self.__viewShortcutsAction.triggered.connect(self.__showShortcutsDialog)
@@ -218,6 +225,7 @@ class MainWindow(QMainWindow):
 
         helpMenu = QMenu(LangClass.TRANSLATIONS['Help'], self)
         helpMenu.addAction(self.__aboutAction)
+        helpMenu.addAction(self.__checkUpdateAction)
         helpMenu.addAction(self.__viewShortcutsAction)
         helpMenu.addAction(self.__githubAction)
         helpMenu.addAction(self.__discordAction)
@@ -289,6 +297,9 @@ class MainWindow(QMainWindow):
         aboutDialog = AboutDialog(self)
         aboutDialog.exec()
 
+    def __checkUpdate(self):
+        update_software()
+
     def __showShortcutsDialog(self):
         shortcutListWidget = ShortcutDialog(self)
         shortcutListWidget.exec()
@@ -330,6 +341,7 @@ class MainWindow(QMainWindow):
             setattr(container, k, CONFIG_MANAGER.get_general_property(k))
         if isinstance(container, SettingsParamsContainer):
             self.__lang = LangClass.lang_changed(container.lang)
+            set_auto_start_windows(container.run_at_startup)
 
     def __refreshContainer(self, container):
         if isinstance(container, SettingsParamsContainer):
@@ -347,6 +359,8 @@ class MainWindow(QMainWindow):
             # If show_toolbar is changed
             if container.show_toolbar != prev_show_toolbar:
                 self.__toggleToolbar(container.show_toolbar)
+            if container.run_at_startup != CONFIG_MANAGER.get_general_property('run_at_startup'):
+                set_auto_start_windows(container.run_at_startup)
             # If show_secondary_toolbar is changed
             if container.show_secondary_toolbar != prev_show_secondary_toolbar:
                 for i in range(self.__mainWidget.count()):

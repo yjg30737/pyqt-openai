@@ -4,13 +4,15 @@ This file is used to store the constants and the global variables that are used 
 
 import json
 import os
+import shutil
+import sys
 
 import tomllib  # Python 3.11 built-in module
 from pathlib import Path
 
 # Load the pyproject.toml file
-SRC_DIR = Path(__file__).resolve().parent
-ROOT_DIR = SRC_DIR.parent
+SRC_DIR = Path(__file__).resolve().parent # VividNode/pyqt_openai
+ROOT_DIR = SRC_DIR.parent # VividNode
 SETUP_FILENAME = ROOT_DIR / "pyproject.toml"
 
 # Read the TOML file using tomllib (Python 3.11+)
@@ -20,15 +22,62 @@ with open(SETUP_FILENAME, "rb") as file:
 # For the sake of following the PEP8 standard, we will declare module-level dunder names.
 # PEP8 standard about dunder names: https://peps.python.org/pep-0008/#module-level-dunder-names
 
-__version__ = pyproject_data["project"]["version"]
+__version__ = '1.1.0'
 __author__ = pyproject_data["project"]["authors"][0]['name']
 
 # Constants
 # ----------------------------
 # APP
+PACKAGE_NAME = pyproject_data["project"]["name"]
+OWNER = 'yjg30737'
+
 DEFAULT_APP_NAME = 'VividNode'
+
+AUTOSTART_REGISTRY_KEY = r"Software\Microsoft\Windows\CurrentVersion\Run"
+
+# The executable path of the application
+def get_executable_path():
+    if getattr(sys, 'frozen', False):  # For PyInstaller
+        executable_path = sys._MEIPASS
+    else:
+        executable_path = os.path.dirname(os.path.abspath(__file__))
+    return executable_path
+
+EXEC_PATH = get_executable_path()
+
+# The current filename of the application
+CURRENT_FILENAME = os.path.join(EXEC_PATH, f'{DEFAULT_APP_NAME}.exe')
+
+def get_config_directory():
+    if os.name == 'nt':  # Windows
+        config_dir = os.path.join(os.getenv('APPDATA'), DEFAULT_APP_NAME)
+    elif os.name == 'posix':  # macOS/Linux
+        config_dir = os.path.join(os.getenv('XDG_CONFIG_HOME', os.path.expanduser('~/.config')), DEFAULT_APP_NAME)
+    else:
+        config_dir = os.path.expanduser(f'~/.{DEFAULT_APP_NAME}')  # Fallback
+
+    # Ensure the directory exists
+    if not os.path.exists(config_dir):
+        os.makedirs(config_dir)
+
+    return config_dir
+
+UPDATE_DIR = get_config_directory()
+
+# The default updater path (relative to the application's root directory)
+UPDATER_PATH = os.path.join(UPDATE_DIR, 'Updater.exe')
+
+# Move the Updater.exe to the config folder
+def move_updater():
+    original_updater_path = os.path.join(ROOT_DIR, 'Updater.exe')
+    if os.path.exists(original_updater_path):
+        if os.path.exists(UPDATER_PATH):
+            os.remove(UPDATER_PATH)
+        shutil.move(original_updater_path, UPDATER_PATH)
+
+move_updater()
+
 CONTACT = pyproject_data["project"]["authors"][0]['email']
-DEFAULT_APP_ICON = 'icon.ico'
 APP_INITIAL_WINDOW_SIZE = (1280, 768)
 
 TRANSPARENT_RANGE = 20, 100
@@ -41,6 +90,8 @@ PAYPAL_URL = 'https://paypal.me/yjg30737'
 GITHUB_URL = 'https://github.com/yjg30737/pyqt-openai'
 DISCORD_URL = 'https://discord.gg/cHekprskVE'
 
+QUICKSTART_MANUAL_URL = 'https://medium.com/@yjg30737/what-is-vividnode-how-to-use-it-4d8a9269a3c0'
+LLAMAINDEX_URL = 'https://medium.com/@yjg30737/what-is-llamaindex-9b821d66568f'
 HOW_TO_GET_OPENAI_API_KEY_URL = 'https://medium.com/@yjg30737/how-to-get-your-openai-api-key-e2193850932e'
 HOW_TO_EXPORT_CHATGPT_CONVERSATION_HISTORY_URL = 'https://medium.com/@yjg30737/how-to-export-your-chatgpt-conversation-history-caa0946d6349'
 HOW_TO_REPLICATE = 'https://medium.com/@yjg30737/10a2cb983ceb'
@@ -48,7 +99,6 @@ HOW_TO_REPLICATE = 'https://medium.com/@yjg30737/10a2cb983ceb'
 COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_CHAT = ['id']
 COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_IMAGE = ['id', 'data']
 DEFAULT_LANGUAGE = 'en_US'
-LANGUAGE_FILE = 'lang/translations.json'
 LANGUAGE_DICT = {
     "English": "en_US",
     "Spanish": "es_ES",
@@ -95,40 +145,44 @@ FREQUENCY_PENALTY_STEP = 0.01
 PRESENCE_PENALTY_RANGE = 0, 2
 PRESENCE_PENALTY_STEP = 0.01
 
+ICON_PATH = os.path.join(EXEC_PATH, 'ico')
+
 ## ICONS
-ICON_ADD = 'ico/add.svg'
-ICON_CASE = 'ico/case.svg'
-ICON_CLOSE = 'ico/close.svg'
-ICON_COPY = 'ico/copy.svg'
-ICON_CUSTOMIZE = 'ico/customize.svg'
-ICON_DELETE = 'ico/delete.svg'
-ICON_DISCORD = 'ico/discord.svg'
-ICON_EXPORT = 'ico/export.svg'
-ICON_FAVORITE_NO = 'ico/favorite_no.svg'
-ICON_FAVORITE_YES = 'ico/favorite_yes.svg'
-ICON_FOCUS_MODE = 'ico/focus_mode.svg'
-ICON_FULLSCREEN = 'ico/fullscreen.svg'
-ICON_GITHUB = 'ico/github.svg'
-ICON_HELP = 'ico/help.svg'
-ICON_HISTORY = 'ico/history.svg'
-ICON_IMPORT = 'ico/import.svg'
-ICON_INFO = 'ico/info.svg'
-ICON_NEXT = 'ico/next.svg'
-ICON_OPENAI = 'ico/openai.png'
-ICON_PREV = 'ico/prev.svg'
-ICON_PROMPT = 'ico/prompt.svg'
-ICON_QUESTION = 'ico/question.svg'
-ICON_REFRESH = 'ico/refresh.svg'
-ICON_REGEX = 'ico/regex.svg'
-ICON_SAVE = 'ico/save.svg'
-ICON_SEARCH = 'ico/search.svg'
-ICON_SETTING = 'ico/setting.svg'
-ICON_SIDEBAR = 'ico/sidebar.svg'
-ICON_STACKONTOP = 'ico/stackontop.svg'
-ICON_USER = 'ico/user.png'
-ICON_VERTICAL_THREE_DOTS = 'ico/vertical_three_dots.svg'
-ICON_WORD = 'ico/word.svg'
-ICON_SEND = 'ico/send.svg'
+DEFAULT_APP_ICON = os.path.join(EXEC_PATH, 'icon.ico')
+
+ICON_ADD = os.path.join(ICON_PATH, 'add.svg')
+ICON_CASE = os.path.join(ICON_PATH, 'case.svg')
+ICON_CLOSE = os.path.join(ICON_PATH, 'close.svg')
+ICON_COPY = os.path.join(ICON_PATH, 'copy.svg')
+ICON_CUSTOMIZE = os.path.join(ICON_PATH, 'customize.svg')
+ICON_DELETE = os.path.join(ICON_PATH, 'delete.svg')
+ICON_DISCORD = os.path.join(ICON_PATH, 'discord.svg')
+ICON_EXPORT = os.path.join(ICON_PATH, 'export.svg')
+ICON_FAVORITE_NO = os.path.join(ICON_PATH, 'favorite_no.svg')
+ICON_FAVORITE_YES = os.path.join(ICON_PATH, 'favorite_yes.svg')
+ICON_FOCUS_MODE = os.path.join(ICON_PATH, 'focus_mode.svg')
+ICON_FULLSCREEN = os.path.join(ICON_PATH, 'fullscreen.svg')
+ICON_GITHUB = os.path.join(ICON_PATH, 'github.svg')
+ICON_HELP = os.path.join(ICON_PATH, 'help.svg')
+ICON_HISTORY = os.path.join(ICON_PATH, 'history.svg')
+ICON_IMPORT = os.path.join(ICON_PATH, 'import.svg')
+ICON_INFO = os.path.join(ICON_PATH, 'info.svg')
+ICON_NEXT = os.path.join(ICON_PATH, 'next.svg')
+ICON_OPENAI = os.path.join(ICON_PATH, 'openai.png')
+ICON_PREV = os.path.join(ICON_PATH, 'prev.svg')
+ICON_PROMPT = os.path.join(ICON_PATH, 'prompt.svg')
+ICON_QUESTION = os.path.join(ICON_PATH, 'question.svg')
+ICON_REFRESH = os.path.join(ICON_PATH, 'refresh.svg')
+ICON_REGEX = os.path.join(ICON_PATH, 'regex.svg')
+ICON_SAVE = os.path.join(ICON_PATH, 'save.svg')
+ICON_SEARCH = os.path.join(ICON_PATH, 'search.svg')
+ICON_SETTING = os.path.join(ICON_PATH, 'setting.svg')
+ICON_SIDEBAR = os.path.join(ICON_PATH, 'sidebar.svg')
+ICON_STACKONTOP = os.path.join(ICON_PATH, 'stackontop.svg')
+ICON_USER = os.path.join(ICON_PATH, 'user.png')
+ICON_VERTICAL_THREE_DOTS = os.path.join(ICON_PATH, 'vertical_three_dots.svg')
+ICON_WORD = os.path.join(ICON_PATH, 'word.svg')
+ICON_SEND = os.path.join(ICON_PATH, 'send.svg')
 
 ## CUSTOMIZE
 DEFAULT_ICON_SIZE = (24, 24)
@@ -172,6 +226,7 @@ DEFAULT_SHORTCUT_FIND_CLOSE = 'Escape'
 DEFAULT_SHORTCUT_PROMPT_BEGINNING = 'Ctrl+B'
 DEFAULT_SHORTCUT_PROMPT_ENDING = 'Ctrl+E'
 DEFAULT_SHORTCUT_SUPPORT_PROMPT_COMMAND = 'Ctrl+Shift+P'
+DEFAULT_SHORTCUT_STACK_ON_TOP = 'Ctrl+Shift+S'
 DEFAULT_SHORTCUT_SHOW_TOOLBAR = 'Ctrl+T'
 DEFAULT_SHORTCUT_SHOW_SECONDARY_TOOLBAR = 'Ctrl+Shift+T'
 DEFAULT_SHORTCUT_FOCUS_MODE = 'F10'
@@ -187,7 +242,18 @@ DEFAULT_SHORTCUT_SEND = 'Ctrl+Return'
 ## DIRECTORY PATH & FILE'S NAME
 MAIN_INDEX = 'main.py'
 IMAGE_DEFAULT_SAVE_DIRECTORY = 'image_result'
-INI_FILE_NAME = 'config.yaml'
+INI_FILE_NAME = os.path.join(get_config_directory(), 'config.yaml')
+LANGUAGE_FILE = os.path.join(get_config_directory(), 'translations.json')
+
+# TODO WILL_REMOVE_AFTER v1.2.0
+prev_lang_file = os.path.join(ROOT_DIR, 'lang/translations.json') if os.path.exists(os.path.join(ROOT_DIR, 'lang/translations.json')) else (os.path.join(SRC_DIR, 'lang/translations.json') if os.path.exists(os.path.join(SRC_DIR, 'lang/translations.json')) else None)
+if prev_lang_file:
+    if os.path.exists(prev_lang_file):
+        if not os.path.exists(LANGUAGE_FILE):
+            shutil.copy(prev_lang_file, LANGUAGE_FILE)
+else:
+    pass
+
 DB_FILE_NAME = 'conv'
 FILE_NAME_LENGTH = 32
 QFILEDIALOG_DEFAULT_DIRECTORY = os.path.expanduser('~')
@@ -199,9 +265,6 @@ IMAGE_FILE_EXT_LIST_STR = 'Image File (*.png *.jpg *.jpeg *.gif *.bmp)'
 TEXT_FILE_EXT_LIST_STR = 'Text File (*.txt)'
 JSON_FILE_EXT_LIST_STR = 'JSON File (*.json)'
 READ_FILE_EXT_LIST_STR = f'{TEXT_FILE_EXT_LIST_STR};;{IMAGE_FILE_EXT_LIST_STR}'
-
-## IMAGE
-IMAGE_CHATGPT_IMPORT_MANUAL = 'images/import_from_chatgpt.png'
 
 ## PROMPT
 PROMPT_BEGINNING_KEY_NAME = 'prompt_beginning'
@@ -325,6 +388,7 @@ CONFIG_DATA = {
         'json_object': False,
         'maximum_messages_in_parameter': MAXIMUM_MESSAGES_IN_PARAMETER,
         'show_as_markdown': True,
+        'run_at_startup': True,
         'use_max_tokens': False,
         'background_image': '',
         'user_image': DEFAULT_USER_IMAGE_PATH,

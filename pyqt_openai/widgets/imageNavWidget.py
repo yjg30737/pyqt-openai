@@ -6,6 +6,7 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QStyledItemDelegate, QTableV
 from pyqt_openai import ICON_DELETE, ICON_CLOSE
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.pyqt_openai_data import DB
+from pyqt_openai.widgets.baseNavWidget import BaseNavWidget
 from pyqt_openai.widgets.button import Button
 from pyqt_openai.widgets.searchBar import SearchBar
 
@@ -45,109 +46,53 @@ class SqlTableModel(QSqlTableModel):
         return super().flags(index)
 
 
-class ImageNavWidget(QWidget):
+class ImageNavWidget(BaseNavWidget):
     getContent = Signal(bytes)
 
     def __init__(self, columns, table_nm, parent=None):
-        super().__init__(parent)
-        self.__initVal(columns, table_nm)
+        super().__init__(columns, table_nm, parent)
         self.__initUi()
 
-    def __initVal(self, columns, table_nm):
-        self.__columns = columns
-        self.__table_nm = table_nm
-
     def __initUi(self):
+        self.setModel(table_type='image')
+
         imageGenerationHistoryLbl = QLabel()
         imageGenerationHistoryLbl.setText(LangClass.TRANSLATIONS['History'])
 
-        self.__searchBar = SearchBar()
-        self.__searchBar.setPlaceHolder(LangClass.TRANSLATIONS['Search...'])
-        self.__searchBar.searched.connect(self.__showResult)
-
-        self.__delBtn = Button()
-        self.__delBtn.setStyleAndIcon(ICON_DELETE)
-        self.__delBtn.clicked.connect(self.__delete)
-        self.__delBtn.setToolTip(LangClass.TRANSLATIONS['Delete Certain Row'])
-
-        self.__clearBtn = Button()
-        self.__clearBtn.setStyleAndIcon(ICON_CLOSE)
-        self.__clearBtn.clicked.connect(self.__clear)
-        self.__delBtn.setToolTip(LangClass.TRANSLATIONS['Remove All'])
-
         lay = QHBoxLayout()
-        lay.addWidget(self.__searchBar)
-        lay.addWidget(self.__delBtn)
-        lay.addWidget(self.__clearBtn)
+        lay.addWidget(self._searchBar)
+        lay.addWidget(self._delBtn)
+        lay.addWidget(self._clearBtn)
         lay.setContentsMargins(0, 0, 0, 0)
 
         menuWidget = QWidget()
         menuWidget.setLayout(lay)
 
-        self.__model = SqlTableModel(self)
-        self.__model.setTable(self.__table_nm)
-        self.__model.beforeUpdate.connect(self.__updated)
-
-        # Set the query to fetch columns in the defined order
-        # Remove DATA for GUI performance
-        if self.__columns.__contains__('data'):
-            self.__columns.remove('data')
-        self.__model.setQuery(QSqlQuery(f"SELECT {','.join(self.__columns)} FROM {self.__table_nm}"))
-
-        for i in range(len(self.__columns)):
-            self.__model.setHeaderData(i, Qt.Orientation.Horizontal, self.__columns[i])
-        self.__model.select()
-        # descending order by insert date
-        idx = self.__columns.index('insert_dt')
-        self.__model.sort(idx, Qt.SortOrder.DescendingOrder)
-
-        # init the proxy model
-        self.__proxyModel = FilterProxyModel()
-
-        # set the table model as source model to make it enable to feature sort and filter function
-        self.__proxyModel.setSourceModel(self.__model)
-
-        # set up the view
-        self.__tableView = QTableView()
-        self.__tableView.setModel(self.__proxyModel)
-        self.__tableView.setEditTriggers(QTableView.EditTrigger.NoEditTriggers)
-        self.__tableView.setSortingEnabled(True)
-
-        # align to center
-        delegate = AlignDelegate()
-        for i in range(self.__model.columnCount()):
-            self.__tableView.setItemDelegateForColumn(i, delegate)
-
-        # set selection/resize policy
-        self.__tableView.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
-        self.__tableView.resizeColumnsToContents()
-        self.__tableView.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
-
-        self.__tableView.activated.connect(self.__clicked)
-        self.__tableView.clicked.connect(self.__clicked)
+        self._tableView.activated.connect(self.__clicked)
+        self._tableView.clicked.connect(self.__clicked)
 
         lay = QVBoxLayout()
         lay.addWidget(imageGenerationHistoryLbl)
         lay.addWidget(menuWidget)
-        lay.addWidget(self.__tableView)
+        lay.addWidget(self._tableView)
         self.setLayout(lay)
 
         # Show default result (which means "show all")
-        self.__showResult('')
+        self._search('')
 
-    def __updated(self, i, r):
-        # Send updated signal
-        self.__model.updated.emit(r.value('id'), r.value('name'))
+    def _clear(self, table_type='image'):
+        table_type = table_type or 'image'
+        super()._clear(table_type=table_type)
 
     def refresh(self):
-        self.__model.select()
+        self._model.select()
 
     def __clicked(self, idx):
         # get the source index
-        source_idx = self.__proxyModel.mapToSource(idx)
+        source_idx = self._proxyModel.mapToSource(idx)
 
         # get the primary key value of the row
-        cur_id = self.__model.record(source_idx.row()).value("id")
+        cur_id = self._model.record(source_idx.row()).value("id")
 
         # Get data from DB id
         data = DB.selectCertainImage(cur_id)['data']
@@ -160,38 +105,20 @@ class ImageNavWidget(QWidget):
         else:
             QMessageBox.critical(self, LangClass.TRANSLATIONS['Error'], LangClass.TRANSLATIONS['No image data is found. Maybe you are using really old version.'])
 
-    def __showResult(self, text):
+    def _search(self, text):
         # index -1 will be read from all columns
         # otherwise it will be read the current column number indicated by combobox
-        self.__proxyModel.setFilterKeyColumn(-1)
+        self._proxyModel.setFilterKeyColumn(-1)
         # regular expression can be used
-        self.__proxyModel.setFilterRegularExpression(text)
+        self._proxyModel.setFilterRegularExpression(text)
 
-    def __delete(self):
-        idx_s = self.__tableView.selectedIndexes()
+    def _delete(self):
+        idx_s = self._tableView.selectedIndexes()
         for idx in idx_s:
             idx = idx.siblingAtColumn(0)
-            id = self.__model.data(idx, role=Qt.ItemDataRole.DisplayRole)
+            id = self._model.data(idx, role=Qt.ItemDataRole.DisplayRole)
             DB.removeImage(id)
-        self.__model.select()
+        self._model.select()
 
-    def __clear(self):
-        '''
-        Clear all data in the table
-        '''
-        # Before clearing, confirm the action
-        reply = QMessageBox.question(self, LangClass.TRANSLATIONS['Confirm'], LangClass.TRANSLATIONS['Are you sure to clear all data?'], QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
-        if reply == QMessageBox.StandardButton.Yes:
-            DB.removeImage()
-            self.__model.select()
-            # self.cleared.emit()
-
-    def setColumns(self, columns):
-        self.__columns = columns
-        self.__model.clear()
-        self.__model.setTable(self.__table_nm)
-        # Remove DATA for GUI performance
-        if self.__columns.__contains__('data'):
-            self.__columns.remove('data')
-        self.__model.setQuery(QSqlQuery(f"SELECT {','.join(self.__columns)} FROM {self.__table_nm}"))
-        self.__model.select()
+    def setColumns(self, columns, table_type='image'):
+        super().setColumns(columns, table_type='image')
