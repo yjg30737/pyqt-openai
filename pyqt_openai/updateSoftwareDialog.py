@@ -64,7 +64,6 @@ def check_for_updates(current_version, owner, repo):
                 update_available = True
                 release_notes_html += f'<li><a href="{release["html_url"]}" target="_blank">{release["tag_name"]}</a></li>'
         release_notes_html += "</ul>"
-        print(recent_version)
 
         if update_available:
             return {'release_notes': release_notes_html, 'recent_version': recent_version}

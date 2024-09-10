@@ -341,6 +341,7 @@ class MainWindow(QMainWindow):
             setattr(container, k, CONFIG_MANAGER.get_general_property(k))
         if isinstance(container, SettingsParamsContainer):
             self.__lang = LangClass.lang_changed(container.lang)
+            set_auto_start_windows(container.run_at_startup)
 
     def __refreshContainer(self, container):
         if isinstance(container, SettingsParamsContainer):

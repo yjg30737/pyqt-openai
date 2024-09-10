@@ -5,6 +5,7 @@ This file is used to store the constants and the global variables that are used 
 import json
 import os
 import shutil
+import sys
 
 import tomllib  # Python 3.11 built-in module
 from pathlib import Path
@@ -34,8 +35,18 @@ DEFAULT_APP_NAME = 'VividNode'
 
 AUTOSTART_REGISTRY_KEY = r"Software\Microsoft\Windows\CurrentVersion\Run"
 
+# The executable path of the application
+def get_executable_path():
+    if getattr(sys, 'frozen', False):  # For PyInstaller
+        executable_path = sys._MEIPASS
+    else:
+        executable_path = os.path.dirname(os.path.abspath(__file__))
+    return executable_path
+
+EXEC_PATH = get_executable_path()
+
 # The current filename of the application
-CURRENT_FILENAME = os.path.join(ROOT_DIR, f'{DEFAULT_APP_NAME}.exe')
+CURRENT_FILENAME = os.path.join(EXEC_PATH, f'{DEFAULT_APP_NAME}.exe')
 
 def get_config_directory():
     if os.name == 'nt':  # Windows
@@ -60,12 +71,13 @@ UPDATER_PATH = os.path.join(UPDATE_DIR, 'Updater.exe')
 def move_updater():
     original_updater_path = os.path.join(ROOT_DIR, 'Updater.exe')
     if os.path.exists(original_updater_path):
+        if os.path.exists(UPDATER_PATH):
+            os.remove(UPDATER_PATH)
         shutil.move(original_updater_path, UPDATER_PATH)
 
 move_updater()
 
 CONTACT = pyproject_data["project"]["authors"][0]['email']
-DEFAULT_APP_ICON = 'icon.ico'
 APP_INITIAL_WINDOW_SIZE = (1280, 768)
 
 TRANSPARENT_RANGE = 20, 100
@@ -133,40 +145,44 @@ FREQUENCY_PENALTY_STEP = 0.01
 PRESENCE_PENALTY_RANGE = 0, 2
 PRESENCE_PENALTY_STEP = 0.01
 
+ICON_PATH = os.path.join(EXEC_PATH, 'ico')
+
 ## ICONS
-ICON_ADD = 'ico/add.svg'
-ICON_CASE = 'ico/case.svg'
-ICON_CLOSE = 'ico/close.svg'
-ICON_COPY = 'ico/copy.svg'
-ICON_CUSTOMIZE = 'ico/customize.svg'
-ICON_DELETE = 'ico/delete.svg'
-ICON_DISCORD = 'ico/discord.svg'
-ICON_EXPORT = 'ico/export.svg'
-ICON_FAVORITE_NO = 'ico/favorite_no.svg'
-ICON_FAVORITE_YES = 'ico/favorite_yes.svg'
-ICON_FOCUS_MODE = 'ico/focus_mode.svg'
-ICON_FULLSCREEN = 'ico/fullscreen.svg'
-ICON_GITHUB = 'ico/github.svg'
-ICON_HELP = 'ico/help.svg'
-ICON_HISTORY = 'ico/history.svg'
-ICON_IMPORT = 'ico/import.svg'
-ICON_INFO = 'ico/info.svg'
-ICON_NEXT = 'ico/next.svg'
-ICON_OPENAI = 'ico/openai.png'
-ICON_PREV = 'ico/prev.svg'
-ICON_PROMPT = 'ico/prompt.svg'
-ICON_QUESTION = 'ico/question.svg'
-ICON_REFRESH = 'ico/refresh.svg'
-ICON_REGEX = 'ico/regex.svg'
-ICON_SAVE = 'ico/save.svg'
-ICON_SEARCH = 'ico/search.svg'
-ICON_SETTING = 'ico/setting.svg'
-ICON_SIDEBAR = 'ico/sidebar.svg'
-ICON_STACKONTOP = 'ico/stackontop.svg'
-ICON_USER = 'ico/user.png'
-ICON_VERTICAL_THREE_DOTS = 'ico/vertical_three_dots.svg'
-ICON_WORD = 'ico/word.svg'
-ICON_SEND = 'ico/send.svg'
+DEFAULT_APP_ICON = os.path.join(EXEC_PATH, 'icon.ico')
+
+ICON_ADD = os.path.join(ICON_PATH, 'add.svg')
+ICON_CASE = os.path.join(ICON_PATH, 'case.svg')
+ICON_CLOSE = os.path.join(ICON_PATH, 'close.svg')
+ICON_COPY = os.path.join(ICON_PATH, 'copy.svg')
+ICON_CUSTOMIZE = os.path.join(ICON_PATH, 'customize.svg')
+ICON_DELETE = os.path.join(ICON_PATH, 'delete.svg')
+ICON_DISCORD = os.path.join(ICON_PATH, 'discord.svg')
+ICON_EXPORT = os.path.join(ICON_PATH, 'export.svg')
+ICON_FAVORITE_NO = os.path.join(ICON_PATH, 'favorite_no.svg')
+ICON_FAVORITE_YES = os.path.join(ICON_PATH, 'favorite_yes.svg')
+ICON_FOCUS_MODE = os.path.join(ICON_PATH, 'focus_mode.svg')
+ICON_FULLSCREEN = os.path.join(ICON_PATH, 'fullscreen.svg')
+ICON_GITHUB = os.path.join(ICON_PATH, 'github.svg')
+ICON_HELP = os.path.join(ICON_PATH, 'help.svg')
+ICON_HISTORY = os.path.join(ICON_PATH, 'history.svg')
+ICON_IMPORT = os.path.join(ICON_PATH, 'import.svg')
+ICON_INFO = os.path.join(ICON_PATH, 'info.svg')
+ICON_NEXT = os.path.join(ICON_PATH, 'next.svg')
+ICON_OPENAI = os.path.join(ICON_PATH, 'openai.png')
+ICON_PREV = os.path.join(ICON_PATH, 'prev.svg')
+ICON_PROMPT = os.path.join(ICON_PATH, 'prompt.svg')
+ICON_QUESTION = os.path.join(ICON_PATH, 'question.svg')
+ICON_REFRESH = os.path.join(ICON_PATH, 'refresh.svg')
+ICON_REGEX = os.path.join(ICON_PATH, 'regex.svg')
+ICON_SAVE = os.path.join(ICON_PATH, 'save.svg')
+ICON_SEARCH = os.path.join(ICON_PATH, 'search.svg')
+ICON_SETTING = os.path.join(ICON_PATH, 'setting.svg')
+ICON_SIDEBAR = os.path.join(ICON_PATH, 'sidebar.svg')
+ICON_STACKONTOP = os.path.join(ICON_PATH, 'stackontop.svg')
+ICON_USER = os.path.join(ICON_PATH, 'user.png')
+ICON_VERTICAL_THREE_DOTS = os.path.join(ICON_PATH, 'vertical_three_dots.svg')
+ICON_WORD = os.path.join(ICON_PATH, 'word.svg')
+ICON_SEND = os.path.join(ICON_PATH, 'send.svg')
 
 ## CUSTOMIZE
 DEFAULT_ICON_SIZE = (24, 24)
@@ -227,8 +243,17 @@ DEFAULT_SHORTCUT_SEND = 'Ctrl+Return'
 MAIN_INDEX = 'main.py'
 IMAGE_DEFAULT_SAVE_DIRECTORY = 'image_result'
 INI_FILE_NAME = os.path.join(get_config_directory(), 'config.yaml')
-# LANGUAGE_FILE = os.path.join(get_config_directory(), 'translations.json')
-LANGUAGE_FILE = 'lang/translations.json'
+LANGUAGE_FILE = os.path.join(get_config_directory(), 'translations.json')
+
+# TODO WILL_REMOVE_AFTER v1.2.0
+prev_lang_file = os.path.join(ROOT_DIR, 'lang/translations.json') if os.path.exists(os.path.join(ROOT_DIR, 'lang/translations.json')) else (os.path.join(SRC_DIR, 'lang/translations.json') if os.path.exists(os.path.join(SRC_DIR, 'lang/translations.json')) else None)
+if prev_lang_file:
+    if os.path.exists(prev_lang_file):
+        if not os.path.exists(LANGUAGE_FILE):
+            shutil.copy(prev_lang_file, LANGUAGE_FILE)
+else:
+    pass
+
 DB_FILE_NAME = 'conv'
 FILE_NAME_LENGTH = 32
 QFILEDIALOG_DEFAULT_DIRECTORY = os.path.expanduser('~')

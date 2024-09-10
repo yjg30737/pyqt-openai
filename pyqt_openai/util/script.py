@@ -402,7 +402,7 @@ def set_auto_start_windows(enable: bool):
     key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, AUTOSTART_REGISTRY_KEY, 0, winreg.KEY_WRITE)
 
     if enable:
-        exe_path = sys.executable  # 현재 실행 파일 경로
+        exe_path = sys.executable  # Current executable path
         winreg.SetValueEx(key, DEFAULT_APP_NAME, 0, winreg.REG_SZ, exe_path)
     else:
         try:
