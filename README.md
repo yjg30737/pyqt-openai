@@ -45,7 +45,7 @@ Although this is named 'pyqt-openai', the model does not use only OpenAI-related
 4. pip install .
 5. pyqt-openai
 
-### Wanna download this without doing stuffs like above? You can download zip file <a href="https://github.com/yjg30737/pyqt-openai/releases">here</a>
+### Wanna download this without doing stuffs like above? You can download installer of zip file <a href="https://github.com/yjg30737/pyqt-openai/releases">here.</a>
 
 ## How to Use 🧐
 
