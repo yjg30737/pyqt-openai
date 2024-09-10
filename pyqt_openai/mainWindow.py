@@ -349,6 +349,7 @@ class MainWindow(QMainWindow):
             prev_show_toolbar = CONFIG_MANAGER.get_general_property('show_toolbar')
             prev_show_secondary_toolbar = CONFIG_MANAGER.get_general_property('show_secondary_toolbar')
             prev_show_as_markdown = CONFIG_MANAGER.get_general_property('show_as_markdown')
+            prev_run_at_startup = CONFIG_MANAGER.get_general_property('run_at_startup')
 
             for k, v in container.get_items():
                 CONFIG_MANAGER.set_general_property(k, v)
@@ -359,7 +360,7 @@ class MainWindow(QMainWindow):
             # If show_toolbar is changed
             if container.show_toolbar != prev_show_toolbar:
                 self.__toggleToolbar(container.show_toolbar)
-            if container.run_at_startup != CONFIG_MANAGER.get_general_property('run_at_startup'):
+            if container.run_at_startup != prev_run_at_startup:
                 set_auto_start_windows(container.run_at_startup)
             # If show_secondary_toolbar is changed
             if container.show_secondary_toolbar != prev_show_secondary_toolbar:

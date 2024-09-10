@@ -35,6 +35,8 @@ DEFAULT_APP_NAME = 'VividNode'
 
 AUTOSTART_REGISTRY_KEY = r"Software\Microsoft\Windows\CurrentVersion\Run"
 
+# Check if the application is frozen (compiled with PyInstaller)
+# If this is main.py, it will return False, that means it is not frozen.
 def is_frozen():
     return hasattr(sys, 'frozen')
 
