@@ -162,7 +162,7 @@ class ReplicateRightSideBarWidget(ImageControlWidget):
         self.__api_key = self.__apiKeyLineEdit.text().strip()
         self.__wrapper.set_api(self.__api_key)
 
-        t = ReplicateThread(self.__wrapper, self.__model, arg, number_of_images)
+        t = ReplicateThread(arg, number_of_images, self.__wrapper, self.__model)
         self._setThread(t)
         super()._submit()
 

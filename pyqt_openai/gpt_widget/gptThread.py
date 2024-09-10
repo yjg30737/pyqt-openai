@@ -17,26 +17,26 @@ class GPTThread(QThread):
     replyGenerated = Signal(str, bool, ChatMessageContainer)
     streamFinished = Signal(ChatMessageContainer)
 
-    def __init__(self, openai_arg, info: ChatMessageContainer, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.__openai_arg = openai_arg
-        self.__stop_streaming = False
+    def __init__(self, input_args, info: ChatMessageContainer):
+        super().__init__()
+        self.__input_args = input_args
+        self.__stop = False
 
         self.__info = info
         self.__info.role = 'assistant'
 
-    def stop_streaming(self):
-        self.__stop_streaming = True
+    def stop(self):
+        self.__stop = True
 
     def run(self):
         try:
             response = OPENAI_STRUCT.chat.completions.create(
-                **self.__openai_arg
+                **self.__input_args
             )
 
             if isinstance(response, openai.Stream):
                 for chunk in response:
-                    if self.__stop_streaming:
+                    if self.__stop:
                         self.__info.finish_reason = 'stopped by user'
                         self.streamFinished.emit(self.__info)
                         break
@@ -65,25 +65,27 @@ class LlamaOpenAIThread(QThread):
     replyGenerated = Signal(str, bool, ChatMessageContainer)
     streamFinished = Signal(ChatMessageContainer)
 
-    def __init__(self, llama_idx_instance, openai_arg, query_text, info: ChatMessageContainer, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.__llama_idx_instance = llama_idx_instance
-        self.__openai_arg = openai_arg
-        self.__query_text = query_text
-        self.__stop_streaming = False
+    def __init__(self, input_args, info: ChatMessageContainer, wrapper, query_text):
+        super().__init__()
+        self.__input_args = input_args
+        self.__stop = False
+
         self.__info = info
         self.__info.role = 'assistant'
 
-    def stop_streaming(self):
-        self.__stop_streaming = True
+        self.__wrapper = wrapper
+        self.__query_text = query_text
+
+    def stop(self):
+        self.__stop = True
 
     def run(self):
         try:
-            resp = self.__llama_idx_instance.get_response(self.__query_text)
+            resp = self.__wrapper.get_response(self.__query_text)
             f = isinstance(resp, StreamingResponse)
             if f:
                 for response_text in resp.response_gen:
-                    if self.__stop_streaming:
+                    if self.__stop:
                         self.__info.finish_reason = 'stopped by user'
                         break
                     else:

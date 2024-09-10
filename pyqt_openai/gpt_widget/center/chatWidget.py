@@ -190,7 +190,7 @@ class ChatWidget(QWidget):
 
             # Run a different thread based on whether the llama-index is enabled or not.
             if is_llama_available:
-                self.__t = LlamaOpenAIThread(LLAMAINDEX_WRAPPER, openai_arg=openai_param, query_text=query_text, info=container)
+                self.__t = LlamaOpenAIThread(openai_param, container, LLAMAINDEX_WRAPPER, query_text)
             else:
                 self.__t = GPTThread(openai_param, info=container)
             self.__t.started.connect(self.__beforeGenerated)

@@ -14,8 +14,9 @@ class DallEThread(QThread):
     def __init__(self, input_args, number_of_images):
         super().__init__()
         self.__input_args = input_args
-        self.__number_of_images = number_of_images
         self.__stop = False
+
+        self.__number_of_images = number_of_images
 
     def stop(self):
         self.__stop = True
