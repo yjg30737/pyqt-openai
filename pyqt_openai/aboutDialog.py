@@ -32,7 +32,6 @@ class AboutDialog(QDialog):
         Software Version {pyqt_openai.__version__}<br/><br/>
         © 2023 {datetime.datetime.now().year}. Used under the {pyqt_openai.LICENSE} License.<br/>
         Copyright (c) {datetime.datetime.now().year} {pyqt_openai.__author__}<br/>
-        {pyqt_openai.ICON_PATH}
         ''')
 
         descWidget2 = LinkLabel()
