@@ -11,11 +11,12 @@ class DallEThread(QThread):
     errorGenerated = Signal(str)
     allReplyGenerated = Signal()
 
-    def __init__(self, openai_arg, number_of_images, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.__openai_arg = openai_arg
-        self.__number_of_images = number_of_images
+    def __init__(self, input_args, number_of_images):
+        super().__init__()
+        self.__input_args = input_args
         self.__stop = False
+
+        self.__number_of_images = number_of_images
 
     def stop(self):
         self.__stop = True
@@ -27,15 +28,15 @@ class DallEThread(QThread):
                     break
 
                 response = OPENAI_STRUCT.images.generate(
-                    **self.__openai_arg
+                    **self.__input_args
                 )
-                container = ImagePromptContainer(**self.__openai_arg)
+                container = ImagePromptContainer(**self.__input_args)
                 for _ in response.data:
                     image_data = base64.b64decode(_.b64_json)
                     container.data = image_data
                     container.revised_prompt = _.revised_prompt
-                    container.width = self.__openai_arg['size'].split('x')[0]
-                    container.height = self.__openai_arg['size'].split('x')[1]
+                    container.width = self.__input_args['size'].split('x')[0]
+                    container.height = self.__input_args['size'].split('x')[1]
                     self.replyGenerated.emit(container)
             self.allReplyGenerated.emit()
         except Exception as e:

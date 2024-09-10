@@ -1,7 +1,9 @@
+import os
 import json
 import sqlite3
 from datetime import datetime
 from typing import List
+import shutil
 
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai import THREAD_TABLE_NAME, THREAD_TRIGGER_NAME, \
@@ -10,15 +12,30 @@ from pyqt_openai import THREAD_TABLE_NAME, THREAD_TRIGGER_NAME, \
     THREAD_MESSAGE_UPDATED_TR_NAME, THREAD_MESSAGE_DELETED_TR_NAME, THREAD_MESSAGE_INSERTED_TR_NAME_OLD, \
     THREAD_MESSAGE_UPDATED_TR_NAME_OLD, THREAD_MESSAGE_DELETED_TR_NAME_OLD, IMAGE_TABLE_NAME, \
     PROPERTY_PROMPT_UNIT_TABLE_NAME_OLD, PROPERTY_PROMPT_GROUP_TABLE_NAME_OLD, TEMPLATE_PROMPT_GROUP_TABLE_NAME_OLD, \
-    TEMPLATE_PROMPT_TABLE_NAME_OLD, PROMPT_GROUP_TABLE_NAME, PROMPT_ENTRY_TABLE_NAME, INI_FILE_NAME, DB_FILE_NAME
+    TEMPLATE_PROMPT_TABLE_NAME_OLD, PROMPT_GROUP_TABLE_NAME, PROMPT_ENTRY_TABLE_NAME, get_config_directory, ROOT_DIR, \
+    SRC_DIR
 from pyqt_openai.models import ImagePromptContainer, ChatMessageContainer, PromptEntryContainer, PromptGroupContainer
 
 
 def get_db_filename():
+    db_filename = CONFIG_MANAGER.get_general_property('db') + '.db'
+
+    # TODO WILL_REMOVE_AFTER v1.2.0
+    prev_config_path = os.path.join(ROOT_DIR, db_filename) if os.path.exists(
+        os.path.join(ROOT_DIR, db_filename)) else (
+        os.path.join(SRC_DIR, db_filename) if os.path.exists(os.path.join(SRC_DIR, db_filename)) else None)
+    if prev_config_path:
+        new_config_path = os.path.join(get_config_directory(), db_filename)
+        if not os.path.exists(new_config_path):
+            shutil.move(prev_config_path, new_config_path)
+    else:
+        pass
+
     """
     Get the database file's name from the settings.
     """
-    db_path = CONFIG_MANAGER.get_general_property('db') + '.db'
+    config_dir = get_config_directory()
+    db_path = os.path.join(config_dir, db_filename)
     return db_path
 
 
@@ -74,18 +91,6 @@ class SqliteDatabase:
                                       insert_dt DATETIME DEFAULT CURRENT_TIMESTAMP)''')
                 # Create prompt entry
                 self.__createPromptEntry()
-
-                # TODO WILL_REMOVE_AFTER v1.0.0
-                # Alter old prompt group table to new one
-                self.__alterOldPromptGroup()
-
-                # TODO WILL_REMOVE_AFTER v1.0.0
-                # Remove old prompt group
-                self.__removeOldPromptGroup()
-
-                # TODO WILL_REMOVE_AFTER v1.0.0
-                # Remove old prompt entry
-                self.__removeOldPromptEntry()
 
                 # Commit the transaction
                 self.__conn.commit()
@@ -332,20 +337,12 @@ class SqliteDatabase:
 
     def __createThread(self):
         try:
-            # TODO WILL_REMOVE_AFTER v1.0.0
-            # Check if the old thread table exists for v0.6.5 and below for migration purpose
-            self.__alterOldThread()
-
             # Create new thread table if not exists
             table_name_new_exists = self.__c.execute(
                     f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{THREAD_TABLE_NAME}'").fetchone()[
                                             0] == 1
             if table_name_new_exists:
-                # TODO WILL_REMOVE_AFTER v1.1.0
-                # Add is_json_response_available column which is added in v0.9.0
-                if self.__c.execute(
-                        f"SELECT count(*) FROM pragma_table_info('{MESSAGE_TABLE_NAME}') WHERE name='is_json_response_available'").fetchone()[0] == 0:
-                    self.__c.execute(f'ALTER TABLE {MESSAGE_TABLE_NAME} ADD COLUMN is_json_response_available INTEGER DEFAULT 0')
+                pass
             else:
                 # If user uses app for the first time, create a table
                 # Create a table with update_dt and insert_dt columns
@@ -592,9 +589,6 @@ class SqliteDatabase:
                               FOREIGN KEY (thread_id) REFERENCES {THREAD_TABLE_NAME}(id)
                               ON DELETE CASCADE)''')
 
-                # TODO WILL_REMOVE_AFTER v1.0.0
-                self.__removeOldTrigger()
-
                 self.__createMessageTrigger()
                 self.__conn.commit()
         except sqlite3.Error as e:
@@ -685,27 +679,8 @@ class SqliteDatabase:
         try:
             # Check if the table exists
             self.__c.execute(f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{IMAGE_TABLE_NAME}'")
-            # TODO WILL_REMOVE_AFTER v1.0.0
             if self.__c.fetchone()[0] == 1:
-                # To not make table every time to change column's name and type
-                self.__c.execute(f'PRAGMA table_info({IMAGE_TABLE_NAME})')
-                existing_columns = set([column[1] for column in self.__c.fetchall()])
-                required_columns = set(ImagePromptContainer.get_keys(['id', 'update_dt', 'insert_dt']))
-
-                # Find missing columns
-                missing_columns = required_columns - existing_columns
-                for column in missing_columns:
-                    # Add missing columns to the table
-                    column_type = 'TEXT'  # Default type
-                    if column in ['n', 'width', 'height']:
-                        column_type = 'INT'
-                    elif column == 'data':
-                        column_type = 'BLOB'
-                    elif column in ['model', 'quality', 'style']:
-                        column_type = 'VARCHAR(255)'
-                    self.__c.execute(f'ALTER TABLE {IMAGE_TABLE_NAME} ADD COLUMN {column} {column_type}')
-
-                self.__conn.commit()
+                pass
             else:
                 self.__c.execute(f'''CREATE TABLE {IMAGE_TABLE_NAME}
                              (id INTEGER PRIMARY KEY,

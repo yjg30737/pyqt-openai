@@ -20,13 +20,44 @@ with open(SETUP_FILENAME, "rb") as file:
 # For the sake of following the PEP8 standard, we will declare module-level dunder names.
 # PEP8 standard about dunder names: https://peps.python.org/pep-0008/#module-level-dunder-names
 
-__version__ = pyproject_data["project"]["version"]
+__version__ = '1.1.0'
 __author__ = pyproject_data["project"]["authors"][0]['name']
 
 # Constants
 # ----------------------------
 # APP
+PACKAGE_NAME = pyproject_data["project"]["name"]
+OWNER = 'yjg30737'
+
+UPDATE_DIR = ROOT_DIR.parent
+
+# Temporary compressed file name for updating
+UPDATE_FILENAME = os.path.join(UPDATE_DIR, 'update.zip')
+
 DEFAULT_APP_NAME = 'VividNode'
+
+AUTOSTART_REGISTRY_KEY = r"Software\Microsoft\Windows\CurrentVersion\Run"
+
+# The current filename of the application
+CURRENT_FILENAME = f'{DEFAULT_APP_NAME}.exe'
+
+# The default updater path (relative to the application's root directory)
+UPDATER_PATH = os.path.join(UPDATE_DIR, 'Updater.exe')
+
+def get_config_directory():
+    if os.name == 'nt':  # Windows
+        config_dir = os.path.join(os.getenv('APPDATA'), DEFAULT_APP_NAME)
+    elif os.name == 'posix':  # macOS/Linux
+        config_dir = os.path.join(os.getenv('XDG_CONFIG_HOME', os.path.expanduser('~/.config')), DEFAULT_APP_NAME)
+    else:
+        config_dir = os.path.expanduser(f'~/.{DEFAULT_APP_NAME}')  # Fallback
+
+    # Ensure the directory exists
+    if not os.path.exists(config_dir):
+        os.makedirs(config_dir)
+
+    return config_dir
+
 CONTACT = pyproject_data["project"]["authors"][0]['email']
 DEFAULT_APP_ICON = 'icon.ico'
 APP_INITIAL_WINDOW_SIZE = (1280, 768)
@@ -41,6 +72,8 @@ PAYPAL_URL = 'https://paypal.me/yjg30737'
 GITHUB_URL = 'https://github.com/yjg30737/pyqt-openai'
 DISCORD_URL = 'https://discord.gg/cHekprskVE'
 
+QUICKSTART_MANUAL_URL = 'https://medium.com/@yjg30737/what-is-vividnode-how-to-use-it-4d8a9269a3c0'
+LLAMAINDEX_URL = 'https://medium.com/@yjg30737/what-is-llamaindex-9b821d66568f'
 HOW_TO_GET_OPENAI_API_KEY_URL = 'https://medium.com/@yjg30737/how-to-get-your-openai-api-key-e2193850932e'
 HOW_TO_EXPORT_CHATGPT_CONVERSATION_HISTORY_URL = 'https://medium.com/@yjg30737/how-to-export-your-chatgpt-conversation-history-caa0946d6349'
 HOW_TO_REPLICATE = 'https://medium.com/@yjg30737/10a2cb983ceb'
@@ -48,7 +81,6 @@ HOW_TO_REPLICATE = 'https://medium.com/@yjg30737/10a2cb983ceb'
 COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_CHAT = ['id']
 COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_IMAGE = ['id', 'data']
 DEFAULT_LANGUAGE = 'en_US'
-LANGUAGE_FILE = 'lang/translations.json'
 LANGUAGE_DICT = {
     "English": "en_US",
     "Spanish": "es_ES",
@@ -172,6 +204,7 @@ DEFAULT_SHORTCUT_FIND_CLOSE = 'Escape'
 DEFAULT_SHORTCUT_PROMPT_BEGINNING = 'Ctrl+B'
 DEFAULT_SHORTCUT_PROMPT_ENDING = 'Ctrl+E'
 DEFAULT_SHORTCUT_SUPPORT_PROMPT_COMMAND = 'Ctrl+Shift+P'
+DEFAULT_SHORTCUT_STACK_ON_TOP = 'Ctrl+Shift+S'
 DEFAULT_SHORTCUT_SHOW_TOOLBAR = 'Ctrl+T'
 DEFAULT_SHORTCUT_SHOW_SECONDARY_TOOLBAR = 'Ctrl+Shift+T'
 DEFAULT_SHORTCUT_FOCUS_MODE = 'F10'
@@ -187,7 +220,9 @@ DEFAULT_SHORTCUT_SEND = 'Ctrl+Return'
 ## DIRECTORY PATH & FILE'S NAME
 MAIN_INDEX = 'main.py'
 IMAGE_DEFAULT_SAVE_DIRECTORY = 'image_result'
-INI_FILE_NAME = 'config.yaml'
+INI_FILE_NAME = os.path.join(get_config_directory(), 'config.yaml')
+# LANGUAGE_FILE = os.path.join(get_config_directory(), 'translations.json')
+LANGUAGE_FILE = 'lang/translations.json'
 DB_FILE_NAME = 'conv'
 FILE_NAME_LENGTH = 32
 QFILEDIALOG_DEFAULT_DIRECTORY = os.path.expanduser('~')
@@ -199,9 +234,6 @@ IMAGE_FILE_EXT_LIST_STR = 'Image File (*.png *.jpg *.jpeg *.gif *.bmp)'
 TEXT_FILE_EXT_LIST_STR = 'Text File (*.txt)'
 JSON_FILE_EXT_LIST_STR = 'JSON File (*.json)'
 READ_FILE_EXT_LIST_STR = f'{TEXT_FILE_EXT_LIST_STR};;{IMAGE_FILE_EXT_LIST_STR}'
-
-## IMAGE
-IMAGE_CHATGPT_IMPORT_MANUAL = 'images/import_from_chatgpt.png'
 
 ## PROMPT
 PROMPT_BEGINNING_KEY_NAME = 'prompt_beginning'
@@ -325,6 +357,7 @@ CONFIG_DATA = {
         'json_object': False,
         'maximum_messages_in_parameter': MAXIMUM_MESSAGES_IN_PARAMETER,
         'show_as_markdown': True,
+        'run_at_startup': True,
         'use_max_tokens': False,
         'background_image': '',
         'user_image': DEFAULT_USER_IMAGE_PATH,

@@ -25,6 +25,7 @@ from pyqt_openai.config_loader import CONFIG_MANAGER
 
 from pyqt_openai.mainWindow import MainWindow
 from pyqt_openai.util.script import handle_exception
+from pyqt_openai.updateSoftwareDialog import update_software
 from pyqt_openai.sqlite import get_db_filename
 
 from pyqt_openai import DEFAULT_APP_ICON
@@ -45,10 +46,12 @@ class App(QApplication):
         self.__showMainWindow()
         self.splash.finish(self.main_window)
 
+        update_software()
+
     def __initQSqlDb(self):
         # Set up the database and table model (you'll need to configure this part based on your database)
-        self.__imageDb = QSqlDatabase.addDatabase('QSQLITE')  # Replace with your database type
-        self.__imageDb.setDatabaseName(get_db_filename())  # Replace with your database name
+        self.__imageDb = QSqlDatabase.addDatabase('QSQLITE')
+        self.__imageDb.setDatabaseName(get_db_filename())
         self.__imageDb.open()
 
     def __initFont(self):
