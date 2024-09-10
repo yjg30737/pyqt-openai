@@ -5,7 +5,7 @@ import requests
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QLabel, QTextBrowser, QDialogButtonBox
 
-from pyqt_openai import __version__, OWNER, PACKAGE_NAME, UPDATE_FILENAME, CURRENT_FILENAME, UPDATER_PATH
+from pyqt_openai import __version__, OWNER, PACKAGE_NAME, UPDATE_DIR, CURRENT_FILENAME, UPDATER_PATH
 
 
 class UpdateSoftwareDialog(QDialog):
@@ -98,5 +98,5 @@ def update_software():
 
 
 def run_updater(update_url):
-    subprocess.Popen([UPDATER_PATH, update_url, UPDATE_FILENAME, CURRENT_FILENAME])
+    subprocess.Popen([UPDATER_PATH, update_url, UPDATE_DIR, CURRENT_FILENAME])
     sys.exit(0)

@@ -4,13 +4,14 @@ This file is used to store the constants and the global variables that are used 
 
 import json
 import os
+import shutil
 
 import tomllib  # Python 3.11 built-in module
 from pathlib import Path
 
 # Load the pyproject.toml file
-SRC_DIR = Path(__file__).resolve().parent
-ROOT_DIR = SRC_DIR.parent
+SRC_DIR = Path(__file__).resolve().parent # VividNode/pyqt_openai
+ROOT_DIR = SRC_DIR.parent # VividNode
 SETUP_FILENAME = ROOT_DIR / "pyproject.toml"
 
 # Read the TOML file using tomllib (Python 3.11+)
@@ -29,20 +30,12 @@ __author__ = pyproject_data["project"]["authors"][0]['name']
 PACKAGE_NAME = pyproject_data["project"]["name"]
 OWNER = 'yjg30737'
 
-UPDATE_DIR = ROOT_DIR.parent
-
-# Temporary compressed file name for updating
-UPDATE_FILENAME = os.path.join(UPDATE_DIR, 'update.zip')
-
 DEFAULT_APP_NAME = 'VividNode'
 
 AUTOSTART_REGISTRY_KEY = r"Software\Microsoft\Windows\CurrentVersion\Run"
 
 # The current filename of the application
-CURRENT_FILENAME = f'{DEFAULT_APP_NAME}.exe'
-
-# The default updater path (relative to the application's root directory)
-UPDATER_PATH = os.path.join(UPDATE_DIR, 'Updater.exe')
+CURRENT_FILENAME = os.path.join(ROOT_DIR, f'{DEFAULT_APP_NAME}.exe')
 
 def get_config_directory():
     if os.name == 'nt':  # Windows
@@ -57,6 +50,19 @@ def get_config_directory():
         os.makedirs(config_dir)
 
     return config_dir
+
+UPDATE_DIR = get_config_directory()
+
+# The default updater path (relative to the application's root directory)
+UPDATER_PATH = os.path.join(UPDATE_DIR, 'Updater.exe')
+
+# Move the Updater.exe to the config folder
+def move_updater():
+    original_updater_path = os.path.join(ROOT_DIR, 'Updater.exe')
+    if os.path.exists(original_updater_path):
+        shutil.move(original_updater_path, UPDATER_PATH)
+
+move_updater()
 
 CONTACT = pyproject_data["project"]["authors"][0]['email']
 DEFAULT_APP_ICON = 'icon.ico'
