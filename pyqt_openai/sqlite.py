@@ -21,11 +21,15 @@ def get_db_filename():
     db_filename = CONFIG_MANAGER.get_general_property('db') + '.db'
 
     # TODO WILL_REMOVE_AFTER v1.2.0
-    prev_config_path = os.path.join(ROOT_DIR, db_filename)
-    if os.path.exists(prev_config_path) or os.path.exists(os.path.join(SRC_DIR, db_filename)):
-        new_path = os.path.join(get_config_directory(), db_filename)
-        if not os.path.exists(new_path):
-            shutil.move(prev_config_path, new_path)
+    prev_config_path = os.path.join(ROOT_DIR, db_filename) if os.path.exists(
+        os.path.join(ROOT_DIR, db_filename)) else (
+        os.path.join(SRC_DIR, db_filename) if os.path.exists(os.path.join(SRC_DIR, db_filename)) else None)
+    if prev_config_path:
+        new_config_path = os.path.join(get_config_directory(), db_filename)
+        if not os.path.exists(new_config_path):
+            shutil.move(prev_config_path, new_config_path)
+    else:
+        pass
 
     """
     Get the database file's name from the settings.

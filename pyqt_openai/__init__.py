@@ -235,9 +235,6 @@ TEXT_FILE_EXT_LIST_STR = 'Text File (*.txt)'
 JSON_FILE_EXT_LIST_STR = 'JSON File (*.json)'
 READ_FILE_EXT_LIST_STR = f'{TEXT_FILE_EXT_LIST_STR};;{IMAGE_FILE_EXT_LIST_STR}'
 
-## IMAGE
-IMAGE_CHATGPT_IMPORT_MANUAL = 'images/import_from_chatgpt.png'
-
 ## PROMPT
 PROMPT_BEGINNING_KEY_NAME = 'prompt_beginning'
 PROMPT_JSON_KEY_NAME = 'prompt_json'

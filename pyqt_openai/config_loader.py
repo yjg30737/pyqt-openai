@@ -106,11 +106,13 @@ class ConfigManager:
         self._save_yaml()
 
 # TODO WILL_REMOVE_AFTER v1.2.0
-prev_config_path = os.path.join(ROOT_DIR, 'config.yaml')
-if os.path.exists(prev_config_path) or os.path.exists(os.path.join(SRC_DIR, 'config.yaml')):
+prev_config_path = os.path.join(ROOT_DIR, 'config.yaml') if os.path.exists(os.path.join(ROOT_DIR, 'config.yaml')) else (os.path.join(SRC_DIR, 'config.yaml') if os.path.exists(os.path.join(SRC_DIR, 'config.yaml')) else None)
+if prev_config_path:
     new_config_path = os.path.join(get_config_directory(), INI_FILE_NAME)
     if not os.path.exists(new_config_path):
         shutil.move(prev_config_path, new_config_path)
+else:
+    pass
 
 init_yaml()
 CONFIG_MANAGER = ConfigManager()
