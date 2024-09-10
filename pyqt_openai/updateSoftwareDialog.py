@@ -5,7 +5,7 @@ import requests
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QLabel, QTextBrowser, QDialogButtonBox
 
-from pyqt_openai import __version__, OWNER, PACKAGE_NAME, UPDATE_DIR, CURRENT_FILENAME, UPDATER_PATH
+from pyqt_openai import __version__, OWNER, PACKAGE_NAME, UPDATE_DIR, CURRENT_FILENAME, UPDATER_PATH, is_frozen
 
 
 class UpdateSoftwareDialog(QDialog):
@@ -91,6 +91,9 @@ def update_software():
     current_version = __version__
     owner = OWNER
     repo = PACKAGE_NAME
+
+    if not is_frozen():
+        return
 
     # Check for updates and show dialog if available
     check_for_updates_and_show_dialog(current_version, owner, repo)

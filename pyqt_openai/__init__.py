@@ -35,9 +35,12 @@ DEFAULT_APP_NAME = 'VividNode'
 
 AUTOSTART_REGISTRY_KEY = r"Software\Microsoft\Windows\CurrentVersion\Run"
 
+def is_frozen():
+    return hasattr(sys, 'frozen')
+
 # The executable path of the application
 def get_executable_path():
-    if getattr(sys, 'frozen', False):  # For PyInstaller
+    if is_frozen():  # For PyInstaller
         executable_path = sys._MEIPASS
     else:
         executable_path = os.path.dirname(os.path.abspath(__file__))

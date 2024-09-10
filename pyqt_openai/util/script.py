@@ -27,7 +27,7 @@ from jinja2 import Template
 from pyqt_openai import MAIN_INDEX, \
     PROMPT_NAME_REGEX, PROMPT_MAIN_KEY_NAME, PROMPT_BEGINNING_KEY_NAME, \
     PROMPT_END_KEY_NAME, PROMPT_JSON_KEY_NAME, CONTEXT_DELIMITER, THREAD_ORDERBY, DEFAULT_APP_NAME, \
-    AUTOSTART_REGISTRY_KEY
+    AUTOSTART_REGISTRY_KEY, is_frozen
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ImagePromptContainer
 from pyqt_openai.pyqt_openai_data import DB
@@ -387,18 +387,15 @@ def handle_exception(exc_type, exc_value, exc_traceback):
     msg_box.exec_()
 
 
-# Set auto start on Windows
-def is_auto_start_enabled_windows():
-    import winreg
-    key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, AUTOSTART_REGISTRY_KEY, 0,
-                         winreg.KEY_READ)
-    try:
-        winreg.QueryValueEx(key, DEFAULT_APP_NAME)
-        return True
-    except FileNotFoundError:
-        return False
-
 def set_auto_start_windows(enable: bool):
+    # If OS is not Windows, return
+    if sys.platform != 'win32':
+        return
+
+    # If this is not a frozen application, return
+    if not is_frozen():
+        return
+
     key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, AUTOSTART_REGISTRY_KEY, 0, winreg.KEY_WRITE)
 
     if enable:
