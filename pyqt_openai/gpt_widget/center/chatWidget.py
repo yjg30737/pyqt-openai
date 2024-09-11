@@ -214,7 +214,7 @@ class ChatWidget(QWidget):
             ''')
 
     def __stopResponse(self):
-        self.__t.stop_streaming()
+        self.__t.stop()
 
     def __toggleWidgetWhileChatting(self, f):
         self.__mainPrompt.setExecuteEnabled(f)
