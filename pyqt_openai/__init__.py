@@ -254,8 +254,7 @@ LANGUAGE_FILE = os.path.join(get_config_directory(), 'translations.json')
 prev_lang_file = os.path.join(ROOT_DIR, 'lang/translations.json') if os.path.exists(os.path.join(ROOT_DIR, 'lang/translations.json')) else (os.path.join(SRC_DIR, 'lang/translations.json') if os.path.exists(os.path.join(SRC_DIR, 'lang/translations.json')) else None)
 if prev_lang_file:
     if os.path.exists(prev_lang_file):
-        if not os.path.exists(LANGUAGE_FILE):
-            shutil.copy(prev_lang_file, LANGUAGE_FILE)
+        shutil.copy(prev_lang_file, LANGUAGE_FILE)
 else:
     pass
 

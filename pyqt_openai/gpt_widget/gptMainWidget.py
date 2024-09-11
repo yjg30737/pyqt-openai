@@ -163,6 +163,7 @@ class GPTMainWidget(QWidget):
         self.__chatNavWidget.setVisible(self.__show_chat_list)
         self.__gptRightSideBarWidget.setVisible(self.__show_setting)
         self.__promptGeneratorWidget.setVisible(self.__show_prompt)
+        self.__rightSideBar.setVisible(self.__show_setting or self.__show_prompt)
 
     def toggleSideBar(self, x):
         self.__chatNavWidget.setVisible(x)
