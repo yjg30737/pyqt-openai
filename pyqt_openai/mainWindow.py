@@ -308,7 +308,8 @@ class MainWindow(QMainWindow):
         if f:
             self.setWindowFlags(self.windowFlags() | Qt.WindowType.WindowStaysOnTopHint)
         else:
-            self.setWindowFlags(self.windowFlags() & ~Qt.WindowType.WindowStaysOnTopHint)
+            # Qt.WindowType.WindowCloseButtonHint is added to prevent the close button get deactivated
+            self.setWindowFlags(self.windowFlags() & ~Qt.WindowType.WindowStaysOnTopHint | Qt.WindowType.WindowCloseButtonHint)
         self.show()
 
     def __setTransparency(self, v):
