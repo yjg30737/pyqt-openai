@@ -22,7 +22,7 @@ with open(SETUP_FILENAME, "rb") as file:
 # For the sake of following the PEP8 standard, we will declare module-level dunder names.
 # PEP8 standard about dunder names: https://peps.python.org/pep-0008/#module-level-dunder-names
 
-__version__ = '1.1.0'
+__version__ = pyproject_data["project"]["version"]
 __author__ = pyproject_data["project"]["authors"][0]['name']
 
 # Constants
