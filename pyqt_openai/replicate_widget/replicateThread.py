@@ -31,7 +31,8 @@ class ReplicateThread(QThread):
             for _ in range(self.__number_of_images):
                 if self.__stop:
                     break
-                self.__input_args['prompt'] = generate_random_prompt(self.__randomizing_prompt_source_arr)
+                if self.__randomizing_prompt_source_arr is not None:
+                    self.__input_args['prompt'] = generate_random_prompt(self.__randomizing_prompt_source_arr)
                 result = self.__wrapper.get_image_response(model=self.__model, input_args=self.__input_args)
                 self.replyGenerated.emit(result)
             self.allReplyGenerated.emit()

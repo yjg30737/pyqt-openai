@@ -11,8 +11,6 @@ from pyqt_openai.widgets.checkBoxListWidget import CheckBoxListWidget
 class RandomImagePromptGeneratorWidget(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
-
-        self.__randomizing_prompt_source_arr = RANDOMIZING_PROMPT_SOURCE_ARR
         self.__initUi()
 
     def __initUi(self):
@@ -25,7 +23,7 @@ class RandomImagePromptGeneratorWidget(QWidget):
 
         self.__listWidget = CheckBoxListWidget()
 
-        for e in self.__randomizing_prompt_source_arr:
+        for e in RANDOMIZING_PROMPT_SOURCE_ARR:
             item = QListWidgetItem(', '.join(e))
             item.setFlags(item.flags() | Qt.ItemFlag.ItemIsUserCheckable | Qt.ItemFlag.ItemIsEditable)
             item.setCheckState(Qt.CheckState.Unchecked)
@@ -62,5 +60,4 @@ class RandomImagePromptGeneratorWidget(QWidget):
         self.__allCheckBox.setChecked(f)
 
     def getRandomPromptSourceArr(self):
-        self.__randomizing_prompt_source_arr = [t.split(', ') for t in self.__listWidget.getCheckedItemsText()]
-        return self.__randomizing_prompt_source_arr
+        return [t.split(', ') for t in self.__listWidget.getCheckedItemsText()] if self.isRandomPromptEnabled() else None
