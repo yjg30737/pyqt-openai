@@ -100,5 +100,5 @@ def update_software():
 
 
 def run_updater(update_url):
-    subprocess.Popen([UPDATER_PATH, update_url, UPDATE_DIR, CURRENT_FILENAME])
+    subprocess.Popen([UPDATER_PATH, update_url, UPDATE_DIR, CURRENT_FILENAME], shell=True)
     sys.exit(0)
