@@ -406,3 +406,12 @@ def set_auto_start_windows(enable: bool):
             winreg.DeleteValue(key, DEFAULT_APP_NAME)
         except FileNotFoundError:
             pass
+
+def generate_random_prompt(arr):
+    if len(arr) > 0:
+        max_len = max(map(lambda x: len(x), arr))
+        weights = [i for i in range(max_len, 0, -1)]
+        random_prompt = ', '.join(list(filter(lambda x: x != '', [random.choices(_, weights[:len(_)])[0] for _ in arr])))
+    else:
+        random_prompt = ''
+    return random_prompt

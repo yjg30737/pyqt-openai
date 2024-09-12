@@ -4,6 +4,7 @@ from PySide6.QtCore import QThread, Signal
 
 from pyqt_openai.models import ImagePromptContainer
 from pyqt_openai.pyqt_openai_data import OPENAI_STRUCT
+from pyqt_openai.util.script import generate_random_prompt
 
 
 class DallEThread(QThread):
@@ -11,10 +12,13 @@ class DallEThread(QThread):
     errorGenerated = Signal(str)
     allReplyGenerated = Signal()
 
-    def __init__(self, input_args, number_of_images):
+    def __init__(self, input_args, number_of_images, randomizing_image_prompt_arr=None):
         super().__init__()
         self.__input_args = input_args
         self.__stop = False
+
+        if randomizing_image_prompt_arr is not None:
+            self.__randomizing_image_prompt_arr = randomizing_image_prompt_arr
 
         self.__number_of_images = number_of_images
 
@@ -26,7 +30,7 @@ class DallEThread(QThread):
             for _ in range(self.__number_of_images):
                 if self.__stop:
                     break
-
+                self.__input_args['prompt'] = generate_random_prompt(self.__randomizing_image_prompt_arr)
                 response = OPENAI_STRUCT.images.generate(
                     **self.__input_args
                 )

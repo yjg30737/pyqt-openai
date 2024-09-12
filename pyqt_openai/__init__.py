@@ -363,6 +363,39 @@ if os.path.exists(AWESOME_CHATGPT_PROMPTS_FILENAME):
 if os.path.exists(ALEX_BROGAN_PROMPT_FILENAME):
     ALEX_BROGAN_PROMPT = json.load(open(ALEX_BROGAN_PROMPT_FILENAME))[0]
 
+
+hair_color_randomizer = ['blonde hair', 'red hair', 'blue hair', 'dark hair', 'green hair', 'white hair']
+hair_style_randomizer = ['Long straight hair', 'Short pixie cut', 'Bob haircut', 'Layered haircut', 'Curly hair', 'Wavy hair', 'Ponytail', 'Messy bun', 'French braid', 'Dutch braid', 'Fishtail braid', 'High bun', 'Low bun', 'Top knot', 'Half-up half-down hairstyle', 'Braided crown', 'Side-swept bangs', 'Bangs/fringe', 'Chignon', 'Waterfall braid', 'Mohawk', 'Beach waves', 'Updo', 'French twist', 'Cornrows', 'Dreadlocks', 'Pigtails', 'Space buns', 'Sock bun']
+clothes_randomizer = ['wearing denim jacket', 'wearing coat', 'wearing blazer', 'wearing blouse', 'wearing biker clothes', 'wearing distressed jeans', 'wearing hoodie']
+expression_randomizer = ['Smile', 'Grin', 'Closed eyes', 'Squinting', '(laughing:1.2)', '(giggle:1.2)', '(Angry face:1.4)', 'Frowning face', 'Confused face', 'Boredom', 'Eyebrow furrow', 'Eye roll', 'Smirk']
+pose_randomizer = ['sitting', 'lying', 'leaning', 'cross-legged']
+camera_distance_randomizer = ['(extreme close-up:1.5)', '(medium full shot:1.5)', '(close-up:1.5)', '(establishing shot:1.5)', '(medium close-up:1.5)', '(point-of-view:1.5)', '(medium shot:1.5)', '(cowboy shot:1.5)', '(long shot:1.5)', '(upper body:1.5)', '(full shot:1.5)', '(full body:1.5)']
+camera_angle_randomizer = ['(front view:1.5)', '(from below:1.5)', '(bilaterally symmetrical:1.5)', '(from behind:1.5)', '(side view:1.5)', '(wide angle view:1.5)', '(back view:1.5)', '(fisheyes view:1.5)',
+                           '(from above:1.5)', '(macro view:1.5)',
+                           '(overhead shot:1.5)', '(straight on:1.5)', '(top down view:1.5)', '(hero view:1.5)',
+                           "(bird's eye view:1.5)", '(low view:1.5)', '(high angle:1.5)',
+                           "(worm's eye view:1.5)", '(slightly above:1.5)', '(selfie:1.5)']
+
+adding_lighting_randomizer = ['bloom', 'backlight', 'sun light', 'soft lighting', 'god rays', 'studio light', 'hard lighting', 'volumetic lighting', 'bioluminescent light']
+wind_randomizer = ['(wind:0)', '(wind:0.5)', '(wind:1)', '(wind:1.5)', '(wind:2)']
+acc1_randomizer = ['wearing sunglasses', 'tattoo']
+acc3_randomizer = ['wearing beanie', 'wearing beret', 'wearing cap', 'wearing fedora']
+attr2_randomizer = ['put on earphones', 'piercing on nose', 'put on headphones']
+location_randomizer = ['In the office', 'Tokyo street', 'In the living room', 'In the music studio', 'On the beach', 'In the club']
+
+RANDOMIZING_PROMPT_SOURCE_ARR = [
+    hair_color_randomizer,
+    hair_style_randomizer,
+    clothes_randomizer,
+    expression_randomizer,
+    pose_randomizer,
+    camera_distance_randomizer,
+    camera_angle_randomizer,
+    adding_lighting_randomizer,
+    wind_randomizer,
+    acc1_randomizer,
+]
+
 # DEFAULT Configuration data for the application settings
 # Initialize here to avoid circular import
 # ----------------------------
@@ -402,7 +435,7 @@ CONFIG_DATA = {
         'API_KEY': '',
         'llama_index_directory': '',
         'apply_user_defined_styles': False,
-        'focus_mode': False,
+        'focus_mode': False
     },
     'DALLE': {
         'quality': 'standard',

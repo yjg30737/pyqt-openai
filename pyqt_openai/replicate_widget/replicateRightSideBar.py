@@ -19,6 +19,7 @@ class ReplicateRightSideBarWidget(ImageControlWidget):
     def _initVal(self):
         super()._initVal()
 
+        self._prompt = CONFIG_MANAGER.get_replicate_property('prompt')
         self._continue_generation = CONFIG_MANAGER.get_replicate_property('continue_generation')
         self._save_prompt_as_text = CONFIG_MANAGER.get_replicate_property('save_prompt_as_text')
         self._is_save = CONFIG_MANAGER.get_replicate_property('is_save')
@@ -29,7 +30,6 @@ class ReplicateRightSideBarWidget(ImageControlWidget):
         self.__model = CONFIG_MANAGER.get_replicate_property('model')
         self.__width = CONFIG_MANAGER.get_replicate_property('width')
         self.__height = CONFIG_MANAGER.get_replicate_property('height')
-        self.__prompt = CONFIG_MANAGER.get_replicate_property('prompt')
         self.__negative_prompt = CONFIG_MANAGER.get_replicate_property('negative_prompt')
 
         self.__wrapper = ReplicateWrapper(self.__api_key.strip() if self.__api_key else '')
@@ -68,21 +68,21 @@ class ReplicateRightSideBarWidget(ImageControlWidget):
         lay.addWidget(self._savePromptAsTextChkBox)
         self._generalGrpBox.setLayout(lay)
 
-        self.__promptWidget = QPlainTextEdit()
-        self.__promptWidget.setPlainText(self.__prompt)
-        self.__promptWidget.textChanged.connect(self.__replicateTextChanged)
-        self.__promptWidget.setPlaceholderText(LangClass.TRANSLATIONS['Enter prompt here...'])
+        self._promptTextEdit.textChanged.connect(self.__replicateTextChanged)
 
-        self.__negativePromptWidget = QPlainTextEdit()
-        self.__negativePromptWidget.setPlaceholderText('ugly, deformed, noisy, blurry, distorted')
-        self.__negativePromptWidget.setPlainText(self.__negative_prompt)
-        self.__negativePromptWidget.textChanged.connect(self.__replicateTextChanged)
+        self._negativeTextEdit = QPlainTextEdit()
+        self._negativeTextEdit.setPlaceholderText('ugly, deformed, noisy, blurry, distorted')
+        self._negativeTextEdit.setPlainText(self.__negative_prompt)
+        self._negativeTextEdit.textChanged.connect(self.__replicateTextChanged)
 
         lay = QVBoxLayout()
+
+        lay.addWidget(self._randomImagePromptGeneratorWidget)
         lay.addWidget(QLabel(LangClass.TRANSLATIONS['Prompt']))
-        lay.addWidget(self.__promptWidget)
+        lay.addWidget(self._promptTextEdit)
+
         lay.addWidget(QLabel(LangClass.TRANSLATIONS['Negative Prompt']))
-        lay.addWidget(self.__negativePromptWidget)
+        lay.addWidget(self._negativeTextEdit)
         promptWidget = QWidget()
         promptWidget.setLayout(lay)
 
@@ -128,10 +128,10 @@ class ReplicateRightSideBarWidget(ImageControlWidget):
             if sender == self.__modelTextEdit:
                 self.__model = sender.toPlainText()
                 CONFIG_MANAGER.set_replicate_property('model', self.__model)
-            elif sender == self.__promptWidget:
-                self.__prompt = sender.toPlainText()
-                CONFIG_MANAGER.set_replicate_property('prompt', self.__prompt)
-            elif sender == self.__negativePromptWidget:
+            elif sender == self._promptTextEdit:
+                self._prompt = sender.toPlainText()
+                CONFIG_MANAGER.set_replicate_property('prompt', self._prompt)
+            elif sender == self._negativeTextEdit:
                 self.__negative_prompt = sender.toPlainText()
                 CONFIG_MANAGER.set_replicate_property('negative_prompt', self.__negative_prompt)
 
@@ -158,18 +158,21 @@ class ReplicateRightSideBarWidget(ImageControlWidget):
     def _submit(self):
         arg = self.getArgument()
         number_of_images = self._number_of_images_to_create if self._continue_generation else 1
+        random_prompt = self._randomImagePromptGeneratorWidget.getRandomPromptSourceArr()
 
         self.__api_key = self.__apiKeyLineEdit.text().strip()
         self.__wrapper.set_api(self.__api_key)
 
-        t = ReplicateThread(arg, number_of_images, self.__wrapper, self.__model)
+        t = ReplicateThread(arg, number_of_images, self.__wrapper, self.__model, random_prompt)
         self._setThread(t)
         super()._submit()
 
     def getArgument(self):
+        obj = super().getArgument()
         return {
-            "prompt": self.__promptWidget.toPlainText(),
-            "negative_prompt": self.__negativePromptWidget.toPlainText(),
+            **obj,
+            "prompt": self._promptTextEdit.toPlainText(),
+            "negative_prompt": self._negativeTextEdit.toPlainText(),
             "width": self.__width,
             "height": self.__height,
         }
