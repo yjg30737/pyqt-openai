@@ -198,7 +198,6 @@ class ChatNavWidget(BaseNavWidget):
         ids = list(set(ids))
         return ids
 
-    # TODO move to baseNavWidget
     # TODO LANGUAGE
     def _delete(self):
         reply = QMessageBox.question(self, LangClass.TRANSLATIONS['Confirm'],
