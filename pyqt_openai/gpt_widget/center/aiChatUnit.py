@@ -4,11 +4,11 @@ from PySide6.QtCore import Qt
 from pyqt_openai.gpt_widget.center.messageTextBrowser import MessageTextBrowser
 from pyqt_openai.models import ChatMessageContainer
 
-from pyqt_openai import ICON_FAVORITE_NO, ICON_INFO, ICON_FAVORITE_YES
+from pyqt_openai import ICON_FAVORITE_NO, ICON_INFO, ICON_FAVORITE_YES, ICON_SPEAKER
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.gpt_widget.center.chatUnit import ChatUnit
 from pyqt_openai.gpt_widget.center.responseInfoDialog import ResponseInfoDialog
-from pyqt_openai.pyqt_openai_data import DB
+from pyqt_openai.pyqt_openai_data import DB, speak
 from pyqt_openai.widgets.button import Button
 
 
@@ -32,8 +32,13 @@ class AIChatUnit(ChatUnit):
         self.__infoBtn.setStyleAndIcon(ICON_INFO)
         self.__infoBtn.clicked.connect(self.__showResponseInfoDialog)
 
+        self.__speakerBtn = Button()
+        self.__speakerBtn.setStyleAndIcon(ICON_SPEAKER)
+        self.__speakerBtn.clicked.connect(self.__speak)
+
         self.getMenuWidget().layout().insertWidget(2, self.__favoriteBtn)
         self.getMenuWidget().layout().insertWidget(3, self.__infoBtn)
+        self.getMenuWidget().layout().insertWidget(4, self.__speakerBtn)
 
         self.setBackgroundRole(QPalette.ColorRole.AlternateBase)
         self.setAutoFillBackground(True)
@@ -69,6 +74,7 @@ class AIChatUnit(ChatUnit):
         self.__favoriteBtn.setEnabled(f)
         self._copyBtn.setEnabled(f)
         self.__infoBtn.setEnabled(f)
+        self.__speakerBtn.setEnabled(f)
 
     def __setResponseInfo(self, arg: ChatMessageContainer):
         self.__result_info = arg
@@ -88,6 +94,11 @@ class AIChatUnit(ChatUnit):
                 raise AttributeError('Response information is not available')
         except AttributeError as e:
             raise e
+
+    def __speak(self):
+        text = self._lbl.toPlainText()
+        if text:
+            speak(text)
 
     def setText(self, text: str):
         if self.__show_as_markdown:

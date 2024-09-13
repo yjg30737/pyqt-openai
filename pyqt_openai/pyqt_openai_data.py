@@ -1,6 +1,5 @@
 """
 This is the file that contains the database and llama-index instance, OpenAI API related constants.
-Also this checks the version of the OpenAI package and raises an exception if the version is below 1.0.
 """
 
 import base64
@@ -149,3 +148,49 @@ def init_llama():
     if llama_index_directory and CONFIG_MANAGER.get_general_property(
             'use_llama_index'):
         LLAMAINDEX_WRAPPER.set_directory(llama_index_directory)
+
+def speak(input_args):
+    response = OPENAI_STRUCT.audio.speech.create(**input_args)
+    return response
+
+from PySide6.QtCore import QBuffer, QByteArray, QIODevice
+
+from PySide6.QtMultimedia import QMediaPlayer, QAudioOutput
+
+
+class AudioPlayer:
+    def __init__(self):
+        self.player = QMediaPlayer()
+        self.audio_output = QAudioOutput()
+        self.player.setAudioOutput(self.audio_output)
+        self.buffer = QBuffer()
+
+    def play_audio_from_memory(self, audio_data: bytes):
+        # Create a QByteArray from the audio data
+        byte_array = QByteArray(audio_data)
+
+        # Set up the buffer with the audio data
+        self.buffer.close()  # Close any previously open buffer
+        self.buffer.setData(byte_array)
+        self.buffer.open(QIODevice.ReadOnly)
+
+        # Set the buffer as the media source
+        self.player.setSourceDevice(self.buffer)
+
+        # Play the audio
+        self.player.play()
+
+
+# if __name__ == '__main__':
+#     import sys
+#
+#     app = QApplication(sys.argv)
+
+    # tts_model = 'tts-1-hd'
+    # tts_voice = 'shimmer'
+    # audio_player = AudioPlayer()
+    # response = speak({'model': tts_model, 'voice': tts_voice, 'input': 'Hey dude what is up?'})
+    # audio_player.play_audio_from_memory(response.content)
+    # response = speak({'model': tts_model, 'voice': tts_voice, 'input': 'The Krabby Patty formula is the sole property of the Krusty Krab and is only to be discussed in part or in whole with its creator Mr. Krabs. Duplication of this formula is punishable by law. Restrictions apply, results may vary.'})
+    # audio_player.play_audio_from_memory(response.content)
+    # sys.exit(app.exec())
