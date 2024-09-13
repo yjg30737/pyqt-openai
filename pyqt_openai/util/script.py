@@ -415,3 +415,55 @@ def generate_random_prompt(arr):
     else:
         random_prompt = ''
     return random_prompt
+
+# def check_microphone_access():
+#     try:
+#         audio = pyaudio.PyAudio()
+#         stream = audio.open(format=pyaudio.paInt16, channels=1, rate=44100, input=True, frames_per_buffer=1024)
+#         stream.close()
+#         audio.terminate()
+#         return True
+#     except Exception as e:
+#         return False
+#
+# # Microphone recording function
+# def record(FORMAT=pyaudio.paInt16, CHANNELS=1, RATE=44100, CHUNK=1024, RECORD_SECONDS=5, WAVE_OUTPUT_FILENAME="output.wav"):
+#     audio = pyaudio.PyAudio()
+#
+#     MIC_RECORDING = True
+#
+#     # Start recording
+#     stream = audio.open(format=FORMAT, channels=CHANNELS,
+#                         rate=RATE, input=True,
+#                         frames_per_buffer=CHUNK)
+#
+#     print("Recording start...")
+#
+#     frames = []
+#
+#     for i in range(0, int(RATE / CHUNK * RECORD_SECONDS)):
+#         if MIC_RECORDING:
+#             data = stream.read(CHUNK)
+#             frames.append(data)
+#         else:
+#             break
+#
+#     print("Recording complete.")
+#
+#     stream.stop_stream()
+#     stream.close()
+#     audio.terminate()
+#
+#     # Save as WAV file
+#     wf = wave.open(WAVE_OUTPUT_FILENAME, 'wb')
+#     wf.setnchannels(CHANNELS)
+#     wf.setsampwidth(audio.get_sample_size(FORMAT))
+#     wf.setframerate(RATE)
+#     wf.writeframes(b''.join(frames))
+#     wf.close()
+
+def start_recording():
+    print('Recording started...')
+
+def stop_recording():
+    print('Recording stopped...')

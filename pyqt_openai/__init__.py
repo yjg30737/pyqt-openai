@@ -188,6 +188,8 @@ ICON_USER = os.path.join(ICON_PATH, 'user.png')
 ICON_VERTICAL_THREE_DOTS = os.path.join(ICON_PATH, 'vertical_three_dots.svg')
 ICON_WORD = os.path.join(ICON_PATH, 'word.svg')
 ICON_SEND = os.path.join(ICON_PATH, 'send.svg')
+ICON_RECORD = os.path.join(ICON_PATH, 'record.svg')
+ICON_SPEAKER = os.path.join(ICON_PATH, 'speaker.svg')
 
 ## CUSTOMIZE
 DEFAULT_ICON_SIZE = (24, 24)
@@ -241,6 +243,7 @@ DEFAULT_SHORTCUT_JSON_MODE = 'Ctrl+J'
 DEFAULT_SHORTCUT_LEFT_SIDEBAR_WINDOW = 'Ctrl+L'
 DEFAULT_SHORTCUT_RIGHT_SIDEBAR_WINDOW = 'Ctrl+R'
 DEFAULT_SHORTCUT_CONTROL_PROMPT_WINDOW = 'Ctrl+Shift+C'
+DEFAULT_SHORTCUT_RECORD = 'Ctrl+Shift+R'
 DEFAULT_SHORTCUT_SETTING = 'Ctrl+Alt+S'
 DEFAULT_SHORTCUT_SEND = 'Ctrl+Return'
 

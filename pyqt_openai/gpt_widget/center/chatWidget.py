@@ -56,6 +56,7 @@ class ChatWidget(QWidget):
         self.__mainWidget.addWidget(chatWidget)
 
         self.__prompt = Prompt(self)
+        self.__prompt.onRecording.connect(self.__toggleWidgetWhileRecording)
         self.__prompt.onStoppedClicked.connect(self.__stopResponse)
         self.__mainPrompt = self.__prompt.getMainPromptInput()
 
@@ -215,6 +216,10 @@ class ChatWidget(QWidget):
 
     def __stopResponse(self):
         self.__t.stop()
+
+    def __toggleWidgetWhileRecording(self, f):
+        self.__mainPrompt.setExecuteEnabled(not f)
+        self.__prompt.sendEnabled(not f)
 
     def __toggleWidgetWhileChatting(self, f):
         self.__mainPrompt.setExecuteEnabled(f)

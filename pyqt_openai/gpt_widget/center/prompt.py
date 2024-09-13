@@ -8,19 +8,20 @@ from pyqt_openai import READ_FILE_EXT_LIST_STR, PROMPT_BEGINNING_KEY_NAME, \
     PROMPT_END_KEY_NAME, PROMPT_JSON_KEY_NAME, DEFAULT_SHORTCUT_PROMPT_BEGINNING, DEFAULT_SHORTCUT_PROMPT_ENDING, \
     DEFAULT_SHORTCUT_SUPPORT_PROMPT_COMMAND, ICON_VERTICAL_THREE_DOTS, ICON_SEND, PROMPT_MAIN_KEY_NAME, \
     IMAGE_FILE_EXT_LIST, \
-    TEXT_FILE_EXT_LIST, QFILEDIALOG_DEFAULT_DIRECTORY, DEFAULT_SHORTCUT_SEND
+    TEXT_FILE_EXT_LIST, QFILEDIALOG_DEFAULT_DIRECTORY, DEFAULT_SHORTCUT_SEND, DEFAULT_SHORTCUT_RECORD, ICON_RECORD
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.gpt_widget.center.commandSuggestionWidget import CommandSuggestionWidget
 from pyqt_openai.gpt_widget.center.textEditPromptGroup import TextEditPromptGroup
 from pyqt_openai.gpt_widget.center.uploadedImageFileWidget import UploadedImageFileWidget
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.pyqt_openai_data import DB
-from pyqt_openai.util.script import get_content_of_text_file_for_send
+from pyqt_openai.util.script import get_content_of_text_file_for_send, start_recording, stop_recording
 from pyqt_openai.widgets.button import Button
 from pyqt_openai.widgets.toolButton import ToolButton
 
 
 class Prompt(QWidget):
+    onRecording = Signal(bool)
     onStoppedClicked = Signal()
 
     def __init__(self, parent=None):
@@ -82,6 +83,12 @@ class Prompt(QWidget):
         self.__sendBtn.setToolTip(LangClass.TRANSLATIONS['Send'] + f' ({DEFAULT_SHORTCUT_SEND})')
         self.__sendBtn.setShortcut(DEFAULT_SHORTCUT_SEND)
 
+        self.__recordBtn = Button()
+        self.__recordBtn.setStyleAndIcon(ICON_RECORD)
+        self.__recordBtn.setToolTip(LangClass.TRANSLATIONS['Record'])
+        self.__recordBtn.setCheckable(True)
+        self.__recordBtn.setShortcut(DEFAULT_SHORTCUT_RECORD)
+
         settingsBtn = ToolButton()
         settingsBtn.setStyleAndIcon(ICON_VERTICAL_THREE_DOTS)
         settingsBtn.setToolTip(LangClass.TRANSLATIONS['Prompt Settings'])
@@ -125,6 +132,7 @@ class Prompt(QWidget):
         settingsBtn.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
 
         lay = QHBoxLayout()
+        lay.addWidget(self.__recordBtn)
         lay.addWidget(self.__sendBtn)
         lay.addWidget(settingsBtn)
         lay.setContentsMargins(1, 1, 1, 1)
@@ -158,6 +166,8 @@ class Prompt(QWidget):
         self.updateHeight()
 
         self.__sendBtn.clicked.connect(self.getMainPromptInput().sendMessage)
+
+        self.__recordBtn.toggled.connect(self.__toggleRecording)
 
         self.__textEditGroup.installEventFilter(self)
 
@@ -316,3 +326,10 @@ class Prompt(QWidget):
                     self.__sendBtn.click()
                     return True
         return super().eventFilter(source, event)
+
+    def __toggleRecording(self, f):
+        self.onRecording.emit(f)
+        if f:
+            start_recording()
+        else:
+            stop_recording()
