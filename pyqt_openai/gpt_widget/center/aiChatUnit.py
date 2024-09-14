@@ -1,14 +1,11 @@
 from PySide6.QtGui import QPalette
-from PySide6.QtCore import Qt
 
-from pyqt_openai.gpt_widget.center.messageTextBrowser import MessageTextBrowser
-from pyqt_openai.models import ChatMessageContainer
-
-from pyqt_openai import ICON_FAVORITE_NO, ICON_INFO, ICON_FAVORITE_YES, ICON_SPEAKER
+from pyqt_openai import ICON_FAVORITE_NO, ICON_INFO, ICON_FAVORITE_YES, ICON_SPEAKER, WHISPER_TTS_MODEL
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.gpt_widget.center.chatUnit import ChatUnit
 from pyqt_openai.gpt_widget.center.responseInfoDialog import ResponseInfoDialog
-from pyqt_openai.pyqt_openai_data import DB, speak
+from pyqt_openai.models import ChatMessageContainer
+from pyqt_openai.pyqt_openai_data import DB, stream_to_speakers
 from pyqt_openai.widgets.button import Button
 
 
@@ -34,7 +31,9 @@ class AIChatUnit(ChatUnit):
 
         self.__speakerBtn = Button()
         self.__speakerBtn.setStyleAndIcon(ICON_SPEAKER)
-        self.__speakerBtn.clicked.connect(self.__speak)
+        self.__speakerBtn.setCheckable(True)
+        self.__speakerBtn.toggled.connect(self.__speak)
+        self.thread = None
 
         self.getMenuWidget().layout().insertWidget(2, self.__favoriteBtn)
         self.getMenuWidget().layout().insertWidget(3, self.__infoBtn)
@@ -95,10 +94,36 @@ class AIChatUnit(ChatUnit):
         except AttributeError as e:
             raise e
 
-    def __speak(self):
-        text = self._lbl.toPlainText()
-        if text:
-            speak(text)
+    def __speak(self, f):
+        if f:
+            text = self._lbl.toPlainText()
+            if text:
+                # Stop the previous thread if it is running
+                if self.thread:
+                    self.thread.stop()
+                    self.thread.join()
+                    self.thread = None
+
+                args = {
+                    'model': WHISPER_TTS_MODEL,
+                    'voice': CONFIG_MANAGER.get_general_property('voice'),
+                    'input': text,
+                    'speed': CONFIG_MANAGER.get_general_property('voice_speed'),
+                }
+                self.thread = stream_to_speakers(args, self.__on_thread_complete)
+                if not self.thread:
+                    self.__speakerBtn.setStyleAndIcon(ICON_SPEAKER)
+                    self.__speakerBtn.setChecked(False)
+        else:
+            if self.thread:
+                self.thread.stop()
+                self.thread = None
+            self.__speakerBtn.setStyleAndIcon(ICON_SPEAKER)
+            self.__speakerBtn.setChecked(False)
+
+    def __on_thread_complete(self):
+        self.__speakerBtn.setStyleAndIcon(ICON_SPEAKER)
+        self.__speakerBtn.setChecked(False)
 
     def setText(self, text: str):
         if self.__show_as_markdown:

@@ -14,8 +14,8 @@ from pyqt_openai.gpt_widget.center.commandSuggestionWidget import CommandSuggest
 from pyqt_openai.gpt_widget.center.textEditPromptGroup import TextEditPromptGroup
 from pyqt_openai.gpt_widget.center.uploadedImageFileWidget import UploadedImageFileWidget
 from pyqt_openai.lang.translations import LangClass
-from pyqt_openai.pyqt_openai_data import DB
-from pyqt_openai.util.script import get_content_of_text_file_for_send, start_recording, stop_recording
+from pyqt_openai.pyqt_openai_data import DB, start_recording, stop_recording
+from pyqt_openai.util.script import get_content_of_text_file_for_send
 from pyqt_openai.widgets.button import Button
 from pyqt_openai.widgets.toolButton import ToolButton
 
@@ -330,6 +330,8 @@ class Prompt(QWidget):
     def __toggleRecording(self, f):
         self.onRecording.emit(f)
         if f:
-            start_recording()
+            is_mic_available = start_recording()
+            if not is_mic_available:
+                self.__recordBtn.setChecked(False)
         else:
             stop_recording()

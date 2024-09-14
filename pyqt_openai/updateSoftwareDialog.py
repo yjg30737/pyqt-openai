@@ -3,7 +3,7 @@ import sys
 
 import requests
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QDialog, QVBoxLayout, QLabel, QTextBrowser, QDialogButtonBox
+from PySide6.QtWidgets import QDialog, QVBoxLayout, QLabel, QTextBrowser, QDialogButtonBox, QMessageBox
 
 from pyqt_openai import __version__, OWNER, PACKAGE_NAME, UPDATE_DIR, CURRENT_FILENAME, UPDATER_PATH, is_frozen
 
@@ -71,7 +71,8 @@ def check_for_updates(current_version, owner, repo):
             return None
 
     except Exception as e:
-        return f"<p>Error fetching release notes: {str(e)}</p>"
+        QMessageBox.critical(None, "Error", f"Error fetching release notes: {str(e)}")
+        return None
 
 
 def check_for_updates_and_show_dialog(current_version, owner, repo):

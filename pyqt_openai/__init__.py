@@ -128,6 +128,14 @@ MAXIMUM_MESSAGES_IN_PARAMETER = 20
 MESSAGE_MAXIMUM_HEIGHT_RANGE = 300, 1000
 MAXIMUM_MESSAGES_IN_PARAMETER_RANGE = 2, 1000
 
+WHISPER_TTS_VOICE_TYPE = ['alloy', 'echo', 'fable', 'onyx', 'nova', 'shimmer']
+WHISPER_TTS_VOICE_SPEED_RANGE = 0.25, 4.0
+WHISPER_TTS_MODEL = 'tts-1'
+WHISPER_TTS_DEFAULT_VOICE = 'alloy'
+WHISPER_TTS_DEFAULT_SPEED = 1.0
+
+STT_MODEL = 'whisper-1'
+
 CONTEXT_DELIMITER = '\n'*2
 PROMPT_IMAGE_SCALE = 200, 200
 TOAST_DURATION = 3
@@ -438,7 +446,9 @@ CONFIG_DATA = {
         'API_KEY': '',
         'llama_index_directory': '',
         'apply_user_defined_styles': False,
-        'focus_mode': False
+        'focus_mode': False,
+        'voice': WHISPER_TTS_DEFAULT_VOICE,
+        'voice_speed': WHISPER_TTS_DEFAULT_SPEED
     },
     'DALLE': {
         'quality': 'standard',

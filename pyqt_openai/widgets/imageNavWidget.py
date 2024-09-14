@@ -3,6 +3,7 @@ from PySide6.QtSql import QSqlTableModel, QSqlQuery
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QStyledItemDelegate, QTableView, QAbstractItemView, QHBoxLayout, \
     QMessageBox, QLabel
 
+import pyqt_openai.pyqt_openai_data
 from pyqt_openai import ICON_DELETE, ICON_CLOSE
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.pyqt_openai_data import DB
@@ -92,7 +93,7 @@ class ImageNavWidget(BaseNavWidget):
         source_idx = self._proxyModel.mapToSource(idx)
 
         # get the primary key value of the row
-        cur_id = self._model.record(source_idx.row()).value("id")
+        cur_id = pyqt_openai.pyqt_openai_data.record(source_idx.row()).value("id")
 
         # Get data from DB id
         data = DB.selectCertainImage(cur_id)['data']

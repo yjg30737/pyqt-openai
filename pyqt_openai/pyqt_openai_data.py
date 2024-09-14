@@ -3,10 +3,16 @@ This is the file that contains the database and llama-index instance, OpenAI API
 """
 
 import base64
+import io
 import os.path
+import time
+import threading
 
+import pyaudio
+from PySide6.QtWidgets import QMessageBox
 from openai import OpenAI
 
+from pyqt_openai import STT_MODEL
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.models import ChatMessageContainer
 from pyqt_openai.sqlite import SqliteDatabase
@@ -18,10 +24,10 @@ DB = SqliteDatabase()
 
 LLAMAINDEX_WRAPPER = GPTLLamaIndexWrapper()
 
-# initialize
 OPENAI_STRUCT = OpenAI(api_key='')
 
 OPENAI_API_VALID = False
+
 
 def set_openai_enabled(f):
     global OPENAI_API_VALID
@@ -149,48 +155,107 @@ def init_llama():
             'use_llama_index'):
         LLAMAINDEX_WRAPPER.set_directory(llama_index_directory)
 
-def speak(input_args):
-    response = OPENAI_STRUCT.audio.speech.create(**input_args)
-    return response
+class StreamThread(threading.Thread):
+    def __init__(self, input_args, stop_callback):
+        super().__init__()
+        self.input_args = input_args
+        self.stop_event = threading.Event()
+        self.stop_callback = stop_callback
+        self.daemon = True
 
-from PySide6.QtCore import QBuffer, QByteArray, QIODevice
+    def run(self):
+        try:
+            player_stream = pyaudio.PyAudio().open(format=pyaudio.paInt16, channels=1, rate=24000, output=True)
 
-from PySide6.QtMultimedia import QMediaPlayer, QAudioOutput
+            start_time = time.time()
+
+            with OPENAI_STRUCT.audio.speech.with_streaming_response.create(
+                    **self.input_args,
+                    response_format="pcm",  # similar to WAV, but without a header chunk at the start.
+            ) as response:
+                print(f"Time to first byte: {int((time.time() - start_time) * 1000)}ms")
+                for chunk in response.iter_bytes(chunk_size=1024):
+                    if self.stop_event.is_set():
+                        print("Stream interrupted.")
+                        break
+                    player_stream.write(chunk)
+
+                print(f"Done in {int((time.time() - start_time) * 1000)}ms.")
+
+        finally:
+            if self.stop_callback:
+                self.stop_callback()
+
+    def stop(self):
+        self.stop_event.set()
+
+def stream_to_speakers(input_args, stop_callback=None):
+    stream_thread = StreamThread(input_args, stop_callback)
+    stream_thread.start()
+    return stream_thread
 
 
-class AudioPlayer:
-    def __init__(self):
-        self.player = QMediaPlayer()
-        self.audio_output = QAudioOutput()
-        self.player.setAudioOutput(self.audio_output)
-        self.buffer = QBuffer()
-
-    def play_audio_from_memory(self, audio_data: bytes):
-        # Create a QByteArray from the audio data
-        byte_array = QByteArray(audio_data)
-
-        # Set up the buffer with the audio data
-        self.buffer.close()  # Close any previously open buffer
-        self.buffer.setData(byte_array)
-        self.buffer.open(QIODevice.ReadOnly)
-
-        # Set the buffer as the media source
-        self.player.setSourceDevice(self.buffer)
-
-        # Play the audio
-        self.player.play()
+def check_microphone_access():
+    try:
+        audio = pyaudio.PyAudio()
+        stream = audio.open(format=pyaudio.paInt16, channels=1, rate=44100, input=True, frames_per_buffer=1024)
+        stream.close()
+        audio.terminate()
+        return True
+    except Exception as e:
+        return False
 
 
-# if __name__ == '__main__':
-#     import sys
-#
-#     app = QApplication(sys.argv)
+def record(FORMAT=pyaudio.paInt16, CHANNELS=1, RATE=44100, CHUNK=1024, RECORD_SECONDS=5, WAVE_OUTPUT_FILENAME="output.wav"):
+    audio = pyaudio.PyAudio()
 
-    # tts_model = 'tts-1-hd'
-    # tts_voice = 'shimmer'
-    # audio_player = AudioPlayer()
-    # response = speak({'model': tts_model, 'voice': tts_voice, 'input': 'Hey dude what is up?'})
-    # audio_player.play_audio_from_memory(response.content)
-    # response = speak({'model': tts_model, 'voice': tts_voice, 'input': 'The Krabby Patty formula is the sole property of the Krusty Krab and is only to be discussed in part or in whole with its creator Mr. Krabs. Duplication of this formula is punishable by law. Restrictions apply, results may vary.'})
-    # audio_player.play_audio_from_memory(response.content)
-    # sys.exit(app.exec())
+    MIC_RECORDING = True
+
+    # Start recording
+    stream = audio.open(format=FORMAT, channels=CHANNELS,
+                        rate=RATE, input=True,
+                        frames_per_buffer=CHUNK)
+
+    print("Recording start...")
+
+    frames = []
+
+    for i in range(0, int(RATE / CHUNK * RECORD_SECONDS)):
+        if MIC_RECORDING:
+            data = stream.read(CHUNK)
+            frames.append(data)
+        else:
+            break
+
+    print("Recording complete.")
+
+    stream.stop_stream()
+    stream.close()
+    audio.terminate()
+
+    buffer = io.BytesIO()
+    # you need to set the name with the extension
+    buffer.name = 'tmp.mp3'
+    audio.export(buffer, format="mp3")
+
+    transcript = OPENAI_STRUCT.audio.transcriptions.create(
+        model=STT_MODEL,
+        file=b''.join(frames)
+    )
+    print(transcript.text)
+
+    # Save as WAV file
+
+
+def start_recording():
+    if not check_microphone_access():
+        QMessageBox.information(None, 'Microphone Access', 'Microphone access is not granted')
+        return False
+    else:
+        print('Recording started...')
+        record()
+        return True
+
+
+def stop_recording():
+    print('Recording stopped...')

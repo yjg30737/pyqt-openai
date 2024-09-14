@@ -27,7 +27,6 @@ class ChatWidget(QWidget):
     def __initVal(self):
         self.__cur_id = 0
         self.__notify_finish = CONFIG_MANAGER.get_general_property('notify_finish')
-        self.__maximum_messages_in_parameter = CONFIG_MANAGER.get_general_property('maximum_messages_in_parameter')
 
     def __initUi(self):
         # Main widget
@@ -128,7 +127,7 @@ class ChatWidget(QWidget):
             # Get image files
             images = self.__prompt.getImageBuffers()
 
-            messages = self.__browser.getMessages(self.__maximum_messages_in_parameter)
+            messages = self.__browser.getMessages(CONFIG_MANAGER.get_general_property('maximum_messages_in_parameter'))
 
             cur_text = self.__prompt.getContent()
 
