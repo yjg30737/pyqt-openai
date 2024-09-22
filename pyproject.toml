@@ -4,19 +4,23 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pyqt-openai"
-version = "1.1.2"
+version = "1.2.0"
 description = "Python multipurpose chatbot that user can use GPT, other AI models altogether (Release Name: VividNode)"
 authors = [{ name = "Jung Gyu Yoon", email = "yjg30737@gmail.com" }]
 license = { text = "MIT" }
 readme = "README.md"
 dependencies = [
     "PySide6",
-    "openai",
     "pyperclip",
     "jinja2",
-    "llama-index",
     "requests",
-    "replicate"
+    "pyaudio",
+
+    "openai",
+    "anthropic",
+    "google-generativeai",
+    "llama-index",
+    "replicate",
 ]
 keywords = ['openai', 'pyqt', 'pyqt5', 'pyqt6', 'pyside6', 'desktop', 'app', 'chatbot', 'gpt', 'replicate']
 

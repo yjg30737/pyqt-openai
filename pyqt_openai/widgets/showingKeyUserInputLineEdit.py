@@ -1,4 +1,4 @@
-# TODO WILL_BE_USED AFTER v1.1.0
+# TODO WILL_BE_USED AFTER v1.4.0
 
 # This works perfectly for showing the key combination in a QLineEdit widget.
 

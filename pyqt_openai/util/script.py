@@ -30,7 +30,7 @@ from pyqt_openai import MAIN_INDEX, \
     AUTOSTART_REGISTRY_KEY, is_frozen
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ImagePromptContainer
-from pyqt_openai.pyqt_openai_data import DB
+from pyqt_openai.globals import DB
 
 
 def get_generic_ext_out_of_qt_ext(text):

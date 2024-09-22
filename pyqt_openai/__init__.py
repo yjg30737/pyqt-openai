@@ -1,5 +1,13 @@
 """
-This file is used to store the constants and the global variables that are used throughout the application.
+This file is used to store the constants and the global constants / variables that are used throughout the application.
+Constants/Variables that are stored here are used throughout the application for the following purposes:
+- Initial values related to the environment settings
+- Values used internally within the application (e.g., application name, DB name, table name, etc.)
+- Values related to the design and UI of the application
+- Default LLM list for the application settings
+
+Constants/Variables that are stored here are not supposed to be changed during the runtime except for __init__.py.
+Variables which are used globally and can be changed are stored in globals.py.
 """
 
 import json
@@ -11,6 +19,7 @@ import tomllib  # Python 3.11 built-in module
 from pathlib import Path
 
 # Load the pyproject.toml file
+
 SRC_DIR = Path(__file__).resolve().parent # VividNode/pyqt_openai
 ROOT_DIR = SRC_DIR.parent # VividNode
 SETUP_FILENAME = ROOT_DIR / "pyproject.toml"
@@ -124,43 +133,15 @@ LANGUAGE_DICT = {
 
 MESSAGE_PADDING = 16
 MESSAGE_MAXIMUM_HEIGHT = 800
-MAXIMUM_MESSAGES_IN_PARAMETER = 20
 MESSAGE_MAXIMUM_HEIGHT_RANGE = 300, 1000
-MAXIMUM_MESSAGES_IN_PARAMETER_RANGE = 2, 1000
-
-WHISPER_TTS_VOICE_TYPE = ['alloy', 'echo', 'fable', 'onyx', 'nova', 'shimmer']
-WHISPER_TTS_VOICE_SPEED_RANGE = 0.25, 4.0
-WHISPER_TTS_MODEL = 'tts-1'
-WHISPER_TTS_DEFAULT_VOICE = 'alloy'
-WHISPER_TTS_DEFAULT_SPEED = 1.0
-
-STT_MODEL = 'whisper-1'
 
 CONTEXT_DELIMITER = '\n'*2
 PROMPT_IMAGE_SCALE = 200, 200
 TOAST_DURATION = 3
 
-## OPENAI
-OPENAI_REQUEST_URL = 'https://api.openai.com/v1/models'
-
-## PARAMETER - OPENAI CHAT
-OPENAI_TEMPERATURE_RANGE = 0, 2
-OPENAI_TEMPERATURE_STEP = 0.01
-
-MAX_TOKENS_RANGE = 512, 128000
-
-TOP_P_RANGE = 0, 1
-TOP_P_STEP = 0.01
-
-FREQUENCY_PENALTY_RANGE = 0, 2
-FREQUENCY_PENALTY_STEP = 0.01
-
-PRESENCE_PENALTY_RANGE = 0, 2
-PRESENCE_PENALTY_STEP = 0.01
-
+## ICONS
 ICON_PATH = os.path.join(EXEC_PATH, 'ico')
 
-## ICONS
 DEFAULT_APP_ICON = os.path.join(EXEC_PATH, 'icon.ico')
 
 ICON_ADD = os.path.join(ICON_PATH, 'add.svg')
@@ -261,14 +242,6 @@ IMAGE_DEFAULT_SAVE_DIRECTORY = 'image_result'
 INI_FILE_NAME = os.path.join(get_config_directory(), 'config.yaml')
 LANGUAGE_FILE = os.path.join(get_config_directory(), 'translations.json')
 
-# TODO WILL_REMOVE_AFTER v1.2.0
-prev_lang_file = os.path.join(ROOT_DIR, 'lang/translations.json') if os.path.exists(os.path.join(ROOT_DIR, 'lang/translations.json')) else (os.path.join(SRC_DIR, 'lang/translations.json') if os.path.exists(os.path.join(SRC_DIR, 'lang/translations.json')) else None)
-if prev_lang_file:
-    if os.path.exists(prev_lang_file):
-        shutil.copy(prev_lang_file, LANGUAGE_FILE)
-else:
-    pass
-
 DB_FILE_NAME = 'conv'
 FILE_NAME_LENGTH = 32
 QFILEDIALOG_DEFAULT_DIRECTORY = os.path.expanduser('~')
@@ -328,7 +301,97 @@ PROPERTY_PROMPT_UNIT_DEFAULT_VALUE = [{'name': 'Task', 'content': ''},
 PROMPT_GROUP_TABLE_NAME = 'prompt_group_tb'
 PROMPT_ENTRY_TABLE_NAME = 'prompt_entry_tb'
 
-# DEFAULT JSON FILENAME FOR PROMPT
+# AI
+## OPENAI
+OPENAI_REQUEST_URL = 'https://api.openai.com/v1/models'
+
+## PARAMETER - OPENAI CHAT
+OPENAI_TEMPERATURE_RANGE = 0, 2
+OPENAI_TEMPERATURE_STEP = 0.01
+
+MAX_TOKENS_RANGE = 512, 128000
+
+TOP_P_RANGE = 0, 1
+TOP_P_STEP = 0.01
+
+FREQUENCY_PENALTY_RANGE = 0, 2
+FREQUENCY_PENALTY_STEP = 0.01
+
+PRESENCE_PENALTY_RANGE = 0, 2
+PRESENCE_PENALTY_STEP = 0.01
+
+## OPENAI WHISPER (TTS, STT)
+WHISPER_TTS_VOICE_TYPE = ['alloy', 'echo', 'fable', 'onyx', 'nova', 'shimmer']
+WHISPER_TTS_VOICE_SPEED_RANGE = 0.25, 4.0
+WHISPER_TTS_MODEL = 'tts-1'
+WHISPER_TTS_DEFAULT_VOICE = 'alloy'
+WHISPER_TTS_DEFAULT_SPEED = 1.0
+
+STT_MODEL = 'whisper-1'
+
+# Endpoint
+# https://platform.openai.com/docs/models/model-endpoint-compatibility
+OPENAI_ENDPOINT_DICT = {
+    '/v1/chat/completions': ['gpt-4o', 'gpt-4o-mini'],
+    '/v1/completions': [
+        'text-davinci-003', 'text-davinci-002', 'text-curie-001', 'text-babbage-001', 'text-ada-001', 'davinci',
+        'curie', 'babbage', 'ada'
+    ],
+    '/v1/edits': ['text-davinci-edit-001', 'code-davinci-edit-001'],
+    '/v1/audio/transcriptions': ['whisper-1'],
+    '/v1/audio/translations': ['whisper-1'],
+    '/v1/fine-tunes': ['davinci', 'curie', 'babbage', 'ada'],
+    '/v1/embeddings': ['text-embedding-ada-002', 'text-search-ada-doc-001'],
+    '/vi/moderations': ['text-moderation-stable', 'text-moderation-latest']
+}
+
+# This doesn't need endpoint
+DALLE_ARR = ['dall-e-2', 'dall-e-3']
+
+OPENAI_CHAT_ENDPOINT = '/v1/chat/completions'
+
+# Other models' configuration data
+DEFAULT_GEMINI_MODEL = 'gemini-1.5-flash'
+LLAMA_REQUEST_URL = "https://api.llama-api.com"
+
+# Overall API configuration data
+DEFAULT_API_CONFIGS = [
+    {
+        "display_name": "OpenAI",
+        "env_var_name": "OPENAI_API_KEY",
+        "api_key": ''
+    },
+    {
+        "display_name": "Gemini",
+        "env_var_name": "GEMINI_API_KEY",
+        "api_key": ''
+    },
+    {
+        "display_name": "Claude",
+        "env_var_name": "CLAUDE_API_KEY",
+        "api_key": ''
+    },
+    {
+        "display_name": "Llama",
+        "env_var_name": "LLAMA_API_KEY",
+        "api_key": ''
+    }
+]
+
+# Dictionary that stores the platform and model pairs
+PLATFORM_MODEL_DICT = {
+    'OpenAI': ['gpt-4o', 'gpt-4o-mini'],
+    'Gemini': ['gemini-1.5-flash'],
+    'Claude': ['claude-3-5-sonnet-20240620'],
+    'Llama': ['llama3-70b']
+}
+
+# Constants related to the number of messages LLM will store
+MAXIMUM_MESSAGES_IN_PARAMETER = 40
+MAXIMUM_MESSAGES_IN_PARAMETER_RANGE = 2, 1000
+
+# PROMPT
+## DEFAULT JSON FILENAME FOR PROMPT
 AWESOME_CHATGPT_PROMPTS_FILENAME = 'prompt_res/awesome_chatgpt_prompts.json'
 ALEX_BROGAN_PROMPT_FILENAME = 'prompt_res/alex_brogan.json'
 
@@ -368,13 +431,13 @@ SENTENCE_PROMPT_GROUP_SAMPLE = '''[
     }
 ]'''
 
-# Load the default prompt
+## Load the default prompt
 if os.path.exists(AWESOME_CHATGPT_PROMPTS_FILENAME):
     AWESOME_CHATGPT_PROMPTS = json.load(open(AWESOME_CHATGPT_PROMPTS_FILENAME))[0]
 if os.path.exists(ALEX_BROGAN_PROMPT_FILENAME):
     ALEX_BROGAN_PROMPT = json.load(open(ALEX_BROGAN_PROMPT_FILENAME))[0]
 
-
+## Data for random prompt generating feature for image generation
 hair_color_randomizer = ['blonde hair', 'red hair', 'blue hair', 'dark hair', 'green hair', 'white hair']
 hair_style_randomizer = ['Long straight hair', 'Short pixie cut', 'Bob haircut', 'Layered haircut', 'Curly hair', 'Wavy hair', 'Ponytail', 'Messy bun', 'French braid', 'Dutch braid', 'Fishtail braid', 'High bun', 'Low bun', 'Top knot', 'Half-up half-down hairstyle', 'Braided crown', 'Side-swept bangs', 'Bangs/fringe', 'Chignon', 'Waterfall braid', 'Mohawk', 'Beach waves', 'Updo', 'French twist', 'Cornrows', 'Dreadlocks', 'Pigtails', 'Space buns', 'Sock bun']
 clothes_randomizer = ['wearing denim jacket', 'wearing coat', 'wearing blazer', 'wearing blouse', 'wearing biker clothes', 'wearing distressed jeans', 'wearing hoodie']
@@ -443,12 +506,16 @@ CONFIG_DATA = {
         'ai_image': DEFAULT_AI_IMAGE_PATH,
         'font_size': DEFAULT_FONT_SIZE,
         'font_family': DEFAULT_FONT_FAMILY,
-        'API_KEY': '',
         'llama_index_directory': '',
         'apply_user_defined_styles': False,
         'focus_mode': False,
         'voice': WHISPER_TTS_DEFAULT_VOICE,
-        'voice_speed': WHISPER_TTS_DEFAULT_SPEED
+        'voice_speed': WHISPER_TTS_DEFAULT_SPEED,
+
+        'OPENAI_API_KEY': '',
+        'GEMINI_API_KEY': '',
+        'CLAUDE_API_KEY': '',
+        'LLAMA_API_KEY': ''
     },
     'DALLE': {
         'quality': 'standard',
@@ -486,6 +553,13 @@ CONFIG_DATA = {
         'show_prompt_on_image': False
     }
 }
+
+# Dynamically add the API keys to the configuration data
+def update_general_config_with_api_keys(config_data, api_configs):
+    for config in api_configs:
+        config_data['General'][config['env_var_name']] = config['api_key']
+
+update_general_config_with_api_keys(CONFIG_DATA, DEFAULT_API_CONFIGS)
 
 # Update the __all__ list with the PEP8 standard dunder names
 __all__ = ['__version__',

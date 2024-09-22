@@ -3,7 +3,7 @@ import base64
 from PySide6.QtCore import QThread, Signal
 
 from pyqt_openai.models import ImagePromptContainer
-from pyqt_openai.pyqt_openai_data import OPENAI_STRUCT
+from pyqt_openai.globals import OPENAI_CLIENT
 from pyqt_openai.util.script import generate_random_prompt
 
 
@@ -32,7 +32,7 @@ class DallEThread(QThread):
                     break
                 if self.__randomizing_prompt_source_arr is not None:
                     self.__input_args['prompt'] = generate_random_prompt(self.__randomizing_prompt_source_arr)
-                response = OPENAI_STRUCT.images.generate(
+                response = OPENAI_CLIENT.images.generate(
                     **self.__input_args
                 )
                 container = ImagePromptContainer(**self.__input_args)

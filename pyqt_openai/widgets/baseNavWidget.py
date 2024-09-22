@@ -14,7 +14,7 @@ from pyqt_openai.gpt_widget.left_sidebar.exportDialog import ExportDialog
 from pyqt_openai.gpt_widget.left_sidebar.importDialog import ImportDialog
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ChatThreadContainer
-from pyqt_openai.pyqt_openai_data import DB
+from pyqt_openai.globals import DB
 from pyqt_openai.widgets.button import Button
 from pyqt_openai.widgets.searchBar import SearchBar
 

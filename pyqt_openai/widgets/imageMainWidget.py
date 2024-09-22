@@ -9,7 +9,7 @@ from pyqt_openai import ICON_HISTORY, ICON_SETTING, \
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ImagePromptContainer
-from pyqt_openai.pyqt_openai_data import DB
+from pyqt_openai.globals import DB
 from pyqt_openai.util.script import get_image_filename_for_saving, open_directory, get_image_prompt_filename_for_saving, \
     getSeparator
 from pyqt_openai.widgets.button import Button

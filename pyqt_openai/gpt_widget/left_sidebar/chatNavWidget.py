@@ -3,14 +3,14 @@ from PySide6.QtSql import QSqlTableModel, QSqlQuery
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QMessageBox, QPushButton, QStyledItemDelegate, QHBoxLayout, \
     QLabel, QSpacerItem, QSizePolicy, QComboBox, QDialog
 
-import pyqt_openai.pyqt_openai_data
+import pyqt_openai.globals
 from pyqt_openai import THREAD_ORDERBY, ICON_ADD, ICON_IMPORT, ICON_SAVE, ICON_REFRESH
 from pyqt_openai.gpt_widget.left_sidebar.chatImportDialog import ChatImportDialog
 from pyqt_openai.gpt_widget.left_sidebar.exportDialog import ExportDialog
 from pyqt_openai.gpt_widget.left_sidebar.importDialog import ImportDialog
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ChatThreadContainer
-from pyqt_openai.pyqt_openai_data import DB
+from pyqt_openai.globals import DB
 from pyqt_openai.widgets.baseNavWidget import BaseNavWidget
 from pyqt_openai.widgets.button import Button
 
@@ -184,7 +184,7 @@ class ChatNavWidget(BaseNavWidget):
         # get the source index
         source_idx = self._proxyModel.mapToSource(idx)
         # get the primary key value of the row
-        cur_id = pyqt_openai.pyqt_openai_data.record(source_idx.row()).value("id")
+        cur_id = self._model.record(source_idx.row()).value("id")
         clicked_thread = DB.selectThread(cur_id)
         # get the title
         title = clicked_thread['name']

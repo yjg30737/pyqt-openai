@@ -15,8 +15,8 @@ from pyqt_openai.gpt_widget.prompt_gen_widget.promptGeneratorWidget import Promp
 from pyqt_openai.gpt_widget.right_sidebar.gptRightSideBarWidget import GPTRightSideBarWidget
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ChatThreadContainer, ChatMessageContainer, CustomizeParamsContainer
-from pyqt_openai.pyqt_openai_data import DB, LLAMAINDEX_WRAPPER
-from pyqt_openai.pyqt_openai_data import is_openai_enabled
+from pyqt_openai.globals import DB, LLAMAINDEX_WRAPPER
+from pyqt_openai.globals import is_openai_enabled
 from pyqt_openai.util.script import open_directory, get_generic_ext_out_of_qt_ext, message_list_to_txt, \
     conv_unit_to_html, \
     add_file_to_zip, getSeparator
