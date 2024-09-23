@@ -21,6 +21,7 @@ from openai import OpenAI
 from pyqt_openai import STT_MODEL, OPENAI_ENDPOINT_DICT, PLATFORM_MODEL_DICT, DEFAULT_GEMINI_MODEL, LLAMA_REQUEST_URL, \
     OPENAI_CHAT_ENDPOINT
 from pyqt_openai.config_loader import CONFIG_MANAGER
+from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ChatMessageContainer
 from pyqt_openai.sqlite import SqliteDatabase
 from pyqt_openai.util.llamapage_script import GPTLLamaIndexWrapper
@@ -334,6 +335,7 @@ def check_microphone_access():
 
 class RecorderThread(QThread):
     recording_finished = Signal(str)
+    errorGenerated = Signal(str)
 
     def __init__(self):
         super().__init__()
@@ -343,47 +345,54 @@ class RecorderThread(QThread):
         self.__stop = True
 
     def run(self):
-        chunk = 1024  # Record in chunks of 1024 samples
-        sample_format = pyaudio.paInt16  # 16 bits per sample
-        channels = 2
-        fs = 44100  # Record at 44100 samples per second
+        try:
+            chunk = 1024  # Record in chunks of 1024 samples
+            sample_format = pyaudio.paInt16  # 16 bits per sample
+            channels = 2
+            fs = 44100  # Record at 44100 samples per second
 
-        p = pyaudio.PyAudio()  # Create an interface to PortAudio
+            p = pyaudio.PyAudio()  # Create an interface to PortAudio
 
-        stream = p.open(format=sample_format,
-                        channels=channels,
-                        rate=fs,
-                        frames_per_buffer=chunk,
-                        input=True)
+            stream = p.open(format=sample_format,
+                            channels=channels,
+                            rate=fs,
+                            frames_per_buffer=chunk,
+                            input=True)
 
-        frames = []  # Initialize array to store frames
+            frames = []  # Initialize array to store frames
 
-        # Store data in chunks for the specified time
-        while True:
-            if self.__stop:
-                break
-            data = stream.read(chunk)
-            frames.append(data)
+            # Store data in chunks for the specified time
+            while True:
+                if self.__stop:
+                    break
+                data = stream.read(chunk)
+                frames.append(data)
 
-        # Stop and close the stream
-        stream.stop_stream()
-        stream.close()
-        # Terminate the PortAudio interface
-        p.terminate()
+            # Stop and close the stream
+            stream.stop_stream()
+            stream.close()
+            # Terminate the PortAudio interface
+            p.terminate()
 
-        # Create a temporary file
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmpfile:
-            filename = tmpfile.name
+            # Create a temporary file
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmpfile:
+                filename = tmpfile.name
 
-        # Save the recorded data as a WAV file in the temporary file
-        wf = wave.open(filename, 'wb')
-        wf.setnchannels(channels)
-        wf.setsampwidth(p.get_sample_size(sample_format))
-        wf.setframerate(fs)
-        wf.writeframes(b''.join(frames))
-        wf.close()
+            # Save the recorded data as a WAV file in the temporary file
+            wf = wave.open(filename, 'wb')
+            wf.setnchannels(channels)
+            wf.setsampwidth(p.get_sample_size(sample_format))
+            wf.setframerate(fs)
+            wf.writeframes(b''.join(frames))
+            wf.close()
 
-        self.recording_finished.emit(filename)
+            self.recording_finished.emit(filename)
+        except Exception as e:
+            if str(e).find('-9996') != -1:
+                self.errorGenerated.emit(LangClass.TRANSLATIONS[
+                                             'No valid input device found. Please connect a microphone or check your audio device settings.'])
+            else:
+                self.errorGenerated.emit(f'<p style="color:red">{e}</p>')
 
 
 class STTThread(QThread):

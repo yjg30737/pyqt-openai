@@ -334,11 +334,18 @@ class Prompt(QWidget):
         if checked:
             self.recorder_thread = RecorderThread()
             self.recorder_thread.recording_finished.connect(self.on_recording_finished)
+            self.recorder_thread.errorGenerated.connect(
+               self.on_recording_error
+            )
             if self.__textEditGroup.getCurrentTextEdit():
                 self.__textEditGroup.getCurrentTextEdit().clear()
             self.recorder_thread.start()
         else:
             self.recorder_thread.stop()
+
+    def on_recording_error(self, error):
+        self.__recordBtn.setChecked(False)
+        QMessageBox.critical(self, LangClass.TRANSLATIONS['Error'], error)
 
     def on_recording_finished(self, filename):
         self.__recordBtn.setChecked(False)
