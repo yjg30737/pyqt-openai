@@ -56,6 +56,7 @@ class ChatPage(QWidget):
 
         # TODO WILL_BE_REMOVED_AFTER v1.5.0
         self.__warningLbl.setText('Currently LlamaIndex, JSON mode, and Image input are only available for the OpenAI Chat model.')
+        self.__warningLbl.setWordWrap(True)
 
         advancedSettingsScrollArea = QScrollArea()
 
@@ -144,8 +145,9 @@ class ChatPage(QWidget):
         self.__jsonChkBox.setShortcut(DEFAULT_SHORTCUT_JSON_MODE)
         self.__jsonChkBox.setToolTip(LangClass.TRANSLATIONS['When enabled, you can send a JSON object to the API and the response will be in JSON format. Otherwise, it will be in plain text.'])
 
+        # TODO LANGUAGE
         llamaManualLbl = LinkLabel()
-        llamaManualLbl.setText('What is LlamaIndex?')
+        llamaManualLbl.setText(LangClass.TRANSLATIONS['What is LlamaIndex?'])
         llamaManualLbl.setUrl(LLAMAINDEX_URL)
 
         self.__llamaChkBox = QCheckBox()

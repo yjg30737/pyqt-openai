@@ -6,7 +6,6 @@ import base64
 import os
 import os.path
 import tempfile
-import threading
 import time
 import wave
 from pathlib import Path
@@ -15,7 +14,6 @@ import anthropic
 import google.generativeai as genai
 import pyaudio
 from PySide6.QtCore import QThread, Signal
-from PySide6.QtWidgets import QMessageBox
 from openai import OpenAI
 
 from pyqt_openai import STT_MODEL, OPENAI_ENDPOINT_DICT, PLATFORM_MODEL_DICT, DEFAULT_GEMINI_MODEL, LLAMA_REQUEST_URL, \
