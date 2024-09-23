@@ -283,13 +283,13 @@ def init_llama():
         LLAMAINDEX_WRAPPER.set_directory(llama_index_directory)
 
 # TTS
-class StreamThread(threading.Thread):
-    def __init__(self, input_args, stop_callback):
+class StreamThread(QThread):
+    errorGenerated = Signal(str)
+
+    def __init__(self, input_args):
         super().__init__()
         self.input_args = input_args
-        self.stop_event = threading.Event()
-        self.stop_callback = stop_callback
-        self.daemon = True
+        self.__stop = False
 
     def run(self):
         try:
@@ -303,24 +303,17 @@ class StreamThread(threading.Thread):
             ) as response:
                 print(f"Time to first byte: {int((time.time() - start_time) * 1000)}ms")
                 for chunk in response.iter_bytes(chunk_size=1024):
-                    if self.stop_event.is_set():
+                    if self.__stop:
                         print("Stream interrupted.")
                         break
                     player_stream.write(chunk)
 
                 print(f"Done in {int((time.time() - start_time) * 1000)}ms.")
-
-        finally:
-            if self.stop_callback:
-                self.stop_callback()
+        except Exception as e:
+            self.errorGenerated.emit(f'<p style="color:red">{e}</p>')
 
     def stop(self):
-        self.stop_event.set()
-
-def stream_to_speakers(input_args, stop_callback=None):
-    stream_thread = StreamThread(input_args, stop_callback)
-    stream_thread.start()
-    return stream_thread
+        self.__stop = True
 
 # STT
 def check_microphone_access():
@@ -464,3 +457,22 @@ class ChatThread(QThread):
             self.__info.finish_reason = 'Error'
             self.__info.content = f'<p style="color:red">{e}</p>'
             self.replyGenerated.emit(self.__info.content, False, self.__info)
+
+
+# To manage only one TTS stream at a time
+current_stream_thread = None
+
+def stop_existing_thread():
+    global current_stream_thread
+    if current_stream_thread:
+        current_stream_thread.stop()
+        current_stream_thread = None
+
+def stream_to_speakers(input_args):
+    global current_stream_thread
+
+    stop_existing_thread()
+
+    stream_thread = StreamThread(input_args)
+    current_stream_thread = stream_thread
+    return stream_thread

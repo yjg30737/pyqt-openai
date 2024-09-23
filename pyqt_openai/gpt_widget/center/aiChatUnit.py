@@ -1,4 +1,5 @@
 from PySide6.QtGui import QPalette
+from PySide6.QtWidgets import QMessageBox
 
 from pyqt_openai import ICON_FAVORITE_NO, ICON_INFO, ICON_FAVORITE_YES, ICON_SPEAKER, WHISPER_TTS_MODEL
 from pyqt_openai.config_loader import CONFIG_MANAGER
@@ -98,28 +99,18 @@ class AIChatUnit(ChatUnit):
         if f:
             text = self._lbl.toPlainText()
             if text:
-                # Stop the previous thread if it is running
-                if self.thread:
-                    self.thread.stop()
-                    self.thread.join()
-                    self.thread = None
-
                 args = {
                     'model': WHISPER_TTS_MODEL,
                     'voice': CONFIG_MANAGER.get_general_property('voice'),
                     'input': text,
                     'speed': CONFIG_MANAGER.get_general_property('voice_speed'),
                 }
-                self.thread = stream_to_speakers(args, self.__on_thread_complete)
-                if not self.thread:
-                    self.__speakerBtn.setStyleAndIcon(ICON_SPEAKER)
-                    self.__speakerBtn.setChecked(False)
+                self.thread = stream_to_speakers(args)
+                self.thread.finished.connect(self.__on_thread_complete)
+                self.thread.errorGenerated.connect(lambda x: QMessageBox.critical(self, 'Error', x))
+                self.thread.start()
         else:
-            if self.thread:
-                self.thread.stop()
-                self.thread = None
-            self.__speakerBtn.setStyleAndIcon(ICON_SPEAKER)
-            self.__speakerBtn.setChecked(False)
+            self.thread.stop()
 
     def __on_thread_complete(self):
         self.__speakerBtn.setStyleAndIcon(ICON_SPEAKER)
