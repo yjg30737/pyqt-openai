@@ -1,12 +1,13 @@
 from PySide6.QtCore import Signal, QThread
 from PySide6.QtWidgets import QMessageBox, QScrollArea, QWidget, QCheckBox, QSpinBox, QGroupBox, QVBoxLayout, \
-    QPushButton
+    QPushButton, QPlainTextEdit
 
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ImagePromptContainer
 from pyqt_openai.util.script import getSeparator
 from pyqt_openai.widgets.findPathWidget import FindPathWidget
 from pyqt_openai.widgets.notifier import NotifierWidget
+from pyqt_openai.widgets.randomImagePromptGeneratorWidget import RandomImagePromptGeneratorWidget
 
 
 class ImageControlWidget(QScrollArea):
@@ -19,6 +20,7 @@ class ImageControlWidget(QScrollArea):
         self._initUi()
 
     def _initVal(self):
+        self._prompt = ''
         self._continue_generation = False
         self._save_prompt_as_text = False
         self._is_save = False
@@ -54,6 +56,13 @@ class ImageControlWidget(QScrollArea):
 
         self._generalGrpBox = QGroupBox()
         self._generalGrpBox.setTitle(LangClass.TRANSLATIONS['General'])
+
+        self._promptTextEdit = QPlainTextEdit()
+        self._promptTextEdit.setPlaceholderText(LangClass.TRANSLATIONS['Enter prompt here...'])
+        self._promptTextEdit.setPlainText(self._prompt)
+
+        self._randomImagePromptGeneratorWidget = RandomImagePromptGeneratorWidget()
+
         self._paramGrpBox = QGroupBox()
         self._paramGrpBox.setTitle(LangClass.TRANSLATIONS['Parameters'])
 
@@ -123,7 +132,9 @@ class ImageControlWidget(QScrollArea):
         self.submit.emit(result)
 
     def getArgument(self):
-        pass
+        return {
+            "prompt": self._promptTextEdit.toPlainText(),
+        }
 
     def _setSaveDirectory(self, directory):
         self._directory = directory

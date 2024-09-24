@@ -1,14 +1,12 @@
 from PySide6.QtGui import QPalette
-from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QMessageBox
 
-from pyqt_openai.gpt_widget.center.messageTextBrowser import MessageTextBrowser
-from pyqt_openai.models import ChatMessageContainer
-
-from pyqt_openai import ICON_FAVORITE_NO, ICON_INFO, ICON_FAVORITE_YES
+from pyqt_openai import ICON_FAVORITE_NO, ICON_INFO, ICON_FAVORITE_YES, ICON_SPEAKER, WHISPER_TTS_MODEL
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.gpt_widget.center.chatUnit import ChatUnit
 from pyqt_openai.gpt_widget.center.responseInfoDialog import ResponseInfoDialog
-from pyqt_openai.pyqt_openai_data import DB
+from pyqt_openai.models import ChatMessageContainer
+from pyqt_openai.globals import DB, stream_to_speakers
 from pyqt_openai.widgets.button import Button
 
 
@@ -32,8 +30,15 @@ class AIChatUnit(ChatUnit):
         self.__infoBtn.setStyleAndIcon(ICON_INFO)
         self.__infoBtn.clicked.connect(self.__showResponseInfoDialog)
 
+        self.__speakerBtn = Button()
+        self.__speakerBtn.setStyleAndIcon(ICON_SPEAKER)
+        self.__speakerBtn.setCheckable(True)
+        self.__speakerBtn.toggled.connect(self.__speak)
+        self.thread = None
+
         self.getMenuWidget().layout().insertWidget(2, self.__favoriteBtn)
         self.getMenuWidget().layout().insertWidget(3, self.__infoBtn)
+        self.getMenuWidget().layout().insertWidget(4, self.__speakerBtn)
 
         self.setBackgroundRole(QPalette.ColorRole.AlternateBase)
         self.setAutoFillBackground(True)
@@ -69,6 +74,7 @@ class AIChatUnit(ChatUnit):
         self.__favoriteBtn.setEnabled(f)
         self._copyBtn.setEnabled(f)
         self.__infoBtn.setEnabled(f)
+        self.__speakerBtn.setEnabled(f)
 
     def __setResponseInfo(self, arg: ChatMessageContainer):
         self.__result_info = arg
@@ -88,6 +94,27 @@ class AIChatUnit(ChatUnit):
                 raise AttributeError('Response information is not available')
         except AttributeError as e:
             raise e
+
+    def __speak(self, f):
+        if f:
+            text = self._lbl.toPlainText()
+            if text:
+                args = {
+                    'model': WHISPER_TTS_MODEL,
+                    'voice': CONFIG_MANAGER.get_general_property('voice'),
+                    'input': text,
+                    'speed': CONFIG_MANAGER.get_general_property('voice_speed'),
+                }
+                self.thread = stream_to_speakers(args)
+                self.thread.finished.connect(self.__on_thread_complete)
+                self.thread.errorGenerated.connect(lambda x: QMessageBox.critical(self, 'Error', x))
+                self.thread.start()
+        else:
+            self.thread.stop()
+
+    def __on_thread_complete(self):
+        self.__speakerBtn.setStyleAndIcon(ICON_SPEAKER)
+        self.__speakerBtn.setChecked(False)
 
     def setText(self, text: str):
         if self.__show_as_markdown:

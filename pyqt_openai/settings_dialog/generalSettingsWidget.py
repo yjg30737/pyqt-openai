@@ -1,16 +1,15 @@
-from pyqt_openai import COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_CHAT, COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_IMAGE, LANGUAGE_DICT, \
-    DB_NAME_REGEX, \
-    MAXIMUM_MESSAGES_IN_PARAMETER_RANGE
-from pyqt_openai.config_loader import CONFIG_MANAGER
-from pyqt_openai.widgets.checkBoxListWidget import CheckBoxListWidget
-
 from PySide6.QtCore import QRegularExpression
 from PySide6.QtGui import QRegularExpressionValidator
 from PySide6.QtWidgets import QComboBox, QFormLayout, QLineEdit, QCheckBox, QSizePolicy, \
-    QVBoxLayout, QHBoxLayout, QGroupBox, QSplitter, QLabel, QWidget, QSpinBox
+    QVBoxLayout, QHBoxLayout, QGroupBox, QSplitter, QLabel, QWidget, QSpinBox, QDoubleSpinBox
 
-from pyqt_openai.models import ImagePromptContainer, ChatThreadContainer, SettingsParamsContainer
+from pyqt_openai import COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_CHAT, COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_IMAGE, LANGUAGE_DICT, \
+    DB_NAME_REGEX, \
+    MAXIMUM_MESSAGES_IN_PARAMETER_RANGE, WHISPER_TTS_VOICE_TYPE, WHISPER_TTS_VOICE_SPEED_RANGE
+from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.lang.translations import LangClass
+from pyqt_openai.models import ImagePromptContainer, ChatThreadContainer
+from pyqt_openai.widgets.checkBoxListWidget import CheckBoxListWidget
 
 
 class GeneralSettingsWidget(QWidget):
@@ -31,6 +30,8 @@ class GeneralSettingsWidget(QWidget):
         self.maximum_messages_in_parameter = CONFIG_MANAGER.get_general_property('maximum_messages_in_parameter')
         self.show_as_markdown = CONFIG_MANAGER.get_general_property('show_as_markdown')
         self.run_at_startup = CONFIG_MANAGER.get_general_property('run_at_startup')
+        self.voice = CONFIG_MANAGER.get_general_property('voice')
+        self.speed = CONFIG_MANAGER.get_general_property('voice_speed')
 
     def __initUi(self):
         # Language setting
@@ -90,9 +91,20 @@ class GeneralSettingsWidget(QWidget):
         self.__show_as_markdown = QCheckBox(LangClass.TRANSLATIONS['Show as Markdown'])
         self.__show_as_markdown.setChecked(self.show_as_markdown)
 
+        self.__voiceCmbBox = QComboBox()
+        self.__voiceCmbBox.addItems(WHISPER_TTS_VOICE_TYPE)
+        self.__voiceCmbBox.setCurrentText(self.voice)
+
+        self.__speedSpinBox = QDoubleSpinBox()
+        self.__speedSpinBox.setRange(*WHISPER_TTS_VOICE_SPEED_RANGE)
+        self.__speedSpinBox.setSingleStep(0.1)
+        self.__speedSpinBox.setValue(float(self.speed))
+
         lay = QFormLayout()
         lay.addRow(LangClass.TRANSLATIONS['Maximum Messages in Parameter'], self.__maximumMessagesInParameterSpinBox)
         lay.addRow(self.__show_as_markdown)
+        lay.addRow(LangClass.TRANSLATIONS['Voice'], self.__voiceCmbBox)
+        lay.addRow(LangClass.TRANSLATIONS['Voice Speed'], self.__speedSpinBox)
 
         chatBrowserGrpBox = QGroupBox(LangClass.TRANSLATIONS['Chat Browser'])
         chatBrowserGrpBox.setLayout(lay)
@@ -162,4 +174,6 @@ class GeneralSettingsWidget(QWidget):
             "maximum_messages_in_parameter": self.__maximumMessagesInParameterSpinBox.value(),
             "show_as_markdown": self.__show_as_markdown.isChecked(),
             "run_at_startup": self.__runAtStartupCheckBox.isChecked(),
+            "voice": self.__voiceCmbBox.currentText(),
+            "voice_speed": self.__speedSpinBox.value(),
         }

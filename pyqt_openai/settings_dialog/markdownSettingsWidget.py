@@ -1,4 +1,4 @@
-# TODO WILL_BE_IMPLEMENTED AFTER v1.1.0
+# TODO WILL_BE_IMPLEMENTED AFTER v1.3.0
 
 # from PySide6.QtWidgets import (QWidget, QVBoxLayout, QCheckBox, QLabel, QComboBox,
 #                             QPushButton, QColorDialog, QFormLayout, QScrollArea)

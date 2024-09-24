@@ -9,7 +9,7 @@ from pyqt_openai import MAXIMUM_MESSAGES_IN_PARAMETER, DEFAULT_FOUND_TEXT_BG_COL
 from pyqt_openai.gpt_widget.center.aiChatUnit import AIChatUnit
 from pyqt_openai.gpt_widget.center.userChatUnit import UserChatUnit
 from pyqt_openai.models import ChatMessageContainer
-from pyqt_openai.pyqt_openai_data import DB
+from pyqt_openai.globals import DB
 from pyqt_openai.util.script import is_valid_regex
 
 

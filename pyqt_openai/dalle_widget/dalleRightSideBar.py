@@ -17,6 +17,7 @@ class DallERightSideBarWidget(ImageControlWidget):
     def _initVal(self):
         super()._initVal()
 
+        self._prompt = CONFIG_MANAGER.get_dalle_property('prompt')
         self._continue_generation = CONFIG_MANAGER.get_dalle_property('continue_generation')
         self._save_prompt_as_text = CONFIG_MANAGER.get_dalle_property('save_prompt_as_text')
         self._is_save = CONFIG_MANAGER.get_dalle_property('is_save')
@@ -31,7 +32,6 @@ class DallERightSideBarWidget(ImageControlWidget):
         self.__prompt_type = CONFIG_MANAGER.get_dalle_property('prompt_type')
         self.__width = CONFIG_MANAGER.get_dalle_property('width')
         self.__height = CONFIG_MANAGER.get_dalle_property('height')
-        self.__prompt = CONFIG_MANAGER.get_dalle_property('prompt')
 
     def _initUi(self):
         super()._initUi()
@@ -87,10 +87,7 @@ class DallERightSideBarWidget(ImageControlWidget):
         self.__heightCmbBox.setCurrentText(str(self.__height))
         self.__heightCmbBox.currentTextChanged.connect(self.__dalleChanged)
 
-        self.__promptWidget = QPlainTextEdit()
-        self.__promptWidget.setPlainText(self.__prompt)
-        self.__promptWidget.textChanged.connect(self.__dalleTextChanged)
-        self.__promptWidget.setPlaceholderText(LangClass.TRANSLATIONS['Enter prompt here...'])
+        self._promptTextEdit.textChanged.connect(self.__dalleTextChanged)
 
         self.__styleCmbBox = QComboBox()
         self.__styleCmbBox.addItems(['vivid', 'natural'])
@@ -103,8 +100,11 @@ class DallERightSideBarWidget(ImageControlWidget):
         lay.addRow(LangClass.TRANSLATIONS['Width'], self.__widthCmbBox)
         lay.addRow(LangClass.TRANSLATIONS['Height'], self.__heightCmbBox)
         lay.addRow(LangClass.TRANSLATIONS['Style'], self.__styleCmbBox)
+
+        lay.addRow(self._randomImagePromptGeneratorWidget)
         lay.addRow(QLabel(LangClass.TRANSLATIONS['Prompt']))
-        lay.addRow(self.__promptWidget)
+        lay.addRow(self._promptTextEdit)
+
         self._paramGrpBox.setLayout(lay)
 
         self._completeUi()
@@ -131,12 +131,13 @@ class DallERightSideBarWidget(ImageControlWidget):
             self.__style = v
             CONFIG_MANAGER.set_dalle_property('style', self.__style)
 
+    # TODO combine __dalleTextChanged and __replicateTextChanged and rename them to __promptTextChanged
     def __dalleTextChanged(self):
         sender = self.sender()
         if isinstance(sender, QPlainTextEdit):
-            if sender == self.__promptWidget:
-                self.__prompt = sender.toPlainText()
-                CONFIG_MANAGER.set_dalle_property('prompt', self.__prompt)
+            if sender == self._promptTextEdit:
+                self._prompt = sender.toPlainText()
+                CONFIG_MANAGER.set_dalle_property('prompt', self._prompt)
 
     def _setSaveDirectory(self, directory):
         super()._setSaveDirectory(directory)
@@ -172,15 +173,18 @@ class DallERightSideBarWidget(ImageControlWidget):
     def _submit(self):
         arg = self.getArgument()
         number_of_images = self._number_of_images_to_create if self._continue_generation else 1
+        random_prompt = self._randomImagePromptGeneratorWidget.getRandomPromptSourceArr()
 
-        t = DallEThread(arg, number_of_images)
+        t = DallEThread(arg, number_of_images, random_prompt)
         self._setThread(t)
         super()._submit()
 
     def getArgument(self):
+        obj = super().getArgument()
         return {
+            **obj,
             "model": "dall-e-3",
-            'prompt': self.__promptWidget.toPlainText(),
+            'prompt': self._promptTextEdit.toPlainText(),
             'n': self.__n,
             "size": f'{self.__width}x{self.__height}',
             'quality': self.__quality,

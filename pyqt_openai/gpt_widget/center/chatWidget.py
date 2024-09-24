@@ -1,7 +1,11 @@
 import json
 import sys
 
+from PySide6.QtCore import Signal
+from PySide6.QtWidgets import QStackedWidget, QWidget, QSizePolicy, QHBoxLayout, QVBoxLayout, QMessageBox
+
 from pyqt_openai.config_loader import CONFIG_MANAGER
+from pyqt_openai.globals import LLAMAINDEX_WRAPPER, DB, get_openai_chat_model, get_argument, ChatThread
 from pyqt_openai.gpt_widget.center.chatBrowser import ChatBrowser
 from pyqt_openai.gpt_widget.center.gptHome import GPTHome
 from pyqt_openai.gpt_widget.center.menuWidget import MenuWidget
@@ -9,10 +13,7 @@ from pyqt_openai.gpt_widget.center.prompt import Prompt
 from pyqt_openai.gpt_widget.gptThread import LlamaOpenAIThread, GPTThread
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ChatMessageContainer
-from pyqt_openai.pyqt_openai_data import LLAMAINDEX_WRAPPER, get_argument, DB
 from pyqt_openai.widgets.notifier import NotifierWidget
-from PySide6.QtCore import Signal
-from PySide6.QtWidgets import QStackedWidget, QWidget, QSizePolicy, QHBoxLayout, QVBoxLayout, QMessageBox
 
 
 class ChatWidget(QWidget):
@@ -27,7 +28,6 @@ class ChatWidget(QWidget):
     def __initVal(self):
         self.__cur_id = 0
         self.__notify_finish = CONFIG_MANAGER.get_general_property('notify_finish')
-        self.__maximum_messages_in_parameter = CONFIG_MANAGER.get_general_property('maximum_messages_in_parameter')
 
     def __initUi(self):
         # Main widget
@@ -56,6 +56,7 @@ class ChatWidget(QWidget):
         self.__mainWidget.addWidget(chatWidget)
 
         self.__prompt = Prompt(self)
+        self.__prompt.onRecording.connect(self.__toggleWidgetWhileRecording)
         self.__prompt.onStoppedClicked.connect(self.__stopResponse)
         self.__mainPrompt = self.__prompt.getMainPromptInput()
 
@@ -127,7 +128,7 @@ class ChatWidget(QWidget):
             # Get image files
             images = self.__prompt.getImageBuffers()
 
-            messages = self.__browser.getMessages(self.__maximum_messages_in_parameter)
+            messages = self.__browser.getMessages(CONFIG_MANAGER.get_general_property('maximum_messages_in_parameter'))
 
             cur_text = self.__prompt.getContent()
 
@@ -158,49 +159,90 @@ class ChatWidget(QWidget):
                     return
 
             # Get parameters for OpenAI
-            openai_param = get_argument(model, system, messages, cur_text, temperature, top_p, frequency_penalty, presence_penalty, stream,
-                                      use_max_tokens, max_tokens,
-                                      images,
-                                      is_llama_available, is_json_response_available, json_content)
+            if model in get_openai_chat_model():
+                param = get_argument(model, system, messages, cur_text, temperature, top_p, frequency_penalty, presence_penalty, stream,
+                                     use_max_tokens, max_tokens,
+                                     images,
+                                     is_llama_available, is_json_response_available, json_content)
 
-            # If there is no current conversation selected on the list to the left, make a new one.
-            if self.__mainWidget.currentIndex() == 0:
-                self.addThread.emit()
+                # If there is no current conversation selected on the list to the left, make a new one.
+                if self.__mainWidget.currentIndex() == 0:
+                    self.addThread.emit()
 
-            # Additional information of user's input
-            additional_info = {
-                'role': 'user',
-                'content': cur_text,
-                'model_name': openai_param['model'],
-                'finish_reason': '',
-                'prompt_tokens': '',
-                'completion_tokens': '',
-                'total_tokens': '',
+                # Additional information of user's input
+                additional_info = {
+                    'role': 'user',
+                    'content': cur_text,
+                    'model_name': param['model'],
+                    'finish_reason': '',
+                    'prompt_tokens': '',
+                    'completion_tokens': '',
+                    'total_tokens': '',
 
-                'is_json_response_available': is_json_response_available,
-            }
+                    'is_json_response_available': is_json_response_available,
+                }
 
-            container_param = {k: v for k, v in {**openai_param, **additional_info}.items() if k in ChatMessageContainer.get_keys()}
+                container_param = {k: v for k, v in {**param, **additional_info}.items() if
+                                   k in ChatMessageContainer.get_keys()}
 
-            # Create a container for the user's input and output from the chatbot
-            container = ChatMessageContainer(**container_param)
+                # Create a container for the user's input and output from the chatbot
+                container = ChatMessageContainer(**container_param)
 
-            query_text = self.__prompt.getContent()
-            self.__browser.showLabel(query_text, False, container)
+                query_text = self.__prompt.getContent()
+                self.__browser.showLabel(query_text, False, container)
 
-            # Run a different thread based on whether the llama-index is enabled or not.
-            if is_llama_available:
-                self.__t = LlamaOpenAIThread(openai_param, container, LLAMAINDEX_WRAPPER, query_text)
+                # Run a different thread based on whether the llama-index is enabled or not.
+                if is_llama_available:
+                    self.__t = LlamaOpenAIThread(param, container, LLAMAINDEX_WRAPPER, query_text)
+                else:
+                    self.__t = GPTThread(param, info=container)
+                self.__t.started.connect(self.__beforeGenerated)
+                self.__t.replyGenerated.connect(self.__browser.showLabel)
+                self.__t.streamFinished.connect(self.__browser.streamFinished)
+                self.__t.start()
+                self.__t.finished.connect(self.__afterGenerated)
+
+                # Remove image files widget from the window
+                self.__prompt.resetUploadImageFileWidget()
             else:
-                self.__t = GPTThread(openai_param, info=container)
-            self.__t.started.connect(self.__beforeGenerated)
-            self.__t.replyGenerated.connect(self.__browser.showLabel)
-            self.__t.streamFinished.connect(self.__browser.streamFinished)
-            self.__t.start()
-            self.__t.finished.connect(self.__afterGenerated)
+                param = get_argument(model, system, messages, cur_text, temperature, top_p, frequency_penalty, presence_penalty, stream,
+                                     use_max_tokens, max_tokens,
+                                     images,
+                                     is_llama_available, is_json_response_available, json_content)
 
-            # Remove image files widget from the window
-            self.__prompt.resetUploadImageFileWidget()
+                # If there is no current conversation selected on the list to the left, make a new one.
+                if self.__mainWidget.currentIndex() == 0:
+                    self.addThread.emit()
+
+                # Additional information of user's input
+                additional_info = {
+                    'role': 'user',
+                    'content': cur_text,
+                    'model_name': param['model'],
+                    'finish_reason': '',
+                    'prompt_tokens': '',
+                    'completion_tokens': '',
+                    'total_tokens': '',
+
+                    'is_json_response_available': is_json_response_available,
+                }
+
+                container_param = {k: v for k, v in {**param, **additional_info}.items() if
+                                   k in ChatMessageContainer.get_keys()}
+
+                # Create a container for the user's input and output from the chatbot
+                container = ChatMessageContainer(**container_param)
+
+                query_text = self.__prompt.getContent()
+                self.__browser.showLabel(query_text, False, container)
+
+                self.__t = ChatThread(param, info=container)
+                self.__t.started.connect(self.__beforeGenerated)
+                self.__t.replyGenerated.connect(self.__browser.showLabel)
+                self.__t.streamFinished.connect(self.__browser.streamFinished)
+                self.__t.start()
+                self.__t.finished.connect(self.__afterGenerated)
+
         except Exception as e:
             # get the line of error and filename
             exc_type, exc_obj, tb = sys.exc_info()
@@ -215,6 +257,10 @@ class ChatWidget(QWidget):
 
     def __stopResponse(self):
         self.__t.stop()
+
+    def __toggleWidgetWhileRecording(self, f):
+        self.__mainPrompt.setExecuteEnabled(not f)
+        self.__prompt.sendEnabled(not f)
 
     def __toggleWidgetWhileChatting(self, f):
         self.__mainPrompt.setExecuteEnabled(f)

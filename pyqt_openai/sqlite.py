@@ -1,39 +1,22 @@
-import os
 import json
+import os
 import sqlite3
 from datetime import datetime
 from typing import List
-import shutil
 
-from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai import THREAD_TABLE_NAME, THREAD_TRIGGER_NAME, \
-    THREAD_TABLE_NAME_OLD, \
-    THREAD_TRIGGER_NAME_OLD, MESSAGE_TABLE_NAME_OLD, MESSAGE_TABLE_NAME, THREAD_MESSAGE_INSERTED_TR_NAME, \
-    THREAD_MESSAGE_UPDATED_TR_NAME, THREAD_MESSAGE_DELETED_TR_NAME, THREAD_MESSAGE_INSERTED_TR_NAME_OLD, \
-    THREAD_MESSAGE_UPDATED_TR_NAME_OLD, THREAD_MESSAGE_DELETED_TR_NAME_OLD, IMAGE_TABLE_NAME, \
-    PROPERTY_PROMPT_UNIT_TABLE_NAME_OLD, PROPERTY_PROMPT_GROUP_TABLE_NAME_OLD, TEMPLATE_PROMPT_GROUP_TABLE_NAME_OLD, \
-    TEMPLATE_PROMPT_TABLE_NAME_OLD, PROMPT_GROUP_TABLE_NAME, PROMPT_ENTRY_TABLE_NAME, get_config_directory, ROOT_DIR, \
-    SRC_DIR
+    MESSAGE_TABLE_NAME, THREAD_MESSAGE_INSERTED_TR_NAME, \
+    THREAD_MESSAGE_UPDATED_TR_NAME, THREAD_MESSAGE_DELETED_TR_NAME, IMAGE_TABLE_NAME, \
+    PROMPT_GROUP_TABLE_NAME, PROMPT_ENTRY_TABLE_NAME, get_config_directory
+from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.models import ImagePromptContainer, ChatMessageContainer, PromptEntryContainer, PromptGroupContainer
 
 
 def get_db_filename():
-    db_filename = CONFIG_MANAGER.get_general_property('db') + '.db'
-
-    # TODO WILL_REMOVE_AFTER v1.2.0
-    prev_config_path = os.path.join(ROOT_DIR, db_filename) if os.path.exists(
-        os.path.join(ROOT_DIR, db_filename)) else (
-        os.path.join(SRC_DIR, db_filename) if os.path.exists(os.path.join(SRC_DIR, db_filename)) else None)
-    if prev_config_path:
-        new_config_path = os.path.join(get_config_directory(), db_filename)
-        if not os.path.exists(new_config_path):
-            shutil.move(prev_config_path, new_config_path)
-    else:
-        pass
-
     """
     Get the database file's name from the settings.
     """
+    db_filename = CONFIG_MANAGER.get_general_property('db') + '.db'
     config_dir = get_config_directory()
     db_path = os.path.join(config_dir, db_filename)
     return db_path
@@ -98,53 +81,6 @@ class SqliteDatabase:
             print(f"An error occurred while creating the table: {e}")
             raise
 
-    def __alterOldPromptGroup(self):
-        try:
-            # Move to new prompt group table if the old prop table exists
-            table_name_old_exists = self.__c.execute(
-                f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{PROPERTY_PROMPT_GROUP_TABLE_NAME_OLD}'").fetchone()[
-                                        0] == 1
-            if table_name_old_exists:
-                prop_prompt_groups = self.selectPropPromptGroup()
-                for group in prop_prompt_groups:
-                    group_id = self.insertPromptGroup(group['name'], prompt_type='form')
-                    prompt_entries = self.selectPropPromptAttribute(group['id'])
-                    for prompt_entry in prompt_entries:
-                        self.insertPromptEntry(group_id, prompt_entry['name'], prompt_entry['text'])
-
-            # Move to new prompt group table if the old template table exists
-            table_name_old_exists = self.__c.execute(
-                f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{TEMPLATE_PROMPT_GROUP_TABLE_NAME_OLD}'").fetchone()[
-                                        0] == 1
-            if table_name_old_exists:
-                template_prompt_group = self.selectTemplatePromptGroup()
-                for group in template_prompt_group:
-                    group_id = self.insertPromptGroup(group['name'], prompt_type='sentence')
-                    prompt_entries = self.selectTemplatePromptUnit(group['id'])
-                    for prompt_entry in prompt_entries:
-                        self.insertPromptEntry(group_id, prompt_entry['name'], prompt_entry['text'])
-        except sqlite3.Error as e:
-            print(f"An error occurred: {e}")
-            raise
-
-    def __removeOldPromptGroup(self):
-        if self.__c.execute(
-                f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{PROPERTY_PROMPT_GROUP_TABLE_NAME_OLD}'").fetchone()[0] == 1:
-            self.__c.execute(f'DROP TABLE {PROPERTY_PROMPT_GROUP_TABLE_NAME_OLD}')
-        if self.__c.execute(
-                f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{TEMPLATE_PROMPT_GROUP_TABLE_NAME_OLD}'").fetchone()[0] == 1:
-            self.__c.execute(f'DROP TABLE {TEMPLATE_PROMPT_GROUP_TABLE_NAME_OLD}')
-
-    def __removeOldPromptEntry(self):
-        self.__c.execute(f'''
-            SELECT name
-            FROM sqlite_master
-            WHERE type = 'table'
-                AND name LIKE '%{PROPERTY_PROMPT_UNIT_TABLE_NAME_OLD}%' OR name LIKE '%{TEMPLATE_PROMPT_TABLE_NAME_OLD}%'
-            ''')
-        for name in self.__c.fetchall():
-            self.__c.execute(f'DROP TABLE {name[0]}')
-
     def insertPromptGroup(self, name, prompt_type):
         try:
             # Insert a row into the table
@@ -204,7 +140,6 @@ class SqliteDatabase:
 
     def deletePromptGroup(self, id=None):
         try:
-            print(id)
             query = f'DELETE FROM {PROMPT_GROUP_TABLE_NAME}'
             if id:
                 query += f' WHERE id = {id}'
@@ -280,60 +215,6 @@ class SqliteDatabase:
         except sqlite3.Error as e:
             print(f"An error occurred: {e}")
             raise
-
-    def selectPropPromptGroup(self):
-        try:
-            self.__c.execute(f'SELECT * FROM {PROPERTY_PROMPT_GROUP_TABLE_NAME_OLD}')
-            return self.__c.fetchall()
-        except sqlite3.Error as e:
-            print(f"An error occurred: {e}")
-            raise
-
-    def selectPropPromptAttribute(self, id):
-        try:
-            self.__c.execute(f'SELECT * FROM {PROPERTY_PROMPT_UNIT_TABLE_NAME_OLD}{id}')
-            return self.__c.fetchall()
-        except sqlite3.Error as e:
-            print(f"An error occurred: {e}")
-            raise
-
-    def selectTemplatePromptGroup(self):
-        try:
-            self.__c.execute(f'SELECT * FROM {TEMPLATE_PROMPT_GROUP_TABLE_NAME_OLD}')
-            return self.__c.fetchall()
-        except sqlite3.Error as e:
-            print(f"An error occurred: {e}")
-            raise
-
-    def selectTemplatePromptUnit(self, id):
-        try:
-            self.__c.execute(
-                f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{TEMPLATE_PROMPT_TABLE_NAME_OLD}{id}'")
-            if self.__c.fetchone()[0] == 1:
-                self.__c.execute(f'SELECT * FROM {TEMPLATE_PROMPT_TABLE_NAME_OLD}{id}')
-                return self.__c.fetchall()
-            else:
-                return []
-        except sqlite3.Error as e:
-            print(f"An error occurred: {e}")
-            raise
-
-    def __alterOldThread(self):
-        # Check if the old thread table exists for v0.6.5 and below for migration purpose
-        table_name_old_exists = self.__c.execute(
-            f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{THREAD_TABLE_NAME_OLD}'").fetchone()[
-                                    0] == 1
-        if table_name_old_exists:
-            # Rename the table (will remove this later)
-            self.__c.execute(f'ALTER TABLE {THREAD_TABLE_NAME_OLD} RENAME TO {THREAD_TABLE_NAME}')
-            # Alter message tables for migration purpose
-            self.__alterThreadUnit()
-
-        # Check if the old trigger table exists for v0.6.5 and below for migration purpose
-        trigger_name_old_exists = self.__c.execute(
-            f"SELECT count(*) FROM sqlite_master WHERE type='trigger' AND name='{THREAD_TRIGGER_NAME_OLD}'").fetchone()[0] == 1
-        if trigger_name_old_exists:
-            self.__c.execute(f'DROP TRIGGER {THREAD_TRIGGER_NAME_OLD}')
 
     def __createThread(self):
         try:
@@ -441,85 +322,6 @@ class SqliteDatabase:
         except sqlite3.Error as e:
             print(f"An error occurred: {e}")
             raise
-
-    def __alterThreadUnit(self):
-        # Make message table
-        self.__createMessage()
-
-        # search the conv unit tables
-        res = self.__c.execute(f'''
-                        SELECT name
-                        FROM sqlite_master
-                        WHERE type = 'table' AND name LIKE '{MESSAGE_TABLE_NAME_OLD}%';
-                    ''')
-        # UNION all old message tables to new one
-        union_query = ''
-        for name in res.fetchall():
-            union_query += f'SELECT * FROM {name[0]}\n'
-        union_query = ' UNION '.join(union_query.split('\n')[:-1]) + ' order by id_fk'
-
-        # Insert all old message tables to new one
-        res = self.__c.execute(union_query)
-
-        arg = ChatMessageContainer()
-        insert_query = arg.create_insert_query(table_name=MESSAGE_TABLE_NAME, excludes=['id'])
-
-        for row in res.fetchall():
-            row_dict = dict(row)
-            row_dict['role'] = 'user' if row_dict['is_user'] == 1 else 'assistant'
-            row_dict['thread_id'] = row_dict['id_fk']
-            row_dict['content'] = row_dict['conv']
-            del row_dict['is_user']
-            del row_dict['conv']
-            del row_dict['id_fk']
-            arg = ChatMessageContainer(**row_dict)
-            self.__c.execute(insert_query, arg.get_values_for_insert(excludes=['id']))
-            self.__conn.commit()
-
-        # Remove old message tables
-        self.__removeOldMessage()
-
-    def __removeOldMessage(self):
-        # remove old message tables
-        self.__c.execute(f'''
-            SELECT name
-            FROM sqlite_master
-            WHERE type = 'table'
-              AND name LIKE '%{MESSAGE_TABLE_NAME_OLD}%'
-            ''')
-        for name in self.__c.fetchall():
-            self.__c.execute(f'DROP TABLE {name[0]}')
-        self.__conn.commit()
-
-    def __removeOldTrigger(self):
-        # remove old trigger
-        self.__c.execute(f'''
-            SELECT name
-            FROM sqlite_master
-            WHERE type = 'trigger'
-              AND name LIKE '%{THREAD_MESSAGE_INSERTED_TR_NAME_OLD}%'
-            ''')
-        for name in self.__c.fetchall():
-            self.__c.execute(f'DROP TRIGGER {name[0]}')
-
-        self.__c.execute(f'''
-            SELECT name
-            FROM sqlite_master
-            WHERE type = 'trigger'
-              AND name LIKE '%{THREAD_MESSAGE_UPDATED_TR_NAME_OLD}%'
-            ''')
-        for name in self.__c.fetchall():
-            self.__c.execute(f'DROP TRIGGER {name[0]}')
-
-        self.__c.execute(f'''
-            SELECT name
-            FROM sqlite_master
-            WHERE type = 'trigger'
-              AND name LIKE '%{THREAD_MESSAGE_DELETED_TR_NAME_OLD}%'
-            ''')
-        for name in self.__c.fetchall():
-            self.__c.execute(f'DROP TRIGGER {name[0]}')
-        self.__conn.commit()
 
     def __createMessageTrigger(self, insert_trigger=True, update_trigger=True, delete_trigger=True):
         """

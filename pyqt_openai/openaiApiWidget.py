@@ -7,10 +7,10 @@ from PySide6.QtWidgets import QHBoxLayout, QLineEdit, QPushButton, QLabel, QWidg
 from pyqt_openai import OPENAI_REQUEST_URL
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.lang.translations import LangClass
-from pyqt_openai.pyqt_openai_data import set_openai_enabled, set_api_key_and_client_global
+from pyqt_openai.globals import set_openai_enabled, set_openai_api_key
 
 
-class ApiWidget(QWidget):
+class OpenAIApiWidget(QWidget):
     onAIEnabled = Signal(bool)
 
     def __init__(self, parent=None):
@@ -42,7 +42,7 @@ class ApiWidget(QWidget):
         self.setLayout(lay)
 
     def setApiKeyAndClient(self, api_key):
-        set_api_key_and_client_global(api_key)
+        set_openai_api_key(api_key)
 
         # for showing to the user
         self.__apiLineEdit.setText(api_key)
@@ -55,7 +55,7 @@ class ApiWidget(QWidget):
             self.onAIEnabled.emit(f)
             if f:
                 self.setApiKeyAndClient(api_key)
-                CONFIG_MANAGER.set_general_property('API_KEY', api_key)
+                CONFIG_MANAGER.set_general_property('OPENAI_API_KEY', api_key)
 
                 self.__apiCheckPreviewLbl.setStyleSheet("color: {}".format(QColor(0, 200, 0).name()))
                 self.__apiCheckPreviewLbl.setText(LangClass.TRANSLATIONS['API key is valid'])
