@@ -1,9 +1,9 @@
 from PySide6.QtWidgets import QVBoxLayout, QTableWidget, QHeaderView, QTableWidgetItem, QLabel, QLineEdit, QDialog, \
     QDialogButtonBox
+from PySide6.QtCore import Qt
 
 from pyqt_openai import HOW_TO_GET_OPENAI_API_KEY_URL, HOW_TO_GET_CLAUDE_API_KEY_URL, HOW_TO_GET_GEMINI_API_KEY_URL, \
     HOW_TO_GET_LLAMA_API_KEY_URL
-from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.widgets.linkLabel import LinkLabel
 
 
@@ -54,6 +54,7 @@ class ApiDialog(QDialog):
 
             getApiKeyLbl = LinkLabel()
             getApiKeyLbl.setText('Link')
+            getApiKeyLbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
             getApiKeyLbl.setUrl(obj['get_api_key'])
             self.__tableWidget.setCellWidget(i, 2, getApiKeyLbl)
 
