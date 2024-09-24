@@ -1,6 +1,11 @@
 from PySide6.QtWidgets import QVBoxLayout, QTableWidget, QHeaderView, QTableWidgetItem, QLabel, QLineEdit, QDialog, \
     QDialogButtonBox
 
+from pyqt_openai import HOW_TO_GET_OPENAI_API_KEY_URL, HOW_TO_GET_CLAUDE_API_KEY_URL, HOW_TO_GET_GEMINI_API_KEY_URL, \
+    HOW_TO_GET_LLAMA_API_KEY_URL
+from pyqt_openai.lang.translations import LangClass
+from pyqt_openai.widgets.linkLabel import LinkLabel
+
 
 # FIXME Are there any ways to get authentification from the claude, gemini?
 # def is_api_key_valid(endpoint, api_key):
@@ -18,8 +23,20 @@ class ApiDialog(QDialog):
     def __initVal(self, api_keys):
         self.__api_keys = api_keys
 
+        # Set "get api key" here
+        for i, obj in enumerate(self.__api_keys):
+            obj['get_api_key'] = {
+                'OpenAI': HOW_TO_GET_OPENAI_API_KEY_URL,
+                'Claude': HOW_TO_GET_CLAUDE_API_KEY_URL,
+                'Gemini': HOW_TO_GET_GEMINI_API_KEY_URL,
+                'Llama': HOW_TO_GET_LLAMA_API_KEY_URL
+            }[obj['display_name']]
+
+
     def __initUi(self):
-        columns = ['Models', 'API Key']
+        self.setWindowTitle('API Key')
+
+        columns = ['Platform', 'API Key', 'Get API Key']
         self.__tableWidget = QTableWidget()
         self.__tableWidget.setColumnCount(len(columns))
         self.__tableWidget.setHorizontalHeaderLabels(columns)
@@ -34,6 +51,11 @@ class ApiDialog(QDialog):
             apiKeyLineEdit = QLineEdit(obj['api_key'])
             apiKeyLineEdit.setEchoMode(QLineEdit.EchoMode.Password)
             self.__tableWidget.setCellWidget(i, 1, apiKeyLineEdit)
+
+            getApiKeyLbl = LinkLabel()
+            getApiKeyLbl.setText('Link')
+            getApiKeyLbl.setUrl(obj['get_api_key'])
+            self.__tableWidget.setCellWidget(i, 2, getApiKeyLbl)
 
         # Dialog buttons
         buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
