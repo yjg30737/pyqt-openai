@@ -22,7 +22,7 @@ dependencies = [
     "llama-index",
     "replicate",
 ]
-keywords = ['openai', 'pyqt', 'pyqt5', 'pyqt6', 'pyside6', 'desktop', 'app', 'chatbot', 'gpt', 'replicate']
+keywords = ['openai', 'pyqt', 'pyqt5', 'pyqt6', 'pyside6', 'desktop', 'app', 'chatbot', 'gpt', 'replicate', 'gemini', 'claude', 'llama', 'llm']
 
 requires-python = ">= 3.11"
 # 3.11
