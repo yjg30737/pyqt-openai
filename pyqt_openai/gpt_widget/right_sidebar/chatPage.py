@@ -7,7 +7,7 @@ from pyqt_openai import DEFAULT_SHORTCUT_JSON_MODE, OPENAI_TEMPERATURE_RANGE, OP
     FREQUENCY_PENALTY_STEP, LLAMAINDEX_URL
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.lang.translations import LangClass
-from pyqt_openai.pyqt_openai_data import get_chat_model, init_llama
+from pyqt_openai.globals import get_chat_model, init_llama, get_openai_chat_model
 from pyqt_openai.util.script import getSeparator
 from pyqt_openai.widgets.linkLabel import LinkLabel
 
@@ -49,6 +49,17 @@ class ChatPage(QWidget):
         modelCmbBox.addItems(get_chat_model())
         modelCmbBox.setCurrentText(self.__model)
         modelCmbBox.currentTextChanged.connect(self.__modelChanged)
+
+        self.__warningLbl = QLabel()
+        self.__warningLbl.setStyleSheet('color: red;')
+        self.__warningLbl.setVisible(False)
+
+        # TODO WILL_BE_REMOVED_AFTER v1.5.0
+        self.__warningLbl.setText('Currently LlamaIndex, JSON mode, and Image input are only available for the OpenAI Chat model.\n'
+        # TODO WILL_BE_REMOVED_AFTER v1.3.0
+                                  'Also you have to get OpenAI API key to use these features.\n'
+                                  'I will update this soon.')
+        self.__warningLbl.setWordWrap(True)
 
         advancedSettingsScrollArea = QScrollArea()
 
@@ -129,22 +140,23 @@ class ChatPage(QWidget):
         streamChkBox.toggled.connect(self.__streamChecked)
         streamChkBox.setText(LangClass.TRANSLATIONS['Stream'])
 
-        jsonChkBox = QCheckBox()
-        jsonChkBox.setChecked(self.__json_object)
-        jsonChkBox.toggled.connect(self.__jsonObjectChecked)
+        self.__jsonChkBox = QCheckBox()
+        self.__jsonChkBox.setChecked(self.__json_object)
+        self.__jsonChkBox.toggled.connect(self.__jsonObjectChecked)
 
-        jsonChkBox.setText(LangClass.TRANSLATIONS['Enable JSON mode'])
-        jsonChkBox.setShortcut(DEFAULT_SHORTCUT_JSON_MODE)
-        jsonChkBox.setToolTip(LangClass.TRANSLATIONS['When enabled, you can send a JSON object to the API and the response will be in JSON format. Otherwise, it will be in plain text.'])
+        self.__jsonChkBox.setText(LangClass.TRANSLATIONS['Enable JSON mode'])
+        self.__jsonChkBox.setShortcut(DEFAULT_SHORTCUT_JSON_MODE)
+        self.__jsonChkBox.setToolTip(LangClass.TRANSLATIONS['When enabled, you can send a JSON object to the API and the response will be in JSON format. Otherwise, it will be in plain text.'])
 
+        # TODO LANGUAGE
         llamaManualLbl = LinkLabel()
-        llamaManualLbl.setText('What is LlamaIndex?')
+        llamaManualLbl.setText(LangClass.TRANSLATIONS['What is LlamaIndex?'])
         llamaManualLbl.setUrl(LLAMAINDEX_URL)
 
-        llamaChkBox = QCheckBox()
-        llamaChkBox.setChecked(self.__use_llama_index)
-        llamaChkBox.toggled.connect(self.__use_llama_indexChecked)
-        llamaChkBox.setText(LangClass.TRANSLATIONS['Use LlamaIndex'])
+        self.__llamaChkBox = QCheckBox()
+        self.__llamaChkBox.setChecked(self.__use_llama_index)
+        self.__llamaChkBox.toggled.connect(self.__use_llama_indexChecked)
+        self.__llamaChkBox.setText(LangClass.TRANSLATIONS['Use LlamaIndex'])
 
         sep = getSeparator('horizontal')
 
@@ -153,9 +165,10 @@ class ChatPage(QWidget):
         lay.addWidget(self.__systemTextEdit)
         lay.addWidget(saveSystemBtn)
         lay.addWidget(modelCmbBox)
+        lay.addWidget(self.__warningLbl)
         lay.addWidget(streamChkBox)
-        lay.addWidget(jsonChkBox)
-        lay.addWidget(llamaChkBox)
+        lay.addWidget(self.__jsonChkBox)
+        lay.addWidget(self.__llamaChkBox)
         lay.addWidget(llamaManualLbl)
         lay.addWidget(sep)
         lay.addWidget(advancedSettingsGrpBox)
@@ -170,6 +183,12 @@ class ChatPage(QWidget):
     def __modelChanged(self, v):
         self.__model = v
         CONFIG_MANAGER.set_general_property('model', v)
+
+        # TODO WILL_BE_REMOVED_AFTER v1.5.0
+        f = v in get_openai_chat_model()
+        self.__jsonChkBox.setEnabled(f)
+        self.__llamaChkBox.setEnabled(f)
+        self.__warningLbl.setVisible(not f)
 
     def __streamChecked(self, f):
         self.__stream = f

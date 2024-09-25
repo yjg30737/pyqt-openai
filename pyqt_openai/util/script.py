@@ -30,7 +30,7 @@ from pyqt_openai import MAIN_INDEX, \
     AUTOSTART_REGISTRY_KEY, is_frozen
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ImagePromptContainer
-from pyqt_openai.pyqt_openai_data import DB
+from pyqt_openai.globals import DB
 
 
 def get_generic_ext_out_of_qt_ext(text):
@@ -386,7 +386,6 @@ def handle_exception(exc_type, exc_value, exc_traceback):
     msg_box.setWindowTitle("Error")
     msg_box.exec_()
 
-
 def set_auto_start_windows(enable: bool):
     # If OS is not Windows, return
     if sys.platform != 'win32':
@@ -406,3 +405,12 @@ def set_auto_start_windows(enable: bool):
             winreg.DeleteValue(key, DEFAULT_APP_NAME)
         except FileNotFoundError:
             pass
+
+def generate_random_prompt(arr):
+    if len(arr) > 0:
+        max_len = max(map(lambda x: len(x), arr))
+        weights = [i for i in range(max_len, 0, -1)]
+        random_prompt = ', '.join(list(filter(lambda x: x != '', [random.choices(_, weights[:len(_)])[0] for _ in arr])))
+    else:
+        random_prompt = ''
+    return random_prompt

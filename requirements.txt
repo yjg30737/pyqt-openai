@@ -1,7 +1,11 @@
 PySide6
-openai
 pyperclip
 jinja2
-llama-index
 requests
+pyaudio
+
+openai
+anthropic
+google-generativeai
+llama-index
 replicate

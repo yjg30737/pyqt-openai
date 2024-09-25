@@ -51,15 +51,15 @@ class MessageTextBrowser(QTextBrowser):
             self.setMinimumHeight(int(max_height))
         self.verticalScrollBar().setSliderPosition(self.verticalScrollBar().maximum())
 
-    # TODO WILL_BE_IMPLEMENTED AFTER v1.1.0
+    # TODO WILL_BE_IMPLEMENTED AFTER v1.3.0
     def setMarkdown(self, markdown: str) -> None:
         super().setMarkdown(markdown)
         # Convert markdown to HTML using QTextDocument
-    #     document = QTextDocument()
-    #     document.setMarkdown(markdown)
-    #     html_text = document.toHtml()
-    #     # with open("test.html", "w") as f:
-    #     #     f.write(html_text)
+        # document = QTextDocument()
+        # document.setMarkdown(markdown)
+        # html_text = document.toHtml()
+        # with open("test.html", "w") as f:
+        #     f.write(html_text)
     # #
     # #     # Customize the converted HTML (e.g., add style tags)
     #     custom_html = f"""

@@ -3,9 +3,10 @@ from PySide6.QtSql import QSqlTableModel, QSqlQuery
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QStyledItemDelegate, QTableView, QAbstractItemView, QHBoxLayout, \
     QMessageBox, QLabel
 
+import pyqt_openai.globals
 from pyqt_openai import ICON_DELETE, ICON_CLOSE
 from pyqt_openai.lang.translations import LangClass
-from pyqt_openai.pyqt_openai_data import DB
+from pyqt_openai.globals import DB
 from pyqt_openai.widgets.baseNavWidget import BaseNavWidget
 from pyqt_openai.widgets.button import Button
 from pyqt_openai.widgets.searchBar import SearchBar

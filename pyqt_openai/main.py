@@ -2,6 +2,7 @@ import os
 import sys
 
 # Get the absolute path of the current script file
+
 script_path = os.path.abspath(__file__)
 
 # Get the root directory by going up one level from the script directory
@@ -50,9 +51,9 @@ class App(QApplication):
 
     def __initQSqlDb(self):
         # Set up the database and table model (you'll need to configure this part based on your database)
-        self.__imageDb = QSqlDatabase.addDatabase('QSQLITE')
-        self.__imageDb.setDatabaseName(get_db_filename())
-        self.__imageDb.open()
+        self.__db = QSqlDatabase.addDatabase('QSQLITE')
+        self.__db.setDatabaseName(get_db_filename())
+        self.__db.open()
 
     def __initFont(self):
         font_family = CONFIG_MANAGER.get_general_property('font_family')

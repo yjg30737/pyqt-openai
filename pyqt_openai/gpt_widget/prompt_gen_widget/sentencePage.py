@@ -13,7 +13,7 @@ from pyqt_openai.gpt_widget.prompt_gen_widget.promptGroupDirectInputDialog impor
 from pyqt_openai.gpt_widget.prompt_gen_widget.promptGroupExportDialog import PromptGroupExportDialog
 from pyqt_openai.gpt_widget.prompt_gen_widget.promptGroupImportDialog import PromptGroupImportDialog
 from pyqt_openai.lang.translations import LangClass
-from pyqt_openai.pyqt_openai_data import DB
+from pyqt_openai.globals import DB
 from pyqt_openai.util.script import open_directory, get_prompt_data
 from pyqt_openai.widgets.button import Button
 

@@ -105,15 +105,19 @@ class ConfigManager:
         self.config['REPLICATE'][key] = value
         self._save_yaml()
 
-# TODO WILL_REMOVE_AFTER v1.2.0
-prev_config_path = os.path.join(ROOT_DIR, 'config.yaml') if os.path.exists(os.path.join(ROOT_DIR, 'config.yaml')) else (os.path.join(SRC_DIR, 'config.yaml') if os.path.exists(os.path.join(SRC_DIR, 'config.yaml')) else None)
-if prev_config_path:
-    new_config_path = os.path.join(get_config_directory(), INI_FILE_NAME)
-    if not os.path.exists(new_config_path):
-        shutil.move(prev_config_path, new_config_path)
-else:
-    pass
+def update_api_key(yaml_file_path):
+    with open(yaml_file_path, 'r') as file:
+        data = yaml.safe_load(file)
+
+    if 'General' in data and 'API_KEY' in data['General']:
+        data['General']['OPENAI_API_KEY'] = data['General'].pop('API_KEY')
+
+    with open(yaml_file_path, 'w') as file:
+        yaml.safe_dump(data, file)
 
 init_yaml()
+
+# TODO WILL_BE_REMOVED_AFTER v1.5.0
+update_api_key(INI_FILE_NAME)
+
 CONFIG_MANAGER = ConfigManager()
-# print(CONFIG_MANAGER.get_general_property('API_KEY'))
