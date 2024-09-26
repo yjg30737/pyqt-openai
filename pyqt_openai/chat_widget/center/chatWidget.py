@@ -6,11 +6,11 @@ from PySide6.QtWidgets import QStackedWidget, QWidget, QSizePolicy, QHBoxLayout,
 
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.globals import LLAMAINDEX_WRAPPER, DB, get_openai_chat_model, get_argument, ChatThread
-from pyqt_openai.gpt_widget.center.chatBrowser import ChatBrowser
-from pyqt_openai.gpt_widget.center.gptHome import GPTHome
-from pyqt_openai.gpt_widget.center.menuWidget import MenuWidget
-from pyqt_openai.gpt_widget.center.prompt import Prompt
-from pyqt_openai.gpt_widget.gptThread import LlamaOpenAIThread, GPTThread
+from pyqt_openai.chat_widget.center.chatBrowser import ChatBrowser
+from pyqt_openai.chat_widget.center.chatHome import ChatHome
+from pyqt_openai.chat_widget.center.menuWidget import MenuWidget
+from pyqt_openai.chat_widget.center.prompt import Prompt
+from pyqt_openai.chat_widget.chatThread import LlamaOpenAIThread, GPTThread
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ChatMessageContainer
 from pyqt_openai.widgets.notifier import NotifierWidget
@@ -35,7 +35,7 @@ class ChatWidget(QWidget):
         # widget for main view
         self.__mainWidget = QStackedWidget()
 
-        self.__homePage = GPTHome()
+        self.__homePage = ChatHome()
         self.__browser = ChatBrowser()
         self.__browser.onReplacedCurrentPage.connect(self.__mainWidget.setCurrentIndex)
 

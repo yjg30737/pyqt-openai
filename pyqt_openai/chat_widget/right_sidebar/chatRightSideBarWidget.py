@@ -3,13 +3,12 @@ from functools import partial
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QScrollArea, QWidget, QTabWidget, QGridLayout
 
+from pyqt_openai.chat_widget.right_sidebar.chatPage import ChatPage
+from pyqt_openai.chat_widget.right_sidebar.llama_widget.llamaPage import LlamaPage
 from pyqt_openai.config_loader import CONFIG_MANAGER
-from pyqt_openai.gpt_widget.right_sidebar.chatPage import ChatPage
-from pyqt_openai.gpt_widget.right_sidebar.llama_widget.llamaPage import LlamaPage
-from pyqt_openai.lang.translations import LangClass
 
 
-class GPTRightSideBarWidget(QScrollArea):
+class ChatRightSideBarWidget(QScrollArea):
     onDirectorySelected = Signal(str)
     onToggleJSON = Signal(bool)
 
@@ -30,8 +29,8 @@ class GPTRightSideBarWidget(QScrollArea):
         self.__llamaPage = LlamaPage()
         self.__llamaPage.onDirectorySelected.connect(self.__onDirectorySelected)
 
-        tabWidget.addTab(chatPage, LangClass.TRANSLATIONS['GPT'], )
-        tabWidget.addTab(self.__llamaPage, 'LlamaIndex', )
+        tabWidget.addTab(chatPage, 'LLM')
+        tabWidget.addTab(self.__llamaPage, 'LlamaIndex')
         tabWidget.currentChanged.connect(self.__tabChanged)
         tabWidget.setTabEnabled(1, self.__use_llama_index)
         tabWidget.setCurrentIndex(self.__cur_idx)

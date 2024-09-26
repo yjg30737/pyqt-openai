@@ -3,8 +3,8 @@ from PySide6.QtWidgets import QMessageBox
 
 from pyqt_openai import ICON_FAVORITE_NO, ICON_INFO, ICON_FAVORITE_YES, ICON_SPEAKER, WHISPER_TTS_MODEL
 from pyqt_openai.config_loader import CONFIG_MANAGER
-from pyqt_openai.gpt_widget.center.chatUnit import ChatUnit
-from pyqt_openai.gpt_widget.center.responseInfoDialog import ResponseInfoDialog
+from pyqt_openai.chat_widget.center.chatUnit import ChatUnit
+from pyqt_openai.chat_widget.center.responseInfoDialog import ResponseInfoDialog
 from pyqt_openai.models import ChatMessageContainer
 from pyqt_openai.globals import DB, stream_to_speakers
 from pyqt_openai.widgets.button import Button

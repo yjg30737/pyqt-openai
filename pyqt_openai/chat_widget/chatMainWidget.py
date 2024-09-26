@@ -9,10 +9,10 @@ from pyqt_openai import THREAD_TABLE_NAME, JSON_FILE_EXT_LIST_STR, ICON_SIDEBAR,
     FILE_NAME_LENGTH, DEFAULT_SHORTCUT_FIND, DEFAULT_SHORTCUT_LEFT_SIDEBAR_WINDOW, \
     DEFAULT_SHORTCUT_CONTROL_PROMPT_WINDOW, DEFAULT_SHORTCUT_RIGHT_SIDEBAR_WINDOW, QFILEDIALOG_DEFAULT_DIRECTORY
 from pyqt_openai.config_loader import CONFIG_MANAGER
-from pyqt_openai.gpt_widget.center.chatWidget import ChatWidget
-from pyqt_openai.gpt_widget.left_sidebar.chatNavWidget import ChatNavWidget
-from pyqt_openai.gpt_widget.prompt_gen_widget.promptGeneratorWidget import PromptGeneratorWidget
-from pyqt_openai.gpt_widget.right_sidebar.gptRightSideBarWidget import GPTRightSideBarWidget
+from pyqt_openai.chat_widget.center.chatWidget import ChatWidget
+from pyqt_openai.chat_widget.left_sidebar.chatNavWidget import ChatNavWidget
+from pyqt_openai.chat_widget.prompt_gen_widget.promptGeneratorWidget import PromptGeneratorWidget
+from pyqt_openai.chat_widget.right_sidebar.chatRightSideBarWidget import ChatRightSideBarWidget
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ChatThreadContainer, ChatMessageContainer, CustomizeParamsContainer
 from pyqt_openai.globals import DB, LLAMAINDEX_WRAPPER
@@ -23,7 +23,7 @@ from pyqt_openai.util.script import open_directory, get_generic_ext_out_of_qt_ex
 from pyqt_openai.widgets.button import Button
 
 
-class GPTMainWidget(QWidget):
+class ChatMainWidget(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.__initVal()
@@ -51,11 +51,11 @@ class GPTMainWidget(QWidget):
 
         self.__browser = self.__chatWidget.getChatBrowser()
 
-        self.__gptRightSideBarWidget = GPTRightSideBarWidget()
-        self.__gptRightSideBarWidget.onToggleJSON.connect(self.__chatWidget.toggleJSON)
+        self.__chatRightSideBarWidget = ChatRightSideBarWidget()
+        self.__chatRightSideBarWidget.onToggleJSON.connect(self.__chatWidget.toggleJSON)
 
         try:
-            self.__gptRightSideBarWidget.onDirectorySelected.connect(LLAMAINDEX_WRAPPER.set_directory)
+            self.__chatRightSideBarWidget.onDirectorySelected.connect(LLAMAINDEX_WRAPPER.set_directory)
         except Exception as e:
             QMessageBox.critical(self, LangClass.TRANSLATIONS["Error"], str(e))
 
@@ -117,7 +117,7 @@ class GPTMainWidget(QWidget):
 
         self.__rightSideBar = QSplitter()
         self.__rightSideBar.setOrientation(Qt.Orientation.Vertical)
-        self.__rightSideBar.addWidget(self.__gptRightSideBarWidget)
+        self.__rightSideBar.addWidget(self.__chatRightSideBarWidget)
         self.__rightSideBar.addWidget(self.__promptGeneratorWidget)
         self.__rightSideBar.setSizes([450, 550])
         self.__rightSideBar.setChildrenCollapsible(False)
@@ -161,7 +161,7 @@ class GPTMainWidget(QWidget):
 
         # Put this below to prevent the widgets pop up when app is opened
         self.__chatNavWidget.setVisible(self.__show_chat_list)
-        self.__gptRightSideBarWidget.setVisible(self.__show_setting)
+        self.__chatRightSideBarWidget.setVisible(self.__show_setting)
         self.__promptGeneratorWidget.setVisible(self.__show_prompt)
         self.__rightSideBar.setVisible(self.__show_setting or self.__show_prompt)
 
@@ -171,7 +171,7 @@ class GPTMainWidget(QWidget):
         CONFIG_MANAGER.set_general_property('show_chat_list', self.__show_chat_list)
 
     def toggleSetting(self, x):
-        self.__gptRightSideBarWidget.setVisible(x)
+        self.__chatRightSideBarWidget.setVisible(x)
         self.__show_setting = x
         CONFIG_MANAGER.set_general_property('show_setting', self.__show_setting)
         if not self.__promptGeneratorWidget.isVisible():
@@ -181,7 +181,7 @@ class GPTMainWidget(QWidget):
         self.__promptGeneratorWidget.setVisible(x)
         self.__show_prompt = x
         CONFIG_MANAGER.set_general_property('show_prompt', self.__show_prompt)
-        if not self.__gptRightSideBarWidget.isVisible():
+        if not self.__chatRightSideBarWidget.isVisible():
             self.__rightSideBar.setVisible(x)
 
     def toggleButtons(self, x):

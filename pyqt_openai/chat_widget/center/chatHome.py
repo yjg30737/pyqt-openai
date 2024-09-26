@@ -9,7 +9,7 @@ from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.widgets.linkLabel import LinkLabel
 
 
-class GPTHome(QScrollArea):
+class ChatHome(QScrollArea):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.__initUi()

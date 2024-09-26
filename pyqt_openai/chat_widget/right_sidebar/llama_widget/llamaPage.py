@@ -1,5 +1,5 @@
 from pyqt_openai.config_loader import CONFIG_MANAGER
-from pyqt_openai.gpt_widget.right_sidebar.llama_widget.listWidget import FileListWidget
+from pyqt_openai.chat_widget.right_sidebar.llama_widget.listWidget import FileListWidget
 from pyqt_openai.lang.translations import LangClass
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QFont

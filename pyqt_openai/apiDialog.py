@@ -32,7 +32,6 @@ class ApiDialog(QDialog):
                 'Llama': HOW_TO_GET_LLAMA_API_KEY_URL
             }[obj['display_name']]
 
-
     def __initUi(self):
         self.setWindowTitle('API Key')
 

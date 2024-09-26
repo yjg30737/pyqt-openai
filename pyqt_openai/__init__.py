@@ -109,7 +109,7 @@ LLAMAINDEX_URL = 'https://medium.com/@yjg30737/what-is-llamaindex-9b821d66568f'
 HOW_TO_GET_OPENAI_API_KEY_URL = 'https://medium.com/@yjg30737/how-to-get-your-openai-api-key-e2193850932e'
 HOW_TO_EXPORT_CHATGPT_CONVERSATION_HISTORY_URL = 'https://medium.com/@yjg30737/how-to-export-your-chatgpt-conversation-history-caa0946d6349'
 HOW_TO_REPLICATE = 'https://medium.com/@yjg30737/10a2cb983ceb'
-HOW_TO_GET_CLAUDE_API_KEY_URL = 'https://medium.com/@yjg30737/e771e42c182a'
+HOW_TO_GET_CLAUDE_API_KEY_URL = 'https://medium.com/@yjg30737/how-to-get-started-with-claude-api-step-by-step-guide-92b5e35ae0a0'
 HOW_TO_GET_GEMINI_API_KEY_URL = 'https://medium.com/@yjg30737/e61a84d64c69'
 HOW_TO_GET_LLAMA_API_KEY_URL = 'https://medium.com/@yjg30737/0dc1900e3606'
 

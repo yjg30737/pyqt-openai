@@ -2,8 +2,8 @@ from PySide6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QLabel
 from PySide6.QtCore import Signal
 
 from pyqt_openai import DEFAULT_SHORTCUT_FIND_CLOSE, ICON_CLOSE
-from pyqt_openai.gpt_widget.center.findTextWidget import FindTextWidget
-from pyqt_openai.gpt_widget.center.chatBrowser import ChatBrowser
+from pyqt_openai.chat_widget.center.findTextWidget import FindTextWidget
+from pyqt_openai.chat_widget.center.chatBrowser import ChatBrowser
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.widgets.button import Button
 

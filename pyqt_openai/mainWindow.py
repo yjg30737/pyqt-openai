@@ -21,7 +21,7 @@ from pyqt_openai.customizeDialog import CustomizeDialog
 from pyqt_openai.dalle_widget.dalleMainWidget import DallEMainWidget
 from pyqt_openai.doNotAskAgainDialog import DoNotAskAgainDialog
 from pyqt_openai.globals import init_llama, set_api_key
-from pyqt_openai.gpt_widget.gptMainWidget import GPTMainWidget
+from pyqt_openai.chat_widget.chatMainWidget import ChatMainWidget
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import SettingsParamsContainer, CustomizeParamsContainer
 from pyqt_openai.openaiApiWidget import OpenAIApiWidget
@@ -50,12 +50,12 @@ class MainWindow(QMainWindow):
     def __initUi(self):
         self.setWindowTitle(DEFAULT_APP_NAME)
 
-        self.__gptWidget = GPTMainWidget(self)
+        self.__chatMainWidget = ChatMainWidget(self)
         self.__dallEWidget = DallEMainWidget(self)
         self.__replicateWidget = ReplicateMainWidget(self)
 
         self.__mainWidget = QStackedWidget()
-        self.__mainWidget.addWidget(self.__gptWidget)
+        self.__mainWidget.addWidget(self.__chatMainWidget)
         self.__mainWidget.addWidget(self.__dallEWidget)
         self.__mainWidget.addWidget(self.__replicateWidget)
 
@@ -78,7 +78,7 @@ class MainWindow(QMainWindow):
         self.resize(*APP_INITIAL_WINDOW_SIZE)
 
         self.__refreshColumns()
-        self.__gptWidget.refreshCustomizedInformation(self.__customizeParamsContainer)
+        self.__chatMainWidget.refreshCustomizedInformation(self.__customizeParamsContainer)
 
     def __setActions(self):
         self.__langAction = QAction()
@@ -305,7 +305,7 @@ class MainWindow(QMainWindow):
         init_llama()
 
     def __setAIEnabled(self, f):
-        self.__gptWidget.setAIEnabled(f)
+        self.__chatMainWidget.setAIEnabled(f)
         self.__dallEWidget.setAIEnabled(f)
 
     def __showApiDialog(self):
@@ -361,7 +361,7 @@ class MainWindow(QMainWindow):
             container = dialog.getParam()
             self.__customizeParamsContainer = container
             self.__refreshContainer(container)
-            self.__gptWidget.refreshCustomizedInformation(container)
+            self.__chatMainWidget.refreshCustomizedInformation(container)
 
     def __aiTypeChanged(self, i):
         self.__mainWidget.setCurrentIndex(i)
@@ -429,7 +429,7 @@ class MainWindow(QMainWindow):
                     restart_app()
 
     def __refreshColumns(self):
-        self.__gptWidget.setColumns(self.__settingsParamContainer.chat_column_to_show)
+        self.__chatMainWidget.setColumns(self.__settingsParamContainer.chat_column_to_show)
         image_column_to_show = self.__settingsParamContainer.image_column_to_show
         if image_column_to_show.__contains__('data'):
             image_column_to_show.remove('data')
