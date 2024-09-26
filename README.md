@@ -2,7 +2,7 @@
 <div align="center">
   <img src="https://github.com/user-attachments/assets/ab169535-8af0-40c7-848d-59a7e5e4b304"/>
 
-  <b>A cross-platform desktop app for LLM such as GPT, Claude, Gemini, Llama chatbot interaction and image generation, offering customizable features, local chat history, and enhanced performance—no browser required!</b>
+  <b>A cross-platform AI desktop chatbot application for LLM such as GPT, Claude, Gemini, Llama chatbot interaction and image generation, offering customizable features, local chat history, and enhanced performance—no browser required!</b>
 
 <hr>
 
