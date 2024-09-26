@@ -2,6 +2,10 @@
 <div align="center">
   <img src="https://github.com/user-attachments/assets/ab169535-8af0-40c7-848d-59a7e5e4b304"/>
 
+  <b>A cross-platform desktop app for LLM such as GPT, Claude, Gemini, Llama chatbot interaction and image generation, offering customizable features, local chat history, and enhanced performance—no browser required!</b>
+
+<hr>
+
   [![](https://dcbadge.vercel.app/api/server/cHekprskVE)](https://discord.gg/cHekprskVE)
   
   [![PyPI - Version](https://img.shields.io/pypi/v/pyqt-openai?logo=pypi&logoColor=white)](https://pypi.org/project/pyqt-openai/) [![Downloads](https://static.pepy.tech/badge/pyqt-openai)](https://pepy.tech/project/pyqt-openai) [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/pyqt-openai?logo=python&logoColor=gold)](https://pypi.org/project/pyqt-openai/)
@@ -13,7 +17,7 @@
 
 ## What is VividNode? 🤔
 
-**VividNode** is a cross-platform desktop application that allows you to interact directly with GPT chatbots (like ChatGPT) and generate images without needing a browser. Built with PySide6, VividNode (formerly known as pyqt-openai) supports Windows, Mac, and Linux, and securely stores your chat history locally in a database.
+**VividNode** is a cross-platform desktop application that allows you to interact directly with LLM(GPT, Claude, Gemini, Llama) chatbots and generate images without needing a browser. Built with PySide6, VividNode (formerly known as pyqt-openai) supports Windows, Mac, and Linux, and securely stores your chat history locally in a database.
 
 ### Key Features:
 - **Chat Interface**: Enjoy a seamless chat experience with a customizable interface, fast thread and message search, and advanced conversation settings. You can also import/export chat histories and use prompt management tools for efficient prompt engineering.
