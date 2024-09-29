@@ -17,7 +17,7 @@ from PySide6.QtCore import QThread, Signal
 from openai import OpenAI
 
 from pyqt_openai import STT_MODEL, OPENAI_ENDPOINT_DICT, PLATFORM_MODEL_DICT, DEFAULT_GEMINI_MODEL, LLAMA_REQUEST_URL, \
-    OPENAI_CHAT_ENDPOINT
+    OPENAI_CHAT_ENDPOINT, O1_MODELS
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ChatMessageContainer
@@ -94,8 +94,11 @@ def get_gpt_argument(model, system, messages, cur_text, temperature, top_p, freq
                      json_content=None
                      ):
     try:
-        system_obj = get_message_obj("system", system)
-        messages = [system_obj] + messages
+        if model in O1_MODELS:
+            stream = False
+        else:
+            system_obj = get_message_obj("system", system)
+            messages = [system_obj] + messages
 
         # Form argument
         openai_arg = {
@@ -196,6 +199,23 @@ def get_argument(model, system, messages, cur_text, temperature, top_p, frequenc
         print(e)
         raise e
 
+def stream_response(platform, response):
+    if platform == 'OpenAI':
+        for chunk in response:
+            response_text = chunk.choices[0].delta.content
+            yield response_text
+    elif platform == 'Gemini':
+        for chunk in response:
+            yield chunk.text
+    elif platform == 'Claude':
+        with response as stream:
+            for text in stream.text_stream:
+                yield text
+    elif platform == 'Llama':
+        for chunk in response:
+            response_text = chunk.choices[0].delta.content
+            yield response_text
+
 def get_response(args, get_content_only=True):
     platform = get_platform_from_model(args['model'])
     if platform == 'OpenAI':
@@ -203,11 +223,11 @@ def get_response(args, get_content_only=True):
             **args
         )
         if args['stream']:
-            for chunk in response:
-                response_text = chunk.choices[0].delta.content
-                yield response_text
+            return stream_response(platform, response)
         else:
             if get_content_only:
+                if args['model'] in O1_MODELS:
+                    return str(response.choices[0].message.content)
                 return response.choices[0].message.content
             else:
                 return response
@@ -225,8 +245,7 @@ def get_response(args, get_content_only=True):
 
         if args['stream']:
             response = chat.send_message(args['messages'][-1]['parts'], stream=args['stream'])
-            for chunk in response:
-                yield chunk.text
+            return stream_response(platform, response)
         else:
             response = chat.send_message(args['messages'][-1]['parts'])
             if get_content_only:
@@ -235,13 +254,12 @@ def get_response(args, get_content_only=True):
                 return response
     elif platform == 'Claude':
         if args['stream']:
-            with CLAUDE_CLIENT.messages.stream(
+            response = CLAUDE_CLIENT.messages.stream(
                     model=args['model'],
                     max_tokens=1024,
                     messages=args['messages']
-            ) as stream:
-                for text in stream.text_stream:
-                    yield text
+            )
+            return stream_response(platform, response)
         else:
             response = CLAUDE_CLIENT.messages.create(
                 model=args['model'],
@@ -257,9 +275,7 @@ def get_response(args, get_content_only=True):
             **args
         )
         if args['stream']:
-            for chunk in response:
-                response_text = chunk.choices[0].delta.content
-                yield response_text
+            return stream_response(platform, response)
         else:
             if get_content_only:
                 return response.choices[0].message.content

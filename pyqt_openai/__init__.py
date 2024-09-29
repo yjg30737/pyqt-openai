@@ -335,7 +335,7 @@ STT_MODEL = 'whisper-1'
 # Endpoint
 # https://platform.openai.com/docs/models/model-endpoint-compatibility
 OPENAI_ENDPOINT_DICT = {
-    '/v1/chat/completions': ['gpt-4o', 'gpt-4o-mini'],
+    '/v1/chat/completions': ['gpt-4o', 'gpt-4o-mini', 'o1-preview', 'o1-mini'],
     '/v1/completions': [
         'text-davinci-003', 'text-davinci-002', 'text-curie-001', 'text-babbage-001', 'text-ada-001', 'davinci',
         'curie', 'babbage', 'ada'
@@ -381,9 +381,12 @@ DEFAULT_API_CONFIGS = [
     }
 ]
 
+# This has to be managed separately since some of the arguments are different with usual models
+O1_MODELS = ['o1-preview', 'o1-mini']
+
 # Dictionary that stores the platform and model pairs
 PLATFORM_MODEL_DICT = {
-    'OpenAI': ['gpt-4o', 'gpt-4o-mini'],
+    'OpenAI': ['gpt-4o', 'gpt-4o-mini']+O1_MODELS,
     'Gemini': ['gemini-1.5-flash'],
     'Claude': ['claude-3-5-sonnet-20240620'],
     'Llama': ['llama3-70b']

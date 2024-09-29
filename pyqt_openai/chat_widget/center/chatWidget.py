@@ -158,90 +158,53 @@ class ChatWidget(QWidget):
                     QMessageBox.critical(self, LangClass.TRANSLATIONS["Error"], f'{LangClass.TRANSLATIONS["JSON content is not valid. Please check the JSON content field."]}\n\n{e}')
                     return
 
+            param = get_argument(model, system, messages, cur_text, temperature, top_p, frequency_penalty,
+                                 presence_penalty, stream,
+                                 use_max_tokens, max_tokens,
+                                 images,
+                                 is_llama_available, is_json_response_available, json_content)
+
+            # If there is no current conversation selected on the list to the left, make a new one.
+            if self.__mainWidget.currentIndex() == 0:
+                self.addThread.emit()
+
+            # Additional information of user's input
+            additional_info = {
+                'role': 'user',
+                'content': cur_text,
+                'model_name': param['model'],
+                'finish_reason': '',
+                'prompt_tokens': '',
+                'completion_tokens': '',
+                'total_tokens': '',
+
+                'is_json_response_available': is_json_response_available,
+            }
+
+            container_param = {k: v for k, v in {**param, **additional_info}.items() if
+                               k in ChatMessageContainer.get_keys()}
+
+            # Create a container for the user's input and output from the chatbot
+            container = ChatMessageContainer(**container_param)
+
+            query_text = self.__prompt.getContent()
+            self.__browser.showLabel(query_text, False, container)
+
             # Get parameters for OpenAI
-            if model in get_openai_chat_model():
-                param = get_argument(model, system, messages, cur_text, temperature, top_p, frequency_penalty, presence_penalty, stream,
-                                     use_max_tokens, max_tokens,
-                                     images,
-                                     is_llama_available, is_json_response_available, json_content)
-
-                # If there is no current conversation selected on the list to the left, make a new one.
-                if self.__mainWidget.currentIndex() == 0:
-                    self.addThread.emit()
-
-                # Additional information of user's input
-                additional_info = {
-                    'role': 'user',
-                    'content': cur_text,
-                    'model_name': param['model'],
-                    'finish_reason': '',
-                    'prompt_tokens': '',
-                    'completion_tokens': '',
-                    'total_tokens': '',
-
-                    'is_json_response_available': is_json_response_available,
-                }
-
-                container_param = {k: v for k, v in {**param, **additional_info}.items() if
-                                   k in ChatMessageContainer.get_keys()}
-
-                # Create a container for the user's input and output from the chatbot
-                container = ChatMessageContainer(**container_param)
-
-                query_text = self.__prompt.getContent()
-                self.__browser.showLabel(query_text, False, container)
-
+            if is_llama_available:
                 # Run a different thread based on whether the llama-index is enabled or not.
-                if is_llama_available:
-                    self.__t = LlamaOpenAIThread(param, container, LLAMAINDEX_WRAPPER, query_text)
-                else:
-                    self.__t = GPTThread(param, info=container)
-                self.__t.started.connect(self.__beforeGenerated)
-                self.__t.replyGenerated.connect(self.__browser.showLabel)
-                self.__t.streamFinished.connect(self.__browser.streamFinished)
-                self.__t.start()
-                self.__t.finished.connect(self.__afterGenerated)
-
-                # Remove image files widget from the window
-                self.__prompt.resetUploadImageFileWidget()
+                self.__t = LlamaOpenAIThread(param, container, LLAMAINDEX_WRAPPER, query_text)
             else:
-                param = get_argument(model, system, messages, cur_text, temperature, top_p, frequency_penalty, presence_penalty, stream,
-                                     use_max_tokens, max_tokens,
-                                     images,
-                                     is_llama_available, is_json_response_available, json_content)
-
-                # If there is no current conversation selected on the list to the left, make a new one.
-                if self.__mainWidget.currentIndex() == 0:
-                    self.addThread.emit()
-
-                # Additional information of user's input
-                additional_info = {
-                    'role': 'user',
-                    'content': cur_text,
-                    'model_name': param['model'],
-                    'finish_reason': '',
-                    'prompt_tokens': '',
-                    'completion_tokens': '',
-                    'total_tokens': '',
-
-                    'is_json_response_available': is_json_response_available,
-                }
-
-                container_param = {k: v for k, v in {**param, **additional_info}.items() if
-                                   k in ChatMessageContainer.get_keys()}
-
-                # Create a container for the user's input and output from the chatbot
-                container = ChatMessageContainer(**container_param)
-
-                query_text = self.__prompt.getContent()
-                self.__browser.showLabel(query_text, False, container)
-
                 self.__t = ChatThread(param, info=container)
-                self.__t.started.connect(self.__beforeGenerated)
-                self.__t.replyGenerated.connect(self.__browser.showLabel)
-                self.__t.streamFinished.connect(self.__browser.streamFinished)
-                self.__t.start()
-                self.__t.finished.connect(self.__afterGenerated)
+
+            self.__t.started.connect(self.__beforeGenerated)
+            self.__t.replyGenerated.connect(self.__browser.showLabel)
+            self.__t.streamFinished.connect(self.__browser.streamFinished)
+            self.__t.start()
+            self.__t.finished.connect(self.__afterGenerated)
+
+            # Remove image files widget from the window
+            self.__prompt.resetUploadImageFileWidget()
 
         except Exception as e:
             # get the line of error and filename
