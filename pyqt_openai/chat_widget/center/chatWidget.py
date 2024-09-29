@@ -10,7 +10,7 @@ from pyqt_openai.chat_widget.center.chatBrowser import ChatBrowser
 from pyqt_openai.chat_widget.center.chatHome import ChatHome
 from pyqt_openai.chat_widget.center.menuWidget import MenuWidget
 from pyqt_openai.chat_widget.center.prompt import Prompt
-from pyqt_openai.chat_widget.chatThread import LlamaOpenAIThread, GPTThread
+from pyqt_openai.chat_widget.chatThread import LlamaOpenAIThread
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ChatMessageContainer
 from pyqt_openai.widgets.notifier import NotifierWidget
