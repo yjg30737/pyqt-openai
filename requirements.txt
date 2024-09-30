@@ -9,3 +9,6 @@ anthropic
 google-generativeai
 llama-index
 replicate
+
+g4f
+curl_cffi

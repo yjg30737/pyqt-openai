@@ -1,10 +1,8 @@
-import openai
 from llama_index.core.base.response.schema import StreamingResponse
 from PySide6.QtCore import QThread, Signal
 
 from pyqt_openai.models import ChatMessageContainer
-from pyqt_openai.globals import OPENAI_CLIENT
-from pyqt_openai.globals import form_response
+
 
 class LlamaOpenAIThread(QThread):
     replyGenerated = Signal(str, bool, ChatMessageContainer)

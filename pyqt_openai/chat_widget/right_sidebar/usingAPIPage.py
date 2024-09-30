@@ -1,6 +1,6 @@
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import QWidget, QDoubleSpinBox, QSpinBox, QFormLayout, QSizePolicy, QComboBox, QTextEdit, \
-    QLabel, QVBoxLayout, QCheckBox, QPushButton, QScrollArea, QGroupBox
+    QLabel, QVBoxLayout, QCheckBox, QPushButton, QScrollArea, QGroupBox, QHBoxLayout
 
 from pyqt_openai import DEFAULT_SHORTCUT_JSON_MODE, OPENAI_TEMPERATURE_RANGE, OPENAI_TEMPERATURE_STEP, \
     MAX_TOKENS_RANGE, TOP_P_RANGE, TOP_P_STEP, FREQUENCY_PENALTY_RANGE, PRESENCE_PENALTY_STEP, PRESENCE_PENALTY_RANGE, \
@@ -12,7 +12,7 @@ from pyqt_openai.util.script import getSeparator
 from pyqt_openai.widgets.linkLabel import LinkLabel
 
 
-class ChatPage(QWidget):
+class UsingAPIPage(QWidget):
     onToggleLlama = Signal(bool)
     onToggleJSON = Signal(bool)
 
@@ -49,6 +49,14 @@ class ChatPage(QWidget):
         modelCmbBox.addItems(get_chat_model())
         modelCmbBox.setCurrentText(self.__model)
         modelCmbBox.currentTextChanged.connect(self.__modelChanged)
+
+        lay = QHBoxLayout()
+        lay.addWidget(QLabel(LangClass.TRANSLATIONS['Model']))
+        lay.addWidget(modelCmbBox)
+        lay.setContentsMargins(0, 0, 0, 0)
+
+        selectModelWidget = QWidget()
+        selectModelWidget.setLayout(lay)
 
         self.__warningLbl = QLabel()
         self.__warningLbl.setStyleSheet('color: red;')
@@ -164,7 +172,7 @@ class ChatPage(QWidget):
         lay.addWidget(systemlbl)
         lay.addWidget(self.__systemTextEdit)
         lay.addWidget(saveSystemBtn)
-        lay.addWidget(modelCmbBox)
+        lay.addWidget(selectModelWidget)
         lay.addWidget(self.__warningLbl)
         lay.addWidget(streamChkBox)
         lay.addWidget(self.__jsonChkBox)

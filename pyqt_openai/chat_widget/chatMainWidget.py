@@ -53,6 +53,9 @@ class ChatMainWidget(QWidget):
 
         self.__chatRightSideBarWidget = ChatRightSideBarWidget()
         self.__chatRightSideBarWidget.onToggleJSON.connect(self.__chatWidget.toggleJSON)
+        self.__chatRightSideBarWidget.onTabChanged.connect(self.__chatWidget.setG4F)
+
+        self.__chatWidget.setG4F(self.__chatRightSideBarWidget.currentTabIdx())
 
         try:
             self.__chatRightSideBarWidget.onDirectorySelected.connect(LLAMAINDEX_WRAPPER.set_directory)

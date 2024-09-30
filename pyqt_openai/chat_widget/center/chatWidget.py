@@ -28,6 +28,7 @@ class ChatWidget(QWidget):
     def __initVal(self):
         self.__cur_id = 0
         self.__notify_finish = CONFIG_MANAGER.get_general_property('notify_finish')
+        self.__is_g4f = False
 
     def __initUi(self):
         # Main widget
@@ -195,7 +196,7 @@ class ChatWidget(QWidget):
                 # Run a different thread based on whether the llama-index is enabled or not.
                 self.__t = LlamaOpenAIThread(param, container, LLAMAINDEX_WRAPPER, query_text)
             else:
-                self.__t = ChatThread(param, info=container)
+                self.__t = ChatThread(param, info=container, is_g4f=self.__is_g4f)
 
             self.__t.started.connect(self.__beforeGenerated)
             self.__t.replyGenerated.connect(self.__browser.showLabel)
@@ -248,6 +249,10 @@ class ChatWidget(QWidget):
         window.showNormal()
         window.raise_()
         window.activateWindow()
+
+    def setG4F(self, idx):
+        # Decide whether to use G4F based on the current tab index
+        self.__is_g4f = idx == 0
 
     def toggleJSON(self, f):
         self.__prompt.toggleJSON(f)

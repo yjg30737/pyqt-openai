@@ -15,6 +15,7 @@ import google.generativeai as genai
 import pyaudio
 from PySide6.QtCore import QThread, Signal
 from openai import OpenAI
+from g4f.client import Client
 
 from pyqt_openai import STT_MODEL, OPENAI_ENDPOINT_DICT, PLATFORM_MODEL_DICT, DEFAULT_GEMINI_MODEL, LLAMA_REQUEST_URL, \
     OPENAI_CHAT_ENDPOINT, O1_MODELS
@@ -29,6 +30,8 @@ os.environ['OPENAI_API_KEY'] = ''
 DB = SqliteDatabase()
 
 LLAMAINDEX_WRAPPER = GPTLLamaIndexWrapper()
+
+G4F_CLIENT = Client()
 
 OPENAI_CLIENT = OpenAI(api_key='')
 GEMINI_CLIENT = genai.GenerativeModel(DEFAULT_GEMINI_MODEL)
@@ -199,24 +202,28 @@ def get_argument(model, system, messages, cur_text, temperature, top_p, frequenc
         print(e)
         raise e
 
-def stream_response(platform, response):
-    if platform == 'OpenAI':
+def stream_response(platform, response, is_g4f=False):
+    if is_g4f:
         for chunk in response:
-            response_text = chunk.choices[0].delta.content
-            yield response_text
-    elif platform == 'Gemini':
-        for chunk in response:
-            yield chunk.text
-    elif platform == 'Claude':
-        with response as stream:
-            for text in stream.text_stream:
-                yield text
-    elif platform == 'Llama':
-        for chunk in response:
-            response_text = chunk.choices[0].delta.content
-            yield response_text
+            yield chunk.choices[0].delta.content
+    else:
+        if platform == 'OpenAI':
+            for chunk in response:
+                response_text = chunk.choices[0].delta.content
+                yield response_text
+        elif platform == 'Gemini':
+            for chunk in response:
+                yield chunk.text
+        elif platform == 'Claude':
+            with response as stream:
+                for text in stream.text_stream:
+                    yield text
+        elif platform == 'Llama':
+            for chunk in response:
+                response_text = chunk.choices[0].delta.content
+                yield response_text
 
-def get_response(args, get_content_only=True):
+def get_api_response(args, get_content_only=True):
     platform = get_platform_from_model(args['model'])
     if platform == 'OpenAI':
         response = OPENAI_CLIENT.chat.completions.create(
@@ -255,9 +262,9 @@ def get_response(args, get_content_only=True):
     elif platform == 'Claude':
         if args['stream']:
             response = CLAUDE_CLIENT.messages.stream(
-                    model=args['model'],
-                    max_tokens=1024,
-                    messages=args['messages']
+                model=args['model'],
+                max_tokens=1024,
+                messages=args['messages']
             )
             return stream_response(platform, response)
         else:
@@ -282,19 +289,24 @@ def get_response(args, get_content_only=True):
             else:
                 return response
 
-def form_response(response, info: ChatMessageContainer):
-    info.content = response.choices[0].message.content
-    info.prompt_tokens = response.usage.prompt_tokens
-    info.completion_tokens = response.usage.completion_tokens
-    info.total_tokens = response.usage.total_tokens
-    info.finish_reason = response.choices[0].finish_reason
-    return info
+def get_response(args, get_content_only=True, is_g4f=False):
+    if is_g4f:
+        response = G4F_CLIENT.chat.completions.create(
+            model=args['model'],
+            stream=args['stream'],
+            messages=args['messages'],
+        )
+        # Platform doesn't matter in G4F
+        return stream_response(platform='', response=response, is_g4f=True)
+    else:
+        return get_api_response(args, get_content_only)
 
 def init_llama():
     llama_index_directory = CONFIG_MANAGER.get_general_property('llama_index_directory')
     if llama_index_directory and CONFIG_MANAGER.get_general_property(
             'use_llama_index'):
         LLAMAINDEX_WRAPPER.set_directory(llama_index_directory)
+
 
 # TTS
 class StreamThread(QThread):
@@ -433,10 +445,11 @@ class ChatThread(QThread):
     replyGenerated = Signal(str, bool, ChatMessageContainer)
     streamFinished = Signal(ChatMessageContainer)
 
-    def __init__(self, input_args, info: ChatMessageContainer):
+    def __init__(self, input_args, info: ChatMessageContainer, is_g4f=False):
         super().__init__()
         self.__input_args = input_args
         self.__stop = False
+        self.__is_g4f = is_g4f
 
         self.__info = info
         self.__info.role = 'assistant'
@@ -445,32 +458,59 @@ class ChatThread(QThread):
         self.__stop = True
 
     def run(self):
-        try:
-            if self.__input_args['stream']:
-                response = get_response(self.__input_args)
-                for chunk in response:
-                    if self.__stop:
-                        self.__info.finish_reason = 'stopped by user'
+            if self.__is_g4f:
+                try:
+                    if self.__input_args['stream']:
+                        response = get_response(self.__input_args, is_g4f=True)
+                        for chunk in response:
+                            if self.__stop:
+                                self.__info.finish_reason = 'stopped by user'
+                                self.streamFinished.emit(self.__info)
+                                break
+                            else:
+                                self.replyGenerated.emit(chunk, True, self.__info)
+                        self.__info.finish_reason = 'stop'
                         self.streamFinished.emit(self.__info)
-                        break
                     else:
-                        self.replyGenerated.emit(chunk, True, self.__info)
-                self.__info.finish_reason = 'stop'
-                self.streamFinished.emit(self.__info)
-            else:
-                response = get_response(self.__input_args)
+                        response = get_response(self.__input_args, is_g4f=True)
 
-                self.__info.content = response
-                # TODO tokenizer
-                self.__info.prompt_tokens = ''
-                self.__info.completion_tokens = ''
-                self.__info.total_tokens = ''
-                self.__info.finish_reason = 'stop'
-                self.replyGenerated.emit(response, False, self.__info)
-        except Exception as e:
-            self.__info.finish_reason = 'Error'
-            self.__info.content = f'<p style="color:red">{e}</p>'
-            self.replyGenerated.emit(self.__info.content, False, self.__info)
+                        self.__info.content = response
+                        self.__info.prompt_tokens = ''
+                        self.__info.completion_tokens = ''
+                        self.__info.total_tokens = ''
+                        self.__info.finish_reason = 'stop'
+                        self.replyGenerated.emit(response, False, self.__info)
+                except Exception as e:
+                    self.__info.finish_reason = 'Error'
+                    self.__info.content = f'<p style="color:red">{e}</p>'
+                    self.replyGenerated.emit(self.__info.content, False, self.__info)
+            else:
+                try:
+                    if self.__input_args['stream']:
+                        response = get_response(self.__input_args)
+                        for chunk in response:
+                            if self.__stop:
+                                self.__info.finish_reason = 'stopped by user'
+                                self.streamFinished.emit(self.__info)
+                                break
+                            else:
+                                self.replyGenerated.emit(chunk, True, self.__info)
+                        self.__info.finish_reason = 'stop'
+                        self.streamFinished.emit(self.__info)
+                    else:
+                        response = get_response(self.__input_args)
+
+                        self.__info.content = response
+                        # TODO tokenizer
+                        self.__info.prompt_tokens = ''
+                        self.__info.completion_tokens = ''
+                        self.__info.total_tokens = ''
+                        self.__info.finish_reason = 'stop'
+                        self.replyGenerated.emit(response, False, self.__info)
+                except Exception as e:
+                    self.__info.finish_reason = 'Error'
+                    self.__info.content = f'<p style="color:red">{e}</p>'
+                    self.replyGenerated.emit(self.__info.content, False, self.__info)
 
 
 # To manage only one TTS stream at a time

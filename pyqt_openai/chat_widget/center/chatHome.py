@@ -15,8 +15,7 @@ class ChatHome(QScrollArea):
         self.__initUi()
 
     def __initUi(self):
-        title = QLabel(f"Welcome to {DEFAULT_APP_NAME}\n"
-                       f"main page!", self)
+        title = QLabel(f"Welcome to {DEFAULT_APP_NAME}!", self)
         title.setFont(QFont('Arial', 32))
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
 

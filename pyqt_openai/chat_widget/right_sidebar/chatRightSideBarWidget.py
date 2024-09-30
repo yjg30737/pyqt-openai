@@ -3,12 +3,14 @@ from functools import partial
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QScrollArea, QWidget, QTabWidget, QGridLayout
 
-from pyqt_openai.chat_widget.right_sidebar.chatPage import ChatPage
+from pyqt_openai.chat_widget.right_sidebar.usingAPIPage import UsingAPIPage
 from pyqt_openai.chat_widget.right_sidebar.llama_widget.llamaPage import LlamaPage
+from pyqt_openai.chat_widget.right_sidebar.usingG4FPage import UsingG4FPage
 from pyqt_openai.config_loader import CONFIG_MANAGER
 
 
 class ChatRightSideBarWidget(QScrollArea):
+    onTabChanged = Signal(int)
     onDirectorySelected = Signal(str)
     onToggleJSON = Signal(bool)
 
@@ -24,20 +26,23 @@ class ChatRightSideBarWidget(QScrollArea):
 
     def __initUi(self):
         tabWidget = QTabWidget()
+        tabWidget.currentChanged.connect(self.onTabChanged.emit)
 
-        chatPage = ChatPage()
+        usingG4FPage = UsingG4FPage()
+        usingAPIPage = UsingAPIPage()
         self.__llamaPage = LlamaPage()
         self.__llamaPage.onDirectorySelected.connect(self.__onDirectorySelected)
 
-        tabWidget.addTab(chatPage, 'LLM')
+        tabWidget.addTab(usingG4FPage, 'G4F')
+        tabWidget.addTab(usingAPIPage, 'LLM')
         tabWidget.addTab(self.__llamaPage, 'LlamaIndex')
         tabWidget.currentChanged.connect(self.__tabChanged)
-        tabWidget.setTabEnabled(1, self.__use_llama_index)
+        tabWidget.setTabEnabled(2, self.__use_llama_index)
         tabWidget.setCurrentIndex(self.__cur_idx)
 
-        partial_func = partial(tabWidget.setTabEnabled, 1)
-        chatPage.onToggleLlama.connect(lambda x: partial_func(x))
-        chatPage.onToggleJSON.connect(self.onToggleJSON)
+        partial_func = partial(tabWidget.setTabEnabled, 2)
+        usingAPIPage.onToggleLlama.connect(lambda x: partial_func(x))
+        usingAPIPage.onToggleJSON.connect(self.onToggleJSON)
 
         lay = QGridLayout()
         lay.addWidget(tabWidget)
@@ -51,9 +56,13 @@ class ChatRightSideBarWidget(QScrollArea):
         self.setStyleSheet('QScrollArea { border: 0 }')
 
     def __tabChanged(self, idx):
-        CONFIG_MANAGER.set_general_property('TAB_IDX', idx)
+        self.__cur_idx = idx
+        CONFIG_MANAGER.set_general_property('TAB_IDX', self.__cur_idx)
 
     def __onDirectorySelected(self, selected_dirname):
         self.__llama_index_directory = selected_dirname
         CONFIG_MANAGER.set_general_property('llama_index_directory', selected_dirname)
         self.onDirectorySelected.emit(selected_dirname)
+
+    def currentTabIdx(self):
+        return self.__cur_idx
