@@ -97,6 +97,10 @@ APP_INITIAL_WINDOW_SIZE = (1280, 768)
 TRANSPARENT_RANGE = 20, 100
 TRANSPARENT_INIT_VAL = 100
 
+LARGE_LABEL_PARAM = ('Arial', 32)
+MEDIUM_LABEL_PARAM = ('Arial', 16)
+SMALL_LABEL_PARAM = ('Arial', 10)
+
 LICENSE = pyproject_data["project"]["license"]['text']
 LICENSE_URL = 'https://github.com/yjg30737/pyqt-openai/blob/main/LICENSE'
 KOFI_URL = 'https://ko-fi.com/junggyuyoon'

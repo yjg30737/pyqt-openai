@@ -4,7 +4,7 @@ from PySide6.QtCore import Signal, Qt
 from PySide6.QtGui import QFont, QColor
 from PySide6.QtWidgets import QHBoxLayout, QLineEdit, QPushButton, QLabel, QWidget
 
-from pyqt_openai import OPENAI_REQUEST_URL
+from pyqt_openai import OPENAI_REQUEST_URL, SMALL_LABEL_PARAM
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.globals import set_openai_enabled, set_openai_api_key
@@ -19,7 +19,7 @@ class OpenAIApiWidget(QWidget):
 
     def __initUi(self):
         self.__apiCheckPreviewLbl = QLabel()
-        self.__apiCheckPreviewLbl.setFont(QFont('Arial', 10))
+        self.__apiCheckPreviewLbl.setFont(QFont(SMALL_LABEL_PARAM))
 
         apiLbl = QLabel(LangClass.TRANSLATIONS['OpenAI API Key'])
 
