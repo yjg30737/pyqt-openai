@@ -19,7 +19,7 @@ class OpenAIApiWidget(QWidget):
 
     def __initUi(self):
         self.__apiCheckPreviewLbl = QLabel()
-        self.__apiCheckPreviewLbl.setFont(QFont(SMALL_LABEL_PARAM))
+        self.__apiCheckPreviewLbl.setFont(QFont(*SMALL_LABEL_PARAM))
 
         apiLbl = QLabel(LangClass.TRANSLATIONS['OpenAI API Key'])
 

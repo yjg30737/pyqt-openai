@@ -25,8 +25,6 @@ from pyqt_openai.models import ChatMessageContainer
 from pyqt_openai.sqlite import SqliteDatabase
 from pyqt_openai.util.llamapage_script import GPTLLamaIndexWrapper
 
-os.environ['OPENAI_API_KEY'] = ''
-
 DB = SqliteDatabase()
 
 LLAMAINDEX_WRAPPER = GPTLLamaIndexWrapper()
@@ -41,21 +39,9 @@ LLAMA_CLIENT = OpenAI(
     base_url=LLAMA_REQUEST_URL
 )
 
-OPENAI_API_VALID = False
-
-def set_openai_enabled(f):
-    global OPENAI_API_VALID
-    OPENAI_API_VALID = f
-    return OPENAI_API_VALID
-
-def is_openai_enabled():
-    return OPENAI_API_VALID
-
-def set_openai_api_key(api_key):
-    os.environ['OPENAI_API_KEY'] = api_key
-    OPENAI_CLIENT.api_key = os.environ['OPENAI_API_KEY']
-
 def set_api_key(env_var_name, api_key):
+    if env_var_name == 'OPENAI_API_KEY':
+        OPENAI_CLIENT.api_key = api_key
     if env_var_name == 'GEMINI_API_KEY':
         genai.configure(api_key=api_key)
     if env_var_name == 'CLAUDE_API_KEY':
@@ -289,15 +275,23 @@ def get_api_response(args, get_content_only=True):
             else:
                 return response
 
+def get_g4f_response(args, get_content_only=True):
+    response = G4F_CLIENT.chat.completions.create(
+        model=args['model'],
+        stream=args['stream'],
+        messages=args['messages'],
+    )
+    if args['stream']:
+        return stream_response(platform='', response=response, is_g4f=True)
+    else:
+        if get_content_only:
+            return response.choices[0].message.content
+        else:
+            return response
+
 def get_response(args, get_content_only=True, is_g4f=False):
     if is_g4f:
-        response = G4F_CLIENT.chat.completions.create(
-            model=args['model'],
-            stream=args['stream'],
-            messages=args['messages'],
-        )
-        # Platform doesn't matter in G4F
-        return stream_response(platform='', response=response, is_g4f=True)
+        return get_g4f_response(args, get_content_only)
     else:
         return get_api_response(args, get_content_only)
 
@@ -306,7 +300,6 @@ def init_llama():
     if llama_index_directory and CONFIG_MANAGER.get_general_property(
             'use_llama_index'):
         LLAMAINDEX_WRAPPER.set_directory(llama_index_directory)
-
 
 # TTS
 class StreamThread(QThread):

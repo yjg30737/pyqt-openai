@@ -1,4 +1,3 @@
-import os
 import webbrowser
 
 from PySide6.QtCore import Qt
@@ -13,24 +12,21 @@ from pyqt_openai import DEFAULT_SHORTCUT_FULL_SCREEN, \
     ICON_CLOSE, \
     DEFAULT_SHORTCUT_SETTING, TRANSPARENT_RANGE, TRANSPARENT_INIT_VAL, ICON_GITHUB, ICON_DISCORD, PAYPAL_URL, KOFI_URL, \
     DISCORD_URL, GITHUB_URL, DEFAULT_SHORTCUT_FOCUS_MODE, ICON_FOCUS_MODE, ICON_SETTING, DEFAULT_SHORTCUT_SHOW_TOOLBAR, \
-    DEFAULT_SHORTCUT_SHOW_SECONDARY_TOOLBAR, DEFAULT_SHORTCUT_STACK_ON_TOP, DEFAULT_API_CONFIGS
+    DEFAULT_SHORTCUT_SHOW_SECONDARY_TOOLBAR, DEFAULT_SHORTCUT_STACK_ON_TOP
 from pyqt_openai.aboutDialog import AboutDialog
-from pyqt_openai.apiDialog import ApiDialog
+from pyqt_openai.chat_widget.chatMainWidget import ChatMainWidget
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.customizeDialog import CustomizeDialog
 from pyqt_openai.dalle_widget.dalleMainWidget import DallEMainWidget
 from pyqt_openai.doNotAskAgainDialog import DoNotAskAgainDialog
 from pyqt_openai.globals import init_llama, set_api_key
-from pyqt_openai.chat_widget.chatMainWidget import ChatMainWidget
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import SettingsParamsContainer, CustomizeParamsContainer
-from pyqt_openai.openaiApiWidget import OpenAIApiWidget
 from pyqt_openai.replicate_widget.replicateMainWidget import ReplicateMainWidget
 from pyqt_openai.settings_dialog.settingsDialog import SettingsDialog
 from pyqt_openai.shortcutDialog import ShortcutDialog
 from pyqt_openai.updateSoftwareDialog import update_software
 from pyqt_openai.util.script import restart_app, show_message_box_after_change_to_restart, set_auto_start_windows
-from pyqt_openai.widgets.animationButton import AnimationButton
 from pyqt_openai.widgets.button import Button
 
 
@@ -65,14 +61,6 @@ class MainWindow(QMainWindow):
         self.__setToolBar()
 
         self.__loadApiKeyInConf()
-
-        # check if loaded API_KEY from ini file is not empty
-        if os.environ['OPENAI_API_KEY']:
-            self.__openaiApiWidget.setApi()
-        # if it is empty
-        else:
-            self.__setAIEnabled(False)
-            self.__openaiApiWidget.showApiCheckPreviewLbl(False)
 
         self.setCentralWidget(self.__mainWidget)
         self.resize(*APP_INITIAL_WINDOW_SIZE)
@@ -172,17 +160,6 @@ class MainWindow(QMainWindow):
         transparencyActionWidget = QWidget(self)
         transparencyActionWidget.setLayout(lay)
         self.__transparentAction.setDefaultWidget(transparencyActionWidget)
-
-        self.__openaiApiWidget = OpenAIApiWidget(self)
-        self.__openaiApiWidget.onAIEnabled.connect(self.__setAIEnabled)
-
-        self.__otherApiButton = AnimationButton(text='Other API', parent=self)
-        self.__otherApiButton.clicked.connect(self.__showApiDialog)
-
-        lay = QHBoxLayout()
-        lay.addWidget(self.__openaiApiWidget)
-        lay.addWidget(self.__otherApiButton)
-        lay.setContentsMargins(0, 0, 0, 0)
 
         self.__apiWidget = QWidget()
         self.__apiWidget.setLayout(lay)
@@ -296,36 +273,13 @@ class MainWindow(QMainWindow):
             currentWidget.showSecondaryToolBar(self.__settingsParamContainer.show_secondary_toolbar)
 
     def __loadApiKeyInConf(self):
-        self.__openaiApiWidget.setApiKeyAndClient(CONFIG_MANAGER.get_general_property('OPENAI_API_KEY'))
+        set_api_key('OPENAI_API_KEY', CONFIG_MANAGER.get_general_property('OPENAI_API_KEY'))
         set_api_key('GEMINI_API_KEY', CONFIG_MANAGER.get_general_property('GEMINI_API_KEY'))
         set_api_key('CLAUDE_API_KEY', CONFIG_MANAGER.get_general_property('CLAUDE_API_KEY'))
         set_api_key('LLAMA_API_KEY', CONFIG_MANAGER.get_general_property('LLAMA_API_KEY'))
 
         # Set llama index directory if it exists
         init_llama()
-
-    def __setAIEnabled(self, f):
-        self.__chatMainWidget.setAIEnabled(f)
-        self.__dallEWidget.setAIEnabled(f)
-
-    def __showApiDialog(self):
-        configs = []
-        # Get the api keys from the conf file with the env var name
-        for conf in DEFAULT_API_CONFIGS:
-            _conf = {
-                'display_name': conf['display_name'],
-                'env_var_name': conf['env_var_name'],
-                'api_key': CONFIG_MANAGER.get_general_property(conf['env_var_name'])
-            }
-            configs.append(_conf)
-
-        self.__apiDialog = ApiDialog(configs, self)
-        reply = self.__apiDialog.exec()
-        if reply == QDialog.DialogCode.Accepted:
-            # Save the api keys to the conf file
-            for k, v in self.__apiDialog.getApiKeys().items():
-                CONFIG_MANAGER.set_general_property(k, v)
-                set_api_key(k, v)
 
     def __showAboutDialog(self):
         aboutDialog = AboutDialog(self)

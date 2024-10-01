@@ -5,6 +5,7 @@ from PySide6.QtWidgets import QWidget, QDoubleSpinBox, QSpinBox, QFormLayout, QS
 from pyqt_openai import DEFAULT_SHORTCUT_JSON_MODE, OPENAI_TEMPERATURE_RANGE, OPENAI_TEMPERATURE_STEP, \
     MAX_TOKENS_RANGE, TOP_P_RANGE, TOP_P_STEP, FREQUENCY_PENALTY_RANGE, PRESENCE_PENALTY_STEP, PRESENCE_PENALTY_RANGE, \
     FREQUENCY_PENALTY_STEP, LLAMAINDEX_URL
+from pyqt_openai.chat_widget.right_sidebar.apiWidget import ApiWidget
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.globals import get_chat_model, init_llama, get_openai_chat_model
@@ -54,6 +55,8 @@ class UsingAPIPage(QWidget):
         lay.addWidget(QLabel(LangClass.TRANSLATIONS['Model']))
         lay.addWidget(modelCmbBox)
         lay.setContentsMargins(0, 0, 0, 0)
+
+        apiWidget = ApiWidget()
 
         selectModelWidget = QWidget()
         selectModelWidget.setLayout(lay)
@@ -166,19 +169,19 @@ class UsingAPIPage(QWidget):
         self.__llamaChkBox.toggled.connect(self.__use_llama_indexChecked)
         self.__llamaChkBox.setText(LangClass.TRANSLATIONS['Use LlamaIndex'])
 
-        sep = getSeparator('horizontal')
-
         lay = QVBoxLayout()
         lay.addWidget(systemlbl)
         lay.addWidget(self.__systemTextEdit)
         lay.addWidget(saveSystemBtn)
+        lay.addWidget(getSeparator('horizontal'))
+        lay.addWidget(apiWidget)
         lay.addWidget(selectModelWidget)
         lay.addWidget(self.__warningLbl)
         lay.addWidget(streamChkBox)
         lay.addWidget(self.__jsonChkBox)
         lay.addWidget(self.__llamaChkBox)
         lay.addWidget(llamaManualLbl)
-        lay.addWidget(sep)
+        lay.addWidget(getSeparator('horizontal'))
         lay.addWidget(advancedSettingsGrpBox)
         lay.setAlignment(Qt.AlignmentFlag.AlignTop)
 
