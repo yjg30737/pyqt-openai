@@ -17,8 +17,8 @@ from PySide6.QtCore import QThread, Signal
 from openai import OpenAI
 from g4f.client import Client
 
-from pyqt_openai import STT_MODEL, OPENAI_ENDPOINT_DICT, PLATFORM_MODEL_DICT, DEFAULT_GEMINI_MODEL, LLAMA_REQUEST_URL, \
-    OPENAI_CHAT_ENDPOINT, O1_MODELS
+from pyqt_openai import STT_MODEL, OPENAI_ENDPOINT_DICT, PROVIDER_MODEL_DICT, DEFAULT_GEMINI_MODEL, LLAMA_REQUEST_URL, \
+    OPENAI_CHAT_ENDPOINT, O1_MODELS, G4F_MODELS
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ChatMessageContainer
@@ -58,9 +58,12 @@ def get_model_endpoint(model):
 def get_openai_chat_model():
     return OPENAI_ENDPOINT_DICT[OPENAI_CHAT_ENDPOINT]
 
-def get_chat_model():
-    all_models = [model for models in PLATFORM_MODEL_DICT.values() for model in models]
-    return all_models
+def get_chat_model(is_g4f=False):
+    if is_g4f:
+        return G4F_MODELS
+    else:
+        all_models = [model for models in PROVIDER_MODEL_DICT.values() for model in models]
+        return all_models
 
 def get_image_url_from_local(image):
     """
@@ -136,36 +139,47 @@ def get_gpt_argument(model, system, messages, cur_text, temperature, top_p, freq
         print(e)
         raise e
 
-# Check which platform a specific model belongs to
-def get_platform_from_model(model):
-    for platform, models in PLATFORM_MODEL_DICT.items():
+# Check which provider a specific model belongs to
+def get_provider_from_model(model):
+    for provider, models in PROVIDER_MODEL_DICT.items():
         if model in models:
-            return platform
+            return provider
     return None
 
-def get_argument(model, system, messages, cur_text, temperature, top_p, frequency_penalty, presence_penalty, stream,
-                 use_max_tokens, max_tokens,
-                 images,
-                 is_llama_available=False, is_json_response_available=0,
-                 json_content=None
-                 ):
-    try:
-        platform = get_platform_from_model(model)
-        if platform == 'OpenAI':
-            args = get_gpt_argument(model, system, messages, cur_text, temperature, top_p, frequency_penalty, presence_penalty, stream,
+def get_g4f_argument(model, messages, cur_text, stream):
+    args = {
+        'model': model,
+        'messages': messages,
+        'stream': stream
+    }
+    args['messages'].append({"role": "user", "content": cur_text})
+    return args
+
+def get_api_argument(model, system, messages, cur_text, temperature, top_p, frequency_penalty, presence_penalty, stream,
                      use_max_tokens, max_tokens,
                      images,
-                     is_llama_available=is_llama_available, is_json_response_available=is_json_response_available,
-                     json_content=json_content
-                     )
-        elif platform == 'Gemini':
+                     is_llama_available=False, is_json_response_available=0,
+                     json_content=None
+                     ):
+    try:
+        provider = get_provider_from_model(model)
+        if provider == 'OpenAI':
+            args = get_gpt_argument(model, system, messages, cur_text, temperature, top_p, frequency_penalty,
+                                    presence_penalty, stream,
+                                    use_max_tokens, max_tokens,
+                                    images,
+                                    is_llama_available=is_llama_available,
+                                    is_json_response_available=is_json_response_available,
+                                    json_content=json_content
+                                    )
+        elif provider == 'Gemini':
             args = {
                 'model': model,
                 'messages': messages,
                 'stream': stream
             }
             args['messages'].append({"role": "user", "content": cur_text})
-        elif platform == 'Claude':
+        elif provider == 'Claude':
             args = {
                 'model': model,
                 'messages': messages,
@@ -173,7 +187,7 @@ def get_argument(model, system, messages, cur_text, temperature, top_p, frequenc
                 'stream': stream
             }
             args['messages'].append({"role": "user", "content": cur_text})
-        elif platform == 'Llama':
+        elif provider == 'Llama':
             args = {
                 'model': model,
                 'messages': messages,
@@ -182,41 +196,62 @@ def get_argument(model, system, messages, cur_text, temperature, top_p, frequenc
             }
             args['messages'].append({"role": "user", "content": cur_text})
         else:
-            raise Exception(f'Platform not found for model {model}')
+            raise Exception(f'Provider not found for model {model}')
         return args
     except Exception as e:
         print(e)
         raise e
 
-def stream_response(platform, response, is_g4f=False):
+def get_argument(model, system, messages, cur_text, temperature, top_p, frequency_penalty, presence_penalty, stream,
+                 use_max_tokens, max_tokens,
+                 images,
+                 is_llama_available=False, is_json_response_available=0,
+                 json_content=None,
+                 is_g4f=False
+                 ):
+    try:
+        if is_g4f:
+            args = get_g4f_argument(model, messages, cur_text, stream)
+        else:
+            args = get_api_argument(model, system, messages, cur_text, temperature, top_p, frequency_penalty, presence_penalty, stream,
+                             use_max_tokens, max_tokens,
+                             images,
+                             is_llama_available=is_llama_available, is_json_response_available=is_json_response_available,
+                             json_content=json_content)
+        return args
+    except Exception as e:
+        print(e)
+        raise e
+
+def stream_response(provider, response, is_g4f=False):
     if is_g4f:
         for chunk in response:
             yield chunk.choices[0].delta.content
     else:
-        if platform == 'OpenAI':
+        if provider == 'OpenAI':
             for chunk in response:
                 response_text = chunk.choices[0].delta.content
                 yield response_text
-        elif platform == 'Gemini':
+        elif provider == 'Gemini':
             for chunk in response:
                 yield chunk.text
-        elif platform == 'Claude':
+        elif provider == 'Claude':
             with response as stream:
                 for text in stream.text_stream:
                     yield text
-        elif platform == 'Llama':
+        elif provider == 'Llama':
             for chunk in response:
                 response_text = chunk.choices[0].delta.content
                 yield response_text
 
 def get_api_response(args, get_content_only=True):
-    platform = get_platform_from_model(args['model'])
-    if platform == 'OpenAI':
+    provider = get_provider_from_model(args['model'])
+    if provider == 'OpenAI':
         response = OPENAI_CLIENT.chat.completions.create(
             **args
         )
         if args['stream']:
-            return stream_response(platform, response)
+            return stream_response(provider, response)
         else:
             if get_content_only:
                 if args['model'] in O1_MODELS:
@@ -224,7 +259,7 @@ def get_api_response(args, get_content_only=True):
                 return response.choices[0].message.content
             else:
                 return response
-    elif platform == 'Gemini':
+    elif provider == 'Gemini':
         # Change 'content' to 'parts'
         # Change role's value from 'assistant' to 'model'
         for message in args['messages']:
@@ -238,21 +273,21 @@ def get_api_response(args, get_content_only=True):
 
         if args['stream']:
             response = chat.send_message(args['messages'][-1]['parts'], stream=args['stream'])
-            return stream_response(platform, response)
+            return stream_response(provider, response)
         else:
             response = chat.send_message(args['messages'][-1]['parts'])
             if get_content_only:
                 return response.text
             else:
                 return response
-    elif platform == 'Claude':
+    elif provider == 'Claude':
         if args['stream']:
             response = CLAUDE_CLIENT.messages.stream(
                 model=args['model'],
                 max_tokens=1024,
                 messages=args['messages']
             )
-            return stream_response(platform, response)
+            return stream_response(provider, response)
         else:
             response = CLAUDE_CLIENT.messages.create(
                 model=args['model'],
@@ -263,12 +298,12 @@ def get_api_response(args, get_content_only=True):
                 return response.content[0].text
             else:
                 return response
-    elif platform == 'Llama':
+    elif provider == 'Llama':
         response = LLAMA_CLIENT.chat.completions.create(
             **args
         )
         if args['stream']:
-            return stream_response(platform, response)
+            return stream_response(provider, response)
         else:
             if get_content_only:
                 return response.choices[0].message.content
@@ -282,7 +317,7 @@ def get_g4f_response(args, get_content_only=True):
         messages=args['messages'],
     )
     if args['stream']:
-        return stream_response(platform='', response=response, is_g4f=True)
+        return stream_response(provider='', response=response, is_g4f=True)
     else:
         if get_content_only:
             return response.choices[0].message.content

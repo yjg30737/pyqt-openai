@@ -21,7 +21,7 @@ class UsingG4FPage(QWidget):
 
     def __initUi(self):
         modelCmbBox = QComboBox()
-        modelCmbBox.addItems(get_chat_model())
+        modelCmbBox.addItems(get_chat_model(is_g4f=True))
         modelCmbBox.setCurrentText(self.__model)
         modelCmbBox.currentTextChanged.connect(self.__modelChanged)
 

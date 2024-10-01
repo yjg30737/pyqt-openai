@@ -33,8 +33,9 @@ class ChatRightSideBarWidget(QScrollArea):
         self.__llamaPage = LlamaPage()
         self.__llamaPage.onDirectorySelected.connect(self.__onDirectorySelected)
 
-        tabWidget.addTab(usingG4FPage, 'G4F')
-        tabWidget.addTab(usingAPIPage, 'LLM')
+        # TODO LANGUAGE
+        tabWidget.addTab(usingG4FPage, 'Using G4F (Free)')
+        tabWidget.addTab(usingAPIPage, 'Using API')
         tabWidget.addTab(self.__llamaPage, 'LlamaIndex')
         tabWidget.currentChanged.connect(self.__tabChanged)
         tabWidget.setTabEnabled(2, self.__use_llama_index)

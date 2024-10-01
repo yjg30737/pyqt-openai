@@ -45,7 +45,7 @@ class ApiWidget(QWidget):
     def __initUi(self):
         self.setWindowTitle('API Key')
 
-        columns = ['Platform', 'API Key', 'Get API Key']
+        columns = ['Provider', 'API Key', 'Get API Key']
         self.__tableWidget = QTableWidget()
         self.__tableWidget.setColumnCount(len(columns))
         self.__tableWidget.setHorizontalHeaderLabels(columns)

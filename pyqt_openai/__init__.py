@@ -336,6 +336,9 @@ WHISPER_TTS_DEFAULT_SPEED = 1.0
 
 STT_MODEL = 'whisper-1'
 
+# G4F Models
+G4F_MODELS = ['gpt-4o', 'gpt-4o-mini', 'gemini-flash', 'claude-3-5-sonnet', 'llama-3.1-70b']
+
 # Endpoint
 # https://platform.openai.com/docs/models/model-endpoint-compatibility
 OPENAI_ENDPOINT_DICT = {
@@ -389,7 +392,7 @@ DEFAULT_API_CONFIGS = [
 O1_MODELS = ['o1-preview', 'o1-mini']
 
 # Dictionary that stores the platform and model pairs
-PLATFORM_MODEL_DICT = {
+PROVIDER_MODEL_DICT = {
     'OpenAI': ['gpt-4o', 'gpt-4o-mini']+O1_MODELS,
     'Gemini': ['gemini-1.5-flash'],
     'Claude': ['claude-3-5-sonnet-20240620'],

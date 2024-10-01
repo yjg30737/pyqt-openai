@@ -163,7 +163,8 @@ class ChatWidget(QWidget):
                                  presence_penalty, stream,
                                  use_max_tokens, max_tokens,
                                  images,
-                                 is_llama_available, is_json_response_available, json_content)
+                                 is_llama_available, is_json_response_available, json_content,
+                                 self.__is_g4f)
 
             # If there is no current conversation selected on the list to the left, make a new one.
             if self.__mainWidget.currentIndex() == 0:
