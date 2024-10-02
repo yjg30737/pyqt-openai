@@ -2,7 +2,8 @@
 <div align="center">
   <img src="https://github.com/user-attachments/assets/ab169535-8af0-40c7-848d-59a7e5e4b304"/>
 
-  <b>A cross-platform AI desktop chatbot application for LLM such as GPT, Claude, Gemini, Llama chatbot interaction and image generation, offering customizable features, local chat history, and enhanced performance—no browser required!</b>
+  <b>A cross-platform AI desktop chatbot application for LLM such as GPT, Claude, Gemini, Llama chatbot interaction and image generation, offering customizable features, local chat history, and enhanced performance—no browser required!<br><br>
+  Basically for free, powered by GPT4Free(since v1.3.0).</b>
 
 <hr>
 
@@ -39,8 +40,7 @@ Although this is named 'pyqt-openai', the model does not use only OpenAI-related
 2. cd pyqt-openai
 3. pip install -r requirements.txt --upgrade
 4. cd pyqt_openai
-5. You should put your api key in the line edit. You can get it in <a href="https://platform.openai.com/account/api-keys">official site</a> of openai. Sign up and log in before you get it.
-6. python main.py
+5. python main.py
 
 ### Install with pyproject.toml 
 1. git clone ~
@@ -49,7 +49,7 @@ Although this is named 'pyqt-openai', the model does not use only OpenAI-related
 4. pip install .
 5. pyqt-openai
 
-### Wanna download this without doing stuffs like above? You can download installer of zip file <a href="https://github.com/yjg30737/pyqt-openai/releases">here.</a>
+### Wanna download this without doing stuffs like above? You can download installer or zip file <a href="https://github.com/yjg30737/pyqt-openai/releases">here.</a>
 
 ## How to Use 🧐
 
