@@ -1,9 +1,11 @@
 from PySide6.QtCore import Qt, Signal
-from PySide6.QtWidgets import QWidget, QComboBox, QVBoxLayout, QCheckBox, QHBoxLayout, QLabel
+from PySide6.QtWidgets import QWidget, QComboBox, QCheckBox, QFormLayout, QTextBrowser, QSizePolicy
 
+from pyqt_openai import G4F_PROVIDER_DEFAULT
 from pyqt_openai.config_loader import CONFIG_MANAGER
-from pyqt_openai.globals import get_chat_model
 from pyqt_openai.lang.translations import LangClass
+from pyqt_openai.util.script import get_g4f_providers, get_g4f_models_by_provider, get_chat_model, get_g4f_models, \
+    getSeparator
 
 
 class UsingG4FPage(QWidget):
@@ -20,27 +22,39 @@ class UsingG4FPage(QWidget):
         self.__model = CONFIG_MANAGER.get_general_property('model')
 
     def __initUi(self):
-        modelCmbBox = QComboBox()
-        modelCmbBox.addItems(get_chat_model(is_g4f=True))
-        modelCmbBox.setCurrentText(self.__model)
-        modelCmbBox.currentTextChanged.connect(self.__modelChanged)
+        manualBrowser = QTextBrowser()
+        manualBrowser.setOpenExternalLinks(True)
+        manualBrowser.setOpenLinks(True)
 
-        lay = QHBoxLayout()
-        lay.addWidget(QLabel(LangClass.TRANSLATIONS['Model']))
-        lay.addWidget(modelCmbBox)
-        lay.setContentsMargins(0, 0, 0, 0)
+        # TODO LANGUAGE
+        manualBrowser.setHtml('''
+        <h2>Using GPT4Free (Free)</h2>
+        <h3>Description</h3>
+        <p>- Responses may often be slow or incomplete.</p>
+        <p>- The response server may be unstable.</p>
+        ''')
+        manualBrowser.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
 
-        selectModelWidget = QWidget()
-        selectModelWidget.setLayout(lay)
+        self.__modelCmbBox = QComboBox()
+        self.__modelCmbBox.addItems(get_chat_model(is_g4f=True))
+        self.__modelCmbBox.setCurrentText(self.__model)
+        self.__modelCmbBox.currentTextChanged.connect(self.__modelChanged)
 
         streamChkBox = QCheckBox()
         streamChkBox.setChecked(self.__stream)
         streamChkBox.toggled.connect(self.__streamChecked)
         streamChkBox.setText(LangClass.TRANSLATIONS['Stream'])
 
-        lay = QVBoxLayout()
-        lay.addWidget(selectModelWidget)
-        lay.addWidget(streamChkBox)
+        providerCmbBox = QComboBox()
+        providerCmbBox.addItems(get_g4f_providers(including_auto=True))
+        providerCmbBox.currentTextChanged.connect(self.__providerChanged)
+
+        lay = QFormLayout()
+        lay.addRow(manualBrowser)
+        lay.addRow(getSeparator('horizontal'))
+        lay.addRow('Model', self.__modelCmbBox)
+        lay.addRow('Provider', providerCmbBox)
+        lay.addRow(streamChkBox)
         lay.setAlignment(Qt.AlignmentFlag.AlignTop)
 
         self.setLayout(lay)
@@ -52,3 +66,10 @@ class UsingG4FPage(QWidget):
     def __streamChecked(self, f):
         self.__stream = f
         CONFIG_MANAGER.set_general_property('stream', f)
+
+    def __providerChanged(self, v):    
+        self.__modelCmbBox.clear()
+        if v == G4F_PROVIDER_DEFAULT:
+            self.__modelCmbBox.addItems(get_g4f_models())
+        else:
+            self.__modelCmbBox.addItems(get_g4f_models_by_provider(v))

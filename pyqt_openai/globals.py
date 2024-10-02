@@ -18,7 +18,7 @@ from openai import OpenAI
 from g4f.client import Client
 
 from pyqt_openai import STT_MODEL, OPENAI_ENDPOINT_DICT, PROVIDER_MODEL_DICT, DEFAULT_GEMINI_MODEL, LLAMA_REQUEST_URL, \
-    OPENAI_CHAT_ENDPOINT, O1_MODELS, G4F_MODELS
+    OPENAI_CHAT_ENDPOINT, O1_MODELS
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ChatMessageContainer
@@ -49,7 +49,7 @@ def set_api_key(env_var_name, api_key):
     if env_var_name == 'LLAMA_API_KEY':
         LLAMA_CLIENT.api_key = api_key
 
-def get_model_endpoint(model):
+def get_openai_model_endpoint(model):
     for k, v in OPENAI_ENDPOINT_DICT.items():
         endpoint_group = list(v)
         if model in endpoint_group:
@@ -57,13 +57,6 @@ def get_model_endpoint(model):
 
 def get_openai_chat_model():
     return OPENAI_ENDPOINT_DICT[OPENAI_CHAT_ENDPOINT]
-
-def get_chat_model(is_g4f=False):
-    if is_g4f:
-        return G4F_MODELS
-    else:
-        all_models = [model for models in PROVIDER_MODEL_DICT.values() for model in models]
-        return all_models
 
 def get_image_url_from_local(image):
     """
@@ -260,8 +253,6 @@ def get_api_response(args, get_content_only=True):
             else:
                 return response
     elif provider == 'Gemini':
-        # Change 'content' to 'parts'
-        # Change role's value from 'assistant' to 'model'
         for message in args['messages']:
             message['parts'] = message.pop('content')
             if message['role'] == 'assistant':
@@ -364,7 +355,9 @@ class StreamThread(QThread):
 
                 print(f"Done in {int((time.time() - start_time) * 1000)}ms.")
         except Exception as e:
-            self.errorGenerated.emit(f'<p style="color:red">{e}</p>')
+            # TODO LANGUAGE
+            self.errorGenerated.emit(f'<p style="color:red">{e}</p>\n\n'
+                                     f'(Are you registered valid OpenAI API Key? This feature requires OpenAI API Key.)\n')
 
     def stop(self):
         self.__stop = True
@@ -458,7 +451,9 @@ class STTThread(QThread):
             )
             self.stt_finished.emit(transcript.text)
         except Exception as e:
-            self.errorGenerated.emit(f'<p style="color:red">{e}</p>')
+            # TODO LANGUAGE
+            self.errorGenerated.emit(f'<p style="color:red">{e}\n\n'
+                                     f'(Are you registered valid OpenAI API Key? This feature requires OpenAI API Key.)</p>')
         finally:
             os.remove(self.filename)
 

@@ -1,6 +1,6 @@
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import QWidget, QDoubleSpinBox, QSpinBox, QFormLayout, QSizePolicy, QComboBox, QTextEdit, \
-    QLabel, QVBoxLayout, QCheckBox, QPushButton, QScrollArea, QGroupBox, QHBoxLayout
+    QLabel, QVBoxLayout, QCheckBox, QPushButton, QScrollArea, QGroupBox, QHBoxLayout, QTextBrowser
 
 from pyqt_openai import DEFAULT_SHORTCUT_JSON_MODE, OPENAI_TEMPERATURE_RANGE, OPENAI_TEMPERATURE_STEP, \
     MAX_TOKENS_RANGE, TOP_P_RANGE, TOP_P_STEP, FREQUENCY_PENALTY_RANGE, PRESENCE_PENALTY_STEP, PRESENCE_PENALTY_RANGE, \
@@ -8,8 +8,8 @@ from pyqt_openai import DEFAULT_SHORTCUT_JSON_MODE, OPENAI_TEMPERATURE_RANGE, OP
 from pyqt_openai.chat_widget.right_sidebar.apiWidget import ApiWidget
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.lang.translations import LangClass
-from pyqt_openai.globals import get_chat_model, init_llama, get_openai_chat_model
-from pyqt_openai.util.script import getSeparator
+from pyqt_openai.globals import init_llama, get_openai_chat_model
+from pyqt_openai.util.script import getSeparator, get_chat_model
 from pyqt_openai.widgets.linkLabel import LinkLabel
 
 
@@ -37,6 +37,26 @@ class UsingAPIPage(QWidget):
         self.__use_llama_index = CONFIG_MANAGER.get_general_property('use_llama_index')
 
     def __initUi(self):
+        manualBrowser = QTextBrowser()
+        manualBrowser.setOpenExternalLinks(True)
+        manualBrowser.setOpenLinks(True)
+
+        # TODO LANGUAGE
+        manualBrowser.setHtml('''
+        <h2>Using API</h2>
+        <h3>Description</h3>
+        <p>- Fast responses.</p>
+        <p>- Stable response server.</p>
+        <p>- Ability to save your AI usage history and statistics.</p>
+        <p>- Option to add custom LLMs you have created.</p>
+        <p>- Ability to save conversation history on the server.</p>
+        <p>- JSON response functionality available (limited to specific LLMs).</p>
+        <p>- LlamaIndex can be used.</p>
+        <p>- Various hyperparameters can be assigned.</p>
+        ''')
+
+        manualBrowser.setSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.MinimumExpanding)
+
         systemlbl = QLabel(LangClass.TRANSLATIONS['System'])
         systemlbl.setToolTip(LangClass.TRANSLATIONS['Basically system means instructions or rules that the model should follow.'] + '\n' + LangClass.TRANSLATIONS['You can write your own system instructions here.'])
 
@@ -170,6 +190,8 @@ class UsingAPIPage(QWidget):
         self.__llamaChkBox.setText(LangClass.TRANSLATIONS['Use LlamaIndex'])
 
         lay = QVBoxLayout()
+        lay.addWidget(manualBrowser)
+        lay.addWidget(getSeparator('horizontal'))
         lay.addWidget(systemlbl)
         lay.addWidget(self.__systemTextEdit)
         lay.addWidget(saveSystemBtn)

@@ -336,9 +336,6 @@ WHISPER_TTS_DEFAULT_SPEED = 1.0
 
 STT_MODEL = 'whisper-1'
 
-# G4F Models
-G4F_MODELS = ['gpt-4o', 'gpt-4o-mini', 'gemini-flash', 'claude-3-5-sonnet', 'llama-3.1-70b']
-
 # Endpoint
 # https://platform.openai.com/docs/models/model-endpoint-compatibility
 OPENAI_ENDPOINT_DICT = {
@@ -390,6 +387,10 @@ DEFAULT_API_CONFIGS = [
 
 # This has to be managed separately since some of the arguments are different with usual models
 O1_MODELS = ['o1-preview', 'o1-mini']
+
+DEFAULT_LLM = 'gpt-4o'
+
+G4F_PROVIDER_DEFAULT = 'Auto'
 
 # Dictionary that stores the platform and model pairs
 PROVIDER_MODEL_DICT = {
@@ -493,7 +494,7 @@ CONFIG_DATA = {
         'show_chat_list': True,
         'stream': True,
         'db': 'conv',
-        'model': 'gpt-4o',
+        'model': DEFAULT_LLM,
         'show_setting': True,
         'use_llama_index': False,
         'do_not_ask_again': False,
