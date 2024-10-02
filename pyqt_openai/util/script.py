@@ -22,12 +22,14 @@ import requests
 from PySide6.QtCore import Qt, QUrl
 from PySide6.QtGui import QDesktopServices
 from PySide6.QtWidgets import QMessageBox, QFrame
+from g4f.Provider import ProviderUtils
+from g4f.models import ModelUtils
 from jinja2 import Template
 
 from pyqt_openai import MAIN_INDEX, \
     PROMPT_NAME_REGEX, PROMPT_MAIN_KEY_NAME, PROMPT_BEGINNING_KEY_NAME, \
     PROMPT_END_KEY_NAME, PROMPT_JSON_KEY_NAME, CONTEXT_DELIMITER, THREAD_ORDERBY, DEFAULT_APP_NAME, \
-    AUTOSTART_REGISTRY_KEY, is_frozen
+    AUTOSTART_REGISTRY_KEY, is_frozen, G4F_PROVIDER_DEFAULT, PROVIDER_MODEL_DICT
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ImagePromptContainer
 from pyqt_openai.globals import DB
@@ -414,3 +416,44 @@ def generate_random_prompt(arr):
     else:
         random_prompt = ''
     return random_prompt
+
+def get_g4f_models():
+    models = list(ModelUtils.convert.keys())
+    return models
+
+def get_g4f_providers(including_auto=False):
+    providers = list(ProviderUtils.convert.keys())
+    if including_auto:
+        providers = [G4F_PROVIDER_DEFAULT] + providers
+    return providers
+
+def get_g4f_models_by_provider(provider):
+    provider = ProviderUtils.convert[provider]
+    models = []
+    if hasattr(provider, 'models'):
+        models = provider.models if provider.models else []
+    return models
+
+def get_g4f_providers_by_model(model):
+    providers = get_g4f_providers()
+    supported_providers = []
+
+    for provider in providers:
+        provider = ProviderUtils.convert[provider]
+
+        if hasattr(provider, 'models'):
+            models = provider.models if provider.models else models
+            if model in models:
+                supported_providers.append(provider)
+
+    supported_providers = [provider.get_dict()['name'] for provider in supported_providers]
+
+    return supported_providers
+
+
+def get_chat_model(is_g4f=False):
+    if is_g4f:
+        return get_g4f_models()
+    else:
+        all_models = [model for models in PROVIDER_MODEL_DICT.values() for model in models]
+        return all_models

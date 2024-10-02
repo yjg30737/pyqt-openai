@@ -97,6 +97,10 @@ APP_INITIAL_WINDOW_SIZE = (1280, 768)
 TRANSPARENT_RANGE = 20, 100
 TRANSPARENT_INIT_VAL = 100
 
+LARGE_LABEL_PARAM = ('Arial', 32)
+MEDIUM_LABEL_PARAM = ('Arial', 16)
+SMALL_LABEL_PARAM = ('Arial', 10)
+
 LICENSE = pyproject_data["project"]["license"]['text']
 LICENSE_URL = 'https://github.com/yjg30737/pyqt-openai/blob/main/LICENSE'
 KOFI_URL = 'https://ko-fi.com/junggyuyoon'
@@ -109,7 +113,7 @@ LLAMAINDEX_URL = 'https://medium.com/@yjg30737/what-is-llamaindex-9b821d66568f'
 HOW_TO_GET_OPENAI_API_KEY_URL = 'https://medium.com/@yjg30737/how-to-get-your-openai-api-key-e2193850932e'
 HOW_TO_EXPORT_CHATGPT_CONVERSATION_HISTORY_URL = 'https://medium.com/@yjg30737/how-to-export-your-chatgpt-conversation-history-caa0946d6349'
 HOW_TO_REPLICATE = 'https://medium.com/@yjg30737/10a2cb983ceb'
-HOW_TO_GET_CLAUDE_API_KEY_URL = 'https://medium.com/@yjg30737/e771e42c182a'
+HOW_TO_GET_CLAUDE_API_KEY_URL = 'https://medium.com/@yjg30737/how-to-get-started-with-claude-api-step-by-step-guide-92b5e35ae0a0'
 HOW_TO_GET_GEMINI_API_KEY_URL = 'https://medium.com/@yjg30737/e61a84d64c69'
 HOW_TO_GET_LLAMA_API_KEY_URL = 'https://medium.com/@yjg30737/0dc1900e3606'
 
@@ -335,7 +339,7 @@ STT_MODEL = 'whisper-1'
 # Endpoint
 # https://platform.openai.com/docs/models/model-endpoint-compatibility
 OPENAI_ENDPOINT_DICT = {
-    '/v1/chat/completions': ['gpt-4o', 'gpt-4o-mini'],
+    '/v1/chat/completions': ['gpt-4o', 'gpt-4o-mini', 'o1-preview', 'o1-mini'],
     '/v1/completions': [
         'text-davinci-003', 'text-davinci-002', 'text-curie-001', 'text-babbage-001', 'text-ada-001', 'davinci',
         'curie', 'babbage', 'ada'
@@ -381,9 +385,16 @@ DEFAULT_API_CONFIGS = [
     }
 ]
 
+# This has to be managed separately since some of the arguments are different with usual models
+O1_MODELS = ['o1-preview', 'o1-mini']
+
+DEFAULT_LLM = 'gpt-4o'
+
+G4F_PROVIDER_DEFAULT = 'Auto'
+
 # Dictionary that stores the platform and model pairs
-PLATFORM_MODEL_DICT = {
-    'OpenAI': ['gpt-4o', 'gpt-4o-mini'],
+PROVIDER_MODEL_DICT = {
+    'OpenAI': ['gpt-4o', 'gpt-4o-mini']+O1_MODELS,
     'Gemini': ['gemini-1.5-flash'],
     'Claude': ['claude-3-5-sonnet-20240620'],
     'Llama': ['llama3-70b']
@@ -483,7 +494,7 @@ CONFIG_DATA = {
         'show_chat_list': True,
         'stream': True,
         'db': 'conv',
-        'model': 'gpt-4o',
+        'model': DEFAULT_LLM,
         'show_setting': True,
         'use_llama_index': False,
         'do_not_ask_again': False,

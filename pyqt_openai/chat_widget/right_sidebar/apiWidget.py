@@ -1,9 +1,11 @@
-from PySide6.QtWidgets import QVBoxLayout, QTableWidget, QHeaderView, QTableWidgetItem, QLabel, QLineEdit, QDialog, \
-    QDialogButtonBox
 from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QVBoxLayout, QTableWidget, QHeaderView, QTableWidgetItem, QLabel, QLineEdit, \
+    QDialogButtonBox, QWidget, QPushButton
 
 from pyqt_openai import HOW_TO_GET_OPENAI_API_KEY_URL, HOW_TO_GET_CLAUDE_API_KEY_URL, HOW_TO_GET_GEMINI_API_KEY_URL, \
-    HOW_TO_GET_LLAMA_API_KEY_URL
+    HOW_TO_GET_LLAMA_API_KEY_URL, DEFAULT_API_CONFIGS
+from pyqt_openai.config_loader import CONFIG_MANAGER
+from pyqt_openai.globals import set_api_key
 from pyqt_openai.widgets.linkLabel import LinkLabel
 
 
@@ -14,14 +16,22 @@ from pyqt_openai.widgets.linkLabel import LinkLabel
 #     print(f)
 
 
-class ApiDialog(QDialog):
-    def __init__(self, api_keys: list, parent=None):
+class ApiWidget(QWidget):
+    def __init__(self, parent=None):
         super().__init__(parent)
-        self.__initVal(api_keys)
+        self.__initVal()
         self.__initUi()
 
-    def __initVal(self, api_keys):
-        self.__api_keys = api_keys
+    def __initVal(self):
+        self.__api_keys = []
+        # Get the api keys from the conf file with the env var name
+        for conf in DEFAULT_API_CONFIGS:
+            _conf = {
+                'display_name': conf['display_name'],
+                'env_var_name': conf['env_var_name'],
+                'api_key': CONFIG_MANAGER.get_general_property(conf['env_var_name'])
+            }
+            self.__api_keys.append(_conf)
 
         # Set "get api key" here
         for i, obj in enumerate(self.__api_keys):
@@ -32,11 +42,10 @@ class ApiDialog(QDialog):
                 'Llama': HOW_TO_GET_LLAMA_API_KEY_URL
             }[obj['display_name']]
 
-
     def __initUi(self):
         self.setWindowTitle('API Key')
 
-        columns = ['Platform', 'API Key', 'Get API Key']
+        columns = ['Provider', 'API Key', 'Get API Key']
         self.__tableWidget = QTableWidget()
         self.__tableWidget.setColumnCount(len(columns))
         self.__tableWidget.setHorizontalHeaderLabels(columns)
@@ -58,23 +67,25 @@ class ApiDialog(QDialog):
             getApiKeyLbl.setUrl(obj['get_api_key'])
             self.__tableWidget.setCellWidget(i, 2, getApiKeyLbl)
 
-        # Dialog buttons
-        buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
-        buttonBox.accepted.connect(self.accept)
-        buttonBox.rejected.connect(self.reject)
+        saveBtn = QPushButton('Save')
+        saveBtn.clicked.connect(self.setApiKeys)
 
         lay = QVBoxLayout()
         lay.addWidget(QLabel('API Key'))
         lay.addWidget(self.__tableWidget)
-        lay.addWidget(buttonBox)
+        lay.addWidget(saveBtn)
+        lay.setContentsMargins(0, 0, 0, 0)
 
         self.setLayout(lay)
 
-        self.setMinimumWidth(600)
+        self.setMinimumHeight(150)
 
-    def getApiKeys(self) -> dict:
+    def setApiKeys(self):
         """
         Dynamically get the api keys from the table widget
         """
         api_keys = {self.__api_keys[i]['env_var_name']: self.__tableWidget.cellWidget(i, 1).text() for i in range(self.__tableWidget.rowCount())}
-        return api_keys
+        # Save the api keys to the conf file
+        for k, v in api_keys.items():
+            CONFIG_MANAGER.set_general_property(k, v)
+            set_api_key(k, v)

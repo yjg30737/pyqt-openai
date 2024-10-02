@@ -2,8 +2,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QFont
 from PySide6.QtWidgets import QLabel, QWidget, QVBoxLayout, QScrollArea
 
-from pyqt_openai import CONTEXT_DELIMITER
-from pyqt_openai.widgets.linkLabel import LinkLabel
+from pyqt_openai import CONTEXT_DELIMITER, LARGE_LABEL_PARAM, MEDIUM_LABEL_PARAM
 
 
 class DallEHome(QScrollArea):
@@ -13,12 +12,12 @@ class DallEHome(QScrollArea):
 
     def __initUi(self):
         title = QLabel('Welcome to DALL-E Page !', self)
-        title.setFont(QFont('Arial', 32))
+        title.setFont(QFont(*LARGE_LABEL_PARAM))
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         description = QLabel('Generate images with DALL-E.' + CONTEXT_DELIMITER)
 
-        description.setFont(QFont('Arial', 16))
+        description.setFont(QFont(*MEDIUM_LABEL_PARAM))
         description.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         lay = QVBoxLayout()

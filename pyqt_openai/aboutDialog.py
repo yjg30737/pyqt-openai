@@ -42,6 +42,7 @@ class AboutDialog(QDialog):
         descWidget3.setText(f'''
         <br/><br/>Contact: {CONTACT}<br/>
         <p>Powered by PySide6</p>
+        <p>Powered by GPT4Free</p>
         ''')
 
         descWidget1.setAlignment(Qt.AlignmentFlag.AlignTop)

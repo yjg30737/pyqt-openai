@@ -15,20 +15,21 @@ import google.generativeai as genai
 import pyaudio
 from PySide6.QtCore import QThread, Signal
 from openai import OpenAI
+from g4f.client import Client
 
-from pyqt_openai import STT_MODEL, OPENAI_ENDPOINT_DICT, PLATFORM_MODEL_DICT, DEFAULT_GEMINI_MODEL, LLAMA_REQUEST_URL, \
-    OPENAI_CHAT_ENDPOINT
+from pyqt_openai import STT_MODEL, OPENAI_ENDPOINT_DICT, PROVIDER_MODEL_DICT, DEFAULT_GEMINI_MODEL, LLAMA_REQUEST_URL, \
+    OPENAI_CHAT_ENDPOINT, O1_MODELS
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ChatMessageContainer
 from pyqt_openai.sqlite import SqliteDatabase
 from pyqt_openai.util.llamapage_script import GPTLLamaIndexWrapper
 
-os.environ['OPENAI_API_KEY'] = ''
-
 DB = SqliteDatabase()
 
 LLAMAINDEX_WRAPPER = GPTLLamaIndexWrapper()
+
+G4F_CLIENT = Client()
 
 OPENAI_CLIENT = OpenAI(api_key='')
 GEMINI_CLIENT = genai.GenerativeModel(DEFAULT_GEMINI_MODEL)
@@ -38,21 +39,9 @@ LLAMA_CLIENT = OpenAI(
     base_url=LLAMA_REQUEST_URL
 )
 
-OPENAI_API_VALID = False
-
-def set_openai_enabled(f):
-    global OPENAI_API_VALID
-    OPENAI_API_VALID = f
-    return OPENAI_API_VALID
-
-def is_openai_enabled():
-    return OPENAI_API_VALID
-
-def set_openai_api_key(api_key):
-    os.environ['OPENAI_API_KEY'] = api_key
-    OPENAI_CLIENT.api_key = os.environ['OPENAI_API_KEY']
-
 def set_api_key(env_var_name, api_key):
+    if env_var_name == 'OPENAI_API_KEY':
+        OPENAI_CLIENT.api_key = api_key
     if env_var_name == 'GEMINI_API_KEY':
         genai.configure(api_key=api_key)
     if env_var_name == 'CLAUDE_API_KEY':
@@ -60,7 +49,7 @@ def set_api_key(env_var_name, api_key):
     if env_var_name == 'LLAMA_API_KEY':
         LLAMA_CLIENT.api_key = api_key
 
-def get_model_endpoint(model):
+def get_openai_model_endpoint(model):
     for k, v in OPENAI_ENDPOINT_DICT.items():
         endpoint_group = list(v)
         if model in endpoint_group:
@@ -68,10 +57,6 @@ def get_model_endpoint(model):
 
 def get_openai_chat_model():
     return OPENAI_ENDPOINT_DICT[OPENAI_CHAT_ENDPOINT]
-
-def get_chat_model():
-    all_models = [model for models in PLATFORM_MODEL_DICT.values() for model in models]
-    return all_models
 
 def get_image_url_from_local(image):
     """
@@ -94,8 +79,11 @@ def get_gpt_argument(model, system, messages, cur_text, temperature, top_p, freq
                      json_content=None
                      ):
     try:
-        system_obj = get_message_obj("system", system)
-        messages = [system_obj] + messages
+        if model in O1_MODELS:
+            stream = False
+        else:
+            system_obj = get_message_obj("system", system)
+            messages = [system_obj] + messages
 
         # Form argument
         openai_arg = {
@@ -144,36 +132,47 @@ def get_gpt_argument(model, system, messages, cur_text, temperature, top_p, freq
         print(e)
         raise e
 
-# Check which platform a specific model belongs to
-def get_platform_from_model(model):
-    for platform, models in PLATFORM_MODEL_DICT.items():
+# Check which provider a specific model belongs to
+def get_provider_from_model(model):
+    for provider, models in PROVIDER_MODEL_DICT.items():
         if model in models:
-            return platform
+            return provider
     return None
 
-def get_argument(model, system, messages, cur_text, temperature, top_p, frequency_penalty, presence_penalty, stream,
-                 use_max_tokens, max_tokens,
-                 images,
-                 is_llama_available=False, is_json_response_available=0,
-                 json_content=None
-                 ):
-    try:
-        platform = get_platform_from_model(model)
-        if platform == 'OpenAI':
-            args = get_gpt_argument(model, system, messages, cur_text, temperature, top_p, frequency_penalty, presence_penalty, stream,
+def get_g4f_argument(model, messages, cur_text, stream):
+    args = {
+        'model': model,
+        'messages': messages,
+        'stream': stream
+    }
+    args['messages'].append({"role": "user", "content": cur_text})
+    return args
+
+def get_api_argument(model, system, messages, cur_text, temperature, top_p, frequency_penalty, presence_penalty, stream,
                      use_max_tokens, max_tokens,
                      images,
-                     is_llama_available=is_llama_available, is_json_response_available=is_json_response_available,
-                     json_content=json_content
-                     )
-        elif platform == 'Gemini':
+                     is_llama_available=False, is_json_response_available=0,
+                     json_content=None
+                     ):
+    try:
+        provider = get_provider_from_model(model)
+        if provider == 'OpenAI':
+            args = get_gpt_argument(model, system, messages, cur_text, temperature, top_p, frequency_penalty,
+                                    presence_penalty, stream,
+                                    use_max_tokens, max_tokens,
+                                    images,
+                                    is_llama_available=is_llama_available,
+                                    is_json_response_available=is_json_response_available,
+                                    json_content=json_content
+                                    )
+        elif provider == 'Gemini':
             args = {
                 'model': model,
                 'messages': messages,
                 'stream': stream
             }
             args['messages'].append({"role": "user", "content": cur_text})
-        elif platform == 'Claude':
+        elif provider == 'Claude':
             args = {
                 'model': model,
                 'messages': messages,
@@ -181,7 +180,7 @@ def get_argument(model, system, messages, cur_text, temperature, top_p, frequenc
                 'stream': stream
             }
             args['messages'].append({"role": "user", "content": cur_text})
-        elif platform == 'Llama':
+        elif provider == 'Llama':
             args = {
                 'model': model,
                 'messages': messages,
@@ -190,30 +189,70 @@ def get_argument(model, system, messages, cur_text, temperature, top_p, frequenc
             }
             args['messages'].append({"role": "user", "content": cur_text})
         else:
-            raise Exception(f'Platform not found for model {model}')
+            raise Exception(f'Provider not found for model {model}')
         return args
     except Exception as e:
         print(e)
         raise e
 
-def get_response(args, get_content_only=True):
-    platform = get_platform_from_model(args['model'])
-    if platform == 'OpenAI':
+def get_argument(model, system, messages, cur_text, temperature, top_p, frequency_penalty, presence_penalty, stream,
+                 use_max_tokens, max_tokens,
+                 images,
+                 is_llama_available=False, is_json_response_available=0,
+                 json_content=None,
+                 is_g4f=False
+                 ):
+    try:
+        if is_g4f:
+            args = get_g4f_argument(model, messages, cur_text, stream)
+        else:
+            args = get_api_argument(model, system, messages, cur_text, temperature, top_p, frequency_penalty, presence_penalty, stream,
+                             use_max_tokens, max_tokens,
+                             images,
+                             is_llama_available=is_llama_available, is_json_response_available=is_json_response_available,
+                             json_content=json_content)
+        return args
+    except Exception as e:
+        print(e)
+        raise e
+
+def stream_response(provider, response, is_g4f=False):
+    if is_g4f:
+        for chunk in response:
+            yield chunk.choices[0].delta.content
+    else:
+        if provider == 'OpenAI':
+            for chunk in response:
+                response_text = chunk.choices[0].delta.content
+                yield response_text
+        elif provider == 'Gemini':
+            for chunk in response:
+                yield chunk.text
+        elif provider == 'Claude':
+            with response as stream:
+                for text in stream.text_stream:
+                    yield text
+        elif provider == 'Llama':
+            for chunk in response:
+                response_text = chunk.choices[0].delta.content
+                yield response_text
+
+def get_api_response(args, get_content_only=True):
+    provider = get_provider_from_model(args['model'])
+    if provider == 'OpenAI':
         response = OPENAI_CLIENT.chat.completions.create(
             **args
         )
         if args['stream']:
-            for chunk in response:
-                response_text = chunk.choices[0].delta.content
-                yield response_text
+            return stream_response(provider, response)
         else:
             if get_content_only:
+                if args['model'] in O1_MODELS:
+                    return str(response.choices[0].message.content)
                 return response.choices[0].message.content
             else:
                 return response
-    elif platform == 'Gemini':
-        # Change 'content' to 'parts'
-        # Change role's value from 'assistant' to 'model'
+    elif provider == 'Gemini':
         for message in args['messages']:
             message['parts'] = message.pop('content')
             if message['role'] == 'assistant':
@@ -225,23 +264,21 @@ def get_response(args, get_content_only=True):
 
         if args['stream']:
             response = chat.send_message(args['messages'][-1]['parts'], stream=args['stream'])
-            for chunk in response:
-                yield chunk.text
+            return stream_response(provider, response)
         else:
             response = chat.send_message(args['messages'][-1]['parts'])
             if get_content_only:
                 return response.text
             else:
                 return response
-    elif platform == 'Claude':
+    elif provider == 'Claude':
         if args['stream']:
-            with CLAUDE_CLIENT.messages.stream(
-                    model=args['model'],
-                    max_tokens=1024,
-                    messages=args['messages']
-            ) as stream:
-                for text in stream.text_stream:
-                    yield text
+            response = CLAUDE_CLIENT.messages.stream(
+                model=args['model'],
+                max_tokens=1024,
+                messages=args['messages']
+            )
+            return stream_response(provider, response)
         else:
             response = CLAUDE_CLIENT.messages.create(
                 model=args['model'],
@@ -252,27 +289,37 @@ def get_response(args, get_content_only=True):
                 return response.content[0].text
             else:
                 return response
-    elif platform == 'Llama':
+    elif provider == 'Llama':
         response = LLAMA_CLIENT.chat.completions.create(
             **args
         )
         if args['stream']:
-            for chunk in response:
-                response_text = chunk.choices[0].delta.content
-                yield response_text
+            return stream_response(provider, response)
         else:
             if get_content_only:
                 return response.choices[0].message.content
             else:
                 return response
 
-def form_response(response, info: ChatMessageContainer):
-    info.content = response.choices[0].message.content
-    info.prompt_tokens = response.usage.prompt_tokens
-    info.completion_tokens = response.usage.completion_tokens
-    info.total_tokens = response.usage.total_tokens
-    info.finish_reason = response.choices[0].finish_reason
-    return info
+def get_g4f_response(args, get_content_only=True):
+    response = G4F_CLIENT.chat.completions.create(
+        model=args['model'],
+        stream=args['stream'],
+        messages=args['messages'],
+    )
+    if args['stream']:
+        return stream_response(provider='', response=response, is_g4f=True)
+    else:
+        if get_content_only:
+            return response.choices[0].message.content
+        else:
+            return response
+
+def get_response(args, get_content_only=True, is_g4f=False):
+    if is_g4f:
+        return get_g4f_response(args, get_content_only)
+    else:
+        return get_api_response(args, get_content_only)
 
 def init_llama():
     llama_index_directory = CONFIG_MANAGER.get_general_property('llama_index_directory')
@@ -308,7 +355,9 @@ class StreamThread(QThread):
 
                 print(f"Done in {int((time.time() - start_time) * 1000)}ms.")
         except Exception as e:
-            self.errorGenerated.emit(f'<p style="color:red">{e}</p>')
+            # TODO LANGUAGE
+            self.errorGenerated.emit(f'<p style="color:red">{e}</p>\n\n'
+                                     f'(Are you registered valid OpenAI API Key? This feature requires OpenAI API Key.)\n')
 
     def stop(self):
         self.__stop = True
@@ -402,7 +451,9 @@ class STTThread(QThread):
             )
             self.stt_finished.emit(transcript.text)
         except Exception as e:
-            self.errorGenerated.emit(f'<p style="color:red">{e}</p>')
+            # TODO LANGUAGE
+            self.errorGenerated.emit(f'<p style="color:red">{e}\n\n'
+                                     f'(Are you registered valid OpenAI API Key? This feature requires OpenAI API Key.)</p>')
         finally:
             os.remove(self.filename)
 
@@ -417,10 +468,11 @@ class ChatThread(QThread):
     replyGenerated = Signal(str, bool, ChatMessageContainer)
     streamFinished = Signal(ChatMessageContainer)
 
-    def __init__(self, input_args, info: ChatMessageContainer):
+    def __init__(self, input_args, info: ChatMessageContainer, is_g4f=False):
         super().__init__()
         self.__input_args = input_args
         self.__stop = False
+        self.__is_g4f = is_g4f
 
         self.__info = info
         self.__info.role = 'assistant'
@@ -429,32 +481,59 @@ class ChatThread(QThread):
         self.__stop = True
 
     def run(self):
-        try:
-            if self.__input_args['stream']:
-                response = get_response(self.__input_args)
-                for chunk in response:
-                    if self.__stop:
-                        self.__info.finish_reason = 'stopped by user'
+            if self.__is_g4f:
+                try:
+                    if self.__input_args['stream']:
+                        response = get_response(self.__input_args, is_g4f=True)
+                        for chunk in response:
+                            if self.__stop:
+                                self.__info.finish_reason = 'stopped by user'
+                                self.streamFinished.emit(self.__info)
+                                break
+                            else:
+                                self.replyGenerated.emit(chunk, True, self.__info)
+                        self.__info.finish_reason = 'stop'
                         self.streamFinished.emit(self.__info)
-                        break
                     else:
-                        self.replyGenerated.emit(chunk, True, self.__info)
-                self.__info.finish_reason = 'stop'
-                self.streamFinished.emit(self.__info)
-            else:
-                response = get_response(self.__input_args)
+                        response = get_response(self.__input_args, is_g4f=True)
 
-                self.__info.content = response
-                # TODO tokenizer
-                self.__info.prompt_tokens = ''
-                self.__info.completion_tokens = ''
-                self.__info.total_tokens = ''
-                self.__info.finish_reason = 'stop'
-                self.replyGenerated.emit(response, False, self.__info)
-        except Exception as e:
-            self.__info.finish_reason = 'Error'
-            self.__info.content = f'<p style="color:red">{e}</p>'
-            self.replyGenerated.emit(self.__info.content, False, self.__info)
+                        self.__info.content = response
+                        self.__info.prompt_tokens = ''
+                        self.__info.completion_tokens = ''
+                        self.__info.total_tokens = ''
+                        self.__info.finish_reason = 'stop'
+                        self.replyGenerated.emit(response, False, self.__info)
+                except Exception as e:
+                    self.__info.finish_reason = 'Error'
+                    self.__info.content = f'<p style="color:red">{e}</p>'
+                    self.replyGenerated.emit(self.__info.content, False, self.__info)
+            else:
+                try:
+                    if self.__input_args['stream']:
+                        response = get_response(self.__input_args)
+                        for chunk in response:
+                            if self.__stop:
+                                self.__info.finish_reason = 'stopped by user'
+                                self.streamFinished.emit(self.__info)
+                                break
+                            else:
+                                self.replyGenerated.emit(chunk, True, self.__info)
+                        self.__info.finish_reason = 'stop'
+                        self.streamFinished.emit(self.__info)
+                    else:
+                        response = get_response(self.__input_args)
+
+                        self.__info.content = response
+                        # TODO tokenizer
+                        self.__info.prompt_tokens = ''
+                        self.__info.completion_tokens = ''
+                        self.__info.total_tokens = ''
+                        self.__info.finish_reason = 'stop'
+                        self.replyGenerated.emit(response, False, self.__info)
+                except Exception as e:
+                    self.__info.finish_reason = 'Error'
+                    self.__info.content = f'<p style="color:red">{e}</p>'
+                    self.replyGenerated.emit(self.__info.content, False, self.__info)
 
 
 # To manage only one TTS stream at a time

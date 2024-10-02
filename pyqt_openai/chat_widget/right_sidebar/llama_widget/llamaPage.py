@@ -1,11 +1,12 @@
-from pyqt_openai.config_loader import CONFIG_MANAGER
-from pyqt_openai.gpt_widget.right_sidebar.llama_widget.listWidget import FileListWidget
-from pyqt_openai.lang.translations import LangClass
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QFont
 from PySide6.QtWidgets import QTextBrowser
 from PySide6.QtWidgets import QWidget, QLabel, QVBoxLayout
 
+from pyqt_openai import SMALL_LABEL_PARAM
+from pyqt_openai.config_loader import CONFIG_MANAGER
+from pyqt_openai.chat_widget.right_sidebar.llama_widget.listWidget import FileListWidget
+from pyqt_openai.lang.translations import LangClass
 
 class LlamaPage(QWidget):
     onDirectorySelected = Signal(str)
@@ -16,7 +17,7 @@ class LlamaPage(QWidget):
 
     def __initUi(self):
         self.__apiCheckPreviewLbl = QLabel()
-        self.__apiCheckPreviewLbl.setFont(QFont('Arial', 10))
+        self.__apiCheckPreviewLbl.setFont(QFont(*SMALL_LABEL_PARAM))
 
         self.__listWidget = FileListWidget()
         self.__listWidget.clicked.connect(self.__setTextInBrowser)

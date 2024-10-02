@@ -1,4 +1,4 @@
-from pyqt_openai.gpt_widget.center.chatUnit import ChatUnit
+from pyqt_openai.chat_widget.center.chatUnit import ChatUnit
 
 
 class UserChatUnit(ChatUnit):
