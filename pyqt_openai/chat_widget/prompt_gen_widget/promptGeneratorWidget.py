@@ -3,8 +3,8 @@ import pyperclip
 from PySide6.QtWidgets import QTextBrowser, QSplitter, QWidget, QLabel, QVBoxLayout, QPushButton, QTabWidget, QScrollArea
 from PySide6.QtCore import Qt
 
-from pyqt_openai.gpt_widget.prompt_gen_widget.formPage import FormPage
-from pyqt_openai.gpt_widget.prompt_gen_widget.sentencePage import SentencePage
+from pyqt_openai.chat_widget.prompt_gen_widget.formPage import FormPage
+from pyqt_openai.chat_widget.prompt_gen_widget.sentencePage import SentencePage
 from pyqt_openai.lang.translations import LangClass
 
 
