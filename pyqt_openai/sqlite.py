@@ -369,8 +369,11 @@ class SqliteDatabase:
             self.__c.execute(
                 f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{MESSAGE_TABLE_NAME}'")
             if self.__c.fetchone()[0] == 1:
-                # Let it pass if the table already exists
-                pass
+                # TODO WILL_BE_REMOVED_AFTER v1.6.0
+                # Add is_g4f, g4f_platform to the table
+                self.__c.execute(f'ALTER TABLE {MESSAGE_TABLE_NAME} ADD '
+                                 f'COLUMN is_g4f INT DEFAULT 0'
+                                 f', g4f_platform VARCHAR(255)')
             else:
                 # Create message table and triggers
                 self.__c.execute(f'''CREATE TABLE {MESSAGE_TABLE_NAME}
@@ -388,6 +391,8 @@ class SqliteDatabase:
                               insert_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
                               favorite_set_date DATETIME,
                               is_json_response_available INT DEFAULT 0,
+                              is_g4f INT DEFAULT 0,
+                              g4f_platform VARCHAR(255),
                               FOREIGN KEY (thread_id) REFERENCES {THREAD_TABLE_NAME}(id)
                               ON DELETE CASCADE)''')
 

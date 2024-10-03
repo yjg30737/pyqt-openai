@@ -86,10 +86,7 @@ class UsingAPIPage(QWidget):
         self.__warningLbl.setVisible(False)
 
         # TODO WILL_BE_REMOVED_AFTER v1.5.0
-        self.__warningLbl.setText('Currently LlamaIndex, JSON mode, and Image input are only available for the OpenAI Chat model.\n'
-        # TODO WILL_BE_REMOVED_AFTER v1.3.0
-                                  'Also you have to get OpenAI API key to use these features.\n'
-                                  'I will update this soon.')
+        self.__warningLbl.setText('Currently LlamaIndex, JSON mode, and Image input are only available for the OpenAI Chat model.')
         self.__warningLbl.setWordWrap(True)
 
         advancedSettingsScrollArea = QScrollArea()
