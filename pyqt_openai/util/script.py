@@ -743,7 +743,7 @@ def get_api_response(args, get_content_only=True):
                 return response
 
 
-def get_g4f_response(args, get_content_only=True):
+def get_g4f_response(args, get_content_only=True, get_g4f_provider=False):
     response = G4F_CLIENT.chat.completions.create(
         model=args['model'],
         stream=args['stream'],
@@ -758,9 +758,16 @@ def get_g4f_response(args, get_content_only=True):
             return response
 
 
-def get_response(args, get_content_only=True, is_g4f=False):
+def get_response(args, get_content_only=True, is_g4f=False, get_g4f_provider=False):
+    """
+    Get the response from the API
+    :param args: The arguments to pass to the API
+    :param get_content_only: Whether to get the content only or not
+    :param is_g4f: Whether the model is G4F or not
+    :param get_g4f_provider: Whether to get the G4F provider or not
+    """
     if is_g4f:
-        return get_g4f_response(args, get_content_only)
+        return get_g4f_response(args, get_content_only, get_g4f_provider)
     else:
         return get_api_response(args, get_content_only)
 
@@ -770,6 +777,7 @@ def init_llama():
     if llama_index_directory and CONFIG_MANAGER.get_general_property(
             'use_llama_index'):
         LLAMAINDEX_WRAPPER.set_directory(llama_index_directory)
+
 
 # TTS
 class StreamThread(QThread):
@@ -927,59 +935,34 @@ class ChatThread(QThread):
         self.__stop = True
 
     def run(self):
-            if self.__is_g4f:
-                try:
-                    if self.__input_args['stream']:
-                        response = get_response(self.__input_args, is_g4f=True)
-                        for chunk in response:
-                            if self.__stop:
-                                self.__info.finish_reason = 'stopped by user'
-                                self.streamFinished.emit(self.__info)
-                                break
-                            else:
-                                self.replyGenerated.emit(chunk, True, self.__info)
-                        self.__info.finish_reason = 'stop'
+        try:
+            if self.__input_args['stream']:
+                response = get_response(self.__input_args, self.__is_g4f)
+                for chunk in response:
+                    if self.__stop:
+                        self.__info.finish_reason = 'stopped by user'
                         self.streamFinished.emit(self.__info)
+                        break
                     else:
-                        response = get_response(self.__input_args, is_g4f=True)
-
-                        self.__info.content = response
-                        self.__info.prompt_tokens = ''
-                        self.__info.completion_tokens = ''
-                        self.__info.total_tokens = ''
-                        self.__info.finish_reason = 'stop'
-                        self.replyGenerated.emit(response, False, self.__info)
-                except Exception as e:
-                    self.__info.finish_reason = 'Error'
-                    self.__info.content = f'<p style="color:red">{e}</p>'
-                    self.replyGenerated.emit(self.__info.content, False, self.__info)
+                        self.replyGenerated.emit(chunk, True, self.__info)
             else:
-                try:
-                    if self.__input_args['stream']:
-                        response = get_response(self.__input_args)
-                        for chunk in response:
-                            if self.__stop:
-                                self.__info.finish_reason = 'stopped by user'
-                                self.streamFinished.emit(self.__info)
-                                break
-                            else:
-                                self.replyGenerated.emit(chunk, True, self.__info)
-                        self.__info.finish_reason = 'stop'
-                        self.streamFinished.emit(self.__info)
-                    else:
-                        response = get_response(self.__input_args)
+                response = get_response(self.__input_args, self.__is_g4f)
+                self.__info.content = response
+                self.__info.prompt_tokens = ''
+                self.__info.completion_tokens = ''
+                self.__info.total_tokens = ''
 
-                        self.__info.content = response
-                        # TODO tokenizer
-                        self.__info.prompt_tokens = ''
-                        self.__info.completion_tokens = ''
-                        self.__info.total_tokens = ''
-                        self.__info.finish_reason = 'stop'
-                        self.replyGenerated.emit(response, False, self.__info)
-                except Exception as e:
-                    self.__info.finish_reason = 'Error'
-                    self.__info.content = f'<p style="color:red">{e}</p>'
-                    self.replyGenerated.emit(self.__info.content, False, self.__info)
+            self.__info.is_g4f = self.__is_g4f
+            self.__info.finish_reason = 'stop'
+
+            if self.__input_args['stream']:
+                self.streamFinished.emit(self.__info)
+            else:
+                self.replyGenerated.emit(self.__info.content, False, self.__info)
+        except Exception as e:
+            self.__info.finish_reason = 'Error'
+            self.__info.content = f'<p style="color:red">{e}</p>'
+            self.replyGenerated.emit(self.__info.content, False, self.__info)
 
 
 # To manage only one TTS stream at a time
