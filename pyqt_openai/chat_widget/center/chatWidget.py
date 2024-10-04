@@ -10,7 +10,8 @@ from pyqt_openai.chat_widget.center.menuWidget import MenuWidget
 from pyqt_openai.chat_widget.center.prompt import Prompt
 from pyqt_openai.chat_widget.llamaOpenAIThread import LlamaOpenAIThread
 from pyqt_openai.config_loader import CONFIG_MANAGER
-from pyqt_openai.globals import LLAMAINDEX_WRAPPER, DB, get_argument, ChatThread
+from pyqt_openai.globals import LLAMAINDEX_WRAPPER, DB
+from pyqt_openai.util.script import get_argument, ChatThread
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ChatMessageContainer
 from pyqt_openai.widgets.notifier import NotifierWidget

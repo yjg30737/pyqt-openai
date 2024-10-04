@@ -5,7 +5,7 @@ from PySide6.QtWidgets import QVBoxLayout, QTableWidget, QHeaderView, QTableWidg
 from pyqt_openai import HOW_TO_GET_OPENAI_API_KEY_URL, HOW_TO_GET_CLAUDE_API_KEY_URL, HOW_TO_GET_GEMINI_API_KEY_URL, \
     HOW_TO_GET_LLAMA_API_KEY_URL, DEFAULT_API_CONFIGS
 from pyqt_openai.config_loader import CONFIG_MANAGER
-from pyqt_openai.globals import set_api_key
+from pyqt_openai.util.script import set_api_key
 from pyqt_openai.widgets.linkLabel import LinkLabel
 
 

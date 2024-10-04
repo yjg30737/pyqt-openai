@@ -19,14 +19,14 @@ from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.customizeDialog import CustomizeDialog
 from pyqt_openai.dalle_widget.dalleMainWidget import DallEMainWidget
 from pyqt_openai.doNotAskAgainDialog import DoNotAskAgainDialog
-from pyqt_openai.globals import init_llama, set_api_key
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import SettingsParamsContainer, CustomizeParamsContainer
 from pyqt_openai.replicate_widget.replicateMainWidget import ReplicateMainWidget
 from pyqt_openai.settings_dialog.settingsDialog import SettingsDialog
 from pyqt_openai.shortcutDialog import ShortcutDialog
 from pyqt_openai.updateSoftwareDialog import update_software
-from pyqt_openai.util.script import restart_app, show_message_box_after_change_to_restart, set_auto_start_windows
+from pyqt_openai.util.script import restart_app, show_message_box_after_change_to_restart, set_auto_start_windows, \
+    set_api_key, init_llama
 from pyqt_openai.widgets.button import Button
 
 

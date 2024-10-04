@@ -8,8 +8,7 @@ from pyqt_openai import DEFAULT_SHORTCUT_JSON_MODE, OPENAI_TEMPERATURE_RANGE, OP
 from pyqt_openai.chat_widget.right_sidebar.apiWidget import ApiWidget
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.lang.translations import LangClass
-from pyqt_openai.globals import init_llama, get_openai_chat_model
-from pyqt_openai.util.script import getSeparator, get_chat_model
+from pyqt_openai.util.script import getSeparator, get_chat_model, get_openai_chat_model, init_llama
 from pyqt_openai.widgets.linkLabel import LinkLabel
 
 
