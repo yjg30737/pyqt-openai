@@ -4,13 +4,13 @@ import sys
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QStackedWidget, QWidget, QSizePolicy, QHBoxLayout, QVBoxLayout, QMessageBox
 
-from pyqt_openai.config_loader import CONFIG_MANAGER
-from pyqt_openai.globals import LLAMAINDEX_WRAPPER, DB, get_openai_chat_model, get_argument, ChatThread
 from pyqt_openai.chat_widget.center.chatBrowser import ChatBrowser
 from pyqt_openai.chat_widget.center.chatHome import ChatHome
 from pyqt_openai.chat_widget.center.menuWidget import MenuWidget
 from pyqt_openai.chat_widget.center.prompt import Prompt
-from pyqt_openai.chat_widget.chatThread import LlamaOpenAIThread
+from pyqt_openai.chat_widget.llamaOpenAIThread import LlamaOpenAIThread
+from pyqt_openai.config_loader import CONFIG_MANAGER
+from pyqt_openai.globals import LLAMAINDEX_WRAPPER, DB, get_argument, ChatThread
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ChatMessageContainer
 from pyqt_openai.widgets.notifier import NotifierWidget

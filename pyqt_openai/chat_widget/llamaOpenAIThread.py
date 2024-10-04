@@ -4,6 +4,8 @@ from PySide6.QtCore import QThread, Signal
 from pyqt_openai.models import ChatMessageContainer
 
 
+# TODO
+# Should combine with ChatThread
 class LlamaOpenAIThread(QThread):
     replyGenerated = Signal(str, bool, ChatMessageContainer)
     streamFinished = Signal(ChatMessageContainer)

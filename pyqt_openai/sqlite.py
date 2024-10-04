@@ -218,11 +218,11 @@ class SqliteDatabase:
 
     def __createThread(self):
         try:
-            # Create new thread table if not exists
-            table_name_new_exists = self.__c.execute(
+            # Create thread table if not exists
+            thread_tb_exists = self.__c.execute(
                     f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{THREAD_TABLE_NAME}'").fetchone()[
                                             0] == 1
-            if table_name_new_exists:
+            if thread_tb_exists:
                 pass
             else:
                 # If user uses app for the first time, create a table
@@ -232,13 +232,15 @@ class SqliteDatabase:
                               name TEXT,
                               update_dt DATETIME,
                               insert_dt DATETIME DEFAULT CURRENT_TIMESTAMP)''')
-                # Create message table
-                self.__createMessage()
-            # Create new thread trigger if not exists
-            trigger_name_new_exists = self.__c.execute(
+
+            # Create message table
+            self.__createMessage()
+
+            # Create trigger if not exists
+            thread_trigger_exists = self.__c.execute(
                 f"SELECT count(*) FROM sqlite_master WHERE type='trigger' AND name='{THREAD_TRIGGER_NAME}'").fetchone()[
                                         0] == 1
-            if trigger_name_new_exists:
+            if thread_trigger_exists:
                 pass
             else:
                 # Create a trigger to update the update_dt column with the current timestamp
@@ -370,10 +372,16 @@ class SqliteDatabase:
                 f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{MESSAGE_TABLE_NAME}'")
             if self.__c.fetchone()[0] == 1:
                 # TODO WILL_BE_REMOVED_AFTER v1.6.0
-                # Add is_g4f, g4f_platform to the table
-                self.__c.execute(f'ALTER TABLE {MESSAGE_TABLE_NAME} ADD '
-                                 f'COLUMN is_g4f INT DEFAULT 0'
-                                 f', g4f_platform VARCHAR(255)')
+                # If there is no is_g4f column, add it
+                self.__c.execute(f"PRAGMA table_info({MESSAGE_TABLE_NAME})")
+                columns = self.__c.fetchall()
+                if 'is_g4f' not in [col[1] for col in columns]:
+                    # Add is_g4f, g4f_platform to the table
+                    self.__c.execute(f'ALTER TABLE {MESSAGE_TABLE_NAME} ADD COLUMN is_g4f INT DEFAULT 0')
+
+                # If there is no g4f_platform column, add it
+                if 'g4f_platform' not in [col[1] for col in columns]:
+                    self.__c.execute(f"ALTER TABLE {MESSAGE_TABLE_NAME} ADD COLUMN g4f_platform VARCHAR(255) DEFAULT ''")
             else:
                 # Create message table and triggers
                 self.__c.execute(f'''CREATE TABLE {MESSAGE_TABLE_NAME}
