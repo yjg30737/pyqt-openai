@@ -12,7 +12,7 @@
   [![PyPI - Version](https://img.shields.io/pypi/v/pyqt-openai?logo=pypi&logoColor=white)](https://pypi.org/project/pyqt-openai/) [![Downloads](https://static.pepy.tech/badge/pyqt-openai)](https://pepy.tech/project/pyqt-openai) [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/pyqt-openai?logo=python&logoColor=gold)](https://pypi.org/project/pyqt-openai/)
 </div>
   
-![녹화_2024_08_31_21_42_47_27](https://github.com/user-attachments/assets/03926f12-7389-412c-ad99-36c501573d44)
+![image](https://github.com/user-attachments/assets/e08aa385-9bff-412b-92e5-a42478b2316a)
 
 <hr>
 
