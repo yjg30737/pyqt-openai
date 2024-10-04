@@ -529,7 +529,10 @@ CONFIG_DATA = {
         'OPENAI_API_KEY': '',
         'GEMINI_API_KEY': '',
         'CLAUDE_API_KEY': '',
-        'LLAMA_API_KEY': ''
+        'LLAMA_API_KEY': '',
+
+        'g4f_model': DEFAULT_LLM,
+        'provider': G4F_PROVIDER_DEFAULT
     },
     'DALLE': {
         'quality': 'standard',

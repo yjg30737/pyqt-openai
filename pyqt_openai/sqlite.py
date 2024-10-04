@@ -376,12 +376,12 @@ class SqliteDatabase:
                 self.__c.execute(f"PRAGMA table_info({MESSAGE_TABLE_NAME})")
                 columns = self.__c.fetchall()
                 if 'is_g4f' not in [col[1] for col in columns]:
-                    # Add is_g4f, g4f_platform to the table
+                    # Add is_g4f, provider to the table
                     self.__c.execute(f'ALTER TABLE {MESSAGE_TABLE_NAME} ADD COLUMN is_g4f INT DEFAULT 0')
 
-                # If there is no g4f_platform column, add it
-                if 'g4f_platform' not in [col[1] for col in columns]:
-                    self.__c.execute(f"ALTER TABLE {MESSAGE_TABLE_NAME} ADD COLUMN g4f_platform VARCHAR(255) DEFAULT ''")
+                # If there is no provider column, add it
+                if 'provider' not in [col[1] for col in columns]:
+                    self.__c.execute(f"ALTER TABLE {MESSAGE_TABLE_NAME} ADD COLUMN provider VARCHAR(255) DEFAULT ''")
             else:
                 # Create message table and triggers
                 self.__c.execute(f'''CREATE TABLE {MESSAGE_TABLE_NAME}
@@ -400,7 +400,7 @@ class SqliteDatabase:
                               favorite_set_date DATETIME,
                               is_json_response_available INT DEFAULT 0,
                               is_g4f INT DEFAULT 0,
-                              g4f_platform VARCHAR(255),
+                              provider VARCHAR(255),
                               FOREIGN KEY (thread_id) REFERENCES {THREAD_TABLE_NAME}(id)
                               ON DELETE CASCADE)''')
 

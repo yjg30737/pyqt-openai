@@ -432,6 +432,16 @@ def get_g4f_models():
     models = list(ModelUtils.convert.keys())
     return models
 
+# TODO get provider
+# providers = Api.get_providers()
+# i = 0
+# for provider in providers:
+#     print(provider)
+#     print(Api.get_provider_models(provider))
+#     i += 1
+#     if i == 5:
+#         break
+
 def get_g4f_providers(including_auto=False):
     providers = list(ProviderUtils.convert.keys())
     if including_auto:
@@ -656,10 +666,14 @@ def get_argument(model, system, messages, cur_text, temperature, top_p, frequenc
         raise e
 
 
-def stream_response(provider, response, is_g4f=False):
+def stream_response(provider, response, is_g4f=False, get_content_only=True):
     if is_g4f:
-        for chunk in response:
-            yield chunk.choices[0].delta.content
+        if get_content_only:
+            for chunk in response:
+                yield chunk.choices[0].delta.content
+        else:
+            for chunk in response:
+                yield chunk
     else:
         if provider == 'OpenAI':
             for chunk in response:
@@ -743,14 +757,14 @@ def get_api_response(args, get_content_only=True):
                 return response
 
 
-def get_g4f_response(args, get_content_only=True, get_g4f_provider=False):
+def get_g4f_response(args, get_content_only=True):
     response = G4F_CLIENT.chat.completions.create(
         model=args['model'],
         stream=args['stream'],
         messages=args['messages'],
     )
     if args['stream']:
-        return stream_response(provider='', response=response, is_g4f=True)
+        return stream_response(provider='', response=response, is_g4f=True, get_content_only=get_content_only)
     else:
         if get_content_only:
             return response.choices[0].message.content
@@ -758,16 +772,16 @@ def get_g4f_response(args, get_content_only=True, get_g4f_provider=False):
             return response
 
 
-def get_response(args, get_content_only=True, is_g4f=False, get_g4f_provider=False):
+def get_response(args, is_g4f=False, get_content_only=True):
     """
     Get the response from the API
     :param args: The arguments to pass to the API
-    :param get_content_only: Whether to get the content only or not
     :param is_g4f: Whether the model is G4F or not
-    :param get_g4f_provider: Whether to get the G4F provider or not
+    :param get_content_only: Whether to get the content only or not
     """
     if is_g4f:
-        return get_g4f_response(args, get_content_only, get_g4f_provider)
+        # For getting the provider
+        return get_g4f_response(args, get_content_only=False)
     else:
         return get_api_response(args, get_content_only)
 
@@ -922,11 +936,12 @@ class ChatThread(QThread):
     replyGenerated = Signal(str, bool, ChatMessageContainer)
     streamFinished = Signal(ChatMessageContainer)
 
-    def __init__(self, input_args, info: ChatMessageContainer, is_g4f=False):
+    def __init__(self, input_args, info: ChatMessageContainer, is_g4f=False, provider=''):
         super().__init__()
         self.__input_args = input_args
         self.__stop = False
         self.__is_g4f = is_g4f
+        self.__provider = provider
 
         self.__info = info
         self.__info.role = 'assistant'
@@ -936,9 +951,18 @@ class ChatThread(QThread):
 
     def run(self):
         try:
+            self.__info.is_g4f = self.__is_g4f
+            # For getting the provider if it is G4F
+            get_content_only = not self.__info.is_g4f
             if self.__input_args['stream']:
-                response = get_response(self.__input_args, self.__is_g4f)
+                response = get_response(self.__input_args, self.__is_g4f, get_content_only)
                 for chunk in response:
+                    # Get provider if it is G4F
+                    # Get the content from choices[0].delta.content if it is G4F, otherwise get it from chunk
+                    # The reason is that G4F has content in choices[0].delta.content, otherwise it has content in chunk.
+                    if self.__is_g4f:
+                        self.__info.provider = chunk.provider
+                        chunk = chunk.choices[0].delta.content
                     if self.__stop:
                         self.__info.finish_reason = 'stopped by user'
                         self.streamFinished.emit(self.__info)
@@ -946,13 +970,19 @@ class ChatThread(QThread):
                     else:
                         self.replyGenerated.emit(chunk, True, self.__info)
             else:
-                response = get_response(self.__input_args, self.__is_g4f)
-                self.__info.content = response
+                response = get_response(self.__input_args, self.__is_g4f, get_content_only)
+                # Get provider if it is G4F
+                # Get the content from choices[0].message.content if it is G4F, otherwise get it from response
+                # The reason is that G4F has content in choices[0].message.content, otherwise it has content in response.
+                if self.__is_g4f:
+                    self.__info.content = response.choices[0].message.content
+                    self.__info.provider = response.provider
+                else:
+                    self.__info.content = response
                 self.__info.prompt_tokens = ''
                 self.__info.completion_tokens = ''
                 self.__info.total_tokens = ''
 
-            self.__info.is_g4f = self.__is_g4f
             self.__info.finish_reason = 'stop'
 
             if self.__input_args['stream']:

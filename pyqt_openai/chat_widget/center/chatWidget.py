@@ -22,7 +22,7 @@ class ChatWidget(QWidget):
     onMenuCloseClicked = Signal()
 
     def __init__(self, parent=None):
-        super(ChatWidget, self).__init__(parent)
+        super().__init__(parent)
         self.__initVal()
         self.__initUi()
 
@@ -116,7 +116,7 @@ class ChatWidget(QWidget):
         try:
             # Get necessary parameters
             stream = CONFIG_MANAGER.get_general_property('stream')
-            model = CONFIG_MANAGER.get_general_property('model')
+            model = CONFIG_MANAGER.get_general_property('g4f_model') if self.__is_g4f else CONFIG_MANAGER.get_general_property('model')
             system = CONFIG_MANAGER.get_general_property('system')
             temperature = CONFIG_MANAGER.get_general_property('temperature')
             max_tokens = CONFIG_MANAGER.get_general_property('max_tokens')
@@ -126,6 +126,7 @@ class ChatWidget(QWidget):
             presence_penalty = CONFIG_MANAGER.get_general_property('presence_penalty')
             use_llama_index = CONFIG_MANAGER.get_general_property('use_llama_index')
             use_max_tokens = CONFIG_MANAGER.get_general_property('use_max_tokens')
+            provider = CONFIG_MANAGER.get_general_property('provider')
 
             # Get image files
             images = self.__prompt.getImageBuffers()
@@ -198,7 +199,7 @@ class ChatWidget(QWidget):
                 # Run a different thread based on whether the llama-index is enabled or not.
                 self.__t = LlamaOpenAIThread(param, container, LLAMAINDEX_WRAPPER, query_text)
             else:
-                self.__t = ChatThread(param, info=container, is_g4f=self.__is_g4f)
+                self.__t = ChatThread(param, info=container, is_g4f=self.__is_g4f, provider=provider)
 
             self.__t.started.connect(self.__beforeGenerated)
             self.__t.replyGenerated.connect(self.__browser.showLabel)

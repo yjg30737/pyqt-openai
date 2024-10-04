@@ -91,7 +91,7 @@ class ChatMessageContainer(Container):
     favorite_set_date: str = ""
     is_json_response_available: str = 0
     is_g4f: int = 0
-    g4f_platform: str = ""
+    provider: str = ""
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
