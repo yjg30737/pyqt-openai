@@ -392,6 +392,8 @@ DEFAULT_LLM = 'gpt-4o'
 
 G4F_PROVIDER_DEFAULT = 'Auto'
 
+G4F_USE_CHAT_HISTORY = True
+
 # Dictionary that stores the platform and model pairs
 PROVIDER_MODEL_DICT = {
     'OpenAI': ['gpt-4o', 'gpt-4o-mini']+O1_MODELS,
@@ -531,8 +533,10 @@ CONFIG_DATA = {
         'CLAUDE_API_KEY': '',
         'LLAMA_API_KEY': '',
 
+        # G4F
         'g4f_model': DEFAULT_LLM,
-        'provider': G4F_PROVIDER_DEFAULT
+        'provider': G4F_PROVIDER_DEFAULT,
+        'g4f_use_chat_history': G4F_USE_CHAT_HISTORY,
     },
     'DALLE': {
         'quality': 'standard',

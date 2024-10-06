@@ -50,12 +50,19 @@ class UsingG4FPage(QWidget):
         providerCmbBox.addItems(get_g4f_providers(including_auto=True))
         providerCmbBox.currentTextChanged.connect(self.__providerChanged)
 
+        # TODO LANGUAGE
+        # TODO NEEDS ADDITIONAL DESCRIPTION
+        g4f_use_chat_historyChkBox = QCheckBox('Use chat history')
+        g4f_use_chat_historyChkBox.setChecked(CONFIG_MANAGER.get_general_property('g4f_use_chat_history'))
+        g4f_use_chat_historyChkBox.toggled.connect(self.__saveChatHistory)
+
         lay = QFormLayout()
         lay.addRow(manualBrowser)
         lay.addRow(getSeparator('horizontal'))
         lay.addRow('Model', self.__modelCmbBox)
         lay.addRow('Provider', providerCmbBox)
         lay.addRow(streamChkBox)
+        lay.addRow(g4f_use_chat_historyChkBox)
         lay.setAlignment(Qt.AlignmentFlag.AlignTop)
 
         self.setLayout(lay)
@@ -75,3 +82,6 @@ class UsingG4FPage(QWidget):
             self.__modelCmbBox.addItems(get_g4f_models())
         else:
             self.__modelCmbBox.addItems(get_g4f_models_by_provider(v))
+
+    def __saveChatHistory(self, f):
+        CONFIG_MANAGER.set_general_property('g4f_use_chat_history', f)

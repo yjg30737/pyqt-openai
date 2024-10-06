@@ -127,11 +127,15 @@ class ChatWidget(QWidget):
             use_llama_index = CONFIG_MANAGER.get_general_property('use_llama_index')
             use_max_tokens = CONFIG_MANAGER.get_general_property('use_max_tokens')
             provider = CONFIG_MANAGER.get_general_property('provider')
+            g4f_use_chat_history = CONFIG_MANAGER.get_general_property('g4f_use_chat_history')
 
             # Get image files
             images = self.__prompt.getImageBuffers()
 
-            messages = self.__browser.getMessages(CONFIG_MANAGER.get_general_property('maximum_messages_in_parameter'))
+            maximum_messages_in_parameter = CONFIG_MANAGER.get_general_property('maximum_messages_in_parameter')
+            messages = self.__browser.getMessages(maximum_messages_in_parameter)
+            if self.__is_g4f and not g4f_use_chat_history:
+                messages = []
 
             cur_text = self.__prompt.getContent()
 

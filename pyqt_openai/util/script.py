@@ -28,8 +28,11 @@ import requests
 from PySide6.QtCore import Qt, QUrl, QThread, Signal
 from PySide6.QtGui import QDesktopServices
 from PySide6.QtWidgets import QMessageBox, QFrame
-from g4f.Provider import ProviderUtils
+from g4f import ProviderType
+from g4f.Provider import ProviderUtils, __providers__
+from g4f.errors import ProviderNotFoundError
 from g4f.models import ModelUtils
+from g4f.providers.retry_provider import IterProvider
 from google import generativeai as genai
 from jinja2 import Template
 
@@ -442,8 +445,23 @@ def get_g4f_models():
 #     if i == 5:
 #         break
 
+def convert_to_provider(provider: str) -> ProviderType:
+    if " " in provider:
+        provider_list = [ProviderUtils.convert[p] for p in provider.split() if p in ProviderUtils.convert]
+        if not provider_list:
+            raise ProviderNotFoundError(f'Providers not found: {provider}')
+        provider = IterProvider(provider_list)
+    elif provider in ProviderUtils.convert:
+        provider = ProviderUtils.convert[provider]
+    elif provider:
+        raise ProviderNotFoundError(f'Provider not found: {provider}')
+    return provider
+
 def get_g4f_providers(including_auto=False):
-    providers = list(ProviderUtils.convert.keys())
+    # providers = list(ProviderUtils.convert.keys())
+    providers = list(provider.__name__
+            for provider in __providers__
+            if provider.working)
     if including_auto:
         providers = [G4F_PROVIDER_DEFAULT] + providers
     return providers
@@ -762,6 +780,7 @@ def get_g4f_response(args, get_content_only=True):
         model=args['model'],
         stream=args['stream'],
         messages=args['messages'],
+        provider=args['provider']
     )
     if args['stream']:
         return stream_response(provider='', response=response, is_g4f=True, get_content_only=get_content_only)
@@ -772,7 +791,7 @@ def get_g4f_response(args, get_content_only=True):
             return response
 
 
-def get_response(args, is_g4f=False, get_content_only=True):
+def get_response(args, is_g4f=False, get_content_only=True, provider=''):
     """
     Get the response from the API
     :param args: The arguments to pass to the API
@@ -781,6 +800,8 @@ def get_response(args, is_g4f=False, get_content_only=True):
     """
     if is_g4f:
         # For getting the provider
+        if provider != G4F_PROVIDER_DEFAULT:
+            args['provider'] = convert_to_provider(provider)
         return get_g4f_response(args, get_content_only=False)
     else:
         return get_api_response(args, get_content_only)
@@ -955,7 +976,7 @@ class ChatThread(QThread):
             # For getting the provider if it is G4F
             get_content_only = not self.__info.is_g4f
             if self.__input_args['stream']:
-                response = get_response(self.__input_args, self.__is_g4f, get_content_only)
+                response = get_response(self.__input_args, self.__is_g4f, get_content_only, self.__provider)
                 for chunk in response:
                     # Get provider if it is G4F
                     # Get the content from choices[0].delta.content if it is G4F, otherwise get it from chunk
@@ -992,6 +1013,15 @@ class ChatThread(QThread):
         except Exception as e:
             self.__info.finish_reason = 'Error'
             self.__info.content = f'<p style="color:red">{e}</p>'
+            if self.__is_g4f:
+                # TODO LANGUAGE
+                self.__info.content += '''
+You can try the following:
+
+- Change the provider
+- Change the model
+- Use API instead of G4F
+'''
             self.replyGenerated.emit(self.__info.content, False, self.__info)
 
 
