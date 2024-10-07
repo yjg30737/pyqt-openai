@@ -48,6 +48,7 @@ class UsingG4FPage(QWidget):
 
         providerCmbBox = QComboBox()
         providerCmbBox.addItems(get_g4f_providers(including_auto=True))
+        providerCmbBox.setCurrentText(self.__provider)
         providerCmbBox.currentTextChanged.connect(self.__providerChanged)
 
         # TODO LANGUAGE

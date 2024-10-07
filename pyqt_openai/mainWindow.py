@@ -12,7 +12,7 @@ from pyqt_openai import DEFAULT_SHORTCUT_FULL_SCREEN, \
     ICON_CLOSE, \
     DEFAULT_SHORTCUT_SETTING, TRANSPARENT_RANGE, TRANSPARENT_INIT_VAL, ICON_GITHUB, ICON_DISCORD, PAYPAL_URL, KOFI_URL, \
     DISCORD_URL, GITHUB_URL, DEFAULT_SHORTCUT_FOCUS_MODE, ICON_FOCUS_MODE, ICON_SETTING, DEFAULT_SHORTCUT_SHOW_TOOLBAR, \
-    DEFAULT_SHORTCUT_SHOW_SECONDARY_TOOLBAR, DEFAULT_SHORTCUT_STACK_ON_TOP
+    DEFAULT_SHORTCUT_SHOW_SECONDARY_TOOLBAR, DEFAULT_SHORTCUT_STACK_ON_TOP, ICON_PAYPAL, ICON_KOFI
 from pyqt_openai.aboutDialog import AboutDialog
 from pyqt_openai.chat_widget.chatMainWidget import ChatMainWidget
 from pyqt_openai.config_loader import CONFIG_MANAGER
@@ -28,6 +28,7 @@ from pyqt_openai.updateSoftwareDialog import update_software
 from pyqt_openai.util.script import restart_app, show_message_box_after_change_to_restart, set_auto_start_windows, \
     set_api_key, init_llama
 from pyqt_openai.widgets.button import Button
+from pyqt_openai.widgets.navWidget import NavBar
 
 
 class MainWindow(QMainWindow):
@@ -126,25 +127,29 @@ class MainWindow(QMainWindow):
         self.__discordAction.triggered.connect(lambda: webbrowser.open(DISCORD_URL))
 
         self.__paypalAction = QAction('Paypal', self)
+        self.__paypalAction.setIcon(QIcon(ICON_PAYPAL))
         self.__paypalAction.triggered.connect(lambda: webbrowser.open(PAYPAL_URL))
 
         self.__kofiAction = QAction('Ko-fi ❤', self)
+        self.__kofiAction.setIcon(QIcon(ICON_KOFI))
         self.__kofiAction.triggered.connect(lambda: webbrowser.open(KOFI_URL))
+
+        self.__navBar = NavBar()
+        self.__navBar.add(LangClass.TRANSLATIONS['Chat'])
+        self.__navBar.add('DALL-E')
+        self.__navBar.add('Replicate')
+        self.__navBar.setSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Preferred)
+        self.__navBar.item_clicked.connect(self.__aiTypeChanged)
+        self.__navBar.set_active_button(0)
 
         # toolbar action
         self.__chooseAiAction = QWidgetAction(self)
-        self.__chooseAiCmbBox = QComboBox()
-        self.__chooseAiCmbBox.addItems([LangClass.TRANSLATIONS['Chat'], 'DALLE', 'Replicate'])
-        self.__chooseAiCmbBox.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.MinimumExpanding)
-        self.__chooseAiCmbBox.currentIndexChanged.connect(self.__aiTypeChanged)
-        self.__chooseAiAction.setDefaultWidget(self.__chooseAiCmbBox)
+        self.__chooseAiAction.setDefaultWidget(self.__navBar)
 
-        self.__customizeAction = QWidgetAction(self)
-        self.__customizeBtn = Button()
-        self.__customizeBtn.setStyleAndIcon(ICON_CUSTOMIZE)
-        self.__customizeBtn.clicked.connect(self.__executeCustomizeDialog)
-        self.__customizeAction.setDefaultWidget(self.__customizeBtn)
-        self.__customizeBtn.setToolTip(LangClass.TRANSLATIONS['Customize'])
+        self.__customizeAction = QAction(self)
+        self.__customizeAction.setText(LangClass.TRANSLATIONS['Customize'])
+        self.__customizeAction.setIcon(QIcon(ICON_CUSTOMIZE))
+        self.__customizeAction.triggered.connect(self.__executeCustomizeDialog)
 
         self.__transparentAction = QWidgetAction(self)
         self.__transparentSpinBox = QSpinBox()
@@ -161,13 +166,8 @@ class MainWindow(QMainWindow):
         transparencyActionWidget.setLayout(lay)
         self.__transparentAction.setDefaultWidget(transparencyActionWidget)
 
-        self.__apiWidget = QWidget()
-        self.__apiWidget.setLayout(lay)
-
-        self.__apiAction = QWidgetAction(self)
-        self.__apiAction.setDefaultWidget(self.__apiWidget)
-
-        self.__settingsAction = QAction(LangClass.TRANSLATIONS['Settings'], self)
+        self.__settingsAction = QAction(self)
+        self.__settingsAction.setText(LangClass.TRANSLATIONS['Settings'])
         self.__settingsAction.setIcon(QIcon(ICON_SETTING))
         self.__settingsAction.setShortcut(DEFAULT_SHORTCUT_SETTING)
         self.__settingsAction.triggered.connect(self.__showSettingsDialog)
@@ -254,12 +254,14 @@ class MainWindow(QMainWindow):
 
     def __setToolBar(self):
         self.__toolbar = QToolBar()
-        lay = self.__toolbar.layout()
         self.__toolbar.addAction(self.__chooseAiAction)
+        self.__toolbar.addAction(self.__settingsAction)
         self.__toolbar.addAction(self.__customizeAction)
+        self.__toolbar.addAction(self.__githubAction)
+        self.__toolbar.addAction(self.__discordAction)
+        self.__toolbar.addAction(self.__paypalAction)
+        self.__toolbar.addAction(self.__kofiAction)
         self.__toolbar.addAction(self.__transparentAction)
-        self.__toolbar.addAction(self.__apiAction)
-        self.__toolbar.setLayout(lay)
         self.__toolbar.setMovable(False)
 
         self.addToolBar(self.__toolbar)
@@ -319,6 +321,7 @@ class MainWindow(QMainWindow):
 
     def __aiTypeChanged(self, i):
         self.__mainWidget.setCurrentIndex(i)
+        self.__navBar.set_active_button(i)
         widget = self.__mainWidget.currentWidget()
         widget.showSecondaryToolBar(self.__settingsParamContainer.show_secondary_toolbar)
 

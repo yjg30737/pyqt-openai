@@ -186,6 +186,8 @@ ICON_WORD = os.path.join(ICON_PATH, 'word.svg')
 ICON_SEND = os.path.join(ICON_PATH, 'send.svg')
 ICON_RECORD = os.path.join(ICON_PATH, 'record.svg')
 ICON_SPEAKER = os.path.join(ICON_PATH, 'speaker.svg')
+ICON_PAYPAL = os.path.join(ICON_PATH, 'paypal.png')
+ICON_KOFI = os.path.join(ICON_PATH, 'kofi.png')
 
 ## CUSTOMIZE
 DEFAULT_ICON_SIZE = (24, 24)
@@ -354,6 +356,8 @@ OPENAI_ENDPOINT_DICT = {
 
 # This doesn't need endpoint
 DALLE_ARR = ['dall-e-2', 'dall-e-3']
+
+DEFAULT_DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 
 OPENAI_CHAT_ENDPOINT = '/v1/chat/completions'
 

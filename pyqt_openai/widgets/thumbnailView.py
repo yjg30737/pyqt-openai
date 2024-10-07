@@ -5,7 +5,7 @@ from PySide6.QtGui import QPixmap, QColor, QBrush, QLinearGradient
 from PySide6.QtWidgets import QGraphicsScene, QGraphicsPixmapItem, QGraphicsView, QApplication, QWidget, QHBoxLayout, \
     QFileDialog
 
-from pyqt_openai import ICON_SAVE, ICON_ADD, ICON_DELETE
+from pyqt_openai import ICON_SAVE, ICON_ADD, ICON_DELETE, ICON_COPY
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.widgets.button import Button
 
@@ -44,7 +44,7 @@ class ThumbnailView(QGraphicsView):
     def __setControlWidget(self):
         # copy the image
         copyBtn = Button()
-        copyBtn.setStyleAndIcon('ico/copy.svg')
+        copyBtn.setStyleAndIcon(ICON_COPY)
         copyBtn.clicked.connect(self.__copy)
 
         # download the image

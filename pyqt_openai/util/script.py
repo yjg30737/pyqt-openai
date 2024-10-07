@@ -41,7 +41,7 @@ from pyqt_openai import MAIN_INDEX, \
     PROMPT_NAME_REGEX, PROMPT_MAIN_KEY_NAME, PROMPT_BEGINNING_KEY_NAME, \
     PROMPT_END_KEY_NAME, PROMPT_JSON_KEY_NAME, CONTEXT_DELIMITER, THREAD_ORDERBY, DEFAULT_APP_NAME, \
     AUTOSTART_REGISTRY_KEY, is_frozen, G4F_PROVIDER_DEFAULT, PROVIDER_MODEL_DICT, O1_MODELS, OPENAI_ENDPOINT_DICT, \
-    OPENAI_CHAT_ENDPOINT, STT_MODEL
+    OPENAI_CHAT_ENDPOINT, STT_MODEL, DEFAULT_DATETIME_FORMAT
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ImagePromptContainer, ChatMessageContainer
@@ -171,8 +171,8 @@ def get_chatgpt_data_for_preview(filename, most_recent_n:int = None):
         conv = data[i]
         conv_dict = {}
         name = conv['title']
-        insert_dt = datetime.fromtimestamp(conv['create_time']).strftime('%Y-%m-%d %H:%M:%S') if conv['create_time'] else None
-        update_dt = datetime.fromtimestamp(conv['update_time']).strftime('%Y-%m-%d %H:%M:%S') if conv['update_time'] else None
+        insert_dt = datetime.fromtimestamp(conv['create_time']).strftime(DEFAULT_DATETIME_FORMAT) if conv['create_time'] else None
+        update_dt = datetime.fromtimestamp(conv['update_time']).strftime(DEFAULT_DATETIME_FORMAT) if conv['update_time'] else None
         conv_dict['id'] = conv['id']
         conv_dict['name'] = name
         conv_dict['insert_dt'] = insert_dt
@@ -199,8 +199,8 @@ def get_chatgpt_data_for_import(conv_arr):
                 metadata = message['metadata']
 
                 role = message['author']['role']
-                create_time = datetime.fromtimestamp(message['create_time']).strftime('%Y-%m-%d %H:%M:%S') if message['create_time'] else None
-                update_time = datetime.fromtimestamp(message['update_time']).strftime('%Y-%m-%d %H:%M:%S') if message['update_time'] else None
+                create_time = datetime.fromtimestamp(message['create_time']).strftime(DEFAULT_DATETIME_FORMAT) if message['create_time'] else None
+                update_time = datetime.fromtimestamp(message['update_time']).strftime(DEFAULT_DATETIME_FORMAT) if message['update_time'] else None
                 content = message['content']
 
                 obj['role'] = role
@@ -777,10 +777,7 @@ def get_api_response(args, get_content_only=True):
 
 def get_g4f_response(args, get_content_only=True):
     response = G4F_CLIENT.chat.completions.create(
-        model=args['model'],
-        stream=args['stream'],
-        messages=args['messages'],
-        provider=args['provider']
+        **args
     )
     if args['stream']:
         return stream_response(provider='', response=response, is_g4f=True, get_content_only=get_content_only)
@@ -797,9 +794,9 @@ def get_response(args, is_g4f=False, get_content_only=True, provider=''):
     :param args: The arguments to pass to the API
     :param is_g4f: Whether the model is G4F or not
     :param get_content_only: Whether to get the content only or not
+    :param provider: The provider of the model (Auto if not provided)
     """
     if is_g4f:
-        # For getting the provider
         if provider != G4F_PROVIDER_DEFAULT:
             args['provider'] = convert_to_provider(provider)
         return get_g4f_response(args, get_content_only=False)
@@ -1011,11 +1008,12 @@ class ChatThread(QThread):
             else:
                 self.replyGenerated.emit(self.__info.content, False, self.__info)
         except Exception as e:
+            self.__info.provider = self.__provider
             self.__info.finish_reason = 'Error'
             self.__info.content = f'<p style="color:red">{e}</p>'
             if self.__is_g4f:
                 # TODO LANGUAGE
-                self.__info.content += '''
+                self.__info.content += '''\n
 You can try the following:
 
 - Change the provider

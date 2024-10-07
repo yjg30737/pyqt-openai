@@ -7,7 +7,7 @@ from typing import List
 from pyqt_openai import THREAD_TABLE_NAME, THREAD_TRIGGER_NAME, \
     MESSAGE_TABLE_NAME, THREAD_MESSAGE_INSERTED_TR_NAME, \
     THREAD_MESSAGE_UPDATED_TR_NAME, THREAD_MESSAGE_DELETED_TR_NAME, IMAGE_TABLE_NAME, \
-    PROMPT_GROUP_TABLE_NAME, PROMPT_ENTRY_TABLE_NAME, get_config_directory
+    PROMPT_GROUP_TABLE_NAME, PROMPT_ENTRY_TABLE_NAME, get_config_directory, DEFAULT_DATETIME_FORMAT
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.models import ImagePromptContainer, ChatMessageContainer, PromptEntryContainer, PromptGroupContainer
 
@@ -474,7 +474,7 @@ class SqliteDatabase:
         Update message favorite
         """
         try:
-            current_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            current_date = datetime.now().strftime(DEFAULT_DATETIME_FORMAT)
             self.__c.execute(f'''
                             UPDATE {MESSAGE_TABLE_NAME} 
                             SET favorite = ?,
