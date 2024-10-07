@@ -1,12 +1,12 @@
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QLineEdit, QWidget, QSpinBox, QVBoxLayout, \
+from PySide6.QtWidgets import QWidget, QSpinBox, QVBoxLayout, \
     QPlainTextEdit, \
-    QFormLayout, QLabel, QSplitter
+    QFormLayout, QLabel, QSplitter, QPushButton
 
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.replicate_widget.replicateThread import ReplicateThread
-from pyqt_openai.util.replicate_script import ReplicateWrapper
+from pyqt_openai.settings_dialog.settingsDialog import SettingsDialog
 from pyqt_openai.widgets.imageControlWidget import ImageControlWidget
 
 
@@ -26,22 +26,38 @@ class ReplicateRightSideBarWidget(ImageControlWidget):
         self._directory = CONFIG_MANAGER.get_replicate_property('directory')
         self._number_of_images_to_create = CONFIG_MANAGER.get_replicate_property('number_of_images_to_create')
 
-        self.__api_key = CONFIG_MANAGER.get_replicate_property('REPLICATE_API_TOKEN')
         self.__model = CONFIG_MANAGER.get_replicate_property('model')
         self.__width = CONFIG_MANAGER.get_replicate_property('width')
         self.__height = CONFIG_MANAGER.get_replicate_property('height')
         self.__negative_prompt = CONFIG_MANAGER.get_replicate_property('negative_prompt')
 
-        self.__wrapper = ReplicateWrapper(self.__api_key.strip() if self.__api_key else '')
-
     def _initUi(self):
         super()._initUi()
 
-        self.__apiKeyLineEdit = QLineEdit()
-        self.__apiKeyLineEdit.setPlaceholderText(LangClass.TRANSLATIONS['Enter Replicate API Key...'])
-        self.__apiKeyLineEdit.setText(self.__api_key)
-        self.__apiKeyLineEdit.setEchoMode(QLineEdit.EchoMode.Password)
-        self.__apiKeyLineEdit.textChanged.connect(self.__replicateChanged)
+        # TODO LANGUAGE
+        self.__setApiBtn = QPushButton('Set API Key')
+        self.__setApiBtn.clicked.connect(lambda _: SettingsDialog(default_index=1, parent=self).exec_())
+        self.__setApiBtn.setStyleSheet('''
+                QPushButton {
+                    background-color: #007BFF;
+                    color: white;
+                    border-radius: 8px;
+                    padding: 10px 20px;
+                    font-size: 16px;
+                    font-family: "Arial";
+                    font-weight: bold;
+                    border: 2px solid #007BFF;
+                }
+                QPushButton:hover {
+                    background-color: #0056b3;
+                    border-color: #0056b3;
+                }
+                QPushButton:pressed {
+                    background-color: #003f7f;
+                    border-color: #003f7f;
+                }
+                '''
+                                )
 
         self.__modelTextEdit = QPlainTextEdit()
         self.__modelTextEdit.setPlainText(self.__model)
@@ -60,7 +76,7 @@ class ReplicateRightSideBarWidget(ImageControlWidget):
         self.__heightSpinBox.valueChanged.connect(self.__replicateChanged)
 
         lay = QVBoxLayout()
-        lay.addWidget(self.__apiKeyLineEdit)
+        lay.addWidget(self.__setApiBtn)
         lay.addWidget(self._findPathWidget)
         lay.addWidget(self._saveChkBox)
         lay.addWidget(self._continueGenerationChkBox)
@@ -110,12 +126,7 @@ class ReplicateRightSideBarWidget(ImageControlWidget):
 
     def __replicateChanged(self, v):
         sender = self.sender()
-        if sender == self.__apiKeyLineEdit:
-            v = v.strip() if v else ''
-            self.__api_key = v
-            CONFIG_MANAGER.set_replicate_property('REPLICATE_API_TOKEN', v)
-            self.__wrapper.set_api(v)
-        elif sender == self.__widthSpinBox:
+        if sender == self.__widthSpinBox:
             self.__width = v
             CONFIG_MANAGER.set_replicate_property('width', v)
         elif sender == self.__heightSpinBox:
@@ -160,10 +171,7 @@ class ReplicateRightSideBarWidget(ImageControlWidget):
         number_of_images = self._number_of_images_to_create if self._continue_generation else 1
         random_prompt = self._randomImagePromptGeneratorWidget.getRandomPromptSourceArr()
 
-        self.__api_key = self.__apiKeyLineEdit.text().strip()
-        self.__wrapper.set_api(self.__api_key)
-
-        t = ReplicateThread(arg, number_of_images, self.__wrapper, self.__model, random_prompt)
+        t = ReplicateThread(arg, number_of_images, self.__model, random_prompt)
         self._setThread(t)
         super()._submit()
 

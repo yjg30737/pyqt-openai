@@ -10,6 +10,7 @@ from g4f.client import Client
 from pyqt_openai import DEFAULT_GEMINI_MODEL, LLAMA_REQUEST_URL
 from pyqt_openai.sqlite import SqliteDatabase
 from pyqt_openai.util.llamapage_script import GPTLLamaIndexWrapper
+from pyqt_openai.util.replicate_script import ReplicateWrapper
 
 DB = SqliteDatabase()
 
@@ -25,4 +26,4 @@ LLAMA_CLIENT = OpenAI(
     base_url=LLAMA_REQUEST_URL
 )
 
-
+REPLICATE_CLIENT = ReplicateWrapper(api_key='')

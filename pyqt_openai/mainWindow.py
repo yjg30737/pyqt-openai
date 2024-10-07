@@ -4,7 +4,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QAction, QIcon
 from PySide6.QtWidgets import QMainWindow, QToolBar, QHBoxLayout, QDialog, QWidgetAction, QSpinBox, \
     QWidget, QApplication, \
-    QComboBox, QSizePolicy, QStackedWidget, QMenu, QSystemTrayIcon, \
+    QSizePolicy, QStackedWidget, QMenu, QSystemTrayIcon, \
     QMessageBox
 
 from pyqt_openai import DEFAULT_SHORTCUT_FULL_SCREEN, \
@@ -27,7 +27,6 @@ from pyqt_openai.shortcutDialog import ShortcutDialog
 from pyqt_openai.updateSoftwareDialog import update_software
 from pyqt_openai.util.script import restart_app, show_message_box_after_change_to_restart, set_auto_start_windows, \
     set_api_key, init_llama
-from pyqt_openai.widgets.button import Button
 from pyqt_openai.widgets.navWidget import NavBar
 
 
@@ -139,8 +138,10 @@ class MainWindow(QMainWindow):
         self.__navBar.add('DALL-E')
         self.__navBar.add('Replicate')
         self.__navBar.setSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Preferred)
-        self.__navBar.item_clicked.connect(self.__aiTypeChanged)
-        self.__navBar.set_active_button(0)
+        self.__navBar.itemClicked.connect(self.__aiTypeChanged)
+
+        # Chat is the default widget
+        self.__navBar.setActiveButton(0)
 
         # toolbar action
         self.__chooseAiAction = QWidgetAction(self)
@@ -279,6 +280,7 @@ class MainWindow(QMainWindow):
         set_api_key('GEMINI_API_KEY', CONFIG_MANAGER.get_general_property('GEMINI_API_KEY'))
         set_api_key('CLAUDE_API_KEY', CONFIG_MANAGER.get_general_property('CLAUDE_API_KEY'))
         set_api_key('LLAMA_API_KEY', CONFIG_MANAGER.get_general_property('LLAMA_API_KEY'))
+        set_api_key('REPLICATE_API_TOKEN', CONFIG_MANAGER.get_replicate_property('REPLICATE_API_TOKEN'))
 
         # Set llama index directory if it exists
         init_llama()
@@ -321,7 +323,7 @@ class MainWindow(QMainWindow):
 
     def __aiTypeChanged(self, i):
         self.__mainWidget.setCurrentIndex(i)
-        self.__navBar.set_active_button(i)
+        self.__navBar.setActiveButton(i)
         widget = self.__mainWidget.currentWidget()
         widget.showSecondaryToolBar(self.__settingsParamContainer.show_secondary_toolbar)
 

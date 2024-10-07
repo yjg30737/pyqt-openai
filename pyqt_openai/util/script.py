@@ -46,7 +46,7 @@ from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ImagePromptContainer, ChatMessageContainer
 from pyqt_openai.globals import DB, OPENAI_CLIENT, CLAUDE_CLIENT, \
-    LLAMA_CLIENT, GEMINI_CLIENT, G4F_CLIENT, LLAMAINDEX_WRAPPER
+    LLAMA_CLIENT, GEMINI_CLIENT, G4F_CLIENT, LLAMAINDEX_WRAPPER, REPLICATE_CLIENT
 
 
 def get_generic_ext_out_of_qt_ext(text):
@@ -135,13 +135,6 @@ def get_image_filename_for_saving(arg: ImagePromptContainer):
 def get_image_prompt_filename_for_saving(directory, filename):
     txt_filename = os.path.join(directory, Path(filename).stem + '.txt')
     return txt_filename
-
-def download_image_as_base64(url: str):
-    response = requests.get(url)
-    response.raise_for_status()  # Check if the URL is correct and raise an exception if there is a problem
-    image_data = response.content
-    base64_encoded = base64.b64decode(base64.b64encode(image_data).decode('utf-8'))
-    return base64_encoded
 
 def restart_app():
     # Define the arguments to be passed to the executable
@@ -568,6 +561,9 @@ def set_api_key(env_var_name, api_key):
         CLAUDE_CLIENT.api_key = api_key
     if env_var_name == 'LLAMA_API_KEY':
         LLAMA_CLIENT.api_key = api_key
+    if env_var_name == 'REPLICATE_API_TOKEN':
+        REPLICATE_CLIENT.api_key = api_key
+        os.environ['REPLICATE_API_TOKEN'] = api_key
 
 
 def get_openai_model_endpoint(model):
