@@ -7,7 +7,7 @@ from typing import List
 from pyqt_openai import THREAD_TABLE_NAME, THREAD_TRIGGER_NAME, \
     MESSAGE_TABLE_NAME, THREAD_MESSAGE_INSERTED_TR_NAME, \
     THREAD_MESSAGE_UPDATED_TR_NAME, THREAD_MESSAGE_DELETED_TR_NAME, IMAGE_TABLE_NAME, \
-    PROMPT_GROUP_TABLE_NAME, PROMPT_ENTRY_TABLE_NAME, get_config_directory
+    PROMPT_GROUP_TABLE_NAME, PROMPT_ENTRY_TABLE_NAME, get_config_directory, DEFAULT_DATETIME_FORMAT
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.models import ImagePromptContainer, ChatMessageContainer, PromptEntryContainer, PromptGroupContainer
 
@@ -218,11 +218,11 @@ class SqliteDatabase:
 
     def __createThread(self):
         try:
-            # Create new thread table if not exists
-            table_name_new_exists = self.__c.execute(
+            # Create thread table if not exists
+            thread_tb_exists = self.__c.execute(
                     f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{THREAD_TABLE_NAME}'").fetchone()[
                                             0] == 1
-            if table_name_new_exists:
+            if thread_tb_exists:
                 pass
             else:
                 # If user uses app for the first time, create a table
@@ -232,13 +232,15 @@ class SqliteDatabase:
                               name TEXT,
                               update_dt DATETIME,
                               insert_dt DATETIME DEFAULT CURRENT_TIMESTAMP)''')
-                # Create message table
-                self.__createMessage()
-            # Create new thread trigger if not exists
-            trigger_name_new_exists = self.__c.execute(
+
+            # Create message table
+            self.__createMessage()
+
+            # Create trigger if not exists
+            thread_trigger_exists = self.__c.execute(
                 f"SELECT count(*) FROM sqlite_master WHERE type='trigger' AND name='{THREAD_TRIGGER_NAME}'").fetchone()[
                                         0] == 1
-            if trigger_name_new_exists:
+            if thread_trigger_exists:
                 pass
             else:
                 # Create a trigger to update the update_dt column with the current timestamp
@@ -369,8 +371,17 @@ class SqliteDatabase:
             self.__c.execute(
                 f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{MESSAGE_TABLE_NAME}'")
             if self.__c.fetchone()[0] == 1:
-                # Let it pass if the table already exists
-                pass
+                # TODO WILL_BE_REMOVED_AFTER v1.6.0
+                # If there is no is_g4f column, add it
+                self.__c.execute(f"PRAGMA table_info({MESSAGE_TABLE_NAME})")
+                columns = self.__c.fetchall()
+                if 'is_g4f' not in [col[1] for col in columns]:
+                    # Add is_g4f, provider to the table
+                    self.__c.execute(f'ALTER TABLE {MESSAGE_TABLE_NAME} ADD COLUMN is_g4f INT DEFAULT 0')
+
+                # If there is no provider column, add it
+                if 'provider' not in [col[1] for col in columns]:
+                    self.__c.execute(f"ALTER TABLE {MESSAGE_TABLE_NAME} ADD COLUMN provider VARCHAR(255) DEFAULT ''")
             else:
                 # Create message table and triggers
                 self.__c.execute(f'''CREATE TABLE {MESSAGE_TABLE_NAME}
@@ -388,6 +399,8 @@ class SqliteDatabase:
                               insert_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
                               favorite_set_date DATETIME,
                               is_json_response_available INT DEFAULT 0,
+                              is_g4f INT DEFAULT 0,
+                              provider VARCHAR(255),
                               FOREIGN KEY (thread_id) REFERENCES {THREAD_TABLE_NAME}(id)
                               ON DELETE CASCADE)''')
 
@@ -461,7 +474,7 @@ class SqliteDatabase:
         Update message favorite
         """
         try:
-            current_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            current_date = datetime.now().strftime(DEFAULT_DATETIME_FORMAT)
             self.__c.execute(f'''
                             UPDATE {MESSAGE_TABLE_NAME} 
                             SET favorite = ?,

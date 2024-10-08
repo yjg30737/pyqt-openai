@@ -11,12 +11,12 @@ from pyqt_openai import READ_FILE_EXT_LIST_STR, PROMPT_BEGINNING_KEY_NAME, \
     IMAGE_FILE_EXT_LIST, \
     TEXT_FILE_EXT_LIST, QFILEDIALOG_DEFAULT_DIRECTORY, DEFAULT_SHORTCUT_SEND, DEFAULT_SHORTCUT_RECORD, ICON_RECORD
 from pyqt_openai.config_loader import CONFIG_MANAGER
-from pyqt_openai.globals import DB, STTThread, RecorderThread
+from pyqt_openai.globals import DB
 from pyqt_openai.chat_widget.center.commandSuggestionWidget import CommandSuggestionWidget
 from pyqt_openai.chat_widget.center.textEditPromptGroup import TextEditPromptGroup
 from pyqt_openai.chat_widget.center.uploadedImageFileWidget import UploadedImageFileWidget
 from pyqt_openai.lang.translations import LangClass
-from pyqt_openai.util.script import get_content_of_text_file_for_send
+from pyqt_openai.util.script import get_content_of_text_file_for_send, RecorderThread, STTThread
 from pyqt_openai.widgets.button import Button
 from pyqt_openai.widgets.toolButton import ToolButton
 

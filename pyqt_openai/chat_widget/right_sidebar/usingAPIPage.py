@@ -5,11 +5,10 @@ from PySide6.QtWidgets import QWidget, QDoubleSpinBox, QSpinBox, QFormLayout, QS
 from pyqt_openai import DEFAULT_SHORTCUT_JSON_MODE, OPENAI_TEMPERATURE_RANGE, OPENAI_TEMPERATURE_STEP, \
     MAX_TOKENS_RANGE, TOP_P_RANGE, TOP_P_STEP, FREQUENCY_PENALTY_RANGE, PRESENCE_PENALTY_STEP, PRESENCE_PENALTY_RANGE, \
     FREQUENCY_PENALTY_STEP, LLAMAINDEX_URL
-from pyqt_openai.chat_widget.right_sidebar.apiWidget import ApiWidget
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.lang.translations import LangClass
-from pyqt_openai.globals import init_llama, get_openai_chat_model
-from pyqt_openai.util.script import getSeparator, get_chat_model
+from pyqt_openai.settings_dialog.settingsDialog import SettingsDialog
+from pyqt_openai.util.script import getSeparator, get_chat_model, get_openai_chat_model, init_llama
 from pyqt_openai.widgets.linkLabel import LinkLabel
 
 
@@ -76,7 +75,30 @@ class UsingAPIPage(QWidget):
         lay.addWidget(modelCmbBox)
         lay.setContentsMargins(0, 0, 0, 0)
 
-        apiWidget = ApiWidget()
+        # TODO LANGUAGE
+        setApiBtn = QPushButton('Set API Key')
+        setApiBtn.clicked.connect(lambda _: SettingsDialog(default_index=1, parent=self).exec_())
+        setApiBtn.setStyleSheet('''
+        QPushButton {
+            background-color: #007BFF;
+            color: white;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-family: "Arial";
+            font-weight: bold;
+            border: 2px solid #007BFF;
+        }
+        QPushButton:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+        QPushButton:pressed {
+            background-color: #003f7f;
+            border-color: #003f7f;
+        }
+        '''
+        )
 
         selectModelWidget = QWidget()
         selectModelWidget.setLayout(lay)
@@ -86,10 +108,7 @@ class UsingAPIPage(QWidget):
         self.__warningLbl.setVisible(False)
 
         # TODO WILL_BE_REMOVED_AFTER v1.5.0
-        self.__warningLbl.setText('Currently LlamaIndex, JSON mode, and Image input are only available for the OpenAI Chat model.\n'
-        # TODO WILL_BE_REMOVED_AFTER v1.3.0
-                                  'Also you have to get OpenAI API key to use these features.\n'
-                                  'I will update this soon.')
+        self.__warningLbl.setText('Currently LlamaIndex, JSON mode, and Image input are only available for the OpenAI Chat model.')
         self.__warningLbl.setWordWrap(True)
 
         advancedSettingsScrollArea = QScrollArea()
@@ -196,7 +215,7 @@ class UsingAPIPage(QWidget):
         lay.addWidget(self.__systemTextEdit)
         lay.addWidget(saveSystemBtn)
         lay.addWidget(getSeparator('horizontal'))
-        lay.addWidget(apiWidget)
+        lay.addWidget(setApiBtn)
         lay.addWidget(selectModelWidget)
         lay.addWidget(self.__warningLbl)
         lay.addWidget(streamChkBox)
