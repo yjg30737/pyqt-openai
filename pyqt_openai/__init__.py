@@ -249,7 +249,14 @@ DEFAULT_SHORTCUT_SEND = 'Ctrl+Return'
 MAIN_INDEX = 'main.py'
 IMAGE_DEFAULT_SAVE_DIRECTORY = 'image_result'
 INI_FILE_NAME = os.path.join(get_config_directory(), 'config.yaml')
-LANGUAGE_FILE = os.path.join(get_config_directory(), 'translations.json')
+LANGUAGE_FILE_BASE_NAME = 'translations.json'
+LANGUAGE_FILE = os.path.join(get_config_directory(), LANGUAGE_FILE_BASE_NAME)
+LANGUAGE_FILE_SRC = os.path.join(os.path.join(EXEC_PATH, 'lang'), LANGUAGE_FILE_BASE_NAME)
+
+# Make sure the language file exists
+if not os.path.exists(LANGUAGE_FILE):
+    shutil.copy(LANGUAGE_FILE_SRC, LANGUAGE_FILE)
+
 
 DB_FILE_NAME = 'conv'
 FILE_NAME_LENGTH = 32

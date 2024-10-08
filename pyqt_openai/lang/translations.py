@@ -1,5 +1,4 @@
 import json
-import os.path
 
 from PySide6.QtCore import QLocale
 
