@@ -15,29 +15,21 @@ import os
 import shutil
 import sys
 
-import tomllib  # Python 3.11 built-in module
 from pathlib import Path
-
-# Load the pyproject.toml file
 
 SRC_DIR = Path(__file__).resolve().parent # VividNode/pyqt_openai
 ROOT_DIR = SRC_DIR.parent # VividNode
-SETUP_FILENAME = ROOT_DIR / "pyproject.toml"
-
-# Read the TOML file using tomllib (Python 3.11+)
-with open(SETUP_FILENAME, "rb") as file:
-    pyproject_data = tomllib.load(file)
 
 # For the sake of following the PEP8 standard, we will declare module-level dunder names.
 # PEP8 standard about dunder names: https://peps.python.org/pep-0008/#module-level-dunder-names
 
-__version__ = pyproject_data["project"]["version"]
-__author__ = pyproject_data["project"]["authors"][0]['name']
+__version__ = '1.4.0'
+__author__ = 'Jung Gyu Yoon'
 
 # Constants
 # ----------------------------
 # APP
-PACKAGE_NAME = pyproject_data["project"]["name"]
+PACKAGE_NAME = 'pyqt-openai'
 OWNER = 'yjg30737'
 
 DEFAULT_APP_NAME = 'VividNode'
@@ -91,7 +83,7 @@ def move_updater():
 
 move_updater()
 
-CONTACT = pyproject_data["project"]["authors"][0]['email']
+CONTACT = 'yjg30737@gmail.com'
 APP_INITIAL_WINDOW_SIZE = (1280, 768)
 
 TRANSPARENT_RANGE = 20, 100
@@ -101,7 +93,7 @@ LARGE_LABEL_PARAM = ('Arial', 32)
 MEDIUM_LABEL_PARAM = ('Arial', 16)
 SMALL_LABEL_PARAM = ('Arial', 10)
 
-LICENSE = pyproject_data["project"]["license"]['text']
+LICENSE = 'MIT'
 LICENSE_URL = 'https://github.com/yjg30737/pyqt-openai/blob/main/LICENSE'
 KOFI_URL = 'https://ko-fi.com/junggyuyoon'
 PAYPAL_URL = 'https://paypal.me/yjg30737'
