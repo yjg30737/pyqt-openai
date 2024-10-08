@@ -186,6 +186,8 @@ ICON_WORD = os.path.join(ICON_PATH, 'word.svg')
 ICON_SEND = os.path.join(ICON_PATH, 'send.svg')
 ICON_RECORD = os.path.join(ICON_PATH, 'record.svg')
 ICON_SPEAKER = os.path.join(ICON_PATH, 'speaker.svg')
+ICON_PAYPAL = os.path.join(ICON_PATH, 'paypal.png')
+ICON_KOFI = os.path.join(ICON_PATH, 'kofi.png')
 
 ## CUSTOMIZE
 DEFAULT_ICON_SIZE = (24, 24)
@@ -247,7 +249,14 @@ DEFAULT_SHORTCUT_SEND = 'Ctrl+Return'
 MAIN_INDEX = 'main.py'
 IMAGE_DEFAULT_SAVE_DIRECTORY = 'image_result'
 INI_FILE_NAME = os.path.join(get_config_directory(), 'config.yaml')
-LANGUAGE_FILE = os.path.join(get_config_directory(), 'translations.json')
+LANGUAGE_FILE_BASE_NAME = 'translations.json'
+LANGUAGE_FILE = os.path.join(get_config_directory(), LANGUAGE_FILE_BASE_NAME)
+LANGUAGE_FILE_SRC = os.path.join(os.path.join(EXEC_PATH, 'lang'), LANGUAGE_FILE_BASE_NAME)
+
+# Make sure the language file exists
+if not os.path.exists(LANGUAGE_FILE):
+    shutil.copy(LANGUAGE_FILE_SRC, LANGUAGE_FILE)
+
 
 DB_FILE_NAME = 'conv'
 FILE_NAME_LENGTH = 32
@@ -355,6 +364,8 @@ OPENAI_ENDPOINT_DICT = {
 # This doesn't need endpoint
 DALLE_ARR = ['dall-e-2', 'dall-e-3']
 
+DEFAULT_DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
+
 OPENAI_CHAT_ENDPOINT = '/v1/chat/completions'
 
 # Other models' configuration data
@@ -391,6 +402,8 @@ O1_MODELS = ['o1-preview', 'o1-mini']
 DEFAULT_LLM = 'gpt-4o'
 
 G4F_PROVIDER_DEFAULT = 'Auto'
+
+G4F_USE_CHAT_HISTORY = True
 
 # Dictionary that stores the platform and model pairs
 PROVIDER_MODEL_DICT = {
@@ -529,7 +542,12 @@ CONFIG_DATA = {
         'OPENAI_API_KEY': '',
         'GEMINI_API_KEY': '',
         'CLAUDE_API_KEY': '',
-        'LLAMA_API_KEY': ''
+        'LLAMA_API_KEY': '',
+
+        # G4F
+        'g4f_model': DEFAULT_LLM,
+        'provider': G4F_PROVIDER_DEFAULT,
+        'g4f_use_chat_history': G4F_USE_CHAT_HISTORY,
     },
     'DALLE': {
         'quality': 'standard',

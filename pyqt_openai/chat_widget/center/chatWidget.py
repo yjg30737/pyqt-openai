@@ -4,13 +4,14 @@ import sys
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QStackedWidget, QWidget, QSizePolicy, QHBoxLayout, QVBoxLayout, QMessageBox
 
-from pyqt_openai.config_loader import CONFIG_MANAGER
-from pyqt_openai.globals import LLAMAINDEX_WRAPPER, DB, get_openai_chat_model, get_argument, ChatThread
 from pyqt_openai.chat_widget.center.chatBrowser import ChatBrowser
 from pyqt_openai.chat_widget.center.chatHome import ChatHome
 from pyqt_openai.chat_widget.center.menuWidget import MenuWidget
 from pyqt_openai.chat_widget.center.prompt import Prompt
-from pyqt_openai.chat_widget.chatThread import LlamaOpenAIThread
+from pyqt_openai.chat_widget.llamaOpenAIThread import LlamaOpenAIThread
+from pyqt_openai.config_loader import CONFIG_MANAGER
+from pyqt_openai.globals import LLAMAINDEX_WRAPPER, DB
+from pyqt_openai.util.script import get_argument, ChatThread
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ChatMessageContainer
 from pyqt_openai.widgets.notifier import NotifierWidget
@@ -21,7 +22,7 @@ class ChatWidget(QWidget):
     onMenuCloseClicked = Signal()
 
     def __init__(self, parent=None):
-        super(ChatWidget, self).__init__(parent)
+        super().__init__(parent)
         self.__initVal()
         self.__initUi()
 
@@ -115,7 +116,7 @@ class ChatWidget(QWidget):
         try:
             # Get necessary parameters
             stream = CONFIG_MANAGER.get_general_property('stream')
-            model = CONFIG_MANAGER.get_general_property('model')
+            model = CONFIG_MANAGER.get_general_property('g4f_model') if self.__is_g4f else CONFIG_MANAGER.get_general_property('model')
             system = CONFIG_MANAGER.get_general_property('system')
             temperature = CONFIG_MANAGER.get_general_property('temperature')
             max_tokens = CONFIG_MANAGER.get_general_property('max_tokens')
@@ -125,11 +126,16 @@ class ChatWidget(QWidget):
             presence_penalty = CONFIG_MANAGER.get_general_property('presence_penalty')
             use_llama_index = CONFIG_MANAGER.get_general_property('use_llama_index')
             use_max_tokens = CONFIG_MANAGER.get_general_property('use_max_tokens')
+            provider = CONFIG_MANAGER.get_general_property('provider')
+            g4f_use_chat_history = CONFIG_MANAGER.get_general_property('g4f_use_chat_history')
 
             # Get image files
             images = self.__prompt.getImageBuffers()
 
-            messages = self.__browser.getMessages(CONFIG_MANAGER.get_general_property('maximum_messages_in_parameter'))
+            maximum_messages_in_parameter = CONFIG_MANAGER.get_general_property('maximum_messages_in_parameter')
+            messages = self.__browser.getMessages(maximum_messages_in_parameter)
+            if self.__is_g4f and not g4f_use_chat_history:
+                messages = []
 
             cur_text = self.__prompt.getContent()
 
@@ -197,7 +203,7 @@ class ChatWidget(QWidget):
                 # Run a different thread based on whether the llama-index is enabled or not.
                 self.__t = LlamaOpenAIThread(param, container, LLAMAINDEX_WRAPPER, query_text)
             else:
-                self.__t = ChatThread(param, info=container, is_g4f=self.__is_g4f)
+                self.__t = ChatThread(param, info=container, is_g4f=self.__is_g4f, provider=provider)
 
             self.__t.started.connect(self.__beforeGenerated)
             self.__t.replyGenerated.connect(self.__browser.showLabel)

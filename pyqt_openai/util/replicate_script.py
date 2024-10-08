@@ -1,26 +1,31 @@
 import os
-
+import requests
+import base64
 import replicate
 
 from pyqt_openai.models import ImagePromptContainer
-from pyqt_openai.util.script import download_image_as_base64
+
+
+def download_image_as_base64(url: str):
+    response = requests.get(url)
+    response.raise_for_status()  # Check if the URL is correct and raise an exception if there is a problem
+    image_data = response.content
+    base64_encoded = base64.b64decode(base64.b64encode(image_data).decode('utf-8'))
+    return base64_encoded
 
 
 class ReplicateWrapper:
     def __init__(self, api_key):
         self.__api_key = api_key
-        self.set_api(api_key)
 
-    def set_api(self, api_key):
-        """
-        True all the time
-        There is no way to know if the api key is valid or not
-        :param api_key:
-        :return:
-        """
-        self.__api_key = api_key
+    @property
+    def api_key(self):
+        return self.__api_key
+
+    @api_key.setter
+    def api_key(self, value):
+        self.__api_key = value
         os.environ['REPLICATE_API_TOKEN'] = self.__api_key
-        return True
 
     def is_available(self):
         return True if self.__api_key is not None else False

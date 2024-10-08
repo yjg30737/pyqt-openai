@@ -51,7 +51,7 @@ class MessageTextBrowser(QTextBrowser):
             self.setMinimumHeight(int(max_height))
         self.verticalScrollBar().setSliderPosition(self.verticalScrollBar().maximum())
 
-    # TODO WILL_BE_IMPLEMENTED AFTER v1.3.0
+    # TODO WILL_BE_IMPLEMENTED AFTER v1.4.0
     def setMarkdown(self, markdown: str) -> None:
         super().setMarkdown(markdown)
         # Convert markdown to HTML using QTextDocument

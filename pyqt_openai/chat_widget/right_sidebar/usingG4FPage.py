@@ -19,7 +19,8 @@ class UsingG4FPage(QWidget):
 
     def __initVal(self):
         self.__stream = CONFIG_MANAGER.get_general_property('stream')
-        self.__model = CONFIG_MANAGER.get_general_property('model')
+        self.__model = CONFIG_MANAGER.get_general_property('g4f_model')
+        self.__provider = CONFIG_MANAGER.get_general_property('provider')
 
     def __initUi(self):
         manualBrowser = QTextBrowser()
@@ -47,7 +48,14 @@ class UsingG4FPage(QWidget):
 
         providerCmbBox = QComboBox()
         providerCmbBox.addItems(get_g4f_providers(including_auto=True))
+        providerCmbBox.setCurrentText(self.__provider)
         providerCmbBox.currentTextChanged.connect(self.__providerChanged)
+
+        # TODO LANGUAGE
+        # TODO NEEDS ADDITIONAL DESCRIPTION
+        g4f_use_chat_historyChkBox = QCheckBox('Use chat history')
+        g4f_use_chat_historyChkBox.setChecked(CONFIG_MANAGER.get_general_property('g4f_use_chat_history'))
+        g4f_use_chat_historyChkBox.toggled.connect(self.__saveChatHistory)
 
         lay = QFormLayout()
         lay.addRow(manualBrowser)
@@ -55,13 +63,14 @@ class UsingG4FPage(QWidget):
         lay.addRow('Model', self.__modelCmbBox)
         lay.addRow('Provider', providerCmbBox)
         lay.addRow(streamChkBox)
+        lay.addRow(g4f_use_chat_historyChkBox)
         lay.setAlignment(Qt.AlignmentFlag.AlignTop)
 
         self.setLayout(lay)
 
     def __modelChanged(self, v):
         self.__model = v
-        CONFIG_MANAGER.set_general_property('model', v)
+        CONFIG_MANAGER.set_general_property('g4f_model', v)
 
     def __streamChecked(self, f):
         self.__stream = f
@@ -69,7 +78,11 @@ class UsingG4FPage(QWidget):
 
     def __providerChanged(self, v):    
         self.__modelCmbBox.clear()
+        CONFIG_MANAGER.set_general_property('provider', v)
         if v == G4F_PROVIDER_DEFAULT:
             self.__modelCmbBox.addItems(get_g4f_models())
         else:
             self.__modelCmbBox.addItems(get_g4f_models_by_provider(v))
+
+    def __saveChatHistory(self, f):
+        CONFIG_MANAGER.set_general_property('g4f_use_chat_history', f)

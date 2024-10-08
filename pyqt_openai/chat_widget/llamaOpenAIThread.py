@@ -1,9 +1,12 @@
 from llama_index.core.base.response.schema import StreamingResponse
 from PySide6.QtCore import QThread, Signal
 
+import pyqt_openai.util.script
 from pyqt_openai.models import ChatMessageContainer
 
 
+# TODO
+# Should combine with ChatThread
 class LlamaOpenAIThread(QThread):
     replyGenerated = Signal(str, bool, ChatMessageContainer)
     streamFinished = Signal(ChatMessageContainer)
@@ -24,7 +27,7 @@ class LlamaOpenAIThread(QThread):
 
     def run(self):
         try:
-            resp = self.__wrapper.get_response(self.__query_text)
+            resp = pyqt_openai.util.script.get_response(self.__query_text)
             f = isinstance(resp, StreamingResponse)
             if f:
                 for response_text in resp.response_gen:

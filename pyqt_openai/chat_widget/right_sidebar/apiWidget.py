@@ -3,9 +3,9 @@ from PySide6.QtWidgets import QVBoxLayout, QTableWidget, QHeaderView, QTableWidg
     QDialogButtonBox, QWidget, QPushButton
 
 from pyqt_openai import HOW_TO_GET_OPENAI_API_KEY_URL, HOW_TO_GET_CLAUDE_API_KEY_URL, HOW_TO_GET_GEMINI_API_KEY_URL, \
-    HOW_TO_GET_LLAMA_API_KEY_URL, DEFAULT_API_CONFIGS
+    HOW_TO_GET_LLAMA_API_KEY_URL, DEFAULT_API_CONFIGS, HOW_TO_REPLICATE
 from pyqt_openai.config_loader import CONFIG_MANAGER
-from pyqt_openai.globals import set_api_key
+from pyqt_openai.util.script import set_api_key
 from pyqt_openai.widgets.linkLabel import LinkLabel
 
 
@@ -33,13 +33,21 @@ class ApiWidget(QWidget):
             }
             self.__api_keys.append(_conf)
 
+        # Add REPLICATE API
+        self.__api_keys.append({
+            'display_name': 'Replicate',
+            'env_var_name': 'REPLICATE_API_TOKEN',
+            'api_key': CONFIG_MANAGER.get_replicate_property('REPLICATE_API_TOKEN')
+        })
+
         # Set "get api key" here
         for i, obj in enumerate(self.__api_keys):
             obj['get_api_key'] = {
                 'OpenAI': HOW_TO_GET_OPENAI_API_KEY_URL,
                 'Claude': HOW_TO_GET_CLAUDE_API_KEY_URL,
                 'Gemini': HOW_TO_GET_GEMINI_API_KEY_URL,
-                'Llama': HOW_TO_GET_LLAMA_API_KEY_URL
+                'Llama': HOW_TO_GET_LLAMA_API_KEY_URL,
+                'Replicate': HOW_TO_REPLICATE
             }[obj['display_name']]
 
     def __initUi(self):
@@ -87,5 +95,8 @@ class ApiWidget(QWidget):
         api_keys = {self.__api_keys[i]['env_var_name']: self.__tableWidget.cellWidget(i, 1).text() for i in range(self.__tableWidget.rowCount())}
         # Save the api keys to the conf file
         for k, v in api_keys.items():
-            CONFIG_MANAGER.set_general_property(k, v)
+            if k == 'REPLICATE_API_TOKEN':
+                CONFIG_MANAGER.set_replicate_property(k, v)
+            else:
+                CONFIG_MANAGER.set_general_property(k, v)
             set_api_key(k, v)
