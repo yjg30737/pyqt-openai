@@ -16,6 +16,22 @@
 
 <hr>
 
+# Help Needed (Important)
+
+Hello. 
+
+**Managing this project alone has become quite challenging so i'm reaching out for support.**
+If you have experience with coding, documentation, design, or even providing constructive feedback, I would greatly appreciate your involvement. Your contribution could make a significant difference.
+
+To get started:
+
+1. Fork this repository.
+2. Create a new branch (e.g., `feature/your-feature`) and add your improvements.
+3. Submit a pull request when your changes are ready.
+4. We'll work together to review and integrate your contributions.
+
+Your contribution, even just a fix a simple typo in readme or simple refactoring can be very helpful. Of course there are a lot of official TODOs i need helping hand as well. So [see here](https://github.com/yjg30737/pyqt-openai/blob/main/CONTRIBUTING.md) if you are willing to contribute.
+
 ## What is VividNode? 🤔
 
 **VividNode** is a cross-platform desktop application that allows you to interact directly with LLM(GPT, Claude, Gemini, Llama) chatbots and generate images without needing a browser. Built with PySide6, VividNode (formerly known as pyqt-openai) supports Windows, Mac, and Linux, and securely stores your chat history locally in a database.
