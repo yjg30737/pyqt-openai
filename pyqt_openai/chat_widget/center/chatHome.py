@@ -27,12 +27,6 @@ class ChatHome(QScrollArea):
         self.__quickStartManualLbl.setFont(QFont(*MEDIUM_LABEL_PARAM))
         self.__quickStartManualLbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.__openaiApiManualLbl = LinkLabel()
-        self.__openaiApiManualLbl.setText(LangClass.TRANSLATIONS['How to get OpenAI API Key?'])
-        self.__openaiApiManualLbl.setUrl(HOW_TO_GET_OPENAI_API_KEY_URL)
-        self.__openaiApiManualLbl.setFont(QFont(*MEDIUM_LABEL_PARAM))
-        self.__openaiApiManualLbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
         self.__background_image = QLabel()
 
         description.setFont(QFont(*MEDIUM_LABEL_PARAM))
@@ -42,7 +36,6 @@ class ChatHome(QScrollArea):
         lay.addWidget(title)
         lay.addWidget(description)
         lay.addWidget(self.__quickStartManualLbl)
-        lay.addWidget(self.__openaiApiManualLbl)
         lay.addWidget(self.__background_image)
         lay.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.setLayout(lay)

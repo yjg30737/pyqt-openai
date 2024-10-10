@@ -4,7 +4,7 @@ from PySide6.QtWidgets import QWidget, QDoubleSpinBox, QSpinBox, QFormLayout, QS
 
 from pyqt_openai import DEFAULT_SHORTCUT_JSON_MODE, OPENAI_TEMPERATURE_RANGE, OPENAI_TEMPERATURE_STEP, \
     MAX_TOKENS_RANGE, TOP_P_RANGE, TOP_P_STEP, FREQUENCY_PENALTY_RANGE, PRESENCE_PENALTY_STEP, PRESENCE_PENALTY_RANGE, \
-    FREQUENCY_PENALTY_STEP, LLAMAINDEX_URL
+    FREQUENCY_PENALTY_STEP, LLAMAINDEX_URL, O1_MODELS
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.settings_dialog.settingsDialog import SettingsDialog
@@ -235,6 +235,9 @@ class UsingAPIPage(QWidget):
     def __modelChanged(self, v):
         self.__model = v
         CONFIG_MANAGER.set_general_property('model', v)
+        # TODO LANGUAGE
+        if self.__model in O1_MODELS:
+            self.__warningLbl.setText('Only available at Tier 3 or higher.')
 
         # TODO WILL_BE_REMOVED_AFTER v1.5.0
         f = v in get_openai_chat_model()

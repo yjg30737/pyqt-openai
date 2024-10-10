@@ -35,6 +35,8 @@ from g4f.models import ModelUtils
 from g4f.providers.retry_provider import IterProvider
 from google import generativeai as genai
 from jinja2 import Template
+from langchain.chains.question_answering.map_reduce_prompt import messages
+from nltk.app.nemo_app import images
 
 import pyqt_openai.util
 from pyqt_openai import MAIN_INDEX, \
@@ -551,6 +553,47 @@ def get_gpt_argument(model, system, messages, cur_text, temperature, top_p, freq
         print(e)
         raise e
 
+def get_claude_argument(model, system, messages, cur_text, stream,
+                        images):
+    try:
+        system_obj = get_message_obj("system", system)
+        messages = [system_obj] + messages
+
+        # Form argument
+        claude_arg = {
+            'model': model,
+            'messages': messages,
+            'stream': stream
+        }
+
+        if len(images) > 0:
+            multiple_images_content = []
+            for image in images:
+                multiple_images_content.append(
+                    {
+                        'type': 'image_url',
+                        'image_url': {
+                            'url': get_image_url_from_local(image),
+                        }
+                    }
+                )
+
+            multiple_images_content = [
+                                          {
+                                              "type": "text",
+                                              "text": cur_text
+                                          }
+                                      ] + multiple_images_content[:]
+
+            claude_arg['messages'].append({"role": "user", "content": multiple_images_content})
+
+        claude_arg['messages'].append({"role": "user", "content": cur_text})
+
+        return claude_arg
+    except Exception as e:
+        print(e)
+        raise e
+
 
 def set_api_key(env_var_name, api_key):
     if env_var_name == 'OPENAI_API_KEY':
@@ -631,8 +674,13 @@ def get_api_argument(model, system, messages, cur_text, temperature, top_p, freq
             args = {
                 'model': model,
                 'messages': messages,
-                'stream': stream
+                'stream': stream,
             }
+            # TODO REFACTORING (FOR COMMON FUNCTION FOR VISION)
+            if len(images) > 0:
+                args['images'] = images
+            if is_json_response_available:
+                args['json_content'] = json_content
             args['messages'].append({"role": "user", "content": cur_text})
         elif provider == 'Claude':
             args = {
@@ -641,7 +689,30 @@ def get_api_argument(model, system, messages, cur_text, temperature, top_p, freq
                 'max_tokens': 1024,
                 'stream': stream
             }
-            args['messages'].append({"role": "user", "content": cur_text})
+            # TODO REFACTORING (FOR COMMON FUNCTION FOR VISION)
+            # Vision
+            if len(images) > 0:
+                multiple_images_content = []
+                for image in images:
+                    multiple_images_content.append(
+                        {
+                            'type': 'image_url',
+                            'image_url': {
+                                'url': get_image_url_from_local(image),
+                            }
+                        }
+                    )
+
+                multiple_images_content = [
+                                              {
+                                                  "type": "text",
+                                                  "text": cur_text
+                                              }
+                                          ] + multiple_images_content[:]
+
+                args['messages'].append({"role": "user", "content": multiple_images_content})
+            else:
+                args['messages'].append({"role": "user", "content": cur_text})
         elif provider == 'Llama':
             args = {
                 'model': model,
@@ -727,19 +798,32 @@ def get_api_response(args, get_content_only=True):
             if message['role'] == 'assistant':
                 message['role'] = 'model'
 
-        chat = GEMINI_CLIENT.start_chat(
-            history=args['messages']
-        )
-
-        if args['stream']:
-            response = chat.send_message(args['messages'][-1]['parts'], stream=args['stream'])
-            return stream_response(provider, response)
+        # TODO REFACTORING (many types of chat are using generate_content function)
+        if len(args['images']) > 0:
+            # Supposedly this don't support history of chat as well as stream
+            response = GEMINI_CLIENT.generate_content(images=args['images'], messages=args['messages'])
+            return response.text
+        elif args['json_content']:
+            response = GEMINI_CLIENT.generate_content(
+                messages=args['messages'],
+                generation_config=genai.GenerationConfig(
+                    response_mime_type="application/json", response_schema=args['json_content']
+            ))
+            return response
         else:
-            response = chat.send_message(args['messages'][-1]['parts'])
-            if get_content_only:
-                return response.text
+            chat = GEMINI_CLIENT.start_chat(
+                history=args['messages']
+            )
+
+            if args['stream']:
+                response = chat.send_message(args['messages'][-1]['parts'], stream=args['stream'])
+                return stream_response(provider, response)
             else:
-                return response
+                response = chat.send_message(args['messages'][-1]['parts'])
+                if get_content_only:
+                    return response.text
+                else:
+                    return response
     elif provider == 'Claude':
         if args['stream']:
             response = CLAUDE_CLIENT.messages.stream(
