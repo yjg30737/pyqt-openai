@@ -526,7 +526,7 @@ def get_gpt_argument(model, system, messages, cur_text, temperature, top_p, freq
                     {
                         'type': 'image_url',
                         'image_url': {
-                            'url': get_image_url_from_local(image),
+                            'url': get_image_url_from_local(image, is_openai=True),
                         }
                     }
                 )
@@ -551,9 +551,10 @@ def get_gpt_argument(model, system, messages, cur_text, temperature, top_p, freq
         print(e)
         raise e
 
-def get_gemini_argument(model, messages, cur_text, stream, images, is_json_response_available, json_content):
+def get_gemini_argument(model, system, messages, cur_text, stream, images):
     try:
         args = {
+            'system': system,
             'model': model,
             'messages': messages,
             'stream': stream,
@@ -566,11 +567,12 @@ def get_gemini_argument(model, messages, cur_text, stream, images, is_json_respo
         print(e)
         raise e
 
-def get_claude_argument(model, messages, cur_text, stream,
+def get_claude_argument(model, system, messages, cur_text, stream,
                         images):
     try:
         args = {
             'model': model,
+            'system': system,
             'messages': messages,
             'max_tokens': 1024,
             'stream': stream
@@ -580,23 +582,24 @@ def get_claude_argument(model, messages, cur_text, stream,
         if len(images) > 0:
             multiple_images_content = []
             for image in images:
+                print(type(image))
                 multiple_images_content.append(
                     {
                         'type': 'image',
                         'source': {
                             'type': 'base64',
-                            'media_type': 'image/jpeg',
-                            'url': get_image_url_from_local(image),
+                            'media_type': 'image/png',
+                            'data': get_image_url_from_local(image),
                         }
                     }
                 )
 
-            multiple_images_content = [
+            multiple_images_content =  multiple_images_content[:] + [
                                           {
                                               "type": "text",
                                               "text": cur_text
                                           }
-                                      ] + multiple_images_content[:]
+                                      ]
 
             args['messages'].append({"role": "user", "content": multiple_images_content})
         else:
@@ -632,7 +635,7 @@ def get_openai_chat_model():
     return OPENAI_ENDPOINT_DICT[OPENAI_CHAT_ENDPOINT]
 
 
-def get_image_url_from_local(image):
+def get_image_url_from_local(image, is_openai=False):
     """
     Image is bytes, this function converts it to base64 and returns the image url
     """
@@ -641,7 +644,10 @@ def get_image_url_from_local(image):
         return base64.b64encode(image).decode('utf-8')
 
     base64_image = encode_image(image)
-    return f'data:image/jpeg;base64,{base64_image}'
+    if is_openai:
+        return f'data:image/jpeg;base64,{base64_image}'
+    else:
+        return base64_image
 
 
 def get_message_obj(role, content):
@@ -683,10 +689,10 @@ def get_api_argument(model, system, messages, cur_text, temperature, top_p, freq
                                     json_content=json_content
                                     )
         elif provider == 'Gemini':
-            args = get_gemini_argument(model, messages, cur_text, stream, images, is_json_response_available, json_content)
+            args = get_gemini_argument(model, system, messages, cur_text, stream, images)
 
         elif provider == 'Claude':
-            args = get_claude_argument(model, messages, cur_text, stream, images)
+            args = get_claude_argument(model, system, messages, cur_text, stream, images)
         elif provider == 'Llama':
             args = {
                 'model': model,
