@@ -41,7 +41,7 @@ from pyqt_openai import MAIN_INDEX, \
     PROMPT_NAME_REGEX, PROMPT_MAIN_KEY_NAME, PROMPT_BEGINNING_KEY_NAME, \
     PROMPT_END_KEY_NAME, PROMPT_JSON_KEY_NAME, CONTEXT_DELIMITER, THREAD_ORDERBY, DEFAULT_APP_NAME, \
     AUTOSTART_REGISTRY_KEY, is_frozen, G4F_PROVIDER_DEFAULT, PROVIDER_MODEL_DICT, O1_MODELS, OPENAI_ENDPOINT_DICT, \
-    OPENAI_CHAT_ENDPOINT, STT_MODEL, DEFAULT_DATETIME_FORMAT
+    OPENAI_CHAT_ENDPOINT, STT_MODEL, DEFAULT_DATETIME_FORMAT, DEFAULT_TOKEN_CHUNK_SIZE
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.globals import DB, OPENAI_CLIENT, CLAUDE_CLIENT, \
     LLAMA_CLIENT, GEMINI_CLIENT, G4F_CLIENT, LLAMAINDEX_WRAPPER, REPLICATE_CLIENT
@@ -574,7 +574,7 @@ def get_claude_argument(model, system, messages, cur_text, stream,
             'model': model,
             'system': system,
             'messages': messages,
-            'max_tokens': 1024,
+            'max_tokens': DEFAULT_TOKEN_CHUNK_SIZE,
             'stream': stream
         }
         # TODO REFACTORING (FOR COMMON FUNCTION FOR VISION)
@@ -582,7 +582,6 @@ def get_claude_argument(model, system, messages, cur_text, stream,
         if len(images) > 0:
             multiple_images_content = []
             for image in images:
-                print(type(image))
                 multiple_images_content.append(
                     {
                         'type': 'image',
@@ -698,7 +697,7 @@ def get_api_argument(model, system, messages, cur_text, temperature, top_p, freq
                 'model': model,
                 'messages': messages,
                 'stream': stream,
-                'max_tokens': 1024
+                'max_tokens': DEFAULT_TOKEN_CHUNK_SIZE
             }
             args['messages'].append({"role": "user", "content": cur_text})
         else:
@@ -779,7 +778,6 @@ def get_api_response(args, get_content_only=True):
                 if message['role'] == 'assistant':
                     message['role'] = 'model'
 
-            # TODO REFACTORING (many types of chat are using generate_content function)
             if len(args.get('images', [])) > 0:
                 # Supposedly this don't support history of chat as well as stream
                 response = GEMINI_CLIENT.generate_content([args['messages'][-1]['parts']] + args['images'])
@@ -802,14 +800,14 @@ def get_api_response(args, get_content_only=True):
             if args['stream']:
                 response = CLAUDE_CLIENT.messages.stream(
                     model=args['model'],
-                    max_tokens=1024,
+                    max_tokens=DEFAULT_TOKEN_CHUNK_SIZE,
                     messages=args['messages']
                 )
                 return stream_response(provider, response)
             else:
                 response = CLAUDE_CLIENT.messages.create(
                     model=args['model'],
-                    max_tokens=1024,
+                    max_tokens=DEFAULT_TOKEN_CHUNK_SIZE,
                     messages=args['messages']
                 )
                 if get_content_only:
@@ -894,14 +892,10 @@ class StreamThread(QThread):
                     **self.input_args,
                     response_format="pcm",  # similar to WAV, but without a header chunk at the start.
             ) as response:
-                print(f"Time to first byte: {int((time.time() - start_time) * 1000)}ms")
-                for chunk in response.iter_bytes(chunk_size=1024):
+                for chunk in response.iter_bytes(chunk_size=DEFAULT_TOKEN_CHUNK_SIZE):
                     if self.__stop:
-                        print("Stream interrupted.")
                         break
                     player_stream.write(chunk)
-
-                print(f"Done in {int((time.time() - start_time) * 1000)}ms.")
         except Exception as e:
             # TODO LANGUAGE
             self.errorGenerated.emit(f'<p style="color:red">{e}</p>\n\n'
@@ -915,7 +909,7 @@ class StreamThread(QThread):
 def check_microphone_access():
     try:
         audio = pyaudio.PyAudio()
-        stream = audio.open(format=pyaudio.paInt16, channels=1, rate=44100, input=True, frames_per_buffer=1024)
+        stream = audio.open(format=pyaudio.paInt16, channels=1, rate=44100, input=True, frames_per_buffer=DEFAULT_TOKEN_CHUNK_SIZE)
         stream.close()
         audio.terminate()
         return True
@@ -936,7 +930,7 @@ class RecorderThread(QThread):
 
     def run(self):
         try:
-            chunk = 1024  # Record in chunks of 1024 samples
+            chunk = DEFAULT_TOKEN_CHUNK_SIZE  # Record in chunks of 1024 samples
             sample_format = pyaudio.paInt16  # 16 bits per sample
             channels = 2
             fs = 44100  # Record at 44100 samples per second
@@ -1044,6 +1038,7 @@ class ChatThread(QThread):
                     # The reason is that G4F has content in choices[0].delta.content, otherwise it has content in chunk.
                     if self.__is_g4f:
                         self.__info.provider = chunk.provider
+                        self.__info.model = chunk.model
                         chunk = chunk.choices[0].delta.content
                     if self.__stop:
                         self.__info.finish_reason = 'stopped by user'
@@ -1058,6 +1053,7 @@ class ChatThread(QThread):
                 # The reason is that G4F has content in choices[0].message.content, otherwise it has content in response.
                 if self.__is_g4f:
                     self.__info.content = response.choices[0].message.content
+                    self.__info.model = response.model
                     self.__info.provider = response.provider
                 else:
                     self.__info.content = response

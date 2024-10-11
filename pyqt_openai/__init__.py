@@ -353,6 +353,8 @@ OPENAI_ENDPOINT_DICT = {
     '/vi/moderations': ['text-moderation-stable', 'text-moderation-latest']
 }
 
+DEFAULT_TOKEN_CHUNK_SIZE = 1024
+
 # This doesn't need endpoint
 DALLE_ARR = ['dall-e-2', 'dall-e-3']
 
