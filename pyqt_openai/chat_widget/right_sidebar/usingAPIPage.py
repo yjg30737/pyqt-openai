@@ -1,10 +1,11 @@
 from PySide6.QtCore import Qt, Signal
+from PySide6.QtGui import QFont
 from PySide6.QtWidgets import QWidget, QDoubleSpinBox, QSpinBox, QFormLayout, QSizePolicy, QComboBox, QTextEdit, \
     QLabel, QVBoxLayout, QCheckBox, QPushButton, QScrollArea, QGroupBox, QHBoxLayout, QTextBrowser
 
 from pyqt_openai import DEFAULT_SHORTCUT_JSON_MODE, OPENAI_TEMPERATURE_RANGE, OPENAI_TEMPERATURE_STEP, \
     MAX_TOKENS_RANGE, TOP_P_RANGE, TOP_P_STEP, FREQUENCY_PENALTY_RANGE, PRESENCE_PENALTY_STEP, PRESENCE_PENALTY_RANGE, \
-    FREQUENCY_PENALTY_STEP, LLAMAINDEX_URL, O1_MODELS
+    FREQUENCY_PENALTY_STEP, LLAMAINDEX_URL, O1_MODELS, SMALL_LABEL_PARAM
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.settings_dialog.settingsDialog import SettingsDialog
@@ -104,12 +105,10 @@ class UsingAPIPage(QWidget):
         selectModelWidget.setLayout(lay)
 
         self.__warningLbl = QLabel()
-        self.__warningLbl.setStyleSheet('color: red;')
+        self.__warningLbl.setStyleSheet('color: orange;')
         self.__warningLbl.setVisible(False)
-
-        # TODO WILL_BE_REMOVED_AFTER v1.5.0
-        self.__warningLbl.setText('Currently LlamaIndex, JSON mode, and Image input are only available for the OpenAI Chat model.')
         self.__warningLbl.setWordWrap(True)
+        self.__warningLbl.setFont(QFont(SMALL_LABEL_PARAM))
 
         advancedSettingsScrollArea = QScrollArea()
 
@@ -237,13 +236,14 @@ class UsingAPIPage(QWidget):
         CONFIG_MANAGER.set_general_property('model', v)
         # TODO LANGUAGE
         if self.__model in O1_MODELS:
-            self.__warningLbl.setText('Only available at Tier 3 or higher.')
-
-        # TODO WILL_BE_REMOVED_AFTER v1.5.0
-        f = v in get_openai_chat_model()
-        self.__jsonChkBox.setEnabled(f)
-        self.__llamaChkBox.setEnabled(f)
-        self.__warningLbl.setVisible(not f)
+            self.__warningLbl.setText('Note: The selected model is only available at Tier 3 or higher.')
+            self.__warningLbl.setVisible(True)
+        else:
+            self.__warningLbl.setText('Note: The selected model does not support LlamaIndex, JSON mode.')
+            f = v in get_openai_chat_model()
+            self.__jsonChkBox.setEnabled(f)
+            self.__llamaChkBox.setEnabled(f)
+            self.__warningLbl.setVisible(not f)
 
     def __streamChecked(self, f):
         self.__stream = f

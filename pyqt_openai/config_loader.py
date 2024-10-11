@@ -117,7 +117,4 @@ def update_api_key(yaml_file_path):
 
 init_yaml()
 
-# TODO WILL_BE_REMOVED_AFTER v1.5.0
-update_api_key(INI_FILE_NAME)
-
 CONFIG_MANAGER = ConfigManager()
