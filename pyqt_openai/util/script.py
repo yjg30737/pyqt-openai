@@ -20,10 +20,10 @@ import wave
 import zipfile
 from datetime import datetime
 from pathlib import Path
-import winreg
+if sys.platform == 'win32':
+    import winreg
 
 import pyaudio
-import requests
 
 from PySide6.QtCore import Qt, QUrl, QThread, Signal
 from PySide6.QtGui import QDesktopServices
