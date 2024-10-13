@@ -27,8 +27,9 @@ dependencies = [
 ]
 keywords = ['openai', 'pyqt', 'pyqt5', 'pyqt6', 'pyside6', 'desktop', 'app', 'chatbot', 'gpt', 'replicate', 'gemini', 'claude', 'llama', 'llm', 'gpt4free']
 
-requires-python = "<3.13, >=3.9"
-# PySide6 doesn't support Python 3.13 yet
+requires-python = "<3.13, >=3.10"
+# PySide6 is not available for Python 3.13 yet
+# Also below 3.10, Error occurs in Shiboken (which is part of PySide6)
 
 classifiers = [
     "Development Status :: 4 - Beta",
