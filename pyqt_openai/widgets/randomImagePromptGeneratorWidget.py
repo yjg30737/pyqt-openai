@@ -4,7 +4,6 @@ from PySide6.QtWidgets import QVBoxLayout, QWidget, QListWidgetItem, \
 
 from pyqt_openai import RANDOMIZING_PROMPT_SOURCE_ARR
 from pyqt_openai.lang.translations import LangClass
-from pyqt_openai.util.script import generate_random_prompt
 from pyqt_openai.widgets.checkBoxListWidget import CheckBoxListWidget
 
 
@@ -51,7 +50,6 @@ class RandomImagePromptGeneratorWidget(QWidget):
         self.__allCheckBox.stateChanged.connect(self.__listWidget.toggleState) # if allChkBox is checked, tablewidget checkboxes will also be checked
         self.__randomPromptGroup.setVisible(False)
 
-    # TODO CONFIG
     def isRandomPromptEnabled(self):
         return self.__randomPromptGroup.isVisible()
 

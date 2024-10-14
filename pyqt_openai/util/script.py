@@ -24,6 +24,8 @@ from pathlib import Path
 
 import PIL.Image
 
+from pyqt_openai.widgets.scrollableErrorDialog import ScrollableErrorDialog
+
 if sys.platform == 'win32':
     import winreg
 
@@ -392,11 +394,7 @@ def handle_exception(exc_type, exc_value, exc_traceback):
     error_msg = "".join(traceback.format_exception(exc_type, exc_value, exc_traceback))
     print(f"Unhandled exception: {error_msg}")
 
-    msg_box = QMessageBox()
-    msg_box.setIcon(QMessageBox.Critical)
-    msg_box.setText("An unexpected error occurred.")
-    msg_box.setInformativeText(error_msg)
-    msg_box.setWindowTitle("Error")
+    msg_box = ScrollableErrorDialog(error_msg)
     msg_box.exec_()
 
 def set_auto_start_windows(enable: bool):
