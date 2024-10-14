@@ -6,6 +6,7 @@ from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.dalle_widget.dalleThread import DallEThread
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.widgets.imageControlWidget import ImageControlWidget
+from pyqt_openai.widgets.modernButton import ModernButton
 
 
 class DallERightSideBarWidget(ImageControlWidget):
@@ -36,6 +37,10 @@ class DallERightSideBarWidget(ImageControlWidget):
     def _initUi(self):
         super()._initUi()
 
+        # TODO LANGUAGE
+        self.__setApiBtn = ModernButton()
+        self.__setApiBtn.setText('Set API Key')
+
         self.__promptTypeToShowRadioGrpBox = QGroupBox(LangClass.TRANSLATIONS['Prompt Type To Show'])
 
         self.__normalOne = QRadioButton(LangClass.TRANSLATIONS['Normal'])
@@ -55,6 +60,7 @@ class DallERightSideBarWidget(ImageControlWidget):
         self.__promptTypeToShowRadioGrpBox.setLayout(lay)
 
         lay = QVBoxLayout()
+        lay.addWidget(self.__setApiBtn)
         lay.addWidget(self._findPathWidget)
         lay.addWidget(self._saveChkBox)
         lay.addWidget(self._continueGenerationChkBox)

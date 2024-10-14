@@ -1,7 +1,7 @@
 from PySide6.QtCore import QRegularExpression
 from PySide6.QtGui import QRegularExpressionValidator
 from PySide6.QtWidgets import QComboBox, QFormLayout, QLineEdit, QCheckBox, QSizePolicy, \
-    QVBoxLayout, QHBoxLayout, QGroupBox, QSplitter, QLabel, QWidget, QSpinBox, QDoubleSpinBox
+    QVBoxLayout, QHBoxLayout, QGroupBox, QSplitter, QLabel, QWidget, QSpinBox, QDoubleSpinBox, QScrollArea
 
 from pyqt_openai import COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_CHAT, COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_IMAGE, LANGUAGE_DICT, \
     DB_NAME_REGEX, \
@@ -12,7 +12,7 @@ from pyqt_openai.models import ImagePromptContainer, ChatThreadContainer
 from pyqt_openai.widgets.checkBoxListWidget import CheckBoxListWidget
 
 
-class GeneralSettingsWidget(QWidget):
+class GeneralSettingsWidget(QScrollArea):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.__initVal()
@@ -159,7 +159,11 @@ class GeneralSettingsWidget(QWidget):
         lay.addWidget(chatBrowserGrpBox)
         lay.addWidget(columnGrpBox)
 
-        self.setLayout(lay)
+        mainWidget = QWidget()
+        mainWidget.setLayout(lay)
+
+        self.setWidget(mainWidget)
+        self.setWidgetResizable(True)
 
     def getParam(self):
         return {

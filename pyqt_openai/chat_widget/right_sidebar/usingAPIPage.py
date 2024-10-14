@@ -8,9 +8,9 @@ from pyqt_openai import DEFAULT_SHORTCUT_JSON_MODE, OPENAI_TEMPERATURE_RANGE, OP
     FREQUENCY_PENALTY_STEP, LLAMAINDEX_URL, O1_MODELS, SMALL_LABEL_PARAM
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.lang.translations import LangClass
-from pyqt_openai.settings_dialog.settingsDialog import SettingsDialog
 from pyqt_openai.util.script import getSeparator, get_chat_model, get_openai_chat_model, init_llama
 from pyqt_openai.widgets.linkLabel import LinkLabel
+from pyqt_openai.widgets.modernButton import ModernButton
 
 
 class UsingAPIPage(QWidget):
@@ -76,30 +76,9 @@ class UsingAPIPage(QWidget):
         lay.addWidget(modelCmbBox)
         lay.setContentsMargins(0, 0, 0, 0)
 
+        setApiBtn = ModernButton()
         # TODO LANGUAGE
-        setApiBtn = QPushButton('Set API Key')
-        setApiBtn.clicked.connect(lambda _: SettingsDialog(default_index=1, parent=self).exec_())
-        setApiBtn.setStyleSheet('''
-        QPushButton {
-            background-color: #007BFF;
-            color: white;
-            border-radius: 8px;
-            padding: 10px 20px;
-            font-size: 16px;
-            font-family: "Arial";
-            font-weight: bold;
-            border: 2px solid #007BFF;
-        }
-        QPushButton:hover {
-            background-color: #0056b3;
-            border-color: #0056b3;
-        }
-        QPushButton:pressed {
-            background-color: #003f7f;
-            border-color: #003f7f;
-        }
-        '''
-        )
+        setApiBtn.setText('Set API Key')
 
         selectModelWidget = QWidget()
         selectModelWidget.setLayout(lay)

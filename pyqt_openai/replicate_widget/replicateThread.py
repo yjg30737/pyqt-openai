@@ -10,7 +10,7 @@ class ReplicateThread(QThread):
     errorGenerated = Signal(str)
     allReplyGenerated = Signal()
 
-    # TODO remove wrapper, model as far as possible
+    # TODO remove model as far as possible
     def __init__(self, input_args, number_of_images, model, randomizing_prompt_source_arr=None):
         super().__init__()
         self.__input_args = input_args

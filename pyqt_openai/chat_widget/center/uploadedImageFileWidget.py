@@ -87,7 +87,6 @@ class UploadedImageFileWidget(QWidget):
         lay.addWidget(lbl)
         self.__toggle(True)
 
-
     def getImageBuffers(self):
         buffers = []
         # Make a copy of the original images

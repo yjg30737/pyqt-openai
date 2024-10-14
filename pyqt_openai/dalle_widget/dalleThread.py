@@ -17,9 +17,7 @@ class DallEThread(QThread):
         self.__input_args = input_args
         self.__stop = False
 
-        if randomizing_prompt_source_arr is not None:
-            self.__randomizing_prompt_source_arr = randomizing_prompt_source_arr
-
+        self.__randomizing_prompt_source_arr = randomizing_prompt_source_arr
         self.__number_of_images = number_of_images
 
     def stop(self):
