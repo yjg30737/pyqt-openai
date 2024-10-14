@@ -60,15 +60,15 @@ Although this is named 'pyqt-openai', the model does not use only OpenAI-related
 
 ## Troubleshooting
 ### Common Issues
-**- Issues Related to PyAudio**
-  - This issue is often due to the absence of PortAudio. Make sure to install PortAudio before you install PyAudio.
-**- Issues Related to PySide6 During Installation**
-  - As of October 14, 2024, PySide6 supports Python versions above 3.9 and below 3.13. If support for Python 3.13 is added in the future, you can remove this note.
-**- Handling Error Messages Related to Software Updates (Windows)**
-  - If you encounter the following error message when trying to update VividNode via the auto-update feature: **PermissionError: [Errno 13] Permission denied**
-  - To resolve this issue, run VividNode as an administrator.
-**- Incomplete or Inaccurate Translations**
-  - If you come across incomplete or unnatural translations, please update the **pyqt_openai/lang/translations.json** file.
+#### Issues Related to PyAudio
+- This issue is often due to the absence of PortAudio. Make sure to install PortAudio before you install PyAudio.
+#### Issues Related to PySide6 During Installation 
+- As of October 14, 2024, PySide6 supports Python versions above 3.9 and below 3.13. If support for Python 3.13 is added in the future, you can remove this note.
+#### Handling Error Messages Related to Software Updates (Windows)
+- If you encounter the following error message when trying to update VividNode via the auto-update feature: **PermissionError: [Errno 13] Permission denied**, To resolve this issue, run VividNode as an administrator.
+#### Incomplete or Inaccurate Translations
+- If you come across incomplete or unnatural translations, please update the **pyqt_openai/lang/translations.json** file.
+
 If the solutions listed here don’t resolve your issue, please report it by [opening an issue](https://github.com/yjg30737/pyqt-openai/issues).
 
 ## Disclaimer
