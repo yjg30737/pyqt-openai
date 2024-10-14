@@ -9,30 +9,25 @@
 
   [![](https://dcbadge.vercel.app/api/server/cHekprskVE)](https://discord.gg/cHekprskVE)
   
-  [![PyPI - Version](https://img.shields.io/pypi/v/pyqt-openai?logo=pypi&logoColor=white)](https://pypi.org/project/pyqt-openai/) [![Downloads](https://static.pepy.tech/badge/pyqt-openai)](https://pepy.tech/project/pyqt-openai) [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/pyqt-openai?logo=python&logoColor=gold)](https://pypi.org/project/pyqt-openai/)
+  [![PyPI - Version](https://img.shields.io/pypi/v/pyqt-openai?logo=pypi&logoColor=white)](https://pypi.org/project/pyqt-openai/) [![Downloads](https://static.pepy.tech/badge/pyqt-openai)](https://pepy.tech/project/pyqt-openai) [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/pyqt-openai?logo=python&logoColor=gold)](https://pypi.org/project/pyqt-openai/) ![commit](https://img.shields.io/github/commit-activity/w/yjg30737/pyqt-openai)
 </div>
 
 ![image](https://github.com/user-attachments/assets/5afc969a-a0f6-474e-a142-d0756c73bf03)
 
 <hr>
 
-# Help Needed (Important)
-
-Hello. 
+## Help Needed 🆘
 
 **Managing this project alone has become quite challenging so i'm reaching out for support.**
 If you have experience with coding, documentation, design, or even providing constructive feedback, I would greatly appreciate your involvement. Your contribution could make a significant difference.
 
-To get started:
-
-1. Fork this repository.
-2. Create a new branch (e.g., `feature/your-feature`) and add your improvements.
-3. Submit a pull request when your changes are ready.
-4. We'll work together to review and integrate your contributions.
-
 Your contribution, even just a fix a simple typo in readme or simple refactoring can be very helpful. Of course there are a lot of official TODOs i need helping hand as well. So [see here](https://github.com/yjg30737/pyqt-openai/blob/main/CONTRIBUTING.md) if you are willing to contribute.
 
 You can contact me 24/7 by sending me an email to **yjg30737@gmail.com** or join [**Discord server**](https://discord.gg/cHekprskVE) to talk in real time.
+
+## Contributors
+* **Me (WizMiner)** 😊
+  * Creator of VividNode 🐐
 
 ## What is VividNode? 🤔
 
