@@ -56,20 +56,20 @@ Although this is named 'pyqt-openai', the model does not use only OpenAI-related
 ### Wanna download this without doing stuffs like above? You can download installer or zip file <a href="https://github.com/yjg30737/pyqt-openai/releases">here.</a>
 
 ## How to Use 🧐
-
 **<a href="https://medium.com/@yjg30737/what-is-vividnode-how-to-use-it-4d8a9269a3c0">QuickStart</a>**
 
-## Support 🫡
-
-### Donate
-  <div>
-    <a href='https://ko-fi.com/W7W711SKZG' target='_blank'><img height='36' width='150' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi1.png?v=3' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
-  </div>
-  <a href="https://paypal.me/yjg30737">
-    <img src="https://github.com/yjg30737/yjg30737/assets/55078043/3366b496-3e1e-491c-841e-19871da55c40" alt="Donate with PayPal" style="height: 60px; width: 170px" />
-  </a>
-</div>
+## Troubleshooting
+### Common Issues
+**- Issues Related to PyAudio**
+  - This issue is often due to the absence of PortAudio. Make sure to install PortAudio before you install PyAudio.
+**- Issues Related to PySide6 During Installation**
+  - As of October 14, 2024, PySide6 supports Python versions above 3.9 and below 3.13. If support for Python 3.13 is added in the future, you can remove this note.
+**- Handling Error Messages Related to Software Updates (Windows)**
+  - If you encounter the following error message when trying to update VividNode via the auto-update feature: **PermissionError: [Errno 13] Permission denied**
+  - To resolve this issue, run VividNode as an administrator.
+**- Incomplete or Inaccurate Translations**
+  - If you come across incomplete or unnatural translations, please update the **pyqt_openai/lang/translations.json** file.
+If the solutions listed here don’t resolve your issue, please report it by [opening an issue](https://github.com/yjg30737/pyqt-openai/issues).
 
 ## Disclaimer
-
 Please do not distribute this commercially without my permission, by claiming it as your own creation.
