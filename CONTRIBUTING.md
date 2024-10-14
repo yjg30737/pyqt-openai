@@ -1,10 +1,20 @@
 # Contribution Guide
 
-**Thank you for considering contributing to this project!** Contributions are what make the open-source community such an amazing place to learn, inspire, and create. There are many ways to contribute, including reporting issues, improving documentation, submitting bug fixes, and adding new features. 
+**Thank you for considering contributing to this project!** Contributions are what make the open-source community such an amazing place to learn, inspire, and create. There are many ways to contribute, including reporting issues, improving documentation, submitting bug fixes, and adding new features.
 
-Below is the list of planned features and tasks that are still in progress or need help. Feel free to pick up any task and make a pull request!
+## TODO LIST
 
-## TODO List
+The following is a list of planned features and tasks that are still in progress or require assistance. If you are interested, please feel free to take on any task and submit a pull request!
+
+### TODO (Essential)
+
+1. **Software Maintainer for Mac**: Seeking a maintainer to support and improve the software for Mac users.
+2. **Software Maintainer for Linux**: Seeking a maintainer to support and improve the software for Linux users.
+
+As of October 14, 2024, Windows has an updater and auto-start features; 
+however, these features are currently unavailable for Mac and Linux. If you are a user of either platform, please contact me! (I'm Windows user 💻) 
+
+### TODO (Additional Improvements)
 
 1. **Theme Functionality**: Implement a theme switcher to support light and dark modes.
 2. **Language Support**: Add multilingual support for the app.
@@ -25,4 +35,9 @@ Below is the list of planned features and tasks that are still in progress or ne
 17. **Streamlit GUI**: Build a Streamlit-based GUI for users who want to run the web server.
 18. **Flutter App Development**: Develop a Flutter app for mobile users who want to interact with the platform.
 
-We welcome all kinds of contributions and look forward to your ideas and improvements! 
+We welcome all kinds of contributions and look forward to your ideas and improvements. Also you can share your own opinion as well. Such as:
+
+* I don't think that is a good idea. How about this idea?
+* I want to add new language.
+
+You can share your idea since this is an open source project.
