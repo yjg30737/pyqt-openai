@@ -6,12 +6,13 @@ from pyqt_openai.settings_dialog.settingsDialog import SettingsDialog
 class ModernButton(QPushButton):
     def __init__(self):
         super().__init__()
+        self.setObjectName('modernButton')
         self.__initUi()
 
     def __initUi(self):
         self.clicked.connect(lambda _: SettingsDialog(default_index=1, parent=self).exec_())
         self.setStyleSheet('''
-        QPushButton {
+        QPushButton#modernButton {
             background-color: #007BFF;
             color: white;
             border-radius: 8px;
@@ -21,11 +22,11 @@ class ModernButton(QPushButton):
             font-weight: bold;
             border: 2px solid #007BFF;
         }
-        QPushButton:hover {
+        QPushButton#modernButton:hover {
             background-color: #0056b3;
             border-color: #0056b3;
         }
-        QPushButton:pressed {
+        QPushButton#modernButton:pressed {
             background-color: #003f7f;
             border-color: #003f7f;
         }

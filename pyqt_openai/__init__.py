@@ -96,6 +96,7 @@ SMALL_LABEL_PARAM = ('Arial', 10)
 LICENSE = 'MIT'
 LICENSE_URL = 'https://github.com/yjg30737/pyqt-openai/blob/main/LICENSE'
 KOFI_URL = 'https://ko-fi.com/junggyuyoon'
+PATREON_URL = 'https://patreon.com/user?u=121090702'
 PAYPAL_URL = 'https://paypal.me/yjg30737'
 GITHUB_URL = 'https://github.com/yjg30737/pyqt-openai'
 DISCORD_URL = 'https://discord.gg/cHekprskVE'
@@ -108,6 +109,7 @@ HOW_TO_REPLICATE = 'https://medium.com/@yjg30737/10a2cb983ceb'
 HOW_TO_GET_CLAUDE_API_KEY_URL = 'https://medium.com/@yjg30737/how-to-get-started-with-claude-api-step-by-step-guide-92b5e35ae0a0'
 HOW_TO_GET_GEMINI_API_KEY_URL = 'https://medium.com/@yjg30737/e61a84d64c69'
 HOW_TO_GET_LLAMA_API_KEY_URL = 'https://medium.com/@yjg30737/0dc1900e3606'
+REPORT_ERROR_URL = 'https://github.com/yjg30737/pyqt-openai?tab=readme-ov-file#troubleshooting'
 
 COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_CHAT = ['id']
 COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_IMAGE = ['id', 'data']
@@ -180,6 +182,7 @@ ICON_RECORD = os.path.join(ICON_PATH, 'record.svg')
 ICON_SPEAKER = os.path.join(ICON_PATH, 'speaker.svg')
 ICON_PAYPAL = os.path.join(ICON_PATH, 'paypal.png')
 ICON_KOFI = os.path.join(ICON_PATH, 'kofi.png')
+ICON_PATREON = os.path.join(ICON_PATH, 'patreon.svg')
 
 ## CUSTOMIZE
 DEFAULT_ICON_SIZE = (24, 24)

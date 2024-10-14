@@ -12,7 +12,8 @@ from pyqt_openai import DEFAULT_SHORTCUT_FULL_SCREEN, \
     ICON_CLOSE, \
     DEFAULT_SHORTCUT_SETTING, TRANSPARENT_RANGE, TRANSPARENT_INIT_VAL, ICON_GITHUB, ICON_DISCORD, PAYPAL_URL, KOFI_URL, \
     DISCORD_URL, GITHUB_URL, DEFAULT_SHORTCUT_FOCUS_MODE, ICON_FOCUS_MODE, ICON_SETTING, DEFAULT_SHORTCUT_SHOW_TOOLBAR, \
-    DEFAULT_SHORTCUT_SHOW_SECONDARY_TOOLBAR, DEFAULT_SHORTCUT_STACK_ON_TOP, ICON_PAYPAL, ICON_KOFI
+    DEFAULT_SHORTCUT_SHOW_SECONDARY_TOOLBAR, DEFAULT_SHORTCUT_STACK_ON_TOP, ICON_PAYPAL, ICON_KOFI, ICON_PATREON, \
+    PATREON_URL
 from pyqt_openai.aboutDialog import AboutDialog
 from pyqt_openai.chat_widget.chatMainWidget import ChatMainWidget
 from pyqt_openai.config_loader import CONFIG_MANAGER
@@ -133,6 +134,10 @@ class MainWindow(QMainWindow):
         self.__kofiAction.setIcon(QIcon(ICON_KOFI))
         self.__kofiAction.triggered.connect(lambda: webbrowser.open(KOFI_URL))
 
+        self.__patreonAction = QAction('Patreon', self)
+        self.__patreonAction.setIcon(QIcon(ICON_PATREON))
+        self.__patreonAction.triggered.connect(lambda: webbrowser.open(PATREON_URL))
+
         self.__navBar = NavBar()
         self.__navBar.add(LangClass.TRANSLATIONS['Chat'])
         self.__navBar.add('DALL-E')
@@ -223,6 +228,7 @@ class MainWindow(QMainWindow):
         donateMenu = QMenu(LangClass.TRANSLATIONS['Donate'], self)
         donateMenu.addAction(self.__paypalAction)
         donateMenu.addAction(self.__kofiAction)
+        donateMenu.addAction(self.__patreonAction)
 
         menubar.addMenu(fileMenu)
         menubar.addMenu(viewMenu)
@@ -262,6 +268,7 @@ class MainWindow(QMainWindow):
         self.__toolbar.addAction(self.__discordAction)
         self.__toolbar.addAction(self.__paypalAction)
         self.__toolbar.addAction(self.__kofiAction)
+        self.__toolbar.addAction(self.__patreonAction)
         self.__toolbar.addAction(self.__transparentAction)
         self.__toolbar.setMovable(False)
 
