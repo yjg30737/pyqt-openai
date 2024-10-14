@@ -16,6 +16,24 @@
 
 <hr>
 
+# Help Needed (Important)
+
+Hello. 
+
+**Managing this project alone has become quite challenging so i'm reaching out for support.**
+If you have experience with coding, documentation, design, or even providing constructive feedback, I would greatly appreciate your involvement. Your contribution could make a significant difference.
+
+To get started:
+
+1. Fork this repository.
+2. Create a new branch (e.g., `feature/your-feature`) and add your improvements.
+3. Submit a pull request when your changes are ready.
+4. We'll work together to review and integrate your contributions.
+
+Your contribution, even just a fix a simple typo in readme or simple refactoring can be very helpful. Of course there are a lot of official TODOs i need helping hand as well. So [see here](https://github.com/yjg30737/pyqt-openai/blob/main/CONTRIBUTING.md) if you are willing to contribute.
+
+You can contact me 24/7 by sending me an email to **yjg30737@gmail.com** or join [**Discord server**](https://discord.gg/cHekprskVE) to talk in real time.
+
 ## What is VividNode? 🤔
 
 **VividNode** is a cross-platform desktop application that allows you to interact directly with LLM(GPT, Claude, Gemini, Llama) chatbots and generate images without needing a browser. Built with PySide6, VividNode (formerly known as pyqt-openai) supports Windows, Mac, and Linux, and securely stores your chat history locally in a database.
@@ -34,20 +52,11 @@ With VividNode, you can experience a more powerful and resource-efficient altern
 Although this is named 'pyqt-openai', the model does not use only OpenAI-related models, and the GUI is created using PySide6, not PyQt. 'pyqt-openai' was the package name decided initially, and we are still using it as changing the package name now would likely result in a huge disaster.
 
 ## How to Install
-
-### Install with traditional way
 1. git clone ~
 2. cd pyqt-openai
 3. pip install -r requirements.txt --upgrade
 4. cd pyqt_openai
 5. python main.py
-
-### Install with pyproject.toml 
-1. git clone ~
-2. Run shell as Administrator
-3. cd pyqt-openai
-4. pip install .
-5. pyqt-openai
 
 ### Wanna download this without doing stuffs like above? You can download installer or zip file <a href="https://github.com/yjg30737/pyqt-openai/releases">here.</a>
 
@@ -56,10 +65,6 @@ Although this is named 'pyqt-openai', the model does not use only OpenAI-related
 **<a href="https://medium.com/@yjg30737/what-is-vividnode-how-to-use-it-4d8a9269a3c0">QuickStart</a>**
 
 ## Support 🫡
-
-**Join our <a href="https://discord.gg/cHekprskVE">Discord Channel</a>** for questions or discussions!
-
-Also we need <b>contributor</b>, You can contact me 24/7 by sending me an email to yjg30737@gmail.com.
 
 ### Donate
   <div>

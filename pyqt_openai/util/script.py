@@ -17,14 +17,18 @@ import tempfile
 import time
 import traceback
 import wave
-import winreg
 import zipfile
 from datetime import datetime
 from io import BytesIO
 from pathlib import Path
+
 import PIL.Image
 
+if sys.platform == 'win32':
+    import winreg
+
 import pyaudio
+
 from PySide6.QtCore import Qt, QUrl, QThread, Signal
 from PySide6.QtGui import QDesktopServices
 from PySide6.QtWidgets import QMessageBox, QFrame
