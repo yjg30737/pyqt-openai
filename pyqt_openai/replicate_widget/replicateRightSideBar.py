@@ -1,7 +1,13 @@
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QWidget, QSpinBox, QVBoxLayout, \
-    QPlainTextEdit, \
-    QFormLayout, QLabel, QSplitter
+from PySide6.QtWidgets import (
+    QWidget,
+    QSpinBox,
+    QVBoxLayout,
+    QPlainTextEdit,
+    QFormLayout,
+    QLabel,
+    QSplitter,
+)
 
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.lang.translations import LangClass
@@ -19,24 +25,32 @@ class ReplicateRightSideBarWidget(ImageControlWidget):
     def _initVal(self):
         super()._initVal()
 
-        self._prompt = CONFIG_MANAGER.get_replicate_property('prompt')
-        self._continue_generation = CONFIG_MANAGER.get_replicate_property('continue_generation')
-        self._save_prompt_as_text = CONFIG_MANAGER.get_replicate_property('save_prompt_as_text')
-        self._is_save = CONFIG_MANAGER.get_replicate_property('is_save')
-        self._directory = CONFIG_MANAGER.get_replicate_property('directory')
-        self._number_of_images_to_create = CONFIG_MANAGER.get_replicate_property('number_of_images_to_create')
+        self._prompt = CONFIG_MANAGER.get_replicate_property("prompt")
+        self._continue_generation = CONFIG_MANAGER.get_replicate_property(
+            "continue_generation"
+        )
+        self._save_prompt_as_text = CONFIG_MANAGER.get_replicate_property(
+            "save_prompt_as_text"
+        )
+        self._is_save = CONFIG_MANAGER.get_replicate_property("is_save")
+        self._directory = CONFIG_MANAGER.get_replicate_property("directory")
+        self._number_of_images_to_create = CONFIG_MANAGER.get_replicate_property(
+            "number_of_images_to_create"
+        )
 
-        self.__model = CONFIG_MANAGER.get_replicate_property('model')
-        self.__width = CONFIG_MANAGER.get_replicate_property('width')
-        self.__height = CONFIG_MANAGER.get_replicate_property('height')
-        self.__negative_prompt = CONFIG_MANAGER.get_replicate_property('negative_prompt')
+        self.__model = CONFIG_MANAGER.get_replicate_property("model")
+        self.__width = CONFIG_MANAGER.get_replicate_property("width")
+        self.__height = CONFIG_MANAGER.get_replicate_property("height")
+        self.__negative_prompt = CONFIG_MANAGER.get_replicate_property(
+            "negative_prompt"
+        )
 
     def _initUi(self):
         super()._initUi()
 
         # TODO LANGUAGE
         self.__setApiBtn = ModernButton()
-        self.__setApiBtn.setText('Set API Key')
+        self.__setApiBtn.setText("Set API Key")
 
         self.__modelTextEdit = QPlainTextEdit()
         self.__modelTextEdit.setPlainText(self.__model)
@@ -66,25 +80,27 @@ class ReplicateRightSideBarWidget(ImageControlWidget):
         self._promptTextEdit.textChanged.connect(self.__replicateTextChanged)
 
         self._negativeTextEdit = QPlainTextEdit()
-        self._negativeTextEdit.setPlaceholderText('ugly, deformed, noisy, blurry, distorted')
+        self._negativeTextEdit.setPlaceholderText(
+            "ugly, deformed, noisy, blurry, distorted"
+        )
         self._negativeTextEdit.setPlainText(self.__negative_prompt)
         self._negativeTextEdit.textChanged.connect(self.__replicateTextChanged)
 
         lay = QVBoxLayout()
 
         lay.addWidget(self._randomImagePromptGeneratorWidget)
-        lay.addWidget(QLabel(LangClass.TRANSLATIONS['Prompt']))
+        lay.addWidget(QLabel(LangClass.TRANSLATIONS["Prompt"]))
         lay.addWidget(self._promptTextEdit)
 
-        lay.addWidget(QLabel(LangClass.TRANSLATIONS['Negative Prompt']))
+        lay.addWidget(QLabel(LangClass.TRANSLATIONS["Negative Prompt"]))
         lay.addWidget(self._negativeTextEdit)
         promptWidget = QWidget()
         promptWidget.setLayout(lay)
 
         lay = QFormLayout()
-        lay.addRow(LangClass.TRANSLATIONS['Model'], self.__modelTextEdit)
-        lay.addRow(LangClass.TRANSLATIONS['Width'], self.__widthSpinBox)
-        lay.addRow(LangClass.TRANSLATIONS['Height'], self.__heightSpinBox)
+        lay.addRow(LangClass.TRANSLATIONS["Model"], self.__modelTextEdit)
+        lay.addRow(LangClass.TRANSLATIONS["Width"], self.__widthSpinBox)
+        lay.addRow(LangClass.TRANSLATIONS["Height"], self.__heightSpinBox)
         otherParamWidget = QWidget()
         otherParamWidget.setLayout(lay)
 
@@ -107,48 +123,54 @@ class ReplicateRightSideBarWidget(ImageControlWidget):
         sender = self.sender()
         if sender == self.__widthSpinBox:
             self.__width = v
-            CONFIG_MANAGER.set_replicate_property('width', v)
+            CONFIG_MANAGER.set_replicate_property("width", v)
         elif sender == self.__heightSpinBox:
             self.__height = v
-            CONFIG_MANAGER.set_replicate_property('height', v)
+            CONFIG_MANAGER.set_replicate_property("height", v)
 
     def __replicateTextChanged(self):
         sender = self.sender()
         if isinstance(sender, QPlainTextEdit):
             if sender == self.__modelTextEdit:
                 self.__model = sender.toPlainText()
-                CONFIG_MANAGER.set_replicate_property('model', self.__model)
+                CONFIG_MANAGER.set_replicate_property("model", self.__model)
             elif sender == self._promptTextEdit:
                 self._prompt = sender.toPlainText()
-                CONFIG_MANAGER.set_replicate_property('prompt', self._prompt)
+                CONFIG_MANAGER.set_replicate_property("prompt", self._prompt)
             elif sender == self._negativeTextEdit:
                 self.__negative_prompt = sender.toPlainText()
-                CONFIG_MANAGER.set_replicate_property('negative_prompt', self.__negative_prompt)
+                CONFIG_MANAGER.set_replicate_property(
+                    "negative_prompt", self.__negative_prompt
+                )
 
     def _setSaveDirectory(self, directory):
         super()._setSaveDirectory(directory)
-        CONFIG_MANAGER.set_replicate_property('directory', directory)
+        CONFIG_MANAGER.set_replicate_property("directory", directory)
 
     def _saveChkBoxToggled(self, f):
         super()._saveChkBoxToggled(f)
-        CONFIG_MANAGER.set_replicate_property('is_save', f)
+        CONFIG_MANAGER.set_replicate_property("is_save", f)
 
     def _continueGenerationChkBoxToggled(self, f):
         super()._continueGenerationChkBoxToggled(f)
-        CONFIG_MANAGER.set_replicate_property('continue_generation', f)
+        CONFIG_MANAGER.set_replicate_property("continue_generation", f)
 
     def _savePromptAsTextChkBoxToggled(self, f):
         super()._savePromptAsTextChkBoxToggled(f)
-        CONFIG_MANAGER.set_replicate_property('save_prompt_as_text', f)
+        CONFIG_MANAGER.set_replicate_property("save_prompt_as_text", f)
 
     def _numberOfImagesToCreateSpinBoxValueChanged(self, value):
         super()._numberOfImagesToCreateSpinBoxValueChanged(value)
-        CONFIG_MANAGER.set_replicate_property('number_of_images_to_create', value)
+        CONFIG_MANAGER.set_replicate_property("number_of_images_to_create", value)
 
     def _submit(self):
         arg = self.getArgument()
-        number_of_images = self._number_of_images_to_create if self._continue_generation else 1
-        random_prompt = self._randomImagePromptGeneratorWidget.getRandomPromptSourceArr()
+        number_of_images = (
+            self._number_of_images_to_create if self._continue_generation else 1
+        )
+        random_prompt = (
+            self._randomImagePromptGeneratorWidget.getRandomPromptSourceArr()
+        )
 
         t = ReplicateThread(arg, number_of_images, self.__model, random_prompt)
         self._setThread(t)
@@ -163,4 +185,3 @@ class ReplicateRightSideBarWidget(ImageControlWidget):
             "width": self.__width,
             "height": self.__height,
         }
-

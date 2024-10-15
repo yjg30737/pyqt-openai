@@ -1,7 +1,15 @@
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QFont
-from PySide6.QtWidgets import QDialog, QPushButton, QHBoxLayout, QVBoxLayout, QWidget, QFormLayout, QSplitter, \
-    QSizePolicy
+from PySide6.QtWidgets import (
+    QDialog,
+    QPushButton,
+    QHBoxLayout,
+    QVBoxLayout,
+    QWidget,
+    QFormLayout,
+    QSplitter,
+    QSizePolicy,
+)
 
 from pyqt_openai import IMAGE_FILE_EXT_LIST_STR, DEFAULT_ICON_SIZE
 from pyqt_openai.fontWidget import FontWidget
@@ -27,7 +35,7 @@ class CustomizeDialog(QDialog):
         self.__font_family = args.font_family
 
     def __initUi(self):
-        self.setWindowTitle(LangClass.TRANSLATIONS['Customize'])
+        self.setWindowTitle(LangClass.TRANSLATIONS["Customize"])
         self.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.WindowCloseButtonHint)
 
         self.__homePageGraphicsView = NormalImageView()
@@ -77,9 +85,9 @@ class CustomizeDialog(QDialog):
         aiWidget.setLayout(lay3)
 
         lay = QFormLayout()
-        lay.addRow(LangClass.TRANSLATIONS['Home Image'], homePageWidget)
-        lay.addRow(LangClass.TRANSLATIONS['User Image'], userWidget)
-        lay.addRow(LangClass.TRANSLATIONS['AI Image'], aiWidget)
+        lay.addRow(LangClass.TRANSLATIONS["Home Image"], homePageWidget)
+        lay.addRow(LangClass.TRANSLATIONS["User Image"], userWidget)
+        lay.addRow(LangClass.TRANSLATIONS["AI Image"], aiWidget)
 
         leftWidget = QWidget()
         leftWidget.setLayout(lay)
@@ -93,14 +101,16 @@ class CustomizeDialog(QDialog):
         self.__splitter.setChildrenCollapsible(False)
         self.__splitter.setSizes([500, 500])
         self.__splitter.setStyleSheet("QSplitterHandle {background-color: lightgray;}")
-        self.__splitter.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
+        self.__splitter.setSizePolicy(
+            QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding
+        )
 
-        sep = getSeparator('horizontal')
+        sep = getSeparator("horizontal")
 
-        self.__okBtn = QPushButton(LangClass.TRANSLATIONS['OK'])
+        self.__okBtn = QPushButton(LangClass.TRANSLATIONS["OK"])
         self.__okBtn.clicked.connect(self.accept)
 
-        cancelBtn = QPushButton(LangClass.TRANSLATIONS['Cancel'])
+        cancelBtn = QPushButton(LangClass.TRANSLATIONS["Cancel"])
         cancelBtn.clicked.connect(self.close)
 
         lay = QHBoxLayout()
@@ -125,5 +135,5 @@ class CustomizeDialog(QDialog):
             user_image=self.__findPathWidget2.getFileName(),
             ai_image=self.__findPathWidget3.getFileName(),
             font_size=self.__fontWidget.getFont().pointSize(),
-            font_family=self.__fontWidget.getFont().family()
+            font_family=self.__fontWidget.getFont().family(),
         )

@@ -4,7 +4,12 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QFont, QPixmap
 from PySide6.QtWidgets import QLabel, QWidget, QVBoxLayout, QScrollArea
 
-from pyqt_openai import DEFAULT_APP_NAME, HOW_TO_GET_OPENAI_API_KEY_URL, LARGE_LABEL_PARAM, MEDIUM_LABEL_PARAM
+from pyqt_openai import (
+    DEFAULT_APP_NAME,
+    HOW_TO_GET_OPENAI_API_KEY_URL,
+    LARGE_LABEL_PARAM,
+    MEDIUM_LABEL_PARAM,
+)
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.widgets.linkLabel import LinkLabel
 
@@ -19,10 +24,12 @@ class ChatHome(QScrollArea):
         title.setFont(QFont(*LARGE_LABEL_PARAM))
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        description = QLabel(LangClass.TRANSLATIONS['Enjoy convenient chatting, all day long!'])
+        description = QLabel(
+            LangClass.TRANSLATIONS["Enjoy convenient chatting, all day long!"]
+        )
 
         self.__quickStartManualLbl = LinkLabel()
-        self.__quickStartManualLbl.setText(LangClass.TRANSLATIONS['Quick Start Manual'])
+        self.__quickStartManualLbl.setText(LangClass.TRANSLATIONS["Quick Start Manual"])
         self.__quickStartManualLbl.setUrl(HOW_TO_GET_OPENAI_API_KEY_URL)
         self.__quickStartManualLbl.setFont(QFont(*MEDIUM_LABEL_PARAM))
         self.__quickStartManualLbl.setAlignment(Qt.AlignmentFlag.AlignCenter)

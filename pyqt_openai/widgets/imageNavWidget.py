@@ -1,7 +1,15 @@
 from PySide6.QtCore import Signal, QSortFilterProxyModel, Qt, QByteArray
 from PySide6.QtSql import QSqlTableModel, QSqlQuery
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QStyledItemDelegate, QTableView, QAbstractItemView, QHBoxLayout, \
-    QMessageBox, QLabel
+from PySide6.QtWidgets import (
+    QWidget,
+    QVBoxLayout,
+    QStyledItemDelegate,
+    QTableView,
+    QAbstractItemView,
+    QHBoxLayout,
+    QMessageBox,
+    QLabel,
+)
 
 import pyqt_openai.globals
 from pyqt_openai import ICON_DELETE, ICON_CLOSE
@@ -15,7 +23,7 @@ from pyqt_openai.widgets.searchBar import SearchBar
 class FilterProxyModel(QSortFilterProxyModel):
     def __init__(self):
         super().__init__()
-        self.__searchedText = ''
+        self.__searchedText = ""
 
     @property
     def searchedText(self):
@@ -55,10 +63,10 @@ class ImageNavWidget(BaseNavWidget):
         self.__initUi()
 
     def __initUi(self):
-        self.setModel(table_type='image')
+        self.setModel(table_type="image")
 
         imageGenerationHistoryLbl = QLabel()
-        imageGenerationHistoryLbl.setText(LangClass.TRANSLATIONS['History'])
+        imageGenerationHistoryLbl.setText(LangClass.TRANSLATIONS["History"])
 
         lay = QHBoxLayout()
         lay.addWidget(self._searchBar)
@@ -79,10 +87,10 @@ class ImageNavWidget(BaseNavWidget):
         self.setLayout(lay)
 
         # Show default result (which means "show all")
-        self._search('')
+        self._search("")
 
-    def _clear(self, table_type='image'):
-        table_type = table_type or 'image'
+    def _clear(self, table_type="image"):
+        table_type = table_type or "image"
         super()._clear(table_type=table_type)
 
     def refresh(self):
@@ -96,15 +104,27 @@ class ImageNavWidget(BaseNavWidget):
         cur_id = self._model.record(source_idx.row()).value("id")
 
         # Get data from DB id
-        data = DB.selectCertainImage(cur_id)['data']
+        data = DB.selectCertainImage(cur_id)["data"]
         if data:
             if isinstance(data, str):
-                QMessageBox.critical(self, LangClass.TRANSLATIONS['Error'], LangClass.TRANSLATIONS['Image URL can\'t be seen after v0.2.51, Now it is replaced with b64_json.'])
+                QMessageBox.critical(
+                    self,
+                    LangClass.TRANSLATIONS["Error"],
+                    LangClass.TRANSLATIONS[
+                        "Image URL can't be seen after v0.2.51, Now it is replaced with b64_json."
+                    ],
+                )
             else:
                 data = QByteArray(data).data()
                 self.getContent.emit(data)
         else:
-            QMessageBox.critical(self, LangClass.TRANSLATIONS['Error'], LangClass.TRANSLATIONS['No image data is found. Maybe you are using really old version.'])
+            QMessageBox.critical(
+                self,
+                LangClass.TRANSLATIONS["Error"],
+                LangClass.TRANSLATIONS[
+                    "No image data is found. Maybe you are using really old version."
+                ],
+            )
 
     def _search(self, text):
         # index -1 will be read from all columns
@@ -121,5 +141,5 @@ class ImageNavWidget(BaseNavWidget):
             DB.removeImage(id)
         self._model.select()
 
-    def setColumns(self, columns, table_type='image'):
-        super().setColumns(columns, table_type='image')
+    def setColumns(self, columns, table_type="image"):
+        super().setColumns(columns, table_type="image")

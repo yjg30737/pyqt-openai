@@ -1,20 +1,37 @@
 import json
 
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QWidget, QAbstractItemView, QSpinBox, QTableWidgetItem, QMessageBox, QGroupBox, QLabel, \
-    QDialogButtonBox, \
-    QCheckBox, QDialog, QVBoxLayout
+from PySide6.QtWidgets import (
+    QWidget,
+    QAbstractItemView,
+    QSpinBox,
+    QTableWidgetItem,
+    QMessageBox,
+    QGroupBox,
+    QLabel,
+    QDialogButtonBox,
+    QCheckBox,
+    QDialog,
+    QVBoxLayout,
+)
 
-from pyqt_openai import JSON_FILE_EXT_LIST_STR, THREAD_ORDERBY, HOW_TO_EXPORT_CHATGPT_CONVERSATION_HISTORY_URL
+from pyqt_openai import (
+    JSON_FILE_EXT_LIST_STR,
+    THREAD_ORDERBY,
+    HOW_TO_EXPORT_CHATGPT_CONVERSATION_HISTORY_URL,
+)
 from pyqt_openai.lang.translations import LangClass
-from pyqt_openai.util.script import get_chatgpt_data_for_import, get_chatgpt_data_for_preview
+from pyqt_openai.util.script import (
+    get_chatgpt_data_for_import,
+    get_chatgpt_data_for_preview,
+)
 from pyqt_openai.widgets.checkBoxTableWidget import CheckBoxTableWidget
 from pyqt_openai.widgets.findPathWidget import FindPathWidget
 from pyqt_openai.widgets.linkLabel import LinkLabel
 
 
 class ChatImportDialog(QDialog):
-    def __init__(self, import_type='general', parent=None):
+    def __init__(self, import_type="general", parent=None):
         super().__init__(parent)
         self.__initVal(import_type)
         self.__initUi()
@@ -31,11 +48,13 @@ class ChatImportDialog(QDialog):
         self.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.WindowCloseButtonHint)
 
         findPathWidget = FindPathWidget()
-        findPathWidget.getLineEdit().setPlaceholderText(LangClass.TRANSLATIONS['Select a json file to import'])
+        findPathWidget.getLineEdit().setPlaceholderText(
+            LangClass.TRANSLATIONS["Select a json file to import"]
+        )
         findPathWidget.setExtOfFiles(JSON_FILE_EXT_LIST_STR)
         findPathWidget.added.connect(self.__setPath)
 
-        self.__chkBoxMostRecent = QCheckBox(LangClass.TRANSLATIONS['Get most recent'])
+        self.__chkBoxMostRecent = QCheckBox(LangClass.TRANSLATIONS["Get most recent"])
         self.__chkBoxMostRecent.setChecked(False)
 
         self.__mostRecentNSpinBox = QSpinBox()
@@ -43,9 +62,13 @@ class ChatImportDialog(QDialog):
         self.__mostRecentNSpinBox.setValue(self.__most_recent_n)
         self.__mostRecentNSpinBox.setEnabled(False)
 
-        self.__chkBoxMostRecent.stateChanged.connect(lambda state: self.__mostRecentNSpinBox.setEnabled(Qt.CheckState(state) == Qt.CheckState.Checked))
+        self.__chkBoxMostRecent.stateChanged.connect(
+            lambda state: self.__mostRecentNSpinBox.setEnabled(
+                Qt.CheckState(state) == Qt.CheckState.Checked
+            )
+        )
 
-        importOptionsGrpBox = QGroupBox(LangClass.TRANSLATIONS['Import Options'])
+        importOptionsGrpBox = QGroupBox(LangClass.TRANSLATIONS["Import Options"])
         lay = QVBoxLayout()
         lay.addWidget(self.__chkBoxMostRecent)
         lay.addWidget(self.__mostRecentNSpinBox)
@@ -53,32 +76,44 @@ class ChatImportDialog(QDialog):
 
         self.__checkBoxTableWidget = CheckBoxTableWidget()
         self.__checkBoxTableWidget.setColumnCount(0)
-        self.__checkBoxTableWidget.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
+        self.__checkBoxTableWidget.setEditTriggers(
+            QAbstractItemView.EditTrigger.NoEditTriggers
+        )
 
-        self.__allCheckBox = QCheckBox(LangClass.TRANSLATIONS['Select All'])
+        self.__allCheckBox = QCheckBox(LangClass.TRANSLATIONS["Select All"])
         self.__allCheckBox.stateChanged.connect(self.__checkBoxTableWidget.toggleState)
 
         lay = QVBoxLayout()
-        lay.addWidget(QLabel(LangClass.TRANSLATIONS['Select the threads you want to import.']))
+        lay.addWidget(
+            QLabel(LangClass.TRANSLATIONS["Select the threads you want to import."])
+        )
         lay.addWidget(self.__allCheckBox)
         lay.addWidget(self.__checkBoxTableWidget)
 
-        self.__dataGrpBox = QGroupBox(LangClass.TRANSLATIONS['Content'])
+        self.__dataGrpBox = QGroupBox(LangClass.TRANSLATIONS["Content"])
         self.__dataGrpBox.setLayout(lay)
         self.__dataGrpBox.setEnabled(False)
 
-        self.__buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        self.__buttonBox = QDialogButtonBox(
+            QDialogButtonBox.Ok | QDialogButtonBox.Cancel
+        )
         self.__buttonBox.accepted.connect(self.accept)
         self.__buttonBox.rejected.connect(self.reject)
         self.__buttonBox.button(QDialogButtonBox.Ok).setEnabled(False)
 
-        manual_lbl = QLabel(LangClass.TRANSLATIONS['You can import a JSON file created through the export feature.'])
+        manual_lbl = QLabel(
+            LangClass.TRANSLATIONS[
+                "You can import a JSON file created through the export feature."
+            ]
+        )
         lay = QVBoxLayout()
         lay.addWidget(manual_lbl)
 
-        if self.__import_type == 'chatgpt':
+        if self.__import_type == "chatgpt":
             viewManualLbl = LinkLabel()
-            viewManualLbl.setText(LangClass.TRANSLATIONS['How to import your ChatGPT data'])
+            viewManualLbl.setText(
+                LangClass.TRANSLATIONS["How to import your ChatGPT data"]
+            )
             viewManualLbl.setUrl(HOW_TO_EXPORT_CHATGPT_CONVERSATION_HISTORY_URL)
             lay.addWidget(viewManualLbl)
 
@@ -100,50 +135,57 @@ class ChatImportDialog(QDialog):
         self.__allCheckBox.stateChanged.connect(self.__toggleBtn)
 
     def __toggleBtn(self):
-        self.__buttonBox.button(QDialogButtonBox.Ok).setEnabled(len(self.__checkBoxTableWidget.getCheckedRows()) > 0)
+        self.__buttonBox.button(QDialogButtonBox.Ok).setEnabled(
+            len(self.__checkBoxTableWidget.getCheckedRows()) > 0
+        )
 
     def __setPath(self, path):
         try:
-            most_recent_n = self.__mostRecentNSpinBox.value() if self.__chkBoxMostRecent.isChecked() else None
+            most_recent_n = (
+                self.__mostRecentNSpinBox.value()
+                if self.__chkBoxMostRecent.isChecked()
+                else None
+            )
             columns = []
-            if self.__import_type == 'general':
+            if self.__import_type == "general":
                 self.__path = path
                 self.__data = json.load(open(path))
                 # Sort by update_dt
-                self.__data = sorted(self.__data, key=lambda x: x[THREAD_ORDERBY], reverse=True)
+                self.__data = sorted(
+                    self.__data, key=lambda x: x[THREAD_ORDERBY], reverse=True
+                )
                 # Get most recent one
                 if most_recent_n is not None:
                     self.__data = self.__data[:most_recent_n]
-                columns = [
-                    'id',
-                    'name',
-                    'insert_dt',
-                    'update_dt'
-                ]
+                columns = ["id", "name", "insert_dt", "update_dt"]
                 self.__checkBoxTableWidget.setHorizontalHeaderLabels(columns)
                 self.__checkBoxTableWidget.setRowCount(len(self.__data))
                 for r_idx, r in enumerate(self.__data):
                     for c_idx, c in enumerate(columns):
                         v = r[c]
-                        self.__checkBoxTableWidget.setItem(r_idx, c_idx + 1, QTableWidgetItem(str(v)))
+                        self.__checkBoxTableWidget.setItem(
+                            r_idx, c_idx + 1, QTableWidgetItem(str(v))
+                        )
                 # for i, d in enumerate(self.__data):
                 #     self.__checkBoxTableWidget.setItem(i, 1, QTableWidgetItem(d['id']))
                 #     self.__checkBoxTableWidget.setItem(i, 2, QTableWidgetItem(d['name']))
                 #     self.__checkBoxTableWidget.setItem(i, 3, QTableWidgetItem(d['insert_dt']))
                 #     self.__checkBoxTableWidget.setItem(i, 4, QTableWidgetItem(d['update_dt']))
-            elif self.__import_type == 'chatgpt':
+            elif self.__import_type == "chatgpt":
                 result_dict = get_chatgpt_data_for_preview(path, most_recent_n)
-                columns = result_dict['columns']
-                self.__data = result_dict['data']
+                columns = result_dict["columns"]
+                self.__data = result_dict["data"]
                 self.__checkBoxTableWidget.setHorizontalHeaderLabels(columns)
                 self.__checkBoxTableWidget.setRowCount(len(self.__data))
 
                 for r_idx, r in enumerate(self.__data):
                     for c_idx, c in enumerate(columns):
                         v = r[c]
-                        self.__checkBoxTableWidget.setItem(r_idx, c_idx + 1, QTableWidgetItem(str(v)))
+                        self.__checkBoxTableWidget.setItem(
+                            r_idx, c_idx + 1, QTableWidgetItem(str(v))
+                        )
             else:
-                raise Exception('Invalid import type')
+                raise Exception("Invalid import type")
 
             self.__checkBoxTableWidget.resizeColumnsToContents()
             self.__dataGrpBox.setEnabled(True)
@@ -155,8 +197,10 @@ class ChatImportDialog(QDialog):
 
     def getData(self):
         checked_rows = self.__checkBoxTableWidget.getCheckedRows()
-        if self.__import_type == 'general':
+        if self.__import_type == "general":
             self.__data = [self.__data[r] for r in checked_rows]
-        elif self.__import_type == 'chatgpt':
-            self.__data = get_chatgpt_data_for_import([self.__data[r] for r in checked_rows])
+        elif self.__import_type == "chatgpt":
+            self.__data = get_chatgpt_data_for_import(
+                [self.__data[r] for r in checked_rows]
+            )
         return self.__data

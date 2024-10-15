@@ -1,6 +1,15 @@
 from PySide6.QtCore import Qt, Signal
-from PySide6.QtWidgets import QDialog, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QWidget, \
-    QCheckBox, QSpacerItem, QSizePolicy
+from PySide6.QtWidgets import (
+    QDialog,
+    QLabel,
+    QPushButton,
+    QVBoxLayout,
+    QHBoxLayout,
+    QWidget,
+    QCheckBox,
+    QSpacerItem,
+    QSizePolicy,
+)
 
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.util.script import getSeparator
@@ -11,12 +20,23 @@ class DoNotAskAgainDialog(QDialog):
 
     def __init__(self, do_not_ask_again: bool = False, parent=None):
         super().__init__(parent)
-        do_not_ask_again_message = LangClass.TRANSLATIONS["Would you like to exit the application? If you won't, it will be running in the background."]
-        do_not_ask_again_checkbox_message = LangClass.TRANSLATIONS['Do not ask again']
-        self.__initVal(do_not_ask_again, do_not_ask_again_message, do_not_ask_again_checkbox_message)
+        do_not_ask_again_message = LangClass.TRANSLATIONS[
+            "Would you like to exit the application? If you won't, it will be running in the background."
+        ]
+        do_not_ask_again_checkbox_message = LangClass.TRANSLATIONS["Do not ask again"]
+        self.__initVal(
+            do_not_ask_again,
+            do_not_ask_again_message,
+            do_not_ask_again_checkbox_message,
+        )
         self.__initUi()
 
-    def __initVal(self, do_not_ask_again, do_not_ask_again_message, do_not_ask_again_checkbox_message):
+    def __initVal(
+        self,
+        do_not_ask_again,
+        do_not_ask_again_message,
+        do_not_ask_again_checkbox_message,
+    ):
         self.__is_cancel = False
         self.__do_not_ask_again = do_not_ask_again
         self.__do_not_ask_again_message = do_not_ask_again_message
@@ -43,7 +63,7 @@ class DoNotAskAgainDialog(QDialog):
         self.doNotAskAgainCheckBox.setChecked(self.__do_not_ask_again)
         self.doNotAskAgainCheckBox.stateChanged.connect(self.__onCheckBoxStateChanged)
 
-        sep = getSeparator('horizontal')
+        sep = getSeparator("horizontal")
 
         lay = QHBoxLayout()
         lay.addWidget(self.doNotAskAgainCheckBox)
@@ -52,7 +72,7 @@ class DoNotAskAgainDialog(QDialog):
         lay.addWidget(self.noButton)
         lay.addWidget(self.cancelButton)
         lay.setAlignment(Qt.AlignmentFlag.AlignRight)
-        lay.setContentsMargins(0,0,0,0)
+        lay.setContentsMargins(0, 0, 0, 0)
         btnWidget = QWidget()
         btnWidget.setLayout(lay)
 

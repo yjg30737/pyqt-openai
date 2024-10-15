@@ -54,6 +54,7 @@ class MessageTextBrowser(QTextBrowser):
     def setMarkdown(self, markdown: str) -> None:
         super().setMarkdown(markdown)
         # Convert markdown to HTML using QTextDocument
+
     #     document = QTextDocument()
     #     document.setMarkdown(markdown)
     #     html_text = document.toHtml()
@@ -89,6 +90,7 @@ class MessageTextBrowser(QTextBrowser):
     # def eventFilter(self, obj, event):
     #     print(obj, int(event.type()))
     #     return super().eventFilter(obj, event)
+
 
 #
 # def main():

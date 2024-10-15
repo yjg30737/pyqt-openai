@@ -1,8 +1,14 @@
 from PySide6.QtCore import Signal, Qt, QThread
 from PySide6.QtGui import QFontDatabase, QFont
-from PySide6.QtWidgets import QListWidget, QWidget, QVBoxLayout, QLabel, QLineEdit, QListWidgetItem
-from PySide6.QtWidgets import QSizePolicy, \
-    QTextEdit, QHBoxLayout
+from PySide6.QtWidgets import (
+    QListWidget,
+    QWidget,
+    QVBoxLayout,
+    QLabel,
+    QLineEdit,
+    QListWidgetItem,
+)
+from PySide6.QtWidgets import QSizePolicy, QTextEdit, QHBoxLayout
 
 from pyqt_openai import DEFAULT_FONT_FAMILY
 from pyqt_openai.lang.translations import LangClass
@@ -47,7 +53,7 @@ class SizeWidget(QWidget):
         sizeBottomWidget.setLayout(lay)
 
         lay = QVBoxLayout()
-        lay.addWidget(QLabel(LangClass.TRANSLATIONS['Size']))
+        lay.addWidget(QLabel(LangClass.TRANSLATIONS["Size"]))
         lay.addWidget(sizeBottomWidget)
         lay.setContentsMargins(0, 0, 0, 0)
         lay.setSpacing(5)
@@ -65,13 +71,15 @@ class SizeWidget(QWidget):
         if style_name:
             pass
         else:
-            font_name = 'Arial'
+            font_name = "Arial"
         sizes = QFontDatabase.pointSizes(font_name)
         sizes = list(map(str, sizes))
         self.__sizeListWidget.addItems(sizes)
 
     def setCurrentSize(self, font: QFont):
-        items = self.__sizeListWidget.findItems(str(font.pointSize()), Qt.MatchFlag.MatchFixedString)
+        items = self.__sizeListWidget.findItems(
+            str(font.pointSize()), Qt.MatchFlag.MatchFixedString
+        )
         item = QListWidgetItem()
         if items:
             item = items[0]
@@ -82,14 +90,16 @@ class SizeWidget(QWidget):
             size_text = item.text()
             self.__sizeLineEdit.setText(size_text)
         else:
-            item = QListWidgetItem('10')
+            item = QListWidgetItem("10")
             self.__sizeListWidget.setCurrentItem(item)
             size_text = item.text()
             self.__sizeLineEdit.setText(size_text)
 
     def __textEdited(self):
         size_text = self.__sizeLineEdit.text()
-        items = self.__sizeListWidget.findItems(size_text, Qt.MatchFlag.MatchFixedString)
+        items = self.__sizeListWidget.findItems(
+            size_text, Qt.MatchFlag.MatchFixedString
+        )
         if items:
             self.__sizeListWidget.setCurrentItem(items[0])
         self.sizeItemChanged.emit(int(size_text))
@@ -103,7 +113,9 @@ class SizeWidget(QWidget):
         sizes = list(map(str, sizes))
         self.__sizeListWidget.clear()
         self.__sizeListWidget.addItems(sizes)
-        items = self.__sizeListWidget.findItems(str(prev_size), Qt.MatchFlag.MatchFixedString)
+        items = self.__sizeListWidget.findItems(
+            str(prev_size), Qt.MatchFlag.MatchFixedString
+        )
         if len(items) > 0:
             item = items[0]
             self.__sizeListWidget.setCurrentItem(item)
@@ -112,7 +124,12 @@ class SizeWidget(QWidget):
             self.__sizeLineEdit.setText(str(prev_size))
 
     def getSize(self):
-        return self.__sizeListWidget.currentItem().text() if self.__sizeListWidget.currentItem() else 10
+        return (
+            self.__sizeListWidget.currentItem().text()
+            if self.__sizeListWidget.currentItem()
+            else 10
+        )
+
 
 class FontItemWidget(QWidget):
     fontItemChanged = Signal(str, list, list)
@@ -140,7 +157,7 @@ class FontItemWidget(QWidget):
         fontBottomWidget.setLayout(lay)
 
         lay = QVBoxLayout()
-        lay.addWidget(QLabel(LangClass.TRANSLATIONS['Font']))
+        lay.addWidget(QLabel(LangClass.TRANSLATIONS["Font"]))
         lay.addWidget(fontBottomWidget)
         lay.setContentsMargins(0, 0, 0, 0)
         lay.setSpacing(5)
@@ -163,7 +180,9 @@ class FontItemWidget(QWidget):
             self.__fontListWidget.addItem(item)
 
     def setCurrentFont(self, font: QFont):
-        items = self.__fontListWidget.findItems(font.family(), Qt.MatchFlag.MatchFixedString)
+        items = self.__fontListWidget.findItems(
+            font.family(), Qt.MatchFlag.MatchFixedString
+        )
         item = QListWidgetItem()
         if items:
             item = items[0]
@@ -177,13 +196,15 @@ class FontItemWidget(QWidget):
         font_name = self.__fontListWidget.currentItem().text()
         self.__fontLineEdit.setText(font_name)
         styles = QFontDatabase.styles(font_name)
-        pointSizes = QFontDatabase.pointSizes(font_name, QFontDatabase.styles(font_name)[0])
+        pointSizes = QFontDatabase.pointSizes(
+            font_name, QFontDatabase.styles(font_name)[0]
+        )
         self.fontItemChanged.emit(font_name, styles, pointSizes)
 
     def __textEdited(self):
         self.__fontListWidget.clear()
         text = self.__fontLineEdit.text()
-        if text.strip() != '':
+        if text.strip() != "":
             match_families = []
             for family in self.__font_families:
                 if family.startswith(text):
@@ -233,7 +254,7 @@ class FontWidget(QWidget):
         topWidget.setLayout(lay)
 
         lay = QVBoxLayout()
-        lay.addWidget(QLabel(LangClass.TRANSLATIONS['Preview']))
+        lay.addWidget(QLabel(LangClass.TRANSLATIONS["Preview"]))
         lay.addWidget(self.__previewTextEdit)
         lay.setContentsMargins(0, 0, 0, 0)
         lay.setSpacing(5)
@@ -254,7 +275,7 @@ class FontWidget(QWidget):
         font.setFamily(font_family)
         font.setPointSize(int(font_size))
         self.__previewTextEdit.setCurrentFont(font)
-        self.__previewTextEdit.setText(LangClass.TRANSLATIONS['Sample'])
+        self.__previewTextEdit.setText(LangClass.TRANSLATIONS["Sample"])
 
     def __sizeItemChangedExec(self, size):
         self.__previewTextEdit.selectAll()
@@ -297,7 +318,7 @@ class FontWidget(QWidget):
 
     def __textChanged(self):
         text = self.__previewTextEdit.toPlainText()
-        if text.strip() != '':
+        if text.strip() != "":
             pass
         else:
             self.__previewTextEdit.setCurrentFont(self.__current_font)

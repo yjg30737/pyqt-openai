@@ -1,4 +1,11 @@
-from PySide6.QtWidgets import QDialog, QLabel, QVBoxLayout, QScrollArea, QPushButton, QHBoxLayout
+from PySide6.QtWidgets import (
+    QDialog,
+    QLabel,
+    QVBoxLayout,
+    QScrollArea,
+    QPushButton,
+    QHBoxLayout,
+)
 
 from pyqt_openai import REPORT_ERROR_URL
 from pyqt_openai.lang.translations import LangClass
@@ -40,9 +47,9 @@ class ScrollableErrorDialog(QDialog):
         report_error_lbl = LinkLabel()
         report_error_lbl.setUrl(REPORT_ERROR_URL)
         # TODO LANGUAGE
-        report_error_lbl.setText('Report Error')
+        report_error_lbl.setText("Report Error")
 
-        ok_button = QPushButton(LangClass.TRANSLATIONS['OK'])
+        ok_button = QPushButton(LangClass.TRANSLATIONS["OK"])
         ok_button.clicked.connect(self.accept)  # Close the dialog when OK is clicked
         button_layout.addWidget(report_error_lbl)
         button_layout.addStretch(1)  # To push the button to the right

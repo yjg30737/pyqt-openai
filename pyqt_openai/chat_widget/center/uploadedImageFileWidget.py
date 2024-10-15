@@ -2,8 +2,16 @@ import os
 
 from PySide6.QtCore import QByteArray, QBuffer, Qt
 from PySide6.QtGui import QPixmap
-from PySide6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QHBoxLayout, QSpacerItem, QSizePolicy, \
-    QScrollArea
+from PySide6.QtWidgets import (
+    QWidget,
+    QLabel,
+    QVBoxLayout,
+    QPushButton,
+    QHBoxLayout,
+    QSpacerItem,
+    QSizePolicy,
+    QScrollArea,
+)
 
 from pyqt_openai import PROMPT_IMAGE_SCALE, IMAGE_FILE_EXT_LIST
 from pyqt_openai.lang.translations import LangClass
@@ -20,13 +28,13 @@ class UploadedImageFileWidget(QWidget):
         self.__original_pixmaps = []  # Array of original images
 
     def __initUi(self):
-        lbl = QLabel(LangClass.TRANSLATIONS['Uploaded Files (Only Images)'])
-        self.__activateDeleteBtn = QPushButton(LangClass.TRANSLATIONS['Delete'])
+        lbl = QLabel(LangClass.TRANSLATIONS["Uploaded Files (Only Images)"])
+        self.__activateDeleteBtn = QPushButton(LangClass.TRANSLATIONS["Delete"])
         self.__activateDeleteBtn.setCheckable(True)
         self.__activateDeleteBtn.toggled.connect(self.__activateDelete)
 
-        self.__manualLbl = QLabel(LangClass.TRANSLATIONS['Click the image to delete'])
-        self.__manualLbl.setStyleSheet('color: red;')
+        self.__manualLbl = QLabel(LangClass.TRANSLATIONS["Click the image to delete"])
+        self.__manualLbl.setStyleSheet("color: red;")
 
         lay = QHBoxLayout()
         lay.addWidget(lbl)
@@ -67,7 +75,7 @@ class UploadedImageFileWidget(QWidget):
             if os.path.splitext(filename)[-1] in IMAGE_FILE_EXT_LIST:
                 buffer = QBuffer()
                 buffer.open(QBuffer.OpenModeFlag.ReadWrite)
-                buffer.write(open(filename, 'rb').read())
+                buffer.write(open(filename, "rb").read())
                 buffer = buffer.data()
                 self.addImageBuffer(buffer)
         self.__toggle(True)
@@ -110,9 +118,9 @@ class UploadedImageFileWidget(QWidget):
         f = self.__activateDeleteBtn.isChecked()
         self.__manualLbl.setVisible(f)
         if f:
-            self.__activateDeleteBtn.setText(LangClass.TRANSLATIONS['Cancel'])
+            self.__activateDeleteBtn.setText(LangClass.TRANSLATIONS["Cancel"])
         else:
-            self.__activateDeleteBtn.setText(LangClass.TRANSLATIONS['Delete'])
+            self.__activateDeleteBtn.setText(LangClass.TRANSLATIONS["Delete"])
         self.__delete_mode = f
 
     def clear(self):

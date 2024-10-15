@@ -3,9 +3,24 @@ import sys
 
 import requests
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QDialog, QVBoxLayout, QLabel, QTextBrowser, QDialogButtonBox, QMessageBox
+from PySide6.QtWidgets import (
+    QDialog,
+    QVBoxLayout,
+    QLabel,
+    QTextBrowser,
+    QDialogButtonBox,
+    QMessageBox,
+)
 
-from pyqt_openai import __version__, OWNER, PACKAGE_NAME, UPDATE_DIR, CURRENT_FILENAME, UPDATER_PATH, is_frozen
+from pyqt_openai import (
+    __version__,
+    OWNER,
+    PACKAGE_NAME,
+    UPDATE_DIR,
+    CURRENT_FILENAME,
+    UPDATER_PATH,
+    is_frozen,
+)
 
 
 class UpdateSoftwareDialog(QDialog):
@@ -17,7 +32,7 @@ class UpdateSoftwareDialog(QDialog):
     def __initVal(self, owner, repo, recent_version):
         self.__owner = owner
         self.__repo = repo
-        self.__recent_version = f'v{recent_version}'
+        self.__recent_version = f"v{recent_version}"
 
     def __initUi(self):
         # TODO LANGUAGE
@@ -58,15 +73,22 @@ def check_for_updates(current_version, owner, repo):
         release_notes_html = "<ul>"
         recent_version = current_version
         for release in releases:
-            release_version = release['tag_name'].lstrip('v')
+            release_version = release["tag_name"].lstrip("v")
             if release_version > current_version:
-                recent_version = release_version if recent_version < release_version else recent_version
+                recent_version = (
+                    release_version
+                    if recent_version < release_version
+                    else recent_version
+                )
                 update_available = True
                 release_notes_html += f'<li><a href="{release["html_url"]}" target="_blank">{release["tag_name"]}</a></li>'
         release_notes_html += "</ul>"
 
         if update_available:
-            return {'release_notes': release_notes_html, 'recent_version': recent_version}
+            return {
+                "release_notes": release_notes_html,
+                "recent_version": recent_version,
+            }
         else:
             return None
 
@@ -78,8 +100,8 @@ def check_for_updates(current_version, owner, repo):
 def check_for_updates_and_show_dialog(current_version, owner, repo):
     result_dict = check_for_updates(current_version, owner, repo)
     if result_dict:
-        release_notes = result_dict['release_notes']
-        recent_version = result_dict['recent_version']
+        release_notes = result_dict["release_notes"]
+        recent_version = result_dict["recent_version"]
         if release_notes:
             # If updates are available, show the update dialog
             update_dialog = UpdateSoftwareDialog(owner, repo, recent_version)
@@ -101,5 +123,7 @@ def update_software():
 
 
 def run_updater(update_url):
-    subprocess.Popen([UPDATER_PATH, update_url, UPDATE_DIR, CURRENT_FILENAME], shell=True)
+    subprocess.Popen(
+        [UPDATER_PATH, update_url, UPDATE_DIR, CURRENT_FILENAME], shell=True
+    )
     sys.exit(0)

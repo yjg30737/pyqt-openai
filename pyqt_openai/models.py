@@ -5,9 +5,16 @@ This file is used to store the data classes that are used throughout the applica
 from dataclasses import dataclass, fields, field
 from typing import List
 
-from pyqt_openai import DB_FILE_NAME, DEFAULT_FONT_SIZE, DEFAULT_FONT_FAMILY, DEFAULT_USER_IMAGE_PATH, \
-    DEFAULT_AI_IMAGE_PATH, MAXIMUM_MESSAGES_IN_PARAMETER, \
-    WHISPER_TTS_DEFAULT_VOICE, WHISPER_TTS_DEFAULT_SPEED
+from pyqt_openai import (
+    DB_FILE_NAME,
+    DEFAULT_FONT_SIZE,
+    DEFAULT_FONT_FAMILY,
+    DEFAULT_USER_IMAGE_PATH,
+    DEFAULT_AI_IMAGE_PATH,
+    MAXIMUM_MESSAGES_IN_PARAMETER,
+    WHISPER_TTS_DEFAULT_VOICE,
+    WHISPER_TTS_DEFAULT_SPEED,
+)
 from pyqt_openai.lang.translations import LangClass
 
 
@@ -62,10 +69,11 @@ class Container:
         Takes the table name as a parameter.
         """
         field_names = self.get_keys(excludes)
-        columns = ', '.join(field_names)
-        placeholders = ', '.join(['?' for _ in field_names])
-        query = f'INSERT INTO {table_name} ({columns}) VALUES ({placeholders})'
+        columns = ", ".join(field_names)
+        placeholders = ", ".join(["?" for _ in field_names])
+        query = f"INSERT INTO {table_name} ({columns}) VALUES ({placeholders})"
         return query
+
 
 @dataclass
 class ChatThreadContainer(Container):
@@ -73,6 +81,7 @@ class ChatThreadContainer(Container):
     name: str = ""
     insert_dt: str = ""
     update_dt: str = ""
+
 
 @dataclass
 class ChatMessageContainer(Container):
@@ -96,6 +105,7 @@ class ChatMessageContainer(Container):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
+
 @dataclass
 class ImagePromptContainer(Container):
     id: str = ""
@@ -115,6 +125,7 @@ class ImagePromptContainer(Container):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
+
 @dataclass
 class SettingsParamsContainer(Container):
     lang: str = LangClass.lang_changed()
@@ -124,7 +135,9 @@ class SettingsParamsContainer(Container):
     show_toolbar: bool = True
     show_secondary_toolbar: bool = True
     chat_column_to_show: List[str] = field(default_factory=ChatThreadContainer.get_keys)
-    image_column_to_show: List[str] = field(default_factory=ImagePromptContainer.get_keys)
+    image_column_to_show: List[str] = field(
+        default_factory=ImagePromptContainer.get_keys
+    )
     maximum_messages_in_parameter: int = MAXIMUM_MESSAGES_IN_PARAMETER
     show_as_markdown: bool = True
     apply_user_defined_styles: bool = False
@@ -132,13 +145,15 @@ class SettingsParamsContainer(Container):
     voice: str = WHISPER_TTS_DEFAULT_VOICE
     voice_speed: int = WHISPER_TTS_DEFAULT_SPEED
 
+
 @dataclass
 class CustomizeParamsContainer(Container):
-    background_image: str = ''
+    background_image: str = ""
     user_image: str = DEFAULT_USER_IMAGE_PATH
     ai_image: str = DEFAULT_AI_IMAGE_PATH
     font_size: int = DEFAULT_FONT_SIZE
     font_family: str = DEFAULT_FONT_FAMILY
+
 
 @dataclass
 class PromptGroupContainer(Container):
@@ -147,6 +162,7 @@ class PromptGroupContainer(Container):
     insert_dt: str = ""
     update_dt: str = ""
     prompt_type: str = ""
+
 
 @dataclass
 class PromptEntryContainer(Container):

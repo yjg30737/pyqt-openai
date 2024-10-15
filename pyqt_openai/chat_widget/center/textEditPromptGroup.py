@@ -4,8 +4,14 @@ from PySide6.QtCore import Signal, QBuffer, QByteArray
 from PySide6.QtGui import QTextCursor, QKeySequence
 from PySide6.QtWidgets import QVBoxLayout, QWidget, QApplication
 
-from pyqt_openai import PROMPT_BEGINNING_KEY_NAME, PROMPT_MAIN_KEY_NAME, PROMPT_END_KEY_NAME, \
-    PROMPT_JSON_KEY_NAME, CONTEXT_DELIMITER, IMAGE_FILE_EXT_LIST
+from pyqt_openai import (
+    PROMPT_BEGINNING_KEY_NAME,
+    PROMPT_MAIN_KEY_NAME,
+    PROMPT_END_KEY_NAME,
+    PROMPT_JSON_KEY_NAME,
+    CONTEXT_DELIMITER,
+    IMAGE_FILE_EXT_LIST,
+)
 from pyqt_openai.chat_widget.center.textEditPrompt import TextEditPrompt
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.widgets.jsonEditor import JSONEditor
@@ -23,13 +29,13 @@ class TextEditPromptGroup(QWidget):
 
     def __initUi(self):
         self.__beginningTextEdit = TextEditPrompt()
-        self.__beginningTextEdit.setPlaceholderText(LangClass.TRANSLATIONS['Beginning'])
+        self.__beginningTextEdit.setPlaceholderText(LangClass.TRANSLATIONS["Beginning"])
 
         self.__textEdit = TextEditPrompt()
-        self.__textEdit.setPlaceholderText(LangClass.TRANSLATIONS['Write some text...'])
+        self.__textEdit.setPlaceholderText(LangClass.TRANSLATIONS["Write some text..."])
 
         self.__endingTextEdit = TextEditPrompt()
-        self.__endingTextEdit.setPlaceholderText(LangClass.TRANSLATIONS['Ending'])
+        self.__endingTextEdit.setPlaceholderText(LangClass.TRANSLATIONS["Ending"])
 
         self.__jsonTextEdit = JSONEditor()
 
@@ -38,7 +44,7 @@ class TextEditPromptGroup(QWidget):
             PROMPT_BEGINNING_KEY_NAME: self.__beginningTextEdit,
             PROMPT_MAIN_KEY_NAME: self.__textEdit,
             PROMPT_JSON_KEY_NAME: self.__jsonTextEdit,
-            PROMPT_END_KEY_NAME: self.__endingTextEdit
+            PROMPT_END_KEY_NAME: self.__endingTextEdit,
         }
 
         lay = QVBoxLayout()
@@ -66,10 +72,10 @@ class TextEditPromptGroup(QWidget):
 
     def executeCommand(self, item, grp):
         command_key = item.text()
-        command = ''
+        command = ""
         for i in range(len(grp)):
-            if grp[i].get('name', '') == command_key:
-                command = grp[i].get('value', '')
+            if grp[i].get("name", "") == command_key:
+                command = grp[i].get("value", "")
 
         w = self.getCurrentTextEdit()
         if w:
@@ -99,7 +105,7 @@ class TextEditPromptGroup(QWidget):
         for w in self.__textGroup.values():
             document = w.document()
             height = document.size().height()
-            overall_height = int(height+document.documentMargin())
+            overall_height = int(height + document.documentMargin())
             w.setMaximumHeight(overall_height)
             group_height += overall_height
         return group_height
@@ -113,7 +119,7 @@ class TextEditPromptGroup(QWidget):
         m = self.__textGroup[PROMPT_MAIN_KEY_NAME].toPlainText().strip()
         e = self.__textGroup[PROMPT_END_KEY_NAME].toPlainText().strip()
 
-        content = ''
+        content = ""
         if b:
             content = b + CONTEXT_DELIMITER
         content += m
@@ -146,7 +152,7 @@ class TextEditPromptGroup(QWidget):
     def handleDrop(self, urls):
         for url in urls:
             if Path(url).suffix in IMAGE_FILE_EXT_LIST:
-                with open(url, 'rb') as f:
+                with open(url, "rb") as f:
                     data = f.read()
                     self.onPasteFile.emit(data)
 
@@ -162,14 +168,14 @@ class TextEditPromptGroup(QWidget):
             buffer.open(QBuffer.ReadWrite)
 
             # Try saving the image as PNG first
-            if not image.save(buffer, 'PNG'):
+            if not image.save(buffer, "PNG"):
                 # If PNG fails, try saving as JPG
-                if not image.save(buffer, 'JPG'):
+                if not image.save(buffer, "JPG"):
                     # Both formats failed
                     buffer.close()
                     return
                 else:
-                    image_format = 'JPG'
+                    image_format = "JPG"
 
             buffer.seek(0)
             image_data = buffer.data()
@@ -181,44 +187,56 @@ class TextEditPromptGroup(QWidget):
             self.__textEdit.paste()
 
     def __moveCursorToOtherPrompt(self, direction):
-        if direction == 'up':
-            if self.__textGroup[PROMPT_MAIN_KEY_NAME].isVisible() and self.__textGroup[
-                PROMPT_MAIN_KEY_NAME].hasFocus():
+        if direction == "up":
+            if (
+                self.__textGroup[PROMPT_MAIN_KEY_NAME].isVisible()
+                and self.__textGroup[PROMPT_MAIN_KEY_NAME].hasFocus()
+            ):
                 if self.__textGroup[PROMPT_BEGINNING_KEY_NAME].isVisible():
                     self.__textGroup[PROMPT_MAIN_KEY_NAME].clearFocus()
                     self.__textGroup[PROMPT_BEGINNING_KEY_NAME].setFocus()
-            elif self.__textGroup[PROMPT_END_KEY_NAME].isVisible() and self.__textGroup[
-                PROMPT_END_KEY_NAME].hasFocus():
+            elif (
+                self.__textGroup[PROMPT_END_KEY_NAME].isVisible()
+                and self.__textGroup[PROMPT_END_KEY_NAME].hasFocus()
+            ):
                 if self.__textGroup[PROMPT_JSON_KEY_NAME].isVisible():
                     self.__textGroup[PROMPT_END_KEY_NAME].clearFocus()
                     self.__textGroup[PROMPT_JSON_KEY_NAME].setFocus()
                 elif self.__textGroup[PROMPT_MAIN_KEY_NAME].isVisible():
                     self.__textGroup[PROMPT_END_KEY_NAME].clearFocus()
                     self.__textGroup[PROMPT_MAIN_KEY_NAME].setFocus()
-            elif self.__textGroup[PROMPT_JSON_KEY_NAME].isVisible() and self.__textGroup[
-                PROMPT_JSON_KEY_NAME].hasFocus():
+            elif (
+                self.__textGroup[PROMPT_JSON_KEY_NAME].isVisible()
+                and self.__textGroup[PROMPT_JSON_KEY_NAME].hasFocus()
+            ):
                 if self.__textGroup[PROMPT_MAIN_KEY_NAME].isVisible():
                     self.__textGroup[PROMPT_JSON_KEY_NAME].clearFocus()
                     self.__textGroup[PROMPT_MAIN_KEY_NAME].setFocus()
-        elif direction == 'down':
-            if self.__textGroup[PROMPT_BEGINNING_KEY_NAME].isVisible() and self.__textGroup[
-                PROMPT_BEGINNING_KEY_NAME].hasFocus():
+        elif direction == "down":
+            if (
+                self.__textGroup[PROMPT_BEGINNING_KEY_NAME].isVisible()
+                and self.__textGroup[PROMPT_BEGINNING_KEY_NAME].hasFocus()
+            ):
                 if self.__textGroup[PROMPT_MAIN_KEY_NAME].isVisible():
                     self.__textGroup[PROMPT_BEGINNING_KEY_NAME].clearFocus()
                     self.__textGroup[PROMPT_MAIN_KEY_NAME].setFocus()
-            elif self.__textGroup[PROMPT_MAIN_KEY_NAME].isVisible() and self.__textGroup[
-                PROMPT_MAIN_KEY_NAME].hasFocus():
+            elif (
+                self.__textGroup[PROMPT_MAIN_KEY_NAME].isVisible()
+                and self.__textGroup[PROMPT_MAIN_KEY_NAME].hasFocus()
+            ):
                 if self.__textGroup[PROMPT_JSON_KEY_NAME].isVisible():
                     self.__textGroup[PROMPT_MAIN_KEY_NAME].clearFocus()
                     self.__textGroup[PROMPT_JSON_KEY_NAME].setFocus()
                 elif self.__textGroup[PROMPT_END_KEY_NAME].isVisible():
                     self.__textGroup[PROMPT_MAIN_KEY_NAME].clearFocus()
                     self.__textGroup[PROMPT_END_KEY_NAME].setFocus()
-            elif self.__textGroup[PROMPT_JSON_KEY_NAME].isVisible() and self.__textGroup[
-                PROMPT_JSON_KEY_NAME].hasFocus():
+            elif (
+                self.__textGroup[PROMPT_JSON_KEY_NAME].isVisible()
+                and self.__textGroup[PROMPT_JSON_KEY_NAME].hasFocus()
+            ):
                 if self.__textGroup[PROMPT_END_KEY_NAME].isVisible():
                     self.__textGroup[PROMPT_JSON_KEY_NAME].clearFocus()
                     self.__textGroup[PROMPT_END_KEY_NAME].setFocus()
 
         else:
-            print('Invalid direction:', direction)
+            print("Invalid direction:", direction)

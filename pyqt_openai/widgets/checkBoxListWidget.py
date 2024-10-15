@@ -69,7 +69,7 @@ class CheckBoxListWidget(QListWidget):
     def getCheckedItems(self):
         return [self.item(i) for i in self.getCheckedRows()]
 
-    def getCheckedItemsText(self, empty_str='', include_empty=True):
+    def getCheckedItemsText(self, empty_str="", include_empty=True):
         result = [item.text() if item else empty_str for item in self.getCheckedItems()]
         if include_empty:
             return result
