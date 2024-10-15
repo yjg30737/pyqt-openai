@@ -25,6 +25,9 @@ Your contribution, even just a fix a simple typo in readme or simple refactoring
 
 You can contact me 24/7 by sending me an email to **yjg30737@gmail.com** or join [**Discord server**](https://discord.gg/cHekprskVE) to talk in real time.
 
+## Test Scenario
+This is the [default test scenario page](https://github.com/yjg30737/pyqt-openai/wiki/Test-Scenario). If you want to test it out and be sure nothing is wrong, try it :)
+
 ## Contributors
 * **Me (WizMiner)** 😊
   * Creator of VividNode 🐐
