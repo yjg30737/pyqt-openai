@@ -85,6 +85,9 @@ class ConfigManager:
     def get_replicate(self):
         return self.config.get("REPLICATE", {})
 
+    def get_g4f_image(self):
+        return self.config.get("G4F_IMAGE", {})
+
     def get_dalle_property(self, key):
         return self.config.get("DALLE", {}).get(key)
 
@@ -93,6 +96,9 @@ class ConfigManager:
 
     def get_replicate_property(self, key):
         return self.config.get("REPLICATE", {}).get(key)
+
+    def get_g4f_image_property(self, key):
+        return self.config.get("G4F_IMAGE", {}).get(key)
 
     # Setter methods
     def set_dalle_property(self, key, value):
@@ -113,6 +119,11 @@ class ConfigManager:
         self.config["REPLICATE"][key] = value
         self._save_yaml()
 
+    def set_g4f_image_property(self, key, value):
+        if "G4F_IMAGE" not in self.config:
+            self.config["G4F_IMAGE"] = {}
+        self.config["G4F_IMAGE"][key] = value
+        self._save_yaml()
 
 def update_api_key(yaml_file_path):
     with open(yaml_file_path, "r") as file:

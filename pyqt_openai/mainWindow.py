@@ -53,6 +53,7 @@ from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.customizeDialog import CustomizeDialog
 from pyqt_openai.dalle_widget.dalleMainWidget import DallEMainWidget
 from pyqt_openai.doNotAskAgainDialog import DoNotAskAgainDialog
+from pyqt_openai.g4f_image_widget.g4fImageMainWidget import G4FImageMainWidget
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import SettingsParamsContainer, CustomizeParamsContainer
 from pyqt_openai.replicate_widget.replicateMainWidget import ReplicateMainWidget
@@ -88,11 +89,13 @@ class MainWindow(QMainWindow):
         self.__chatMainWidget = ChatMainWidget(self)
         self.__dallEWidget = DallEMainWidget(self)
         self.__replicateWidget = ReplicateMainWidget(self)
+        self.__g4fImageWidget = G4FImageMainWidget(self)
 
         self.__mainWidget = QStackedWidget()
         self.__mainWidget.addWidget(self.__chatMainWidget)
         self.__mainWidget.addWidget(self.__dallEWidget)
         self.__mainWidget.addWidget(self.__replicateWidget)
+        self.__mainWidget.addWidget(self.__g4fImageWidget)
 
         self.__setActions()
         self.__setMenuBar()
@@ -196,6 +199,7 @@ class MainWindow(QMainWindow):
         self.__navBar.add(LangClass.TRANSLATIONS["Chat"])
         self.__navBar.add("DALL-E")
         self.__navBar.add("Replicate")
+        self.__navBar.add("G4F Image")
         self.__navBar.setSizePolicy(
             QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Preferred
         )

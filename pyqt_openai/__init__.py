@@ -673,39 +673,57 @@ CONFIG_DATA = {
     },
     "DALLE": {
         "quality": "standard",
-        "show_history": True,
         "n": 1,
-        "show_setting": True,
         "size": "1024x1024",
+        "style": "vivid",
+        "response_format": "b64_json",
+        "width": 1024,
+        "height": 1024,
+        "prompt_type": 1,
+
+        "show_history": True,
+        "show_setting": True,
+        "prompt": "Astronaut in a jungle, cold color palette, muted colors, detailed, 8k",
         "directory": QFILEDIALOG_DEFAULT_DIRECTORY,
         "is_save": True,
         "continue_generation": False,
         "number_of_images_to_create": 2,
-        "style": "vivid",
-        "response_format": "b64_json",
         "save_prompt_as_text": True,
         "show_prompt_on_image": False,
-        "prompt_type": 1,
-        "width": 1024,
-        "height": 1024,
-        "prompt": "Astronaut in a jungle, cold color palette, muted colors, detailed, 8k",
     },
     "REPLICATE": {
         "REPLICATE_API_TOKEN": "",
-        "show_history": True,
         "model": "stability-ai/sdxl:39ed52f2a78e934b3ba6e2a89f5b1c712de7dfea535525255b1aa35c5565e08b",
-        "show_setting": True,
         "width": 768,
         "height": 768,
+
+        "show_history": True,
+        "show_setting": True,
         "prompt": "Astronaut in a jungle, cold color palette, muted colors, detailed, 8k",
-        "negative_prompt": "ugly, deformed, noisy, blurry, distorted",
         "directory": QFILEDIALOG_DEFAULT_DIRECTORY,
         "is_save": True,
         "continue_generation": False,
         "number_of_images_to_create": 2,
         "save_prompt_as_text": True,
         "show_prompt_on_image": False,
+
+        "negative_prompt": "ugly, deformed, noisy, blurry, distorted",
     },
+    "G4F_IMAGE": {
+        "model": "flux",
+
+        "show_history": True,
+        "show_setting": True,
+        "prompt": "Astronaut in a jungle, cold color palette, muted colors, detailed, 8k",
+        "directory": QFILEDIALOG_DEFAULT_DIRECTORY,
+        "is_save": True,
+        "continue_generation": False,
+        "number_of_images_to_create": 2,
+        "save_prompt_as_text": True,
+        "show_prompt_on_image": False,
+
+        "negative_prompt": "ugly, deformed, noisy, blurry, distorted",
+    }
 }
 
 # Dynamically add the API keys to the configuration data
