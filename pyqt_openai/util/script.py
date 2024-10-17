@@ -35,7 +35,7 @@ from PySide6.QtCore import Qt, QUrl, QThread, Signal
 from PySide6.QtGui import QDesktopServices
 from PySide6.QtWidgets import QMessageBox, QFrame
 from g4f import ProviderType
-from g4f.Provider import ProviderUtils, __providers__
+from g4f.Provider import ProviderUtils, __providers__, __map__
 from g4f.errors import ProviderNotFoundError
 from g4f.models import ModelUtils
 from g4f.providers.retry_provider import IterProvider
@@ -522,17 +522,6 @@ def get_g4f_models():
     return models
 
 
-# TODO get provider
-# providers = Api.get_providers()
-# i = 0
-# for provider in providers:
-#     print(provider)
-#     print(Api.get_provider_models(provider))
-#     i += 1
-#     if i == 5:
-#         break
-
-
 def convert_to_provider(provider: str) -> ProviderType:
     if " " in provider:
         provider_list = [
@@ -775,6 +764,29 @@ def get_provider_from_model(model):
         if model in models:
             return provider
     return None
+
+def get_g4f_image_models() -> list:
+    image_models = []
+    index = []
+    for provider in __providers__:
+        if hasattr(provider, "image_models"):
+            if hasattr(provider, "get_models"):
+                provider.get_models()
+            parent = provider
+            if hasattr(provider, "parent"):
+                parent = __map__[provider.parent]
+            if parent.__name__ not in index:
+                for model in provider.image_models:
+                    image_models.append({
+                        "provider": parent.__name__,
+                        "url": parent.url,
+                        "label": parent.label if hasattr(parent, "label") else None,
+                        "image_model": model,
+                    })
+                    index.append(parent.__name__)
+
+    models = [model['image_model'] for model in image_models]
+    return models
 
 
 def get_g4f_argument(model, messages, cur_text, stream):

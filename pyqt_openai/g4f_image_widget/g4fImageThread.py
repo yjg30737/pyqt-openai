@@ -37,9 +37,6 @@ class G4FImageThread(QThread):
                     )
                 response = G4F_CLIENT.images.generate(
                     **self.__input_args
-                    # quality="better",
-                    # style="default",
-                    # Add any other necessary parameters
                 )
                 arg = {
                     **self.__input_args,

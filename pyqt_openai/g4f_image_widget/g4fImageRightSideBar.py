@@ -11,6 +11,7 @@ from PySide6.QtWidgets import (
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.g4f_image_widget.g4fImageThread import G4FImageThread
 from pyqt_openai.lang.translations import LangClass
+from pyqt_openai.util.script import get_g4f_image_models
 from pyqt_openai.widgets.imageControlWidget import ImageControlWidget
 
 
@@ -44,9 +45,9 @@ class G4FImageRightSideBarWidget(ImageControlWidget):
     def _initUi(self):
         super()._initUi()
 
-        # TODO add registered image models in g4f to combobox
         self.__modelCmbBox = QComboBox()
-        self.__modelCmbBox.addItems([self.__model])
+        g4f_image_models = get_g4f_image_models()
+        self.__modelCmbBox.addItems(g4f_image_models)
         self.__modelCmbBox.setCurrentText(self.__model)
         self.__modelCmbBox.currentTextChanged.connect(self.__g4fModelChanged)
 
