@@ -12,10 +12,10 @@ class NormalImageView(QGraphicsView):
     def __initVal(self):
         self._scene = QGraphicsScene()
         self._p = QPixmap()
-        self._item = ''
+        self._item = ""
 
     def setFilename(self, filename: str):
-        if filename == '':
+        if filename == "":
             pass
         else:
             self._p = QPixmap(filename)

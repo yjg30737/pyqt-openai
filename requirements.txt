@@ -3,6 +3,7 @@ pyperclip
 jinja2
 requests
 pyaudio
+pillow
 
 openai
 anthropic

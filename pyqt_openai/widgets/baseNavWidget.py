@@ -1,8 +1,13 @@
 from PySide6.QtCore import Signal, QSortFilterProxyModel, Qt
 from PySide6.QtSql import QSqlTableModel, QSqlQuery
-from PySide6.QtWidgets import QWidget, QMessageBox, QStyledItemDelegate, QTableView, \
-    QAbstractItemView, \
-    QLabel
+from PySide6.QtWidgets import (
+    QWidget,
+    QMessageBox,
+    QStyledItemDelegate,
+    QTableView,
+    QAbstractItemView,
+    QLabel,
+)
 
 from pyqt_openai import ICON_DELETE, ICON_CLOSE
 from pyqt_openai.globals import DB
@@ -14,7 +19,7 @@ from pyqt_openai.widgets.searchBar import SearchBar
 class FilterProxyModel(QSortFilterProxyModel):
     def __init__(self):
         super().__init__()
-        self.__searchedText = ''
+        self.__searchedText = ""
 
     @property
     def searchedText(self):
@@ -40,17 +45,21 @@ class SqlTableModel(QSqlTableModel):
     addedCol = Signal()
     deletedCol = Signal()
 
-    def __init__(self, table_type='chat', parent=None):
+    def __init__(self, table_type="chat", parent=None):
         super().__init__(parent)
         self.__table_type = table_type
         self.__parent = parent
 
     def flags(self, index):
-        if self.__table_type == 'chat':
-            if index.column() == self.column_index_by_name('name'):
-                return Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsEditable
+        if self.__table_type == "chat":
+            if index.column() == self.column_index_by_name("name"):
+                return (
+                    Qt.ItemFlag.ItemIsEnabled
+                    | Qt.ItemFlag.ItemIsSelectable
+                    | Qt.ItemFlag.ItemIsEditable
+                )
             return Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable
-        elif self.__table_type == 'image':
+        elif self.__table_type == "image":
             if index.column() == 0:
                 return Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable
         return super().flags(index)
@@ -60,7 +69,6 @@ class SqlTableModel(QSqlTableModel):
 
 
 class BaseNavWidget(QWidget):
-
     def __init__(self, columns, table_nm, parent=None):
         super().__init__(parent)
         self.__initVal(columns, table_nm)
@@ -72,39 +80,41 @@ class BaseNavWidget(QWidget):
 
     def __initUi(self):
         imageGenerationHistoryLbl = QLabel()
-        imageGenerationHistoryLbl.setText(LangClass.TRANSLATIONS['History'])
+        imageGenerationHistoryLbl.setText(LangClass.TRANSLATIONS["History"])
 
         self._searchBar = SearchBar()
-        self._searchBar.setPlaceHolder(LangClass.TRANSLATIONS['Search...'])
+        self._searchBar.setPlaceHolder(LangClass.TRANSLATIONS["Search..."])
         self._searchBar.searched.connect(self._search)
 
         self._delBtn = Button()
         self._delBtn.setStyleAndIcon(ICON_DELETE)
         self._delBtn.clicked.connect(self._delete)
-        self._delBtn.setToolTip(LangClass.TRANSLATIONS['Delete Certain Row'])
+        self._delBtn.setToolTip(LangClass.TRANSLATIONS["Delete Certain Row"])
 
         self._clearBtn = Button()
         self._clearBtn.setStyleAndIcon(ICON_CLOSE)
         self._clearBtn.clicked.connect(self._clear)
-        self._clearBtn.setToolTip(LangClass.TRANSLATIONS['Remove All'])
+        self._clearBtn.setToolTip(LangClass.TRANSLATIONS["Remove All"])
 
-    def setModel(self, table_type='chat'):
+    def setModel(self, table_type="chat"):
         self._model = SqlTableModel(table_type, self)
         self._model.setTable(self._table_nm)
         self._model.beforeUpdate.connect(self._updated)
 
         # Set the query to fetch columns in the defined order
         # Remove DATA for GUI performance
-        if table_type == 'image':
-            if self._columns.__contains__('data'):
-                self._columns.remove('data')
-            self._model.setQuery(QSqlQuery(f"SELECT {','.join(self._columns)} FROM {self._table_nm}"))
+        if table_type == "image":
+            if self._columns.__contains__("data"):
+                self._columns.remove("data")
+            self._model.setQuery(
+                QSqlQuery(f"SELECT {','.join(self._columns)} FROM {self._table_nm}")
+            )
 
         for i in range(len(self._columns)):
             self._model.setHeaderData(i, Qt.Orientation.Horizontal, self._columns[i])
         self._model.select()
         # descending order by insert date
-        idx = self._columns.index('insert_dt')
+        idx = self._columns.index("insert_dt")
         self._model.sort(idx, Qt.SortOrder.DescendingOrder)
 
         # init the proxy model
@@ -116,7 +126,10 @@ class BaseNavWidget(QWidget):
         # set up the view
         self._tableView = QTableView()
         self._tableView.setModel(self._proxyModel)
-        self._tableView.setEditTriggers(QTableView.EditTrigger.DoubleClicked | QTableView.EditTrigger.SelectedClicked)
+        self._tableView.setEditTriggers(
+            QTableView.EditTrigger.DoubleClicked
+            | QTableView.EditTrigger.SelectedClicked
+        )
         self._tableView.setSortingEnabled(True)
 
         # align to center
@@ -125,16 +138,20 @@ class BaseNavWidget(QWidget):
             self._tableView.setItemDelegateForColumn(i, delegate)
 
         # set selection/resize policy
-        self._tableView.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+        self._tableView.setSelectionBehavior(
+            QAbstractItemView.SelectionBehavior.SelectRows
+        )
         self._tableView.resizeColumnsToContents()
-        self._tableView.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
+        self._tableView.setSelectionMode(
+            QAbstractItemView.SelectionMode.ExtendedSelection
+        )
 
         # self.__tableView.activated.connect(self.__clicked)
         # self.__tableView.clicked.connect(self.__clicked)
 
     def _updated(self, i, r):
         # Send updated signal
-        self._model.updated.emit(r.value('id'), r.value('name'))
+        self._model.updated.emit(r.value("id"), r.value("name"))
 
     def _delete(self):
         pass
@@ -142,29 +159,33 @@ class BaseNavWidget(QWidget):
     def _search(self, text):
         pass
 
-    def _clear(self, table_type='chat'):
-        '''
+    def _clear(self, table_type="chat"):
+        """
         Clear all data in the table
-        '''
+        """
         # Before clearing, confirm the action
-        reply = QMessageBox.question(self, LangClass.TRANSLATIONS['Confirm'],
-                                     LangClass.TRANSLATIONS['Are you sure to clear all data?'],
-                                     QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+        reply = QMessageBox.question(
+            self,
+            LangClass.TRANSLATIONS["Confirm"],
+            LangClass.TRANSLATIONS["Are you sure to clear all data?"],
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+        )
         if reply == QMessageBox.StandardButton.Yes:
-            if table_type == 'chat':
+            if table_type == "chat":
                 DB.deleteThread()
-            elif table_type == 'image':
+            elif table_type == "image":
                 DB.removeImage()
             self._model.select()
 
-    def setColumns(self, columns, table_type='chat'):
+    def setColumns(self, columns, table_type="chat"):
         self._columns = columns
         self._model.clear()
         self._model.setTable(self._table_nm)
-        if table_type == 'image':
+        if table_type == "image":
             # Remove DATA for GUI performance
-            if self._columns.__contains__('data'):
-                self._columns.remove('data')
-        self._model.setQuery(QSqlQuery(f"SELECT {','.join(self._columns)} FROM {self._table_nm}"))
+            if self._columns.__contains__("data"):
+                self._columns.remove("data")
+        self._model.setQuery(
+            QSqlQuery(f"SELECT {','.join(self._columns)} FROM {self._table_nm}")
+        )
         self._model.select()
-

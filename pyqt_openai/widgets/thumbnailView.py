@@ -2,8 +2,15 @@ import os
 
 from PySide6.QtCore import Qt, QPointF, Signal
 from PySide6.QtGui import QPixmap, QColor, QBrush, QLinearGradient
-from PySide6.QtWidgets import QGraphicsScene, QGraphicsPixmapItem, QGraphicsView, QApplication, QWidget, QHBoxLayout, \
-    QFileDialog
+from PySide6.QtWidgets import (
+    QGraphicsScene,
+    QGraphicsPixmapItem,
+    QGraphicsView,
+    QApplication,
+    QWidget,
+    QHBoxLayout,
+    QFileDialog,
+)
 
 from pyqt_openai import ICON_SAVE, ICON_ADD, ICON_DELETE, ICON_COPY
 from pyqt_openai.lang.translations import LangClass
@@ -76,9 +83,12 @@ class ThumbnailView(QGraphicsView):
     def __refreshSceneAndView(self):
         self._item = self._scene.addPixmap(self._p)
         self._item.setTransformationMode(Qt.TransformationMode.SmoothTransformation)
-        rect = self.sceneRect() \
-            if (self._item.boundingRect().width() > self.sceneRect().width()) or (self._item.boundingRect().height() > self.sceneRect().height()) \
+        rect = (
+            self.sceneRect()
+            if (self._item.boundingRect().width() > self.sceneRect().width())
+            or (self._item.boundingRect().height() > self.sceneRect().height())
             else self._item.boundingRect()
+        )
         self.fitInView(rect, self.__aspectRatioMode)
         self.setScene(self._scene)
 
@@ -104,7 +114,12 @@ class ThumbnailView(QGraphicsView):
         QApplication.clipboard().setPixmap(self._p)
 
     def __save(self):
-        filename = QFileDialog.getSaveFileName(self, LangClass.TRANSLATIONS['Save'], os.path.expanduser('~'), 'Image file (*.png)')
+        filename = QFileDialog.getSaveFileName(
+            self,
+            LangClass.TRANSLATIONS["Save"],
+            os.path.expanduser("~"),
+            "Image file (*.png)",
+        )
         if filename[0]:
             filename = filename[0]
             if filename:

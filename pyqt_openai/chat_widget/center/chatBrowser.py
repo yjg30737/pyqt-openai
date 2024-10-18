@@ -5,7 +5,11 @@ from PySide6.QtGui import QTextCharFormat, QColor, QTextCursor
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import QScrollArea, QVBoxLayout, QWidget, QLabel
 
-from pyqt_openai import MAXIMUM_MESSAGES_IN_PARAMETER, DEFAULT_FOUND_TEXT_BG_COLOR, DEFAULT_FOUND_TEXT_COLOR
+from pyqt_openai import (
+    MAXIMUM_MESSAGES_IN_PARAMETER,
+    DEFAULT_FOUND_TEXT_BG_COLOR,
+    DEFAULT_FOUND_TEXT_COLOR,
+)
 from pyqt_openai.chat_widget.center.aiChatUnit import AIChatUnit
 from pyqt_openai.chat_widget.center.userChatUnit import UserChatUnit
 from pyqt_openai.models import ChatMessageContainer
@@ -24,8 +28,8 @@ class ChatBrowser(QScrollArea):
 
     def __initVal(self):
         self.__cur_id = 0
-        self.__user_image = ''
-        self.__ai_image = ''
+        self.__user_image = ""
+        self.__ai_image = ""
 
     def __initUi(self):
         lay = QVBoxLayout()
@@ -72,7 +76,7 @@ class ChatBrowser(QScrollArea):
 
     def __setLabel(self, text, stream_f, role):
         chatUnit = QLabel()
-        if role == 'user':
+        if role == "user":
             chatUnit = UserChatUnit()
             chatUnit.setText(text)
             chatUnit.setIcon(self.__user_image)
@@ -95,15 +99,16 @@ class ChatBrowser(QScrollArea):
 
     def event(self, event):
         if event.type() == 43:
-            self.verticalScrollBar().setSliderPosition(self.verticalScrollBar().maximum())
+            self.verticalScrollBar().setSliderPosition(
+                self.verticalScrollBar().maximum()
+            )
         return super().event(event)
 
     def getMessages(self, limit=MAXIMUM_MESSAGES_IN_PARAMETER):
         messages = DB.selectCertainThreadMessages(self.__cur_id)
-        all_text_lst = [{
-            'role': message.role,
-            'content': message.content
-        } for message in messages]
+        all_text_lst = [
+            {"role": message.role, "content": message.content} for message in messages
+        ]
         all_text_lst = all_text_lst[-limit:]
 
         return all_text_lst
@@ -111,12 +116,12 @@ class ChatBrowser(QScrollArea):
     def getLastResponse(self):
         lay = self.getLayout()
         if lay:
-            i = lay.count()-1
+            i = lay.count() - 1
             if lay.itemAt(i) and lay.itemAt(i).widget():
                 widget = lay.itemAt(i).widget()
                 if isinstance(widget, AIChatUnit):
                     return widget.getText()
-        return ''
+        return ""
 
     def clear(self):
         """
@@ -124,7 +129,7 @@ class ChatBrowser(QScrollArea):
         """
         lay = self.getLayout()
         if lay:
-            for i in range(lay.count()-1, -1, -1):
+            for i in range(lay.count() - 1, -1, -1):
                 item = lay.itemAt(i)
                 if item and item.widget():
                     item.widget().deleteLater()
@@ -182,13 +187,17 @@ class ChatBrowser(QScrollArea):
         return self.__getLabelsByType(AIChatUnit)
 
     def isFinishedByLength(self):
-        return self.__getLastUnit().getResponseInfo().finish_reason == 'length'
+        return self.__getLastUnit().getResponseInfo().finish_reason == "length"
 
     def clearFormatting(self, label=None):
         if label is None:
             # if isinstance(lbl, AIChatUnit) or isinstance(lbl, UserChatUnit) should be added
             # Or else AttributeError: 'QWidget' object has no attribute 'getLbl' will be raised when calling getLbl()
-            labels = [lbl.getLbl() for lbl in self.__getEveryLabels() if isinstance(lbl, AIChatUnit) or isinstance(lbl, UserChatUnit)]
+            labels = [
+                lbl.getLbl()
+                for lbl in self.__getEveryLabels()
+                if isinstance(lbl, AIChatUnit) or isinstance(lbl, UserChatUnit)
+            ]
             for lbl in labels:
                 self.clearFormatting(lbl)
             return
@@ -200,7 +209,7 @@ class ChatBrowser(QScrollArea):
     def highlightText(self, label, pattern, case_sensitive):
         self.clearFormatting(label)  # Clear any previous formatting
 
-        if pattern == '':
+        if pattern == "":
             return
 
         cursor = label.textCursor()
@@ -222,46 +231,52 @@ class ChatBrowser(QScrollArea):
             cursor.setPosition(end, QTextCursor.KeepAnchor)
             cursor.setCharFormat(format)
 
-    def setCurrentLabelIncludingTextBySliderPosition(self, text, case_sensitive=False, word_only=False, is_regex=False):
+    def setCurrentLabelIncludingTextBySliderPosition(
+        self, text, case_sensitive=False, word_only=False, is_regex=False
+    ):
         labels = self.__getEveryLabels()
-        label_info = [{'class':label.getLbl(), 'text':label.getText(), 'pos':label.y()} for label in labels if isinstance(label, AIChatUnit) or isinstance(label, UserChatUnit)]
+        label_info = [
+            {"class": label.getLbl(), "text": label.getText(), "pos": label.y()}
+            for label in labels
+            if isinstance(label, AIChatUnit) or isinstance(label, UserChatUnit)
+        ]
         selections = []
 
         for _ in label_info:
             pattern = text
-            _['pattern'] = pattern
+            _["pattern"] = pattern
             if is_regex:
                 if is_valid_regex(pattern):
                     if case_sensitive:
-                        result = re.search(pattern, _['text'], re.IGNORECASE)
+                        result = re.search(pattern, _["text"], re.IGNORECASE)
                         if result:
                             selections.append(_)
                     else:
-                        result = re.search(pattern, _['text'])
+                        result = re.search(pattern, _["text"])
                         if result:
                             selections.append(_)
                 else:
-                    if _['text'].find(text) != -1:
+                    if _["text"].find(text) != -1:
                         selections.append(_)
             else:
                 if case_sensitive:
                     if word_only:
-                        pattern = r'\b' + re.escape(text) + r'\b'
-                        result = re.search(pattern, _['text'])
+                        pattern = r"\b" + re.escape(text) + r"\b"
+                        result = re.search(pattern, _["text"])
                         if result:
                             selections.append(_)
                     else:
-                        if _['text'].find(text) != -1:
+                        if _["text"].find(text) != -1:
                             selections.append(_)
                 else:
                     if word_only:
-                        pattern = r'\b' + re.escape(text) + r'\b'
-                        result = re.search(pattern, _['text'], re.IGNORECASE)
+                        pattern = r"\b" + re.escape(text) + r"\b"
+                        result = re.search(pattern, _["text"], re.IGNORECASE)
                         if result:
                             selections.append(_)
                     else:
                         pattern = re.escape(text)
-                        result = re.search(pattern, _['text'], re.IGNORECASE)
+                        result = re.search(pattern, _["text"], re.IGNORECASE)
                         if result:
                             selections.append(_)
 

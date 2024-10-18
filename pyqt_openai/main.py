@@ -18,8 +18,7 @@ sys.path.insert(0, os.getcwd())  # Add the current directory as well
 # os.environ['QT_API'] = 'pyqt6'
 
 from PySide6.QtGui import QFont, QIcon, QPixmap
-from PySide6.QtWidgets import QApplication, \
-    QSplashScreen
+from PySide6.QtWidgets import QApplication, QSplashScreen
 from PySide6.QtSql import QSqlDatabase
 
 from pyqt_openai.config_loader import CONFIG_MANAGER
@@ -51,21 +50,23 @@ class App(QApplication):
 
     def __initQSqlDb(self):
         # Set up the database and table model (you'll need to configure this part based on your database)
-        self.__db = QSqlDatabase.addDatabase('QSQLITE')
+        self.__db = QSqlDatabase.addDatabase("QSQLITE")
         self.__db.setDatabaseName(get_db_filename())
         self.__db.open()
 
     def __initFont(self):
-        font_family = CONFIG_MANAGER.get_general_property('font_family')
-        font_size = CONFIG_MANAGER.get_general_property('font_size')
+        font_family = CONFIG_MANAGER.get_general_property("font_family")
+        font_size = CONFIG_MANAGER.get_general_property("font_size")
         QApplication.setFont(QFont(font_family, font_size))
 
     def __showMainWindow(self):
         self.main_window = MainWindow()
         self.main_window.show()
 
+
 # Set the global exception handler
 sys.excepthook = handle_exception
+
 
 def main():
     app = App(sys.argv)

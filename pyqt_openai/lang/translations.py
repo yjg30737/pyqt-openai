@@ -10,6 +10,7 @@ class WordsDict(dict):
     Only used for release version
     to prevent KeyError
     """
+
     def __missing__(self, key):
         return key
 
@@ -19,11 +20,12 @@ class LangClass:
     LangClass is the class that manages the language of the application.
     It reads the language file and sets the language.
     """
+
     TRANSLATIONS = WordsDict()
 
     @classmethod
     def lang_changed(cls, lang=None):
-        with open(LANGUAGE_FILE, 'r', encoding='utf-8') as file:
+        with open(LANGUAGE_FILE, "r", encoding="utf-8") as file:
             translations_data = json.load(file)
 
         if not lang:

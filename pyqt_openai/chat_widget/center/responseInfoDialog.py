@@ -16,19 +16,19 @@ class ResponseInfoDialog(QDialog):
         self.__result_info = result_info
 
     def __initUi(self):
-        self.setWindowTitle(LangClass.TRANSLATIONS['Message Result'])
+        self.setWindowTitle(LangClass.TRANSLATIONS["Message Result"])
         self.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.WindowCloseButtonHint)
 
         lbls = []
-        for k, v in self.__result_info.get_items(excludes=['content']):
-            if k == 'favorite':
+        for k, v in self.__result_info.get_items(excludes=["content"]):
+            if k == "favorite":
                 lbls.append(QLabel(f'{k}: {"Yes" if v else "No"}'))
             else:
-                lbls.append(QLabel(f'{k}: {v}'))
+                lbls.append(QLabel(f"{k}: {v}"))
 
-        sep = getSeparator('horizontal')
+        sep = getSeparator("horizontal")
 
-        okBtn = QPushButton('OK')
+        okBtn = QPushButton("OK")
         okBtn.clicked.connect(self.accept)
 
         lay = QFormLayout()

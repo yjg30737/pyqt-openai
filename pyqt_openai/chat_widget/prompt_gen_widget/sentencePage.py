@@ -2,16 +2,46 @@ import json
 import os
 
 from PySide6.QtCore import Signal, Qt
-from PySide6.QtWidgets import QWidget, QDialog, QTableWidget, QVBoxLayout, QHBoxLayout, QHeaderView, QTableWidgetItem, \
-    QAbstractItemView, QFileDialog, QLabel, QSpacerItem, QListWidget, QListWidgetItem, QSizePolicy, QSplitter, \
-    QMessageBox
+from PySide6.QtWidgets import (
+    QWidget,
+    QDialog,
+    QTableWidget,
+    QVBoxLayout,
+    QHBoxLayout,
+    QHeaderView,
+    QTableWidgetItem,
+    QAbstractItemView,
+    QFileDialog,
+    QLabel,
+    QSpacerItem,
+    QListWidget,
+    QListWidgetItem,
+    QSizePolicy,
+    QSplitter,
+    QMessageBox,
+)
 
-from pyqt_openai import JSON_FILE_EXT_LIST_STR, ICON_ADD, ICON_DELETE, ICON_IMPORT, ICON_EXPORT, \
-    QFILEDIALOG_DEFAULT_DIRECTORY, INDENT_SIZE
-from pyqt_openai.chat_widget.prompt_gen_widget.promptEntryDirectInputDialog import PromptEntryDirectInputDialog
-from pyqt_openai.chat_widget.prompt_gen_widget.promptGroupDirectInputDialog import PromptGroupDirectInputDialog
-from pyqt_openai.chat_widget.prompt_gen_widget.promptGroupExportDialog import PromptGroupExportDialog
-from pyqt_openai.chat_widget.prompt_gen_widget.promptGroupImportDialog import PromptGroupImportDialog
+from pyqt_openai import (
+    JSON_FILE_EXT_LIST_STR,
+    ICON_ADD,
+    ICON_DELETE,
+    ICON_IMPORT,
+    ICON_EXPORT,
+    QFILEDIALOG_DEFAULT_DIRECTORY,
+    INDENT_SIZE,
+)
+from pyqt_openai.chat_widget.prompt_gen_widget.promptEntryDirectInputDialog import (
+    PromptEntryDirectInputDialog,
+)
+from pyqt_openai.chat_widget.prompt_gen_widget.promptGroupDirectInputDialog import (
+    PromptGroupDirectInputDialog,
+)
+from pyqt_openai.chat_widget.prompt_gen_widget.promptGroupExportDialog import (
+    PromptGroupExportDialog,
+)
+from pyqt_openai.chat_widget.prompt_gen_widget.promptGroupImportDialog import (
+    PromptGroupImportDialog,
+)
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.globals import DB
 from pyqt_openai.util.script import open_directory, get_prompt_data
@@ -37,11 +67,11 @@ class SentenceGroupList(QWidget):
 
         self.__importBtn = Button()
         self.__importBtn.setStyleAndIcon(ICON_IMPORT)
-        self.__importBtn.setToolTip(LangClass.TRANSLATIONS['Import'])
+        self.__importBtn.setToolTip(LangClass.TRANSLATIONS["Import"])
 
         self.__exportBtn = Button()
         self.__exportBtn.setStyleAndIcon(ICON_EXPORT)
-        self.__exportBtn.setToolTip(LangClass.TRANSLATIONS['Export'])
+        self.__exportBtn.setToolTip(LangClass.TRANSLATIONS["Export"])
 
         self.__addBtn.clicked.connect(self.__add)
         self.__delBtn.clicked.connect(self.__delete)
@@ -51,7 +81,13 @@ class SentenceGroupList(QWidget):
         lay = QHBoxLayout()
         # Should've added "Sentence Group" to the translation, but it's not in the
         # translation file for incomplete JSON response issue
-        lay.addWidget(QLabel(LangClass.TRANSLATIONS['Sentence'] + ' ' + LangClass.TRANSLATIONS['Group']))
+        lay.addWidget(
+            QLabel(
+                LangClass.TRANSLATIONS["Sentence"]
+                + " "
+                + LangClass.TRANSLATIONS["Group"]
+            )
+        )
         lay.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.Policy.MinimumExpanding))
         lay.addWidget(self.__addBtn)
         lay.addWidget(self.__delBtn)
@@ -65,7 +101,7 @@ class SentenceGroupList(QWidget):
 
         self.__list = QListWidget()
 
-        groups = DB.selectPromptGroup(prompt_type='sentence')
+        groups = DB.selectPromptGroup(prompt_type="sentence")
         if len(groups) <= 0:
             self.__delBtn.setEnabled(False)
 
@@ -102,7 +138,7 @@ class SentenceGroupList(QWidget):
         reply = dialog.exec()
         if reply == QDialog.DialogCode.Accepted:
             name = dialog.getPromptGroupName()
-            id = DB.insertPromptGroup(name, prompt_type='sentence')
+            id = DB.insertPromptGroup(name, prompt_type="sentence")
             self.__addGroupItem(id, name)
 
     def __delete(self):
@@ -112,7 +148,7 @@ class SentenceGroupList(QWidget):
         DB.deletePromptGroup(id)
         self.deleted.emit(id)
 
-        groups = DB.selectPromptGroup(prompt_type='sentence')
+        groups = DB.selectPromptGroup(prompt_type="sentence")
         if len(groups) <= 0:
             self.__delBtn.setEnabled(False)
 
@@ -124,30 +160,35 @@ class SentenceGroupList(QWidget):
             result = dialog.getSelected()
             # Save the data
             for group in result:
-                id = DB.insertPromptGroup(group['name'], prompt_type='sentence')
-                for entry in group['data']:
-                    DB.insertPromptEntry(id, entry['name'], entry['content'])
-                name = group['name']
+                id = DB.insertPromptGroup(group["name"], prompt_type="sentence")
+                for entry in group["data"]:
+                    DB.insertPromptEntry(id, entry["name"], entry["content"])
+                name = group["name"]
                 self.__addGroupItem(id, name)
 
     def __export(self):
         try:
             # Get the file
-            file_data = QFileDialog.getSaveFileName(self, LangClass.TRANSLATIONS['Save'], QFILEDIALOG_DEFAULT_DIRECTORY, JSON_FILE_EXT_LIST_STR)
+            file_data = QFileDialog.getSaveFileName(
+                self,
+                LangClass.TRANSLATIONS["Save"],
+                QFILEDIALOG_DEFAULT_DIRECTORY,
+                JSON_FILE_EXT_LIST_STR,
+            )
             if file_data[0]:
                 filename = file_data[0]
                 # Get the data
-                data = get_prompt_data('sentence')
+                data = get_prompt_data("sentence")
                 dialog = PromptGroupExportDialog(data, self)
                 reply = dialog.exec()
                 if reply == QDialog.DialogCode.Accepted:
                     data = dialog.getSelected()
                     # Save the data
-                    with open(filename, 'w') as f:
+                    with open(filename, "w") as f:
                         json.dump(data, f, indent=INDENT_SIZE)
                     open_directory(os.path.dirname(filename))
         except Exception as e:
-            QMessageBox.critical(self, LangClass.TRANSLATIONS['Error'], str(e))
+            QMessageBox.critical(self, LangClass.TRANSLATIONS["Error"], str(e))
             print(e)
 
     def __itemChanged(self, item):
@@ -171,7 +212,7 @@ class PromptTable(QWidget):
         self.__initUi()
 
     def __initVal(self):
-        self.__title = ''
+        self.__title = ""
         self.__entries = []
 
     def __initUi(self):
@@ -199,9 +240,15 @@ class PromptTable(QWidget):
 
         self.__table = QTableWidget()
         self.__table.setColumnCount(2)
-        self.__table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
-        self.__table.setHorizontalHeaderLabels([LangClass.TRANSLATIONS['Name'], LangClass.TRANSLATIONS['Value']])
-        self.__table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
+        self.__table.setSelectionBehavior(
+            QAbstractItemView.SelectionBehavior.SelectRows
+        )
+        self.__table.setHorizontalHeaderLabels(
+            [LangClass.TRANSLATIONS["Name"], LangClass.TRANSLATIONS["Value"]]
+        )
+        self.__table.horizontalHeader().setSectionResizeMode(
+            1, QHeaderView.ResizeMode.Stretch
+        )
         self.__table.currentItemChanged.connect(self.__rowChanged)
         self.__table.itemChanged.connect(self.__saveChangedPrompt)
 
@@ -243,7 +290,7 @@ class PromptTable(QWidget):
         self.__delBtn.setEnabled(True)
 
     def setNothingRightNow(self):
-        self.__title = ''
+        self.__title = ""
         self.__titleLbl.setText(self.__title)
         self.__table.clearContents()
         self.__addBtn.setEnabled(False)
@@ -253,10 +300,14 @@ class PromptTable(QWidget):
         return self.__group_id
 
     def __rowChanged(self, new_item: QTableWidgetItem, old_item: QTableWidgetItem):
-        prompt = ''
+        prompt = ""
         # To avoid AttributeError
         if new_item:
-            prompt = self.__table.item(new_item.row(), 1).text() if new_item.column() == 0 else new_item.text()
+            prompt = (
+                self.__table.item(new_item.row(), 1).text()
+                if new_item.column() == 0
+                else new_item.text()
+            )
         self.updated.emit(prompt)
 
     def __saveChangedPrompt(self, item: QTableWidgetItem):
@@ -265,9 +316,9 @@ class PromptTable(QWidget):
         name = name_item.text()
 
         prompt_item = self.__table.item(item.row(), 1)
-        prompt = prompt_item.text() if prompt_item else ''
+        prompt = prompt_item.text() if prompt_item else ""
         DB.updatePromptEntry(id, name, prompt)
-        
+
     def __add(self):
         dialog = PromptEntryDirectInputDialog(self.__group_id, self)
         reply = dialog.exec()
@@ -275,15 +326,15 @@ class PromptTable(QWidget):
             self.__table.itemChanged.disconnect(self.__saveChangedPrompt)
 
             name = dialog.getPromptName()
-            self.__table.setRowCount(self.__table.rowCount()+1)
+            self.__table.setRowCount(self.__table.rowCount() + 1)
 
             item1 = QTableWidgetItem(name)
             item1.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-            self.__table.setItem(self.__table.rowCount()-1, 0, item1)
+            self.__table.setItem(self.__table.rowCount() - 1, 0, item1)
 
-            item2 = QTableWidgetItem('')
+            item2 = QTableWidgetItem("")
             item2.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-            self.__table.setItem(self.__table.rowCount()-1, 1, item2)
+            self.__table.setItem(self.__table.rowCount() - 1, 1, item2)
 
             id = DB.insertPromptEntry(self.__group_id, name)
             item1.setData(Qt.ItemDataRole.UserRole, id)
@@ -291,7 +342,9 @@ class PromptTable(QWidget):
             self.__table.itemChanged.connect(self.__saveChangedPrompt)
 
     def __delete(self):
-        for i in sorted(set([i.row() for i in self.__table.selectedIndexes()]), reverse=True):
+        for i in sorted(
+            set([i.row() for i in self.__table.selectedIndexes()]), reverse=True
+        ):
             id = self.__table.item(i, 0).data(Qt.ItemDataRole.UserRole)
             self.__table.removeRow(i)
             DB.deletePromptEntry(self.__group_id, id)
@@ -340,5 +393,5 @@ class SentencePage(QWidget):
     def delete(self, id):
         if self.__table.getId() == id:
             self.__table.setNothingRightNow()
-        elif len(DB.selectPromptGroup(prompt_type='sentence')) == 0:
+        elif len(DB.selectPromptGroup(prompt_type="sentence")) == 0:
             self.__table.setNothingRightNow()

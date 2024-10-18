@@ -1,7 +1,14 @@
 from PySide6 import QtGui
 from PySide6.QtCore import Qt, Signal, QTimer, QPropertyAnimation
 from PySide6.QtGui import QIcon
-from PySide6.QtWidgets import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QPushButton, QApplication
+from PySide6.QtWidgets import (
+    QWidget,
+    QLabel,
+    QHBoxLayout,
+    QVBoxLayout,
+    QPushButton,
+    QApplication,
+)
 
 from pyqt_openai import ICON_CLOSE, NOTIFIER_MAX_CHAR
 
@@ -9,18 +16,28 @@ from pyqt_openai import ICON_CLOSE, NOTIFIER_MAX_CHAR
 class NotifierWidget(QWidget):
     doubleClicked = Signal()
 
-    def __init__(self, informative_text='', detailed_text='', parent=None):
+    def __init__(self, informative_text="", detailed_text="", parent=None):
         super().__init__(parent)
         self.__timerVal = 10000
         self.__initUi(informative_text, detailed_text)
         self.__repositionWidget()
 
-    def __initUi(self, informative_text='', detailed_text=''):
-        self.setWindowFlags(Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowStaysOnTopHint | Qt.WindowType.SubWindow)
+    def __initUi(self, informative_text="", detailed_text=""):
+        self.setWindowFlags(
+            Qt.WindowType.FramelessWindowHint
+            | Qt.WindowType.WindowStaysOnTopHint
+            | Qt.WindowType.SubWindow
+        )
 
-        self.__informativeTextLabel = QLabel(informative_text) if informative_text else QLabel('Informative')
-        self.__detailedTextLabel = QLabel(detailed_text) if detailed_text else QLabel('Detailed')
-        self.__detailedTextLabel.setText(self.__detailedTextLabel.text()[:NOTIFIER_MAX_CHAR] + '...')
+        self.__informativeTextLabel = (
+            QLabel(informative_text) if informative_text else QLabel("Informative")
+        )
+        self.__detailedTextLabel = (
+            QLabel(detailed_text) if detailed_text else QLabel("Detailed")
+        )
+        self.__detailedTextLabel.setText(
+            self.__detailedTextLabel.text()[:NOTIFIER_MAX_CHAR] + "..."
+        )
         self.__detailedTextLabel.setWordWrap(True)
 
         closeBtn = QPushButton()

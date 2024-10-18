@@ -1,7 +1,13 @@
 import pyperclip
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPalette
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QSpacerItem, QSizePolicy
+from PySide6.QtWidgets import (
+    QWidget,
+    QVBoxLayout,
+    QHBoxLayout,
+    QSpacerItem,
+    QSizePolicy,
+)
 
 from pyqt_openai import DEFAULT_ICON_SIZE, ICON_COPY
 from pyqt_openai.chat_widget.center.messageTextBrowser import MessageTextBrowser

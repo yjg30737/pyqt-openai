@@ -1,5 +1,13 @@
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QDialog, QVBoxLayout, QMessageBox, QLineEdit, QPushButton, QHBoxLayout, QWidget
+from PySide6.QtWidgets import (
+    QDialog,
+    QVBoxLayout,
+    QMessageBox,
+    QLineEdit,
+    QPushButton,
+    QHBoxLayout,
+    QWidget,
+)
 
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.util.script import is_prompt_group_name_valid, getSeparator
@@ -11,19 +19,21 @@ class PromptGroupDirectInputDialog(QDialog):
         self.__initUi()
 
     def __initUi(self):
-        self.setWindowTitle(LangClass.TRANSLATIONS['New Prompt'])
+        self.setWindowTitle(LangClass.TRANSLATIONS["New Prompt"])
         self.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.WindowCloseButtonHint)
 
         self.__name = QLineEdit()
-        self.__name.setPlaceholderText(LangClass.TRANSLATIONS['Name'])
-        self.__name.textChanged.connect(lambda x: self.__okBtn.setEnabled(x.strip() != ''))
+        self.__name.setPlaceholderText(LangClass.TRANSLATIONS["Name"])
+        self.__name.textChanged.connect(
+            lambda x: self.__okBtn.setEnabled(x.strip() != "")
+        )
 
-        sep = getSeparator('horizontal')
+        sep = getSeparator("horizontal")
 
-        self.__okBtn = QPushButton(LangClass.TRANSLATIONS['OK'])
+        self.__okBtn = QPushButton(LangClass.TRANSLATIONS["OK"])
         self.__okBtn.clicked.connect(self.__accept)
 
-        cancelBtn = QPushButton(LangClass.TRANSLATIONS['Cancel'])
+        cancelBtn = QPushButton(LangClass.TRANSLATIONS["Cancel"])
         cancelBtn.clicked.connect(self.close)
 
         lay = QHBoxLayout()
@@ -51,6 +61,9 @@ class PromptGroupDirectInputDialog(QDialog):
             self.accept()
         else:
             self.__name.setFocus()
-            QMessageBox.warning(self, LangClass.TRANSLATIONS['Warning'], LangClass.TRANSLATIONS['Prompt name already exists.'])
+            QMessageBox.warning(
+                self,
+                LangClass.TRANSLATIONS["Warning"],
+                LangClass.TRANSLATIONS["Prompt name already exists."],
+            )
             return
-

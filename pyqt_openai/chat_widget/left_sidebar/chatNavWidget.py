@@ -1,7 +1,18 @@
 from PySide6.QtCore import Signal, QSortFilterProxyModel, Qt
 from PySide6.QtSql import QSqlTableModel, QSqlQuery
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QMessageBox, QPushButton, QStyledItemDelegate, QHBoxLayout, \
-    QLabel, QSpacerItem, QSizePolicy, QComboBox, QDialog
+from PySide6.QtWidgets import (
+    QWidget,
+    QVBoxLayout,
+    QMessageBox,
+    QPushButton,
+    QStyledItemDelegate,
+    QHBoxLayout,
+    QLabel,
+    QSpacerItem,
+    QSizePolicy,
+    QComboBox,
+    QDialog,
+)
 
 import pyqt_openai.globals
 from pyqt_openai import THREAD_ORDERBY, ICON_ADD, ICON_IMPORT, ICON_SAVE, ICON_REFRESH
@@ -18,7 +29,7 @@ from pyqt_openai.widgets.button import Button
 class FilterProxyModel(QSortFilterProxyModel):
     def __init__(self):
         super().__init__()
-        self.__searchedText = ''
+        self.__searchedText = ""
 
     @property
     def searchedText(self):
@@ -45,8 +56,12 @@ class SqlTableModel(QSqlTableModel):
     deletedCol = Signal()
 
     def flags(self, index):
-        if index.column() == self.column_index_by_name('name'):
-            return Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsEditable
+        if index.column() == self.column_index_by_name("name"):
+            return (
+                Qt.ItemFlag.ItemIsEnabled
+                | Qt.ItemFlag.ItemIsSelectable
+                | Qt.ItemFlag.ItemIsEditable
+            )
         return Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable
 
     def column_index_by_name(self, name):
@@ -66,10 +81,10 @@ class ChatNavWidget(BaseNavWidget):
         self.__initUi()
 
     def __initUi(self):
-        self.setModel(table_type='chat')
+        self.setModel(table_type="chat")
 
         imageGenerationHistoryLbl = QLabel()
-        imageGenerationHistoryLbl.setText(LangClass.TRANSLATIONS['History'])
+        imageGenerationHistoryLbl.setText(LangClass.TRANSLATIONS["History"])
 
         self.__addBtn = Button()
         self.__importBtn = Button()
@@ -81,10 +96,10 @@ class ChatNavWidget(BaseNavWidget):
         self.__saveBtn.setStyleAndIcon(ICON_SAVE)
         self.__refreshBtn.setStyleAndIcon(ICON_REFRESH)
 
-        self.__addBtn.setToolTip(LangClass.TRANSLATIONS['Add'])
-        self.__importBtn.setToolTip(LangClass.TRANSLATIONS['Import'])
-        self.__saveBtn.setToolTip(LangClass.TRANSLATIONS['Export'])
-        self.__refreshBtn.setToolTip(LangClass.TRANSLATIONS['Refresh'])
+        self.__addBtn.setToolTip(LangClass.TRANSLATIONS["Add"])
+        self.__importBtn.setToolTip(LangClass.TRANSLATIONS["Import"])
+        self.__saveBtn.setToolTip(LangClass.TRANSLATIONS["Export"])
+        self.__refreshBtn.setToolTip(LangClass.TRANSLATIONS["Refresh"])
 
         self.__addBtn.clicked.connect(self.add)
         self.__importBtn.clicked.connect(self.__import)
@@ -106,10 +121,13 @@ class ChatNavWidget(BaseNavWidget):
         menuSubWidget1.setLayout(lay)
 
         self.__searchOptionCmbBox = QComboBox()
-        self.__searchOptionCmbBox.addItems([LangClass.TRANSLATIONS['Title'], LangClass.TRANSLATIONS['Content']])
+        self.__searchOptionCmbBox.addItems(
+            [LangClass.TRANSLATIONS["Title"], LangClass.TRANSLATIONS["Content"]]
+        )
         self.__searchOptionCmbBox.setMinimumHeight(self._searchBar.sizeHint().height())
         self.__searchOptionCmbBox.currentIndexChanged.connect(
-            lambda _: self._search(self._searchBar.getSearchBar().text()))
+            lambda _: self._search(self._searchBar.getSearchBar().text())
+        )
 
         lay = QHBoxLayout()
         lay.addWidget(self._searchBar)
@@ -130,7 +148,7 @@ class ChatNavWidget(BaseNavWidget):
         self._tableView.clicked.connect(self.__clicked)
         self._tableView.activated.connect(self.__clicked)
 
-        self.__favoriteBtn = QPushButton(LangClass.TRANSLATIONS['Favorite List'])
+        self.__favoriteBtn = QPushButton(LangClass.TRANSLATIONS["Favorite List"])
         self.__favoriteBtn.setCheckable(True)
         self.__favoriteBtn.toggled.connect(self.__onFavoriteClicked)
 
@@ -170,7 +188,11 @@ class ChatNavWidget(BaseNavWidget):
             if reply == QDialog.Accepted:
                 self.onExport.emit(dialog.getSelectedIds())
         else:
-            QMessageBox.information(self, LangClass.TRANSLATIONS['Information'], LangClass.TRANSLATIONS['No data to export.'])
+            QMessageBox.information(
+                self,
+                LangClass.TRANSLATIONS["Information"],
+                LangClass.TRANSLATIONS["No data to export."],
+            )
 
     def refreshData(self, title=None):
         self._model.select()
@@ -187,7 +209,7 @@ class ChatNavWidget(BaseNavWidget):
         cur_id = self._model.record(source_idx.row()).value("id")
         clicked_thread = DB.selectThread(cur_id)
         # get the title
-        title = clicked_thread['name']
+        title = clicked_thread["name"]
 
         self.clicked.emit(cur_id, title)
 
@@ -195,15 +217,23 @@ class ChatNavWidget(BaseNavWidget):
         selected_idx_s = self._tableView.selectedIndexes()
         ids = []
         for idx in selected_idx_s:
-            ids.append(self._model.data(self._proxyModel.mapToSource(idx.siblingAtColumn(0)), role=Qt.ItemDataRole.DisplayRole))
+            ids.append(
+                self._model.data(
+                    self._proxyModel.mapToSource(idx.siblingAtColumn(0)),
+                    role=Qt.ItemDataRole.DisplayRole,
+                )
+            )
         ids = list(set(ids))
         return ids
 
     # TODO LANGUAGE
     def _delete(self):
-        reply = QMessageBox.question(self, LangClass.TRANSLATIONS['Confirm'],
-                                     LangClass.TRANSLATIONS['Are you sure to delete the selected data?'],
-                                     QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+        reply = QMessageBox.question(
+            self,
+            LangClass.TRANSLATIONS["Confirm"],
+            LangClass.TRANSLATIONS["Are you sure to delete the selected data?"],
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+        )
         if reply == QMessageBox.StandardButton.Yes:
             ids = self.__getSelectedIds()
             for _id in ids:
@@ -211,8 +241,8 @@ class ChatNavWidget(BaseNavWidget):
             self._model.select()
             self.cleared.emit()
 
-    def _clear(self, table_type='chat'):
-        table_type = table_type or 'chat'
+    def _clear(self, table_type="chat"):
+        table_type = table_type or "chat"
         super()._clear(table_type=table_type)
         self.cleared.emit()
 
@@ -221,23 +251,29 @@ class ChatNavWidget(BaseNavWidget):
 
     def _search(self, text):
         # title
-        if self.__searchOptionCmbBox.currentText() == LangClass.TRANSLATIONS['Title']:
+        if self.__searchOptionCmbBox.currentText() == LangClass.TRANSLATIONS["Title"]:
             self.refreshData(text)
         # content
-        elif self.__searchOptionCmbBox.currentText() == LangClass.TRANSLATIONS['Content']:
+        elif (
+            self.__searchOptionCmbBox.currentText() == LangClass.TRANSLATIONS["Content"]
+        ):
             if text:
                 threads = DB.selectAllContentOfThread(content_to_select=text)
                 ids = [_[0] for _ in threads]
-                self._model.setQuery(QSqlQuery(f"SELECT {','.join(self._columns)} FROM {self._table_nm} "
-                                                f"WHERE id IN ({','.join(map(str, ids))})"))
+                self._model.setQuery(
+                    QSqlQuery(
+                        f"SELECT {','.join(self._columns)} FROM {self._table_nm} "
+                        f"WHERE id IN ({','.join(map(str, ids))})"
+                    )
+                )
             else:
                 self.refreshData()
 
     def isCurrentConvExists(self):
         return self._model.rowCount() > 0 and self._tableView.currentIndex()
 
-    def setColumns(self, columns, table_type='chat'):
-        super().setColumns(columns, table_type='chat')
+    def setColumns(self, columns, table_type="chat"):
+        super().setColumns(columns, table_type="chat")
 
     def __onFavoriteClicked(self, f):
         self.onFavoriteClicked.emit(f)

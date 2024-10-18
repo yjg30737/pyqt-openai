@@ -2,7 +2,11 @@ from PySide6.QtWidgets import QLabel, QWidget, QHBoxLayout, QGraphicsOpacityEffe
 from PySide6.QtCore import Qt, QTimer, QPropertyAnimation, QAbstractAnimation, QPoint
 from PySide6.QtGui import QFont, QColor
 
-from pyqt_openai import TOAST_DURATION, DEFAULT_TOAST_BACKGROUND_COLOR, DEFAULT_TOAST_FOREGROUND_COLOR
+from pyqt_openai import (
+    TOAST_DURATION,
+    DEFAULT_TOAST_BACKGROUND_COLOR,
+    DEFAULT_TOAST_FOREGROUND_COLOR,
+)
 
 
 class Toast(QWidget):
@@ -27,11 +31,17 @@ class Toast(QWidget):
 
         # text in toast (toast foreground)
         self.__lbl = QLabel(text)
-        self.__lbl.setObjectName('popupLbl')
-        self.__lbl.setStyleSheet(f'QLabel#popupLbl {{ color: {self.__foregroundColor}; padding: 5px; }}')
+        self.__lbl.setObjectName("popupLbl")
+        self.__lbl.setStyleSheet(
+            f"QLabel#popupLbl {{ color: {self.__foregroundColor}; padding: 5px; }}"
+        )
 
-        self.__lbl.setMinimumWidth(min(200, self.__lbl.fontMetrics().boundingRect(text).width() * 2))
-        self.__lbl.setMinimumHeight(self.__lbl.fontMetrics().boundingRect(text).height() * 2)
+        self.__lbl.setMinimumWidth(
+            min(200, self.__lbl.fontMetrics().boundingRect(text).width() * 2)
+        )
+        self.__lbl.setMinimumHeight(
+            self.__lbl.fontMetrics().boundingRect(text).height() * 2
+        )
         self.__lbl.setWordWrap(True)
 
         # toast background
@@ -39,7 +49,9 @@ class Toast(QWidget):
         lay.addWidget(self.__lbl)
         lay.setAlignment(Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignVCenter)
 
-        self.setStyleSheet(f'QWidget {{ background: {self.__backgroundColor}; border-radius: 5px; }}')
+        self.setStyleSheet(
+            f"QWidget {{ background: {self.__backgroundColor}; border-radius: 5px; }}"
+        )
         self.__setToastSizeBasedOnTextSize()
         self.setLayout(lay)
 
@@ -116,10 +128,14 @@ class Toast(QWidget):
         self.__setBackgroundColor()
 
     def __setForegroundColor(self):
-        self.__lbl.setStyleSheet(f'QLabel#popupLbl {{ color: {self.__foregroundColor}; padding: 5px; }}')
+        self.__lbl.setStyleSheet(
+            f"QLabel#popupLbl {{ color: {self.__foregroundColor}; padding: 5px; }}"
+        )
 
     def __setBackgroundColor(self):
-        self.setStyleSheet(f'QWidget {{ background-color: {self.__backgroundColor}; border-radius: 5px; }}')
+        self.setStyleSheet(
+            f"QWidget {{ background-color: {self.__backgroundColor}; border-radius: 5px; }}"
+        )
 
     def setOpacity(self, opacity: float):
         self.__opacity = opacity
@@ -127,7 +143,11 @@ class Toast(QWidget):
 
     def eventFilter(self, obj, e) -> bool:
         if e.type() == 14:
-            self.setPosition(QPoint(self.__parent.rect().center().x(), self.__parent.rect().center().y()))
+            self.setPosition(
+                QPoint(
+                    self.__parent.rect().center().x(), self.__parent.rect().center().y()
+                )
+            )
         elif isinstance(obj, Toast):
             if e.type() == 75:
                 self.__setForegroundColor()

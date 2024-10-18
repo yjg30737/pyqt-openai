@@ -1,7 +1,18 @@
 from PySide6.QtGui import QColor, QPalette, qGray, QIcon
-from PySide6.QtWidgets import QGraphicsColorizeEffect, QWidget, QApplication, QToolButton, QPushButton
+from PySide6.QtWidgets import (
+    QGraphicsColorizeEffect,
+    QWidget,
+    QApplication,
+    QToolButton,
+    QPushButton,
+)
 
-from pyqt_openai import DEFAULT_BUTTON_HOVER_COLOR, DEFAULT_BUTTON_PRESSED_COLOR, DEFAULT_BUTTON_CHECKED_COLOR
+from pyqt_openai import (
+    DEFAULT_BUTTON_HOVER_COLOR,
+    DEFAULT_BUTTON_PRESSED_COLOR,
+    DEFAULT_BUTTON_CHECKED_COLOR,
+)
+
 
 class ButtonStyleHelper:
     def __init__(self, base_widget: QWidget = None):
@@ -14,9 +25,9 @@ class ButtonStyleHelper:
         sc.logicalDotsPerInchChanged.connect(self.__scaleChanged)
         self.__size = sc.logicalDotsPerInch() // 4
         self.__padding = self.__border_radius = self.__size // 10
-        self.__background_color = 'transparent'
-        self.__icon = ''
-        self.__animation = ''
+        self.__background_color = "transparent"
+        self.__icon = ""
+        self.__animation = ""
         if self.__baseWidget:
             self.__initColorByBaseWidget()
         else:
@@ -53,7 +64,11 @@ class ButtonStyleHelper:
         return self.__getPressedColor(self.__base_color)
 
     def __getButtonTextColor(self, base_color):
-        r, g, b = base_color.red() ^ 255, base_color.green() ^ 255, base_color.blue() ^ 255
+        r, g, b = (
+            base_color.red() ^ 255,
+            base_color.green() ^ 255,
+            base_color.blue() ^ 255,
+        )
         if r == g == b:
             text_color = QColor(r, g, b)
         else:
@@ -64,7 +79,7 @@ class ButtonStyleHelper:
         return text_color.name()
 
     def styleInit(self):
-        self.__btn_style = f'''
+        self.__btn_style = f"""
         QAbstractButton
         {{
         border: 0;
@@ -87,7 +102,7 @@ class ButtonStyleHelper:
         background-color: {self.__checked_color};
         border: none;
         }}
-        '''
+        """
         return self.__btn_style
 
     def setPadding(self, padding: int):
@@ -107,5 +122,3 @@ class ButtonStyleHelper:
 
     def __scaleChanged(self, dpi):
         self.__size = dpi // 4
-
-

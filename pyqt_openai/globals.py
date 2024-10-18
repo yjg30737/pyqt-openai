@@ -18,12 +18,9 @@ LLAMAINDEX_WRAPPER = GPTLLamaIndexWrapper()
 
 G4F_CLIENT = Client()
 
-OPENAI_CLIENT = OpenAI(api_key='')
+OPENAI_CLIENT = OpenAI(api_key="")
 GEMINI_CLIENT = genai.GenerativeModel(DEFAULT_GEMINI_MODEL)
-CLAUDE_CLIENT = anthropic.Anthropic(api_key='')
-LLAMA_CLIENT = OpenAI(
-    api_key='',
-    base_url=LLAMA_REQUEST_URL
-)
+CLAUDE_CLIENT = anthropic.Anthropic(api_key="")
+LLAMA_CLIENT = OpenAI(api_key="", base_url=LLAMA_REQUEST_URL)
 
-REPLICATE_CLIENT = ReplicateWrapper(api_key='')
+REPLICATE_CLIENT = ReplicateWrapper(api_key="")

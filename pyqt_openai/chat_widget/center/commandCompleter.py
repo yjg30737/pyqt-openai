@@ -1,6 +1,12 @@
 from PySide6.QtCore import Qt, Signal
-from PySide6.QtWidgets import QTableWidget, QHeaderView, QScrollArea, QStyledItemDelegate, \
-    QStyle, QTableWidgetItem
+from PySide6.QtWidgets import (
+    QTableWidget,
+    QHeaderView,
+    QScrollArea,
+    QStyledItemDelegate,
+    QStyle,
+    QTableWidgetItem,
+)
 
 
 class CommandCompleterTableWidgetDelegate(QStyledItemDelegate):
@@ -41,7 +47,7 @@ class CommandCompleterTableWidget(QTableWidget):
             widget = self.item(i, 0)
             if widget:
                 widget_text = widget.text()
-                if text.strip() != '':
+                if text.strip() != "":
                     idx = widget_text.lower().find(text.lower())
                     if idx != -1:
                         matched_texts_lst.append(text)
@@ -52,10 +58,10 @@ class CommandCompleterTableWidget(QTableWidget):
                     self.hideRow(i)
         return len(matched_texts_lst) > 0
 
-    def addPromptCommand(self,  prompt_command_lst: list):
+    def addPromptCommand(self, prompt_command_lst: list):
         for prompt_command_unit in prompt_command_lst:
-            name = prompt_command_unit['name']
-            value = prompt_command_unit['value']
+            name = prompt_command_unit["name"]
+            value = prompt_command_unit["value"]
 
             item1 = QTableWidgetItem()
             item1.setText(name)
