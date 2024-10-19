@@ -50,11 +50,15 @@ With VividNode, you can experience a more powerful and resource-efficient altern
 Although this is named 'pyqt-openai', the model does not use only OpenAI-related models, and the GUI is created using PySide6, not PyQt. 'pyqt-openai' was the package name decided initially, and we are still using it as changing the package name now would likely result in a huge disaster.
 
 ## How to Install
+### Standard Way
 1. git clone ~
 2. cd pyqt-openai
 3. pip install -r requirements.txt --upgrade
 4. cd pyqt_openai
 5. python main.py
+### With Makefile
+1. make venv
+2. make run
 
 ### Wanna download this without doing stuffs like above? You can download installer or zip file <a href="https://github.com/yjg30737/pyqt-openai/releases">here.</a>
 
