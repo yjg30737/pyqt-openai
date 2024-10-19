@@ -12,7 +12,8 @@ class G4FImageHome(QScrollArea):
 
     def __initUi(self):
         # TODO LANGUAGE
-        title = QLabel("Welcome to GPT4Free Image Generation Page !", self)
+        title = QLabel("Welcome to GPT4Free\n" +
+                       "Image Generation Page !", self)
         title.setFont(QFont(*LARGE_LABEL_PARAM))
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
 

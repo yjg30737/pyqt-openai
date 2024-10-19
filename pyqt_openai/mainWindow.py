@@ -45,7 +45,7 @@ from pyqt_openai import (
     ICON_PAYPAL,
     ICON_KOFI,
     ICON_PATREON,
-    PATREON_URL,
+    PATREON_URL, ICON_UPDATE,
 )
 from pyqt_openai.aboutDialog import AboutDialog
 from pyqt_openai.chat_widget.chatMainWidget import ChatMainWidget
@@ -168,6 +168,7 @@ class MainWindow(QMainWindow):
         self.__checkUpdateAction = QAction(
             LangClass.TRANSLATIONS["Check for Updates..."], self
         )
+        self.__checkUpdateAction.setIcon(QIcon(ICON_UPDATE))
         self.__checkUpdateAction.triggered.connect(self.__checkUpdate)
 
         self.__viewShortcutsAction = QAction(
@@ -325,6 +326,7 @@ class MainWindow(QMainWindow):
         self.__toolbar = QToolBar()
         self.__toolbar.addAction(self.__chooseAiAction)
         self.__toolbar.addAction(self.__settingsAction)
+        self.__toolbar.addAction(self.__checkUpdateAction)
         self.__toolbar.addAction(self.__customizeAction)
         self.__toolbar.addAction(self.__githubAction)
         self.__toolbar.addAction(self.__discordAction)

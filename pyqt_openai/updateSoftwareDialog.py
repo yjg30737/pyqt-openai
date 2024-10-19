@@ -21,6 +21,7 @@ from pyqt_openai import (
     UPDATER_PATH,
     is_frozen,
 )
+from pyqt_openai.lang.translations import LangClass
 
 
 class UpdateSoftwareDialog(QDialog):
@@ -39,6 +40,7 @@ class UpdateSoftwareDialog(QDialog):
         self.setWindowTitle("Update Software")
         self.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.WindowCloseButtonHint)
         self.setModal(True)
+
         lay = QVBoxLayout()
 
         self.setLayout(lay)
@@ -49,17 +51,31 @@ class UpdateSoftwareDialog(QDialog):
         self.releaseNoteBrowser = QTextBrowser()
         self.releaseNoteBrowser.setOpenExternalLinks(True)
 
-        update_url = f"https://github.com/{self.__owner}/{self.__repo}/releases/download/{self.__recent_version}/VividNode.zip"
-
-        buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
-        buttonBox.accepted.connect(lambda: run_updater(update_url))
-        buttonBox.rejected.connect(self.reject)
-
-        askLbl = QLabel("Do you want to update?")
-
         lay.addWidget(self.releaseNoteBrowser)
-        lay.addWidget(askLbl)
-        lay.addWidget(buttonBox)
+
+        if sys.platform == "win32":
+            update_url = f"https://github.com/{self.__owner}/{self.__repo}/releases/download/{self.__recent_version}/VividNode.zip"
+
+            buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+            buttonBox.accepted.connect(lambda: run_updater(update_url))
+            buttonBox.rejected.connect(self.reject)
+
+            askLbl = QLabel("Do you want to update?")
+
+            lay.addWidget(askLbl)
+            lay.addWidget(buttonBox)
+        else:
+            self.__updateManualLbl = QLabel()
+            self.__updateManualLbl.setText(
+                f'<b>{LangClass.TRANSLATIONS["Update Available"]}</b>'
+                +
+                f'''<br>
+            Automatic updates are currently supported only on Windows.  
+            For manual updates, please click the link for the latest version and install the file appropriate for your operating system.  
+            Linux - Install via tar  
+            macOS - Install via dmg
+            ''')
+        lay.addWidget(self.__updateManualLbl)
 
 
 def check_for_updates(current_version, owner, repo):
@@ -107,7 +123,6 @@ def check_for_updates_and_show_dialog(current_version, owner, repo):
             update_dialog = UpdateSoftwareDialog(owner, repo, recent_version)
             update_dialog.releaseNoteBrowser.setHtml(release_notes)
             update_dialog.exec()
-
 
 def update_software():
     # Replace with actual values
