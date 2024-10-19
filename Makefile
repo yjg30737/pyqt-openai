@@ -1,12 +1,14 @@
 .PHONY: venv run clean format build upload install
 
 ifeq ($(OS),Windows_NT)
+    PYTHON=python
     VE_PYTHON=venv\Scripts\python
     VE_PIP=venv\Scripts\pip
     VE_BLACK=venv\Scripts\black
     VE_TWINE=venv\Scripts\twine
     VE_PYINSTALLER=venv\Scripts\pyinstaller
 else
+    PYTHON=python3
     VE_PYTHON=venv/bin/python
     VE_PIP=venv/bin/pip
     VE_BLACK=venv/bin/black
