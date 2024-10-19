@@ -118,12 +118,15 @@ def update_software():
     if not is_frozen():
         return
 
-    # Check for updates and show dialog if available
-    check_for_updates_and_show_dialog(current_version, owner, repo)
+    # Check for updates and show dialog if available (Windows only)
+    if sys.platform == "win32":
+        check_for_updates_and_show_dialog(current_version, owner, repo)
 
 
 def run_updater(update_url):
-    subprocess.Popen(
-        [UPDATER_PATH, update_url, UPDATE_DIR, CURRENT_FILENAME], shell=True
-    )
-    sys.exit(0)
+    if sys.platform == "win32":
+        subprocess.Popen(
+            [UPDATER_PATH, update_url, UPDATE_DIR, CURRENT_FILENAME], shell=True
+        )
+        sys.exit(0)
+    pass

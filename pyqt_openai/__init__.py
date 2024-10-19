@@ -34,6 +34,7 @@ OWNER = "yjg30737"
 
 DEFAULT_APP_NAME = "VividNode"
 
+# For Windows
 AUTOSTART_REGISTRY_KEY = r"Software\Microsoft\Windows\CurrentVersion\Run"
 
 # Check if the application is frozen (compiled with PyInstaller)
@@ -77,7 +78,7 @@ def get_config_directory():
 
 UPDATE_DIR = get_config_directory()
 
-# The default updater path (relative to the application's root directory)
+# The default updater path (relative to the application's root directory) - For Windows
 UPDATER_PATH = os.path.join(UPDATE_DIR, "Updater.exe")
 
 # Move the Updater.exe to the config folder
@@ -733,6 +734,9 @@ def update_general_config_with_api_keys(config_data, api_configs):
 
 
 update_general_config_with_api_keys(CONFIG_DATA, DEFAULT_API_CONFIGS)
+
+# Set the default llama index cache directory for preventing any issues such as PermissionError
+os.environ['NLTK_DATA'] = os.path.join(get_config_directory(), "llama_index_cache")
 
 # Update the __all__ list with the PEP8 standard dunder names
 __all__ = ["__version__", "__author__"]
