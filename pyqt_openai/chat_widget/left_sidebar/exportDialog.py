@@ -3,7 +3,14 @@ This dialog is for exporting conversation threads selected by the user from the 
 """
 
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QTableWidgetItem, QLabel, QDialogButtonBox, QCheckBox, QDialog, QVBoxLayout
+from PySide6.QtWidgets import (
+    QTableWidgetItem,
+    QLabel,
+    QDialogButtonBox,
+    QCheckBox,
+    QDialog,
+    QVBoxLayout,
+)
 
 from pyqt_openai import THREAD_ORDERBY
 from pyqt_openai.lang.translations import LangClass
@@ -32,28 +39,39 @@ class ExportDialog(QDialog):
         for r_idx, r in enumerate(self.__data):
             for c_idx, c in enumerate(self.__columns):
                 v = r[c]
-                self.__checkBoxTableWidget.setItem(r_idx, c_idx+1, QTableWidgetItem(str(v)))
+                self.__checkBoxTableWidget.setItem(
+                    r_idx, c_idx + 1, QTableWidgetItem(str(v))
+                )
 
         self.__checkBoxTableWidget.resizeColumnsToContents()
         self.__checkBoxTableWidget.setSortingEnabled(True)
         if self.__sort_by in self.__columns:
-            self.__checkBoxTableWidget.sortByColumn(self.__columns.index(self.__sort_by)+1, Qt.SortOrder.DescendingOrder)
+            self.__checkBoxTableWidget.sortByColumn(
+                self.__columns.index(self.__sort_by) + 1, Qt.SortOrder.DescendingOrder
+            )
 
         # Dialog buttons
         buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         buttonBox.accepted.connect(self.accept)
         buttonBox.rejected.connect(self.reject)
 
-        allCheckBox = QCheckBox(LangClass.TRANSLATIONS['Select All'])
-        allCheckBox.stateChanged.connect(self.__checkBoxTableWidget.toggleState) # if allChkBox is checked, tablewidget checkboxes will also be checked
+        allCheckBox = QCheckBox(LangClass.TRANSLATIONS["Select All"])
+        allCheckBox.stateChanged.connect(
+            self.__checkBoxTableWidget.toggleState
+        )  # if allChkBox is checked, tablewidget checkboxes will also be checked
 
         lay = QVBoxLayout()
-        lay.addWidget(QLabel(LangClass.TRANSLATIONS['Select the threads you want to export.']))
+        lay.addWidget(
+            QLabel(LangClass.TRANSLATIONS["Select the threads you want to export."])
+        )
         lay.addWidget(allCheckBox)
         lay.addWidget(self.__checkBoxTableWidget)
         lay.addWidget(buttonBox)
         self.setLayout(lay)
 
     def getSelectedIds(self):
-        ids = [self.__checkBoxTableWidget.item(r, 1).text() for r in self.__checkBoxTableWidget.getCheckedRows()]
+        ids = [
+            self.__checkBoxTableWidget.item(r, 1).text()
+            for r in self.__checkBoxTableWidget.getCheckedRows()
+        ]
         return ids

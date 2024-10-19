@@ -10,8 +10,10 @@ class ReplicateThread(QThread):
     errorGenerated = Signal(str)
     allReplyGenerated = Signal()
 
-    # TODO remove wrapper, model as far as possible
-    def __init__(self, input_args, number_of_images, model, randomizing_prompt_source_arr=None):
+    # TODO remove model as far as possible
+    def __init__(
+        self, input_args, number_of_images, model, randomizing_prompt_source_arr=None
+    ):
         super().__init__()
         self.__input_args = input_args
         self.__stop = False
@@ -30,8 +32,12 @@ class ReplicateThread(QThread):
                 if self.__stop:
                     break
                 if self.__randomizing_prompt_source_arr is not None:
-                    self.__input_args['prompt'] = generate_random_prompt(self.__randomizing_prompt_source_arr)
-                result = REPLICATE_CLIENT.get_image_response(model=self.__model, input_args=self.__input_args)
+                    self.__input_args["prompt"] = generate_random_prompt(
+                        self.__randomizing_prompt_source_arr
+                    )
+                result = REPLICATE_CLIENT.get_image_response(
+                    model=self.__model, input_args=self.__input_args
+                )
                 self.replyGenerated.emit(result)
             self.allReplyGenerated.emit()
         except Exception as e:

@@ -1,6 +1,13 @@
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QDialog, QVBoxLayout, \
-    QDialogButtonBox, QMessageBox, QStackedWidget, QWidget, QHBoxLayout
+from PySide6.QtWidgets import (
+    QDialog,
+    QVBoxLayout,
+    QDialogButtonBox,
+    QMessageBox,
+    QStackedWidget,
+    QWidget,
+    QHBoxLayout,
+)
 
 from pyqt_openai.chat_widget.right_sidebar.apiWidget import ApiWidget
 from pyqt_openai.lang.translations import LangClass
@@ -33,8 +40,8 @@ class SettingsDialog(QDialog):
         self.__stackedWidget = QStackedWidget()
 
         self.__navBar = NavBar(orientation=Qt.Orientation.Vertical)
-        self.__navBar.add(LangClass.TRANSLATIONS['General'])
-        self.__navBar.add(LangClass.TRANSLATIONS['API Key'])
+        self.__navBar.add(LangClass.TRANSLATIONS["General"])
+        self.__navBar.add(LangClass.TRANSLATIONS["API Key"])
         self.__navBar.itemClicked.connect(self.__currentWidgetChanged)
 
         self.__stackedWidget.addWidget(self.__generalSettingsWidget)
@@ -59,8 +66,12 @@ class SettingsDialog(QDialog):
 
     def __accept(self):
         # If DB file name is empty
-        if self.__generalSettingsWidget.db.strip() == '':
-            QMessageBox.critical(self, LangClass.TRANSLATIONS['Error'], LangClass.TRANSLATIONS['Database name cannot be empty.'])
+        if self.__generalSettingsWidget.db.strip() == "":
+            QMessageBox.critical(
+                self,
+                LangClass.TRANSLATIONS["Error"],
+                LangClass.TRANSLATIONS["Database name cannot be empty."],
+            )
         else:
             self.accept()
 

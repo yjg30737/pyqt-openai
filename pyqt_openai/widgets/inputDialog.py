@@ -1,5 +1,12 @@
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QDialog, QVBoxLayout, QLineEdit, QPushButton, QHBoxLayout, QWidget
+from PySide6.QtWidgets import (
+    QDialog,
+    QVBoxLayout,
+    QLineEdit,
+    QPushButton,
+    QHBoxLayout,
+    QWidget,
+)
 
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.util.script import getSeparator
@@ -16,12 +23,12 @@ class InputDialog(QDialog):
 
         self.__newName = QLineEdit(text)
         self.__newName.textChanged.connect(self.__setAccept)
-        sep = getSeparator('horizontal')
+        sep = getSeparator("horizontal")
 
-        self.__okBtn = QPushButton(LangClass.TRANSLATIONS['OK'])
+        self.__okBtn = QPushButton(LangClass.TRANSLATIONS["OK"])
         self.__okBtn.clicked.connect(self.accept)
 
-        cancelBtn = QPushButton(LangClass.TRANSLATIONS['Cancel'])
+        cancelBtn = QPushButton(LangClass.TRANSLATIONS["Cancel"])
         cancelBtn.clicked.connect(self.close)
 
         lay = QHBoxLayout()
@@ -44,4 +51,4 @@ class InputDialog(QDialog):
         return self.__newName.text()
 
     def __setAccept(self, text):
-        self.__okBtn.setEnabled(text.strip() != '')
+        self.__okBtn.setEnabled(text.strip() != "")

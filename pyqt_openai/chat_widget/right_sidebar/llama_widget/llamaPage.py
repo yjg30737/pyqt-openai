@@ -8,6 +8,7 @@ from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.chat_widget.right_sidebar.llama_widget.listWidget import FileListWidget
 from pyqt_openai.lang.translations import LangClass
 
+
 class LlamaPage(QWidget):
     onDirectorySelected = Signal(str)
 
@@ -24,7 +25,11 @@ class LlamaPage(QWidget):
         self.__listWidget.onDirectorySelected.connect(self.__onDirectorySelected)
 
         self.__txtBrowser = QTextBrowser()
-        self.__txtBrowser.setPlaceholderText(LangClass.TRANSLATIONS["This text browser shows selected file's content in the list."])
+        self.__txtBrowser.setPlaceholderText(
+            LangClass.TRANSLATIONS[
+                "This text browser shows selected file's content in the list."
+            ]
+        )
         self.__txtBrowser.setMaximumHeight(150)
 
         lay = QVBoxLayout()
@@ -41,9 +46,9 @@ class LlamaPage(QWidget):
         self.onDirectorySelected.emit(selected_dirname)
 
     def __setTextInBrowser(self, txt_file):
-        with open(txt_file, 'r', encoding='utf-8') as f:
+        with open(txt_file, "r", encoding="utf-8") as f:
             self.__txtBrowser.setText(f.read())
 
     def setDirectory(self):
-        directory = CONFIG_MANAGER.get_general_property('llama_index_directory')
+        directory = CONFIG_MANAGER.get_general_property("llama_index_directory")
         self.__listWidget.setDirectory(directory, called_from_btn=False)

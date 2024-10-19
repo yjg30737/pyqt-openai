@@ -1,7 +1,13 @@
 from PySide6.QtGui import QPalette
 from PySide6.QtWidgets import QMessageBox
 
-from pyqt_openai import ICON_FAVORITE_NO, ICON_INFO, ICON_FAVORITE_YES, ICON_SPEAKER, WHISPER_TTS_MODEL
+from pyqt_openai import (
+    ICON_FAVORITE_NO,
+    ICON_INFO,
+    ICON_FAVORITE_YES,
+    ICON_SPEAKER,
+    WHISPER_TTS_MODEL,
+)
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.chat_widget.center.chatUnit import ChatUnit
 from pyqt_openai.chat_widget.center.responseInfoDialog import ResponseInfoDialog
@@ -18,8 +24,10 @@ class AIChatUnit(ChatUnit):
         self.__initAIChatUi()
 
     def __initVal(self):
-        self.__result_info = ''
-        self.__show_as_markdown = CONFIG_MANAGER.get_general_property('show_as_markdown')
+        self.__result_info = ""
+        self.__show_as_markdown = CONFIG_MANAGER.get_general_property(
+            "show_as_markdown"
+        )
 
     def __initAIChatUi(self):
         self.__favoriteBtn = Button()
@@ -89,10 +97,12 @@ class AIChatUnit(ChatUnit):
         Note: This function is used to get the response information after the response is generated.
         """
         try:
-            if self.__result_info and isinstance(self.__result_info, ChatMessageContainer):
+            if self.__result_info and isinstance(
+                self.__result_info, ChatMessageContainer
+            ):
                 return self.__result_info
             else:
-                raise AttributeError('Response information is not available')
+                raise AttributeError("Response information is not available")
         except AttributeError as e:
             raise e
 
@@ -101,14 +111,16 @@ class AIChatUnit(ChatUnit):
             text = self._lbl.toPlainText()
             if text:
                 args = {
-                    'model': WHISPER_TTS_MODEL,
-                    'voice': CONFIG_MANAGER.get_general_property('voice'),
-                    'input': text,
-                    'speed': CONFIG_MANAGER.get_general_property('voice_speed'),
+                    "model": WHISPER_TTS_MODEL,
+                    "voice": CONFIG_MANAGER.get_general_property("voice"),
+                    "input": text,
+                    "speed": CONFIG_MANAGER.get_general_property("voice_speed"),
                 }
                 self.thread = stream_to_speakers(args)
                 self.thread.finished.connect(self.__on_thread_complete)
-                self.thread.errorGenerated.connect(lambda x: QMessageBox.critical(self, 'Error', x))
+                self.thread.errorGenerated.connect(
+                    lambda x: QMessageBox.critical(self, "Error", x)
+                )
                 self.thread.start()
         else:
             self.thread.stop()

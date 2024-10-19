@@ -1,5 +1,12 @@
-from PySide6.QtWidgets import QWidget, QLineEdit, QGridLayout, QLabel, \
-    QHBoxLayout, QApplication, QSizePolicy
+from PySide6.QtWidgets import (
+    QWidget,
+    QLineEdit,
+    QGridLayout,
+    QLabel,
+    QHBoxLayout,
+    QApplication,
+    QSizePolicy,
+)
 from PySide6.QtCore import Signal
 
 from pyqt_openai import ICON_SEARCH
@@ -23,7 +30,7 @@ class SearchBar(QWidget):
         self.__searchIconLbl.setFixedSize(ps, ps)
 
         self.__searchBar = QWidget()
-        self.__searchBar.setObjectName('searchBar')
+        self.__searchBar.setObjectName("searchBar")
 
         lay = QHBoxLayout()
         lay.addWidget(self.__searchIconLbl)
@@ -56,7 +63,9 @@ class SearchBar(QWidget):
         lay.addWidget(searchWidget)
         lay.setContentsMargins(0, 0, 0, 0)
 
-        self.setSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Preferred)
+        self.setSizePolicy(
+            QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Preferred
+        )
 
         self.__setStyle()
 
@@ -71,7 +80,7 @@ class SearchBar(QWidget):
     def __setStyle(self):
         self.__searchIconLbl.setSvgFile(ICON_SEARCH)
         self.setStyleSheet(
-            f'''
+            f"""
             QLineEdit
             {{
                 background: transparent;
@@ -82,7 +91,7 @@ class SearchBar(QWidget):
                 border: 1px solid gray;
             }}
             QWidget {{ padding: 5px; }}
-            '''
+            """
         )
 
     def __searched(self, text):

@@ -1,22 +1,21 @@
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QWidget,
-    QSpinBox,
     QVBoxLayout,
     QPlainTextEdit,
     QFormLayout,
     QLabel,
-    QSplitter,
+    QSplitter, QComboBox,
 )
 
 from pyqt_openai.config_loader import CONFIG_MANAGER
+from pyqt_openai.g4f_image_widget.g4fImageThread import G4FImageThread
 from pyqt_openai.lang.translations import LangClass
-from pyqt_openai.replicate_widget.replicateThread import ReplicateThread
+from pyqt_openai.util.script import get_g4f_image_models
 from pyqt_openai.widgets.imageControlWidget import ImageControlWidget
-from pyqt_openai.widgets.modernButton import ModernButton
 
 
-class ReplicateRightSideBarWidget(ImageControlWidget):
+class G4FImageRightSideBarWidget(ImageControlWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self._initVal()
@@ -25,51 +24,34 @@ class ReplicateRightSideBarWidget(ImageControlWidget):
     def _initVal(self):
         super()._initVal()
 
-        self._prompt = CONFIG_MANAGER.get_replicate_property("prompt")
-        self._continue_generation = CONFIG_MANAGER.get_replicate_property(
+        self._prompt = CONFIG_MANAGER.get_g4f_image_property("prompt")
+        self._continue_generation = CONFIG_MANAGER.get_g4f_image_property(
             "continue_generation"
         )
-        self._save_prompt_as_text = CONFIG_MANAGER.get_replicate_property(
+        self._save_prompt_as_text = CONFIG_MANAGER.get_g4f_image_property(
             "save_prompt_as_text"
         )
-        self._is_save = CONFIG_MANAGER.get_replicate_property("is_save")
-        self._directory = CONFIG_MANAGER.get_replicate_property("directory")
-        self._number_of_images_to_create = CONFIG_MANAGER.get_replicate_property(
+        self._is_save = CONFIG_MANAGER.get_g4f_image_property("is_save")
+        self._directory = CONFIG_MANAGER.get_g4f_image_property("directory")
+        self._number_of_images_to_create = CONFIG_MANAGER.get_g4f_image_property(
             "number_of_images_to_create"
         )
 
-        self.__model = CONFIG_MANAGER.get_replicate_property("model")
-        self.__width = CONFIG_MANAGER.get_replicate_property("width")
-        self.__height = CONFIG_MANAGER.get_replicate_property("height")
-        self.__negative_prompt = CONFIG_MANAGER.get_replicate_property(
+        self.__model = CONFIG_MANAGER.get_g4f_image_property("model")
+        self.__negative_prompt = CONFIG_MANAGER.get_g4f_image_property(
             "negative_prompt"
         )
 
     def _initUi(self):
         super()._initUi()
 
-        # TODO LANGUAGE
-        self.__setApiBtn = ModernButton()
-        self.__setApiBtn.setText("Set API Key")
-
-        self.__modelTextEdit = QPlainTextEdit()
-        self.__modelTextEdit.setPlainText(self.__model)
-        self.__modelTextEdit.textChanged.connect(self.__replicateTextChanged)
-
-        self.__widthSpinBox = QSpinBox()
-        self.__widthSpinBox.setRange(512, 1392)
-        self.__widthSpinBox.setSingleStep(8)
-        self.__widthSpinBox.setValue(self.__width)
-        self.__widthSpinBox.valueChanged.connect(self.__replicateChanged)
-
-        self.__heightSpinBox = QSpinBox()
-        self.__heightSpinBox.setRange(512, 1392)
-        self.__heightSpinBox.setSingleStep(8)
-        self.__heightSpinBox.setValue(self.__height)
-        self.__heightSpinBox.valueChanged.connect(self.__replicateChanged)
+        self.__modelCmbBox = QComboBox()
+        g4f_image_models = get_g4f_image_models()
+        self.__modelCmbBox.addItems(g4f_image_models)
+        self.__modelCmbBox.setCurrentText(self.__model)
+        self.__modelCmbBox.currentTextChanged.connect(self.__g4fModelChanged)
 
         lay = QVBoxLayout()
-        lay.addWidget(self.__setApiBtn)
         lay.addWidget(self._findPathWidget)
         lay.addWidget(self._saveChkBox)
         lay.addWidget(self._continueGenerationChkBox)
@@ -98,9 +80,7 @@ class ReplicateRightSideBarWidget(ImageControlWidget):
         promptWidget.setLayout(lay)
 
         lay = QFormLayout()
-        lay.addRow(LangClass.TRANSLATIONS["Model"], self.__modelTextEdit)
-        lay.addRow(LangClass.TRANSLATIONS["Width"], self.__widthSpinBox)
-        lay.addRow(LangClass.TRANSLATIONS["Height"], self.__heightSpinBox)
+        lay.addRow(LangClass.TRANSLATIONS["Model"], self.__modelCmbBox)
         otherParamWidget = QWidget()
         otherParamWidget.setLayout(lay)
 
@@ -119,49 +99,41 @@ class ReplicateRightSideBarWidget(ImageControlWidget):
 
         self._completeUi()
 
-    def __replicateChanged(self, v):
-        sender = self.sender()
-        if sender == self.__widthSpinBox:
-            self.__width = v
-            CONFIG_MANAGER.set_replicate_property("width", v)
-        elif sender == self.__heightSpinBox:
-            self.__height = v
-            CONFIG_MANAGER.set_replicate_property("height", v)
+    def __g4fModelChanged(self, text):
+        self.__model = text
+        CONFIG_MANAGER.set_g4f_image_property("model", self.__model)
 
     def __replicateTextChanged(self):
         sender = self.sender()
         if isinstance(sender, QPlainTextEdit):
-            if sender == self.__modelTextEdit:
-                self.__model = sender.toPlainText()
-                CONFIG_MANAGER.set_replicate_property("model", self.__model)
-            elif sender == self._promptTextEdit:
+            if sender == self._promptTextEdit:
                 self._prompt = sender.toPlainText()
-                CONFIG_MANAGER.set_replicate_property("prompt", self._prompt)
+                CONFIG_MANAGER.set_g4f_image_property("prompt", self._prompt)
             elif sender == self._negativeTextEdit:
                 self.__negative_prompt = sender.toPlainText()
-                CONFIG_MANAGER.set_replicate_property(
+                CONFIG_MANAGER.set_g4f_image_property(
                     "negative_prompt", self.__negative_prompt
                 )
 
     def _setSaveDirectory(self, directory):
         super()._setSaveDirectory(directory)
-        CONFIG_MANAGER.set_replicate_property("directory", directory)
+        CONFIG_MANAGER.set_g4f_image_property("directory", directory)
 
     def _saveChkBoxToggled(self, f):
         super()._saveChkBoxToggled(f)
-        CONFIG_MANAGER.set_replicate_property("is_save", f)
+        CONFIG_MANAGER.set_g4f_image_property("is_save", f)
 
     def _continueGenerationChkBoxToggled(self, f):
         super()._continueGenerationChkBoxToggled(f)
-        CONFIG_MANAGER.set_replicate_property("continue_generation", f)
+        CONFIG_MANAGER.set_g4f_image_property("continue_generation", f)
 
     def _savePromptAsTextChkBoxToggled(self, f):
         super()._savePromptAsTextChkBoxToggled(f)
-        CONFIG_MANAGER.set_replicate_property("save_prompt_as_text", f)
+        CONFIG_MANAGER.set_g4f_image_property("save_prompt_as_text", f)
 
     def _numberOfImagesToCreateSpinBoxValueChanged(self, value):
         super()._numberOfImagesToCreateSpinBoxValueChanged(value)
-        CONFIG_MANAGER.set_replicate_property("number_of_images_to_create", value)
+        CONFIG_MANAGER.set_g4f_image_property("number_of_images_to_create", value)
 
     def _submit(self):
         arg = self.getArgument()
@@ -172,7 +144,7 @@ class ReplicateRightSideBarWidget(ImageControlWidget):
             self._randomImagePromptGeneratorWidget.getRandomPromptSourceArr()
         )
 
-        t = ReplicateThread(arg, number_of_images, self.__model, random_prompt)
+        t = G4FImageThread(arg, number_of_images, self.__model, random_prompt)
         self._setThread(t)
         super()._submit()
 
@@ -180,8 +152,7 @@ class ReplicateRightSideBarWidget(ImageControlWidget):
         obj = super().getArgument()
         return {
             **obj,
+            "model": self.__modelCmbBox.currentText(),
             "prompt": self._promptTextEdit.toPlainText(),
             "negative_prompt": self._negativeTextEdit.toPlainText(),
-            "width": self.__width,
-            "height": self.__height,
         }

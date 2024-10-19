@@ -1,10 +1,15 @@
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QVBoxLayout, QWidget, QListWidgetItem, \
-    QLabel, QCheckBox, QGroupBox
+from PySide6.QtWidgets import (
+    QVBoxLayout,
+    QWidget,
+    QListWidgetItem,
+    QLabel,
+    QCheckBox,
+    QGroupBox,
+)
 
 from pyqt_openai import RANDOMIZING_PROMPT_SOURCE_ARR
 from pyqt_openai.lang.translations import LangClass
-from pyqt_openai.util.script import generate_random_prompt
 from pyqt_openai.widgets.checkBoxListWidget import CheckBoxListWidget
 
 
@@ -15,17 +20,21 @@ class RandomImagePromptGeneratorWidget(QWidget):
 
     def __initUi(self):
         # TODO LANGUAGE
-        self.setWindowTitle('Random Sentence Generator')
+        self.setWindowTitle("Random Sentence Generator")
 
-        lbl = QLabel('Select the elements you want to include in the prompt')
+        lbl = QLabel("Select the elements you want to include in the prompt")
 
-        self.__allCheckBox = QCheckBox(LangClass.TRANSLATIONS['Select All'])
+        self.__allCheckBox = QCheckBox(LangClass.TRANSLATIONS["Select All"])
 
         self.__listWidget = CheckBoxListWidget()
 
         for e in RANDOMIZING_PROMPT_SOURCE_ARR:
-            item = QListWidgetItem(', '.join(e))
-            item.setFlags(item.flags() | Qt.ItemFlag.ItemIsUserCheckable | Qt.ItemFlag.ItemIsEditable)
+            item = QListWidgetItem(", ".join(e))
+            item.setFlags(
+                item.flags()
+                | Qt.ItemFlag.ItemIsUserCheckable
+                | Qt.ItemFlag.ItemIsEditable
+            )
             item.setCheckState(Qt.CheckState.Unchecked)
             self.__listWidget.addItem(item)
 
@@ -35,10 +44,10 @@ class RandomImagePromptGeneratorWidget(QWidget):
         lay.addWidget(self.__listWidget)
 
         self.__randomPromptGroup = QGroupBox()
-        self.__randomPromptGroup.setTitle('List of random words to generate a prompt')
+        self.__randomPromptGroup.setTitle("List of random words to generate a prompt")
         self.__randomPromptGroup.setLayout(lay)
 
-        useBtn = QCheckBox('Use random-generated prompt')
+        useBtn = QCheckBox("Use random-generated prompt")
         useBtn.toggled.connect(self.__toggleRandomPrompt)
 
         lay = QVBoxLayout()
@@ -48,10 +57,11 @@ class RandomImagePromptGeneratorWidget(QWidget):
 
         self.setLayout(lay)
 
-        self.__allCheckBox.stateChanged.connect(self.__listWidget.toggleState) # if allChkBox is checked, tablewidget checkboxes will also be checked
+        self.__allCheckBox.stateChanged.connect(
+            self.__listWidget.toggleState
+        )  # if allChkBox is checked, tablewidget checkboxes will also be checked
         self.__randomPromptGroup.setVisible(False)
 
-    # TODO CONFIG
     def isRandomPromptEnabled(self):
         return self.__randomPromptGroup.isVisible()
 
@@ -60,4 +70,8 @@ class RandomImagePromptGeneratorWidget(QWidget):
         self.__allCheckBox.setChecked(f)
 
     def getRandomPromptSourceArr(self):
-        return [t.split(', ') for t in self.__listWidget.getCheckedItemsText()] if self.isRandomPromptEnabled() else None
+        return (
+            [t.split(", ") for t in self.__listWidget.getCheckedItemsText()]
+            if self.isRandomPromptEnabled()
+            else None
+        )

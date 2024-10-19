@@ -1,12 +1,28 @@
 import re
 
 from PySide6.QtCore import Signal, Qt
-from PySide6.QtWidgets import QWidget, QLabel, \
-    QHBoxLayout, QGridLayout, QLineEdit, QMessageBox
+from PySide6.QtWidgets import (
+    QWidget,
+    QLabel,
+    QHBoxLayout,
+    QGridLayout,
+    QLineEdit,
+    QMessageBox,
+)
 
 from pyqt_openai.chat_widget.center.chatBrowser import ChatBrowser
-from pyqt_openai import DEFAULT_SHORTCUT_FIND_PREV, DEFAULT_SHORTCUT_FIND_NEXT, DEFAULT_SHORTCUT_GENERAL_ACTION, DEFAULT_SHORTCUT_FIND_CLOSE, ICON_PREV, \
-    ICON_NEXT, ICON_CASE, ICON_WORD, ICON_REGEX, ICON_CLOSE
+from pyqt_openai import (
+    DEFAULT_SHORTCUT_FIND_PREV,
+    DEFAULT_SHORTCUT_FIND_NEXT,
+    DEFAULT_SHORTCUT_GENERAL_ACTION,
+    DEFAULT_SHORTCUT_FIND_CLOSE,
+    ICON_PREV,
+    ICON_NEXT,
+    ICON_CASE,
+    ICON_WORD,
+    ICON_REGEX,
+    ICON_CLOSE,
+)
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.widgets.button import Button
 
@@ -25,7 +41,7 @@ class FindTextWidget(QWidget):
 
     def __initVal(self):
         self.__selections = []
-        self.__cur_text = ''
+        self.__cur_text = ""
         self.__cur_idx = 0
 
     def __initUi(self):
@@ -34,8 +50,8 @@ class FindTextWidget(QWidget):
         self.__findTextLineEdit.returnPressed.connect(self.next)
         self.setFocusProxy(self.__findTextLineEdit)
 
-        self.__cnt_init_text = '{0} results'
-        self.__cnt_cur_idx_text = '{0}/{1}'
+        self.__cnt_init_text = "{0} results"
+        self.__cnt_cur_idx_text = "{0}/{1}"
         self.__cnt_lbl = QLabel(self.__cnt_init_text.format(0))
 
         self.__prevBtn = Button()
@@ -67,11 +83,17 @@ class FindTextWidget(QWidget):
         self.__regexBtn.toggled.connect(self.__regexToggled)
         self.__regexBtn.setStyleAndIcon(ICON_REGEX)
 
-        self.__prevBtn.setToolTip(LangClass.TRANSLATIONS['Previous Occurrence'] + f' ({DEFAULT_SHORTCUT_FIND_PREV})')
-        self.__nextBtn.setToolTip(LangClass.TRANSLATIONS['Next Occurrence'] + f' ({DEFAULT_SHORTCUT_FIND_NEXT})')
-        self.__caseBtn.setToolTip(LangClass.TRANSLATIONS['Match Case'])
-        self.__wordBtn.setToolTip(LangClass.TRANSLATIONS['Match Word'])
-        self.__regexBtn.setToolTip(LangClass.TRANSLATIONS['Regex'])
+        self.__prevBtn.setToolTip(
+            LangClass.TRANSLATIONS["Previous Occurrence"]
+            + f" ({DEFAULT_SHORTCUT_FIND_PREV})"
+        )
+        self.__nextBtn.setToolTip(
+            LangClass.TRANSLATIONS["Next Occurrence"]
+            + f" ({DEFAULT_SHORTCUT_FIND_NEXT})"
+        )
+        self.__caseBtn.setToolTip(LangClass.TRANSLATIONS["Match Case"])
+        self.__wordBtn.setToolTip(LangClass.TRANSLATIONS["Match Word"])
+        self.__regexBtn.setToolTip(LangClass.TRANSLATIONS["Regex"])
 
         lay = QHBoxLayout()
         lay.addWidget(self.__findTextLineEdit)
@@ -109,21 +131,28 @@ class FindTextWidget(QWidget):
         self.__btnToggled(is_exist)
 
     def __isBadPattern(self, text):
-        return self.__regexBtn.isChecked() and re.escape(text) == re.escape('\\')
+        return self.__regexBtn.isChecked() and re.escape(text) == re.escape("\\")
 
     def __showWarning(self):
-        QMessageBox.warning(self, LangClass.TRANSLATIONS['Warning'], LangClass.TRANSLATIONS['Bad pattern'])
+        QMessageBox.warning(
+            self,
+            LangClass.TRANSLATIONS["Warning"],
+            LangClass.TRANSLATIONS["Bad pattern"],
+        )
 
     def __getSelections(self, text):
         return self.__chatBrowser.setCurrentLabelIncludingTextBySliderPosition(
             text,
             case_sensitive=self.__caseBtn.isChecked(),
             word_only=self.__wordBtn.isChecked(),
-            is_regex=self.__regexBtn.isChecked()
+            is_regex=self.__regexBtn.isChecked(),
         )
 
     def __isSelectionExist(self, text):
-        return len(list(map(lambda x: x['pattern'], self.__selections))) > 0 and text.strip() != ''
+        return (
+            len(list(map(lambda x: x["pattern"], self.__selections))) > 0
+            and text.strip() != ""
+        )
 
     def clearFormatting(self):
         self.__chatBrowser.clearFormatting()
@@ -149,22 +178,36 @@ class FindTextWidget(QWidget):
         self.__nextBtn.setEnabled(f)
 
     def __setCurrentPosition(self):
-        self.__chatBrowser.highlightText(self.__selections[self.__cur_idx]['class'], self.__selections[self.__cur_idx]['pattern'], self.__caseBtn.isChecked())
-        self.__chatBrowser.verticalScrollBar().setSliderPosition(self.__selections[self.__cur_idx]['pos'])
+        self.__chatBrowser.highlightText(
+            self.__selections[self.__cur_idx]["class"],
+            self.__selections[self.__cur_idx]["pattern"],
+            self.__caseBtn.isChecked(),
+        )
+        self.__chatBrowser.verticalScrollBar().setSliderPosition(
+            self.__selections[self.__cur_idx]["pos"]
+        )
 
     def prev(self):
-        self.__chatBrowser.clearFormatting(self.__selections[self.__cur_idx]['class'])
+        self.__chatBrowser.clearFormatting(self.__selections[self.__cur_idx]["class"])
         self.__cur_idx -= 1
         if self.__cur_idx == -1:
-            QMessageBox.information(self, LangClass.TRANSLATIONS['Information'], LangClass.TRANSLATIONS['Reached the beginning'])
+            QMessageBox.information(
+                self,
+                LangClass.TRANSLATIONS["Information"],
+                LangClass.TRANSLATIONS["Reached the beginning"],
+            )
             self.__cur_idx = 0
         self.__setCurrentPosition()
 
     def next(self):
-        self.__chatBrowser.clearFormatting(self.__selections[self.__cur_idx]['class'])
+        self.__chatBrowser.clearFormatting(self.__selections[self.__cur_idx]["class"])
         self.__cur_idx += 1
         if self.__cur_idx == len(self.__selections):
-            QMessageBox.information(self, LangClass.TRANSLATIONS['Information'], LangClass.TRANSLATIONS['Reached the end'])
+            QMessageBox.information(
+                self,
+                LangClass.TRANSLATIONS["Information"],
+                LangClass.TRANSLATIONS["Reached the end"],
+            )
             self.__cur_idx = len(self.__selections) - 1
         self.__setCurrentPosition()
 

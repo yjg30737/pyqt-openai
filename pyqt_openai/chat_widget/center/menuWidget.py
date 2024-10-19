@@ -16,7 +16,7 @@ class MenuWidget(QWidget):
         self.__initUi(widget=widget)
 
     def __initUi(self, widget):
-        self.__titleLbl = QLabel(LangClass.TRANSLATIONS['Title'])
+        self.__titleLbl = QLabel(LangClass.TRANSLATIONS["Title"])
         self.__findTextWidget = FindTextWidget(widget)
         self.__chatBrowser = widget
 
@@ -25,7 +25,9 @@ class MenuWidget(QWidget):
         self.__closeBtn.setShortcut(DEFAULT_SHORTCUT_FIND_CLOSE)
         self.__closeBtn.setStyleAndIcon(ICON_CLOSE)
 
-        self.__closeBtn.setToolTip(LangClass.TRANSLATIONS['Close'] + f' ({DEFAULT_SHORTCUT_FIND_CLOSE})')
+        self.__closeBtn.setToolTip(
+            LangClass.TRANSLATIONS["Close"] + f" ({DEFAULT_SHORTCUT_FIND_CLOSE})"
+        )
 
         lay = QVBoxLayout()
         lay.addWidget(self.__titleLbl)

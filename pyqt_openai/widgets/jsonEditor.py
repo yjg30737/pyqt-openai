@@ -5,7 +5,11 @@ from PySide6.QtCore import Qt, QTimer, Signal
 from PySide6.QtGui import QTextCursor, QTextCharFormat, QColor
 from PySide6.QtWidgets import QTextEdit, QMessageBox
 
-from pyqt_openai import INDENT_SIZE, DEFAULT_SOURCE_HIGHLIGHT_COLOR, DEFAULT_SOURCE_ERROR_COLOR
+from pyqt_openai import (
+    INDENT_SIZE,
+    DEFAULT_SOURCE_HIGHLIGHT_COLOR,
+    DEFAULT_SOURCE_ERROR_COLOR,
+)
 from pyqt_openai.lang.translations import LangClass
 
 
@@ -50,7 +54,7 @@ class JSONEditor(QTextEdit):
         cursor = self.textCursor()
         self.setUpdatesEnabled(False)
         cursor.beginEditBlock()
-        for match in self.find_iter(r'\"(.*?)\":'):
+        for match in self.find_iter(r"\"(.*?)\":"):
             cursor.setPosition(match[0])
             cursor.setPosition(match[1], QTextCursor.KeepAnchor)
             cursor.setCharFormat(self.key_format)
@@ -67,21 +71,21 @@ class JSONEditor(QTextEdit):
         # If up and down keys are pressed and cursor is at the beginning or end of the text
         if event.modifiers() == Qt.KeyboardModifier.ControlModifier:
             if event.key() == Qt.Key.Key_Up:
-                self.moveCursorToOtherPrompt.emit('up')
+                self.moveCursorToOtherPrompt.emit("up")
                 return
             elif event.key() == Qt.Key.Key_Down:
-                self.moveCursorToOtherPrompt.emit('down')
+                self.moveCursorToOtherPrompt.emit("down")
                 return
             else:
                 return super().keyPressEvent(event)
 
         if event.key() == Qt.Key.Key_BraceLeft:
             super().keyPressEvent(event)
-            self.insertPlainText('\n\n')
-            self.insertPlainText('}')
+            self.insertPlainText("\n\n")
+            self.insertPlainText("}")
             cursor.movePosition(QTextCursor.Up)
             cursor.movePosition(QTextCursor.StartOfLine)
-            cursor.insertText(' ' * INDENT_SIZE)
+            cursor.insertText(" " * INDENT_SIZE)
             self.setTextCursor(cursor)
         elif event.key() == Qt.Key.Key_QuoteDbl:
             super().keyPressEvent(event)
@@ -90,16 +94,22 @@ class JSONEditor(QTextEdit):
             self.setTextCursor(cursor)
         elif event.key() == Qt.Key.Key_BracketLeft:
             super().keyPressEvent(event)
-            self.insertPlainText(']')
+            self.insertPlainText("]")
             cursor.movePosition(QTextCursor.PreviousCharacter)
             self.setTextCursor(cursor)
-        elif event.key() == Qt.Key.Key_Tab and not event.modifiers() & Qt.KeyboardModifier.ShiftModifier:
+        elif (
+            event.key() == Qt.Key.Key_Tab
+            and not event.modifiers() & Qt.KeyboardModifier.ShiftModifier
+        ):
             cursor = self.textCursor()
             if cursor.hasSelection():
                 self.indent_selected_text()
             else:
-                self.insertPlainText(' ' * INDENT_SIZE)
-        elif event.key() == Qt.Key.Key_Tab and event.modifiers() & Qt.KeyboardModifier.ShiftModifier:
+                self.insertPlainText(" " * INDENT_SIZE)
+        elif (
+            event.key() == Qt.Key.Key_Tab
+            and event.modifiers() & Qt.KeyboardModifier.ShiftModifier
+        ):
             cursor = self.textCursor()
             if cursor.hasSelection():
                 self.dedent_selected_text()
@@ -118,7 +128,7 @@ class JSONEditor(QTextEdit):
 
         while cursor.position() < end:
             cursor.movePosition(QTextCursor.StartOfLine)
-            cursor.insertText(' ' * INDENT_SIZE)
+            cursor.insertText(" " * INDENT_SIZE)
             cursor.movePosition(QTextCursor.Down)
 
         cursor.endEditBlock()
@@ -134,8 +144,10 @@ class JSONEditor(QTextEdit):
         while cursor.position() < end:
             cursor.movePosition(QTextCursor.StartOfLine)
             line_text = cursor.block().text()
-            if line_text.startswith(' ' * INDENT_SIZE):
-                cursor.movePosition(QTextCursor.Right, QTextCursor.KeepAnchor, INDENT_SIZE)
+            if line_text.startswith(" " * INDENT_SIZE):
+                cursor.movePosition(
+                    QTextCursor.Right, QTextCursor.KeepAnchor, INDENT_SIZE
+                )
                 for _ in range(INDENT_SIZE):
                     cursor.deleteChar()
             cursor.movePosition(QTextCursor.Down)
@@ -146,7 +158,7 @@ class JSONEditor(QTextEdit):
         cursor = self.textCursor()
         cursor.movePosition(QTextCursor.StartOfLine)
         line_text = cursor.block().text()
-        if line_text.startswith(' ' * INDENT_SIZE):
+        if line_text.startswith(" " * INDENT_SIZE):
             cursor.movePosition(QTextCursor.Right, QTextCursor.KeepAnchor, INDENT_SIZE)
             for _ in range(INDENT_SIZE):
                 cursor.deleteChar()
@@ -167,6 +179,7 @@ class JSONEditor(QTextEdit):
     def focusOutEvent(self, event):
         self.setCursorWidth(0)
         return super().focusInEvent(event)
+
 
 # # Usage
 # class AIWidget(QWidget):

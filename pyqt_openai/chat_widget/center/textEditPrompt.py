@@ -37,26 +37,28 @@ class TextEditPrompt(QTextEdit):
         # Send key events to the suggestion widget if enabled
         if self.__commandSuggestionEnabled:
             if event.key() == Qt.Key.Key_Up:
-                self.sendSuggestionWidget.emit('up')
+                self.sendSuggestionWidget.emit("up")
             elif event.key() == Qt.Key.Key_Down:
-                self.sendSuggestionWidget.emit('down')
+                self.sendSuggestionWidget.emit("down")
         else:
             if event.modifiers() == Qt.KeyboardModifier.ControlModifier:
                 if event.key() == Qt.Key.Key_Up:
-                    self.moveCursorToOtherPrompt.emit('up')
+                    self.moveCursorToOtherPrompt.emit("up")
                     return
                 elif event.key() == Qt.Key.Key_Down:
-                    self.moveCursorToOtherPrompt.emit('down')
+                    self.moveCursorToOtherPrompt.emit("down")
                     return
                 else:
                     return super().keyPressEvent(event)
 
-        if (event.key() == Qt.Key.Key_Return or event.key() == Qt.Key.Key_Enter) and self.__executeEnabled:
+        if (
+            event.key() == Qt.Key.Key_Return or event.key() == Qt.Key.Key_Enter
+        ) and self.__executeEnabled:
             if event.modifiers() == Qt.KeyboardModifier.ShiftModifier:
                 return super().keyPressEvent(event)
             else:
                 if self.__commandSuggestionEnabled:
-                    self.sendSuggestionWidget.emit('enter')
+                    self.sendSuggestionWidget.emit("enter")
                 else:
                     self.sendMessage()
         else:

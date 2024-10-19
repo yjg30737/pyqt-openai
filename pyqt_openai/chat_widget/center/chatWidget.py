@@ -2,7 +2,14 @@ import json
 import sys
 
 from PySide6.QtCore import Signal
-from PySide6.QtWidgets import QStackedWidget, QWidget, QSizePolicy, QHBoxLayout, QVBoxLayout, QMessageBox
+from PySide6.QtWidgets import (
+    QStackedWidget,
+    QWidget,
+    QSizePolicy,
+    QHBoxLayout,
+    QVBoxLayout,
+    QMessageBox,
+)
 
 from pyqt_openai.chat_widget.center.chatBrowser import ChatBrowser
 from pyqt_openai.chat_widget.center.chatHome import ChatHome
@@ -28,7 +35,7 @@ class ChatWidget(QWidget):
 
     def __initVal(self):
         self.__cur_id = 0
-        self.__notify_finish = CONFIG_MANAGER.get_general_property('notify_finish')
+        self.__notify_finish = CONFIG_MANAGER.get_general_property("notify_finish")
         self.__is_g4f = False
 
     def __initUi(self):
@@ -69,7 +76,9 @@ class ChatWidget(QWidget):
 
         self.__queryWidget = QWidget()
         self.__queryWidget.setLayout(lay)
-        self.__queryWidget.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Maximum)
+        self.__queryWidget.setSizePolicy(
+            QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Maximum
+        )
 
         lay = QVBoxLayout()
         lay.addWidget(self.__mainWidget)
@@ -100,7 +109,9 @@ class ChatWidget(QWidget):
     def setAIEnabled(self, f):
         self.__prompt.setEnabled(f)
 
-    def refreshCustomizedInformation(self, background_image=None, user_image=None, ai_image=None):
+    def refreshCustomizedInformation(
+        self, background_image=None, user_image=None, ai_image=None
+    ):
         self.__homePage.setPixmap(background_image)
         self.__browser.setUserImage(user_image)
         self.__browser.setAIImage(ai_image)
@@ -115,24 +126,34 @@ class ChatWidget(QWidget):
     def __chat(self):
         try:
             # Get necessary parameters
-            stream = CONFIG_MANAGER.get_general_property('stream')
-            model = CONFIG_MANAGER.get_general_property('g4f_model') if self.__is_g4f else CONFIG_MANAGER.get_general_property('model')
-            system = CONFIG_MANAGER.get_general_property('system')
-            temperature = CONFIG_MANAGER.get_general_property('temperature')
-            max_tokens = CONFIG_MANAGER.get_general_property('max_tokens')
-            top_p = CONFIG_MANAGER.get_general_property('top_p')
-            is_json_response_available = 1 if CONFIG_MANAGER.get_general_property('json_object') else 0
-            frequency_penalty = CONFIG_MANAGER.get_general_property('frequency_penalty')
-            presence_penalty = CONFIG_MANAGER.get_general_property('presence_penalty')
-            use_llama_index = CONFIG_MANAGER.get_general_property('use_llama_index')
-            use_max_tokens = CONFIG_MANAGER.get_general_property('use_max_tokens')
-            provider = CONFIG_MANAGER.get_general_property('provider')
-            g4f_use_chat_history = CONFIG_MANAGER.get_general_property('g4f_use_chat_history')
+            stream = CONFIG_MANAGER.get_general_property("stream")
+            model = (
+                CONFIG_MANAGER.get_general_property("g4f_model")
+                if self.__is_g4f
+                else CONFIG_MANAGER.get_general_property("model")
+            )
+            system = CONFIG_MANAGER.get_general_property("system")
+            temperature = CONFIG_MANAGER.get_general_property("temperature")
+            max_tokens = CONFIG_MANAGER.get_general_property("max_tokens")
+            top_p = CONFIG_MANAGER.get_general_property("top_p")
+            is_json_response_available = (
+                1 if CONFIG_MANAGER.get_general_property("json_object") else 0
+            )
+            frequency_penalty = CONFIG_MANAGER.get_general_property("frequency_penalty")
+            presence_penalty = CONFIG_MANAGER.get_general_property("presence_penalty")
+            use_llama_index = CONFIG_MANAGER.get_general_property("use_llama_index")
+            use_max_tokens = CONFIG_MANAGER.get_general_property("use_max_tokens")
+            provider = CONFIG_MANAGER.get_general_property("provider")
+            g4f_use_chat_history = CONFIG_MANAGER.get_general_property(
+                "g4f_use_chat_history"
+            )
 
             # Get image files
             images = self.__prompt.getImageBuffers()
 
-            maximum_messages_in_parameter = CONFIG_MANAGER.get_general_property('maximum_messages_in_parameter')
+            maximum_messages_in_parameter = CONFIG_MANAGER.get_general_property(
+                "maximum_messages_in_parameter"
+            )
             messages = self.__browser.getMessages(maximum_messages_in_parameter)
             if self.__is_g4f and not g4f_use_chat_history:
                 messages = []
@@ -144,33 +165,63 @@ class ChatWidget(QWidget):
             is_llama_available = False
             if use_llama_index:
                 # Check llamaindex is available
-                is_llama_available = LLAMAINDEX_WRAPPER.get_directory() != ''
+                is_llama_available = LLAMAINDEX_WRAPPER.get_directory() != ""
                 if is_llama_available:
                     if LLAMAINDEX_WRAPPER.is_query_engine_set():
                         pass
                     else:
-                        LLAMAINDEX_WRAPPER.set_query_engine(streaming=stream, similarity_top_k=3)
+                        LLAMAINDEX_WRAPPER.set_query_engine(
+                            streaming=stream, similarity_top_k=3
+                        )
                 else:
-                    QMessageBox.warning(self, LangClass.TRANSLATIONS["Warning"], LangClass.TRANSLATIONS['LLAMA index is not available. Please check the directory path or disable the llama index.'])
+                    QMessageBox.warning(
+                        self,
+                        LangClass.TRANSLATIONS["Warning"],
+                        LangClass.TRANSLATIONS[
+                            "LLAMA index is not available. Please check the directory path or disable the llama index."
+                        ],
+                    )
                     return
 
             # Check JSON response is valid
             if is_json_response_available:
                 if not json_content:
-                    QMessageBox.critical(self, LangClass.TRANSLATIONS["Error"], LangClass.TRANSLATIONS['JSON content is empty. Please fill in the JSON content field.'])
+                    QMessageBox.critical(
+                        self,
+                        LangClass.TRANSLATIONS["Error"],
+                        LangClass.TRANSLATIONS[
+                            "JSON content is empty. Please fill in the JSON content field."
+                        ],
+                    )
                     return
                 try:
                     json.loads(json_content)
                 except Exception as e:
-                    QMessageBox.critical(self, LangClass.TRANSLATIONS["Error"], f'{LangClass.TRANSLATIONS["JSON content is not valid. Please check the JSON content field."]}\n\n{e}')
+                    QMessageBox.critical(
+                        self,
+                        LangClass.TRANSLATIONS["Error"],
+                        f'{LangClass.TRANSLATIONS["JSON content is not valid. Please check the JSON content field."]}\n\n{e}',
+                    )
                     return
 
-            param = get_argument(model, system, messages, cur_text, temperature, top_p, frequency_penalty,
-                                 presence_penalty, stream,
-                                 use_max_tokens, max_tokens,
-                                 images,
-                                 is_llama_available, is_json_response_available, json_content,
-                                 self.__is_g4f)
+            param = get_argument(
+                model,
+                system,
+                messages,
+                cur_text,
+                temperature,
+                top_p,
+                frequency_penalty,
+                presence_penalty,
+                stream,
+                use_max_tokens,
+                max_tokens,
+                images,
+                is_llama_available,
+                is_json_response_available,
+                json_content,
+                self.__is_g4f,
+            )
 
             # If there is no current conversation selected on the list to the left, make a new one.
             if self.__mainWidget.currentIndex() == 0:
@@ -178,19 +229,21 @@ class ChatWidget(QWidget):
 
             # Additional information of user's input
             additional_info = {
-                'role': 'user',
-                'content': cur_text,
-                'model_name': param['model'],
-                'finish_reason': '',
-                'prompt_tokens': '',
-                'completion_tokens': '',
-                'total_tokens': '',
-
-                'is_json_response_available': is_json_response_available,
+                "role": "user",
+                "content": cur_text,
+                "model_name": param["model"],
+                "finish_reason": "",
+                "prompt_tokens": "",
+                "completion_tokens": "",
+                "total_tokens": "",
+                "is_json_response_available": is_json_response_available,
             }
 
-            container_param = {k: v for k, v in {**param, **additional_info}.items() if
-                               k in ChatMessageContainer.get_keys()}
+            container_param = {
+                k: v
+                for k, v in {**param, **additional_info}.items()
+                if k in ChatMessageContainer.get_keys()
+            }
 
             # Create a container for the user's input and output from the chatbot
             container = ChatMessageContainer(**container_param)
@@ -201,9 +254,13 @@ class ChatWidget(QWidget):
             # Get parameters for OpenAI
             if is_llama_available:
                 # Run a different thread based on whether the llama-index is enabled or not.
-                self.__t = LlamaOpenAIThread(param, container, LLAMAINDEX_WRAPPER, query_text)
+                self.__t = LlamaOpenAIThread(
+                    param, container, LLAMAINDEX_WRAPPER, query_text
+                )
             else:
-                self.__t = ChatThread(param, info=container, is_g4f=self.__is_g4f, provider=provider)
+                self.__t = ChatThread(
+                    param, info=container, is_g4f=self.__is_g4f, provider=provider
+                )
 
             self.__t.started.connect(self.__beforeGenerated)
             self.__t.replyGenerated.connect(self.__browser.showLabel)
@@ -220,11 +277,15 @@ class ChatWidget(QWidget):
             f = tb.tb_frame
             lineno = tb.tb_lineno
             filename = f.f_code.co_filename
-            QMessageBox.critical(self, LangClass.TRANSLATIONS["Error"], f'''
+            QMessageBox.critical(
+                self,
+                LangClass.TRANSLATIONS["Error"],
+                f"""
                 {str(e)},
                 'File: {filename}',
                 'Line: {lineno}'
-            ''')
+            """,
+            )
 
     def __stopResponse(self):
         self.__t.stop()
@@ -247,7 +308,10 @@ class ChatWidget(QWidget):
         self.__mainPrompt.setFocus()
         if not self.isVisible() or not self.window().isActiveWindow():
             if self.__notify_finish:
-                self.__notifierWidget = NotifierWidget(informative_text=LangClass.TRANSLATIONS['Response 👌'], detailed_text = self.__browser.getLastResponse())
+                self.__notifierWidget = NotifierWidget(
+                    informative_text=LangClass.TRANSLATIONS["Response 👌"],
+                    detailed_text=self.__browser.getLastResponse(),
+                )
                 self.__notifierWidget.show()
                 self.__notifierWidget.doubleClicked.connect(self.__bringWindowToFront)
 

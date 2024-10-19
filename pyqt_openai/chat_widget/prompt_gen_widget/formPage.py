@@ -1,16 +1,47 @@
 import json, os
 
 from PySide6.QtCore import Signal, Qt
-from PySide6.QtWidgets import QFileDialog, QTableWidget, QMessageBox, QSizePolicy, QSpacerItem, QStackedWidget, QLabel, \
-    QAbstractItemView, QTableWidgetItem, QHeaderView, QHBoxLayout, \
-    QVBoxLayout, QWidget, QDialog, QListWidget, QListWidgetItem, QSplitter
+from PySide6.QtWidgets import (
+    QFileDialog,
+    QTableWidget,
+    QMessageBox,
+    QSizePolicy,
+    QSpacerItem,
+    QStackedWidget,
+    QLabel,
+    QAbstractItemView,
+    QTableWidgetItem,
+    QHeaderView,
+    QHBoxLayout,
+    QVBoxLayout,
+    QWidget,
+    QDialog,
+    QListWidget,
+    QListWidgetItem,
+    QSplitter,
+)
 
-from pyqt_openai import JSON_FILE_EXT_LIST_STR, ICON_ADD, ICON_DELETE, ICON_IMPORT, ICON_EXPORT, \
-    QFILEDIALOG_DEFAULT_DIRECTORY, INDENT_SIZE
-from pyqt_openai.chat_widget.prompt_gen_widget.promptGroupDirectInputDialog import PromptGroupDirectInputDialog
-from pyqt_openai.chat_widget.prompt_gen_widget.promptEntryDirectInputDialog import PromptEntryDirectInputDialog
-from pyqt_openai.chat_widget.prompt_gen_widget.promptGroupExportDialog import PromptGroupExportDialog
-from pyqt_openai.chat_widget.prompt_gen_widget.promptGroupImportDialog import PromptGroupImportDialog
+from pyqt_openai import (
+    JSON_FILE_EXT_LIST_STR,
+    ICON_ADD,
+    ICON_DELETE,
+    ICON_IMPORT,
+    ICON_EXPORT,
+    QFILEDIALOG_DEFAULT_DIRECTORY,
+    INDENT_SIZE,
+)
+from pyqt_openai.chat_widget.prompt_gen_widget.promptGroupDirectInputDialog import (
+    PromptGroupDirectInputDialog,
+)
+from pyqt_openai.chat_widget.prompt_gen_widget.promptEntryDirectInputDialog import (
+    PromptEntryDirectInputDialog,
+)
+from pyqt_openai.chat_widget.prompt_gen_widget.promptGroupExportDialog import (
+    PromptGroupExportDialog,
+)
+from pyqt_openai.chat_widget.prompt_gen_widget.promptGroupImportDialog import (
+    PromptGroupImportDialog,
+)
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.globals import DB
 from pyqt_openai.util.script import open_directory, get_prompt_data
@@ -38,16 +69,16 @@ class FormGroupList(QWidget):
 
         self.__importBtn = Button()
         self.__importBtn.setStyleAndIcon(ICON_IMPORT)
-        self.__importBtn.setToolTip(LangClass.TRANSLATIONS['Import'])
+        self.__importBtn.setToolTip(LangClass.TRANSLATIONS["Import"])
         self.__importBtn.clicked.connect(self.__import)
 
         self.__exportBtn = Button()
         self.__exportBtn.setStyleAndIcon(ICON_EXPORT)
-        self.__exportBtn.setToolTip(LangClass.TRANSLATIONS['Export'])
+        self.__exportBtn.setToolTip(LangClass.TRANSLATIONS["Export"])
         self.__exportBtn.clicked.connect(self.__export)
 
         lay = QHBoxLayout()
-        lay.addWidget(QLabel(LangClass.TRANSLATIONS['Form Group']))
+        lay.addWidget(QLabel(LangClass.TRANSLATIONS["Form Group"]))
         lay.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.Policy.MinimumExpanding))
         lay.addWidget(self.__addBtn)
         lay.addWidget(self.__delBtn)
@@ -59,7 +90,7 @@ class FormGroupList(QWidget):
         topWidget = QWidget()
         topWidget.setLayout(lay)
 
-        groups = DB.selectPromptGroup(prompt_type='form')
+        groups = DB.selectPromptGroup(prompt_type="form")
 
         self.__list = QListWidget()
 
@@ -92,7 +123,7 @@ class FormGroupList(QWidget):
         reply = dialog.exec()
         if reply == QDialog.DialogCode.Accepted:
             name = dialog.getPromptGroupName()
-            id = DB.insertPromptGroup(name, prompt_type='form')
+            id = DB.insertPromptGroup(name, prompt_type="form")
             self.__addGroupItem(id, name)
 
     def __delete(self):
@@ -110,30 +141,35 @@ class FormGroupList(QWidget):
             result = dialog.getSelected()
             # Save the data
             for group in result:
-                id = DB.insertPromptGroup(group['name'], prompt_type='form')
-                for entry in group['data']:
-                    DB.insertPromptEntry(id, entry['name'], entry['content'])
-                name = group['name']
+                id = DB.insertPromptGroup(group["name"], prompt_type="form")
+                for entry in group["data"]:
+                    DB.insertPromptEntry(id, entry["name"], entry["content"])
+                name = group["name"]
                 self.__addGroupItem(id, name)
 
     def __export(self):
         try:
             # Get the file
-            file_data = QFileDialog.getSaveFileName(self, LangClass.TRANSLATIONS['Save'], QFILEDIALOG_DEFAULT_DIRECTORY, JSON_FILE_EXT_LIST_STR)
+            file_data = QFileDialog.getSaveFileName(
+                self,
+                LangClass.TRANSLATIONS["Save"],
+                QFILEDIALOG_DEFAULT_DIRECTORY,
+                JSON_FILE_EXT_LIST_STR,
+            )
             if file_data[0]:
                 filename = file_data[0]
                 # Get the data
-                data = get_prompt_data(prompt_type='form')
+                data = get_prompt_data(prompt_type="form")
                 dialog = PromptGroupExportDialog(data, self)
                 reply = dialog.exec()
                 if reply == QDialog.DialogCode.Accepted:
                     data = dialog.getSelected()
                     # Save the data
-                    with open(filename, 'w') as f:
+                    with open(filename, "w") as f:
                         json.dump(data, f, indent=INDENT_SIZE)
                     open_directory(os.path.dirname(filename))
         except Exception as e:
-            QMessageBox.critical(self, LangClass.TRANSLATIONS['Error'], str(e))
+            QMessageBox.critical(self, LangClass.TRANSLATIONS["Error"], str(e))
             print(e)
 
     def __itemChanged(self, item):
@@ -145,6 +181,7 @@ class PromptTable(QWidget):
     """
     benchmarked https://gptforwork.com/tools/prompt-generator
     """
+
     updated = Signal(str)
 
     def __init__(self, id, parent=None):
@@ -182,9 +219,15 @@ class PromptTable(QWidget):
         self.__table = QTableWidget()
         self.__table.setColumnCount(2)
         self.__table.setRowCount(len(self.__entries))
-        self.__table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
-        self.__table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
-        self.__table.setHorizontalHeaderLabels([LangClass.TRANSLATIONS['Name'], LangClass.TRANSLATIONS['Value']])
+        self.__table.horizontalHeader().setSectionResizeMode(
+            1, QHeaderView.ResizeMode.Stretch
+        )
+        self.__table.setSelectionBehavior(
+            QAbstractItemView.SelectionBehavior.SelectRows
+        )
+        self.__table.setHorizontalHeaderLabels(
+            [LangClass.TRANSLATIONS["Name"], LangClass.TRANSLATIONS["Value"]]
+        )
 
         for i in range(len(self.__entries)):
             name = self.__entries[i].name
@@ -211,12 +254,12 @@ class PromptTable(QWidget):
         self.setLayout(lay)
 
     def getPromptText(self):
-        prompt_text = ''
+        prompt_text = ""
         for i in range(self.__table.rowCount()):
-            name = self.__table.item(i, 0).text() if self.__table.item(i, 0) else ''
-            value = self.__table.item(i, 1).text() if self.__table.item(i, 1) else ''
+            name = self.__table.item(i, 0).text() if self.__table.item(i, 0) else ""
+            value = self.__table.item(i, 1).text() if self.__table.item(i, 1) else ""
             if value.strip():
-                prompt_text += f'{name}: {value}\n'
+                prompt_text += f"{name}: {value}\n"
         return prompt_text
 
     def __generatePrompt(self):
@@ -237,23 +280,25 @@ class PromptTable(QWidget):
             self.__table.itemChanged.disconnect(self.__saveChangedPrompt)
 
             name = dialog.getPromptName()
-            self.__table.setRowCount(self.__table.rowCount()+1)
+            self.__table.setRowCount(self.__table.rowCount() + 1)
 
             item1 = QTableWidgetItem(name)
             item1.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-            self.__table.setItem(self.__table.rowCount()-1, 0, item1)
+            self.__table.setItem(self.__table.rowCount() - 1, 0, item1)
 
-            item2 = QTableWidgetItem('')
+            item2 = QTableWidgetItem("")
             item2.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-            self.__table.setItem(self.__table.rowCount()-1, 1, item2)
+            self.__table.setItem(self.__table.rowCount() - 1, 1, item2)
 
-            id = DB.insertPromptEntry(self.__group_id, name, '')
+            id = DB.insertPromptEntry(self.__group_id, name, "")
             item1.setData(Qt.ItemDataRole.UserRole, id)
 
             self.__table.itemChanged.connect(self.__saveChangedPrompt)
 
     def __delete(self):
-        for i in sorted(set([i.row() for i in self.__table.selectedIndexes()]), reverse=True):
+        for i in sorted(
+            set([i.row() for i in self.__table.selectedIndexes()]), reverse=True
+        ):
             id = self.__table.item(i, 0).data(Qt.ItemDataRole.UserRole)
             self.__table.removeRow(i)
             DB.deletePromptEntry(self.__group_id, id)
@@ -268,7 +313,7 @@ class FormPage(QWidget):
         self.__initUi()
 
     def __initVal(self):
-        self.__groups = DB.selectPromptGroup(prompt_type='form')
+        self.__groups = DB.selectPromptGroup(prompt_type="form")
 
     def __initUi(self):
         leftWidget = FormGroupList()

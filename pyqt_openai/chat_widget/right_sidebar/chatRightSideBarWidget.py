@@ -20,9 +20,11 @@ class ChatRightSideBarWidget(QScrollArea):
         self.__initUi()
 
     def __initVal(self):
-        self.__cur_idx = CONFIG_MANAGER.get_general_property('TAB_IDX')
-        self.__use_llama_index = CONFIG_MANAGER.get_general_property('use_llama_index')
-        self.__llama_index_directory = CONFIG_MANAGER.get_general_property('llama_index_directory')
+        self.__cur_idx = CONFIG_MANAGER.get_general_property("TAB_IDX")
+        self.__use_llama_index = CONFIG_MANAGER.get_general_property("use_llama_index")
+        self.__llama_index_directory = CONFIG_MANAGER.get_general_property(
+            "llama_index_directory"
+        )
 
     def __initUi(self):
         tabWidget = QTabWidget()
@@ -34,9 +36,9 @@ class ChatRightSideBarWidget(QScrollArea):
         self.__llamaPage.onDirectorySelected.connect(self.__onDirectorySelected)
 
         # TODO LANGUAGE
-        tabWidget.addTab(usingG4FPage, 'Using G4F (Free)')
-        tabWidget.addTab(usingAPIPage, 'Using API')
-        tabWidget.addTab(self.__llamaPage, 'LlamaIndex')
+        tabWidget.addTab(usingG4FPage, "Using G4F (Free)")
+        tabWidget.addTab(usingAPIPage, "Using API")
+        tabWidget.addTab(self.__llamaPage, "LlamaIndex")
         tabWidget.currentChanged.connect(self.__tabChanged)
         tabWidget.setTabEnabled(2, self.__use_llama_index)
         tabWidget.setCurrentIndex(self.__cur_idx)
@@ -54,15 +56,15 @@ class ChatRightSideBarWidget(QScrollArea):
         self.setWidget(mainWidget)
         self.setWidgetResizable(True)
 
-        self.setStyleSheet('QScrollArea { border: 0 }')
+        self.setStyleSheet("QScrollArea { border: 0 }")
 
     def __tabChanged(self, idx):
         self.__cur_idx = idx
-        CONFIG_MANAGER.set_general_property('TAB_IDX', self.__cur_idx)
+        CONFIG_MANAGER.set_general_property("TAB_IDX", self.__cur_idx)
 
     def __onDirectorySelected(self, selected_dirname):
         self.__llama_index_directory = selected_dirname
-        CONFIG_MANAGER.set_general_property('llama_index_directory', selected_dirname)
+        CONFIG_MANAGER.set_general_property("llama_index_directory", selected_dirname)
         self.onDirectorySelected.emit(selected_dirname)
 
     def currentTabIdx(self):
