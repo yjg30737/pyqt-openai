@@ -17,7 +17,7 @@ else
 endif
 
 venv:
-	python -m venv venv
+	$(PYTHON) -m venv venv
 	$(VE_PIP) install -r requirements.txt
 
 run:
