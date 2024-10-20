@@ -51,6 +51,8 @@ class UpdateSoftwareDialog(QDialog):
         self.releaseNoteBrowser = QTextBrowser()
         self.releaseNoteBrowser.setOpenExternalLinks(True)
 
+        self.__updateManualLbl = QLabel()
+
         lay.addWidget(self.releaseNoteBrowser)
 
         if sys.platform == "win32":
@@ -65,7 +67,6 @@ class UpdateSoftwareDialog(QDialog):
             lay.addWidget(askLbl)
             lay.addWidget(buttonBox)
         else:
-            self.__updateManualLbl = QLabel()
             self.__updateManualLbl.setText(
                 f'<b>{LangClass.TRANSLATIONS["Update Available"]}</b>'
                 +
