@@ -540,7 +540,6 @@ def convert_to_provider(provider: str) -> ProviderType:
 
 
 def get_g4f_providers(including_auto=False):
-    # providers = list(ProviderUtils.convert.keys())
     providers = list(
         provider.__name__ for provider in __providers__ if provider.working
     )
@@ -557,7 +556,7 @@ def get_g4f_models_by_provider(provider):
     return models
 
 
-def get_g4f_providers_by_model(model):
+def get_g4f_providers_by_model(model, including_auto=False):
     providers = get_g4f_providers()
     supported_providers = []
 
@@ -572,6 +571,9 @@ def get_g4f_providers_by_model(model):
     supported_providers = [
         provider.get_dict()["name"] for provider in supported_providers
     ]
+
+    if including_auto:
+        supported_providers = [G4F_PROVIDER_DEFAULT] + supported_providers
 
     return supported_providers
 

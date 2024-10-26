@@ -162,6 +162,7 @@ class MainWindow(QMainWindow):
         self.__fullScreenAction.triggered.connect(self.__fullScreenToggle)
 
         self.__aboutAction = QAction(LangClass.TRANSLATIONS["About..."], self)
+        self.__aboutAction.setIcon(QIcon(DEFAULT_APP_ICON))
         self.__aboutAction.triggered.connect(self.__showAboutDialog)
 
         # TODO LANGAUGE
@@ -325,6 +326,9 @@ class MainWindow(QMainWindow):
     def __setToolBar(self):
         self.__toolbar = QToolBar()
         self.__toolbar.addAction(self.__chooseAiAction)
+        self.__toolbar.addAction(self.__showSecondaryToolBarAction)
+        self.__toolbar.addAction(self.__fullScreenAction)
+        self.__toolbar.addAction(self.__stackAction)
         self.__toolbar.addAction(self.__settingsAction)
         self.__toolbar.addAction(self.__checkUpdateAction)
         self.__toolbar.addAction(self.__customizeAction)
@@ -333,6 +337,7 @@ class MainWindow(QMainWindow):
         self.__toolbar.addAction(self.__paypalAction)
         self.__toolbar.addAction(self.__kofiAction)
         self.__toolbar.addAction(self.__patreonAction)
+        self.__toolbar.addAction(self.__aboutAction)
         self.__toolbar.addAction(self.__transparentAction)
         self.__toolbar.setMovable(False)
 

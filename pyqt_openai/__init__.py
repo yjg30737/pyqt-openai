@@ -413,6 +413,8 @@ G4F_PROVIDER_DEFAULT = "Auto"
 
 G4F_USE_CHAT_HISTORY = True
 
+G4F_DEFAULT_IMAGE_MODEL = "flux"
+
 # Dictionary that stores the platform and model pairs
 PROVIDER_MODEL_DICT = {
     "OpenAI": ["gpt-4o", "gpt-4o-mini"] + O1_MODELS,
@@ -712,7 +714,8 @@ CONFIG_DATA = {
         "negative_prompt": "ugly, deformed, noisy, blurry, distorted",
     },
     "G4F_IMAGE": {
-        "model": "flux",
+        "model": G4F_DEFAULT_IMAGE_MODEL,
+        "provider": G4F_PROVIDER_DEFAULT,
 
         "show_history": True,
         "show_setting": True,
