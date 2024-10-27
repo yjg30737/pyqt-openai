@@ -110,6 +110,9 @@ class AIChatUnit(ChatUnit):
         if f:
             text = self._lbl.toPlainText()
             if text:
+                # TODO GET VOICE PROVIDER
+                voice_provider = CONFIG_MANAGER.get_general_property("voice_provider")
+
                 args = {
                     "model": WHISPER_TTS_MODEL,
                     "voice": CONFIG_MANAGER.get_general_property("voice"),

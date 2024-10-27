@@ -358,6 +358,9 @@ WHISPER_TTS_MODEL = "tts-1"
 WHISPER_TTS_DEFAULT_VOICE = "alloy"
 WHISPER_TTS_DEFAULT_SPEED = 1.0
 
+## EDGE-TTS (TTS)
+EDGE_TTS_VOICE_TYPE = ["en-GB-SoniaNeural", "en-US-GuyNeural", "en-US-JennyNeural"]
+
 STT_MODEL = "whisper-1"
 
 # Endpoint

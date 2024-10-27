@@ -18,6 +18,8 @@ import time
 import traceback
 import wave
 import zipfile
+import numpy as np
+
 from datetime import datetime
 from io import BytesIO
 from pathlib import Path
@@ -1049,7 +1051,7 @@ def init_llama():
 
 
 # TTS
-class StreamThread(QThread):
+class TTSThread(QThread):
     errorGenerated = Signal(str)
 
     def __init__(self, input_args):
@@ -1101,21 +1103,26 @@ def check_microphone_access():
     except Exception as e:
         return False
 
-
 class RecorderThread(QThread):
     recording_finished = Signal(str)
     errorGenerated = Signal(str)
 
-    def __init__(self):
+    # Silence detection 사용 여부
+
+    def __init__(self, is_silence_detection=False, silence_duration=3, silence_threshold=500):
         super().__init__()
         self.__stop = False
+        self.__is_silence_detection = is_silence_detection
+        if self.__is_silence_detection:
+            self.__silence_duration = silence_duration  # Duration to detect silence (in seconds)
+            self.__silence_threshold = silence_threshold  # Amplitude threshold for silence
 
     def stop(self):
         self.__stop = True
 
     def run(self):
         try:
-            chunk = DEFAULT_TOKEN_CHUNK_SIZE  # Record in chunks of 1024 samples
+            chunk = 1024  # Record in chunks of 1024 samples
             sample_format = pyaudio.paInt16  # 16 bits per sample
             channels = 2
             fs = 44100  # Record at 44100 samples per second
@@ -1132,12 +1139,29 @@ class RecorderThread(QThread):
 
             frames = []  # Initialize array to store frames
 
-            # Store data in chunks for the specified time
+            silence_start_time = None  # Track silence start time
+
             while True:
                 if self.__stop:
                     break
+
                 data = stream.read(chunk)
                 frames.append(data)
+
+                if self.__is_silence_detection:
+                    # Convert the data to a numpy array for amplitude analysis
+                    audio_data = np.frombuffer(data, dtype=np.int16)
+                    amplitude = np.max(np.abs(audio_data))
+
+                    if amplitude < self.__silence_threshold:
+                        # If silent, check if the silence duration threshold is reached
+                        if silence_start_time is None:
+                            silence_start_time = time.time()
+                        elif time.time() - silence_start_time >= self.__silence_duration:
+                            break
+                    else:
+                        # Reset silence start time if sound is detected
+                        silence_start_time = None
 
             # Stop and close the stream
             stream.stop_stream()
@@ -1161,13 +1185,10 @@ class RecorderThread(QThread):
         except Exception as e:
             if str(e).find("-9996") != -1:
                 self.errorGenerated.emit(
-                    LangClass.TRANSLATIONS[
-                        "No valid input device found. Please connect a microphone or check your audio device settings."
-                    ]
+                    "No valid input device found. Please connect a microphone or check your audio device settings."
                 )
             else:
                 self.errorGenerated.emit(f'<p style="color:red">{e}</p>')
-
 
 class STTThread(QThread):
     stt_finished = Signal(str)
@@ -1294,6 +1315,6 @@ def stop_existing_thread():
 def stream_to_speakers(input_args):
     stop_existing_thread()
 
-    stream_thread = StreamThread(input_args)
+    stream_thread = TTSThread(input_args)
     pyqt_openai.util.script.current_stream_thread = stream_thread
     return stream_thread

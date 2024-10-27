@@ -13,6 +13,7 @@ from pyqt_openai.chat_widget.right_sidebar.apiWidget import ApiWidget
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import SettingsParamsContainer
 from pyqt_openai.settings_dialog.generalSettingsWidget import GeneralSettingsWidget
+from pyqt_openai.settings_dialog.voiceSettingsWidget import VoiceSettingsWidget
 from pyqt_openai.widgets.navWidget import NavBar
 
 
@@ -31,6 +32,7 @@ class SettingsDialog(QDialog):
 
         self.__generalSettingsWidget = GeneralSettingsWidget()
         self.__apiWidget = ApiWidget()
+        self.__voiceSettingsWidget = VoiceSettingsWidget()
 
         # Dialog buttons
         buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
