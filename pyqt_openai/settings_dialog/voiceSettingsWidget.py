@@ -27,7 +27,9 @@ class VoiceSettingsWidget(QWidget):
         self.__voiceProviderCmbBox.setCurrentText(self.voice_provider)
         self.__voiceProviderCmbBox.currentTextChanged.connect(self.__voiceProviderChanged)
 
-        self.__warningLbl = QLabel("You need to install <a href='https://mpv.io/installation/'>mpv</a> to use edge-tts.")
+        # TODO LANGUAGE
+        self.__warningLbl = QLabel("You need to install mpv to use edge-tts. "
+                                   "<a href='https://mpv.io/installation/'>Link</a>")
         self.__warningLbl.setOpenExternalLinks(True)
         self.__warningLbl.setStyleSheet("color: yellow;")
         self.__warningLbl.setVisible(self.voice_provider == 'edge-tts')

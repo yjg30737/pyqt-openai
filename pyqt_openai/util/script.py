@@ -4,8 +4,7 @@ Mostly, these functions are used to perform chat-related tasks such as sending a
 or common tasks such as opening a directory, generating random strings, etc.
 Some of the functions are used to set PyQt settings, restart the application, show message boxes, etc.
 """
-
-
+import asyncio
 import base64
 import json
 import os
@@ -1050,37 +1049,59 @@ def init_llama():
         LLAMAINDEX_WRAPPER.set_directory(llama_index_directory)
 
 
+async def edge_tts_speech(text, voice, stop_event) -> None:
+    process = await asyncio.create_subprocess_exec(
+        "edge-playback",
+        f"--voice={voice}",
+        f"--text={text}",
+    )
+    while not stop_event.is_set():
+        await asyncio.sleep(0.1)
+        if process.returncode is not None:  # Checks if the process is complete
+            break
+    if process.returncode is None:
+        process.terminate()  # Terminate if still running
+
 # TTS
 class TTSThread(QThread):
     errorGenerated = Signal(str)
 
-    def __init__(self, input_args):
+    def __init__(self, voice_provider, input_args):
         super().__init__()
+        self.voice_provider = voice_provider
         self.input_args = input_args
         self.__stop = False
 
+    # In the TTSThread class
+    async def async_edge_tts_speech_wrapper(self):
+        stop_event = asyncio.Event()
+        self._stop_event = stop_event
+        await edge_tts_speech(self.input_args['input'], self.input_args['voice'], stop_event)
+
     def run(self):
         try:
-            player_stream = pyaudio.PyAudio().open(
-                format=pyaudio.paInt16, channels=1, rate=24000, output=True
-            )
-
-            start_time = time.time()
-
-            with OPENAI_CLIENT.audio.speech.with_streaming_response.create(
-                **self.input_args,
-                response_format="pcm",  # similar to WAV, but without a header chunk at the start.
-            ) as response:
-                for chunk in response.iter_bytes(chunk_size=DEFAULT_TOKEN_CHUNK_SIZE):
-                    if self.__stop:
-                        break
-                    player_stream.write(chunk)
+            if self.voice_provider == "OpenAI":
+                player_stream = pyaudio.PyAudio().open(
+                    format=pyaudio.paInt16, channels=1, rate=24000, output=True
+                )
+                with OPENAI_CLIENT.audio.speech.with_streaming_response.create(
+                    **self.input_args,
+                    response_format="pcm",  # similar to WAV, but without a header chunk at the start.
+                ) as response:
+                    for chunk in response.iter_bytes(chunk_size=DEFAULT_TOKEN_CHUNK_SIZE):
+                        if self.__stop:
+                            break
+                        player_stream.write(chunk)
+            elif self.voice_provider == 'edge-tts':
+                asyncio.run(self.async_edge_tts_speech_wrapper())
         except Exception as e:
+            error_text = f'<p style="color:red">{e}</p>'
+
             # TODO LANGUAGE
-            self.errorGenerated.emit(
-                f'<p style="color:red">{e}</p>\n\n'
-                f"(Are you registered valid OpenAI API Key? This feature requires OpenAI API Key.)\n"
-            )
+            if self.voice_provider == 'OpenAI':
+                error_text += "<br>(Are you registered valid OpenAI API Key? This feature requires OpenAI API Key.)"
+
+            self.errorGenerated.emit(error_text)
 
     def stop(self):
         self.__stop = True
@@ -1312,9 +1333,9 @@ def stop_existing_thread():
         pyqt_openai.util.script.current_stream_thread = None
 
 
-def stream_to_speakers(input_args):
+def stream_to_speakers(voice_provider, input_args):
     stop_existing_thread()
 
-    stream_thread = TTSThread(input_args)
+    stream_thread = TTSThread(voice_provider, input_args)
     pyqt_openai.util.script.current_stream_thread = stream_thread
     return stream_thread
