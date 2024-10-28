@@ -45,7 +45,7 @@ from pyqt_openai import (
     ICON_PAYPAL,
     ICON_KOFI,
     ICON_PATREON,
-    PATREON_URL, ICON_UPDATE,
+    PATREON_URL, ICON_UPDATE, ICON_SHORTCUT,
 )
 from pyqt_openai.aboutDialog import AboutDialog
 from pyqt_openai.chat_widget.chatMainWidget import ChatMainWidget
@@ -175,6 +175,7 @@ class MainWindow(QMainWindow):
         self.__viewShortcutsAction = QAction(
             LangClass.TRANSLATIONS["View Shortcuts"], self
         )
+        self.__viewShortcutsAction.setIcon(QIcon(ICON_SHORTCUT))
         self.__viewShortcutsAction.triggered.connect(self.__showShortcutsDialog)
 
         self.__githubAction = QAction("Github", self)
@@ -338,6 +339,7 @@ class MainWindow(QMainWindow):
         self.__toolbar.addAction(self.__kofiAction)
         self.__toolbar.addAction(self.__patreonAction)
         self.__toolbar.addAction(self.__aboutAction)
+        self.__toolbar.addAction(self.__viewShortcutsAction)
         self.__toolbar.addAction(self.__transparentAction)
         self.__toolbar.setMovable(False)
 

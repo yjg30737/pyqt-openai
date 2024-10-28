@@ -241,6 +241,4 @@ class GeneralSettingsWidget(QScrollArea):
             "maximum_messages_in_parameter": self.__maximumMessagesInParameterSpinBox.value(),
             "show_as_markdown": self.__show_as_markdown.isChecked(),
             "run_at_startup": self.__runAtStartupCheckBox.isChecked(),
-            "voice": self.__voiceCmbBox.currentText(),
-            "voice_speed": self.__speedSpinBox.value(),
         }

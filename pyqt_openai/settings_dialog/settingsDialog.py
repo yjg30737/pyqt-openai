@@ -44,10 +44,12 @@ class SettingsDialog(QDialog):
         self.__navBar = NavBar(orientation=Qt.Orientation.Vertical)
         self.__navBar.add(LangClass.TRANSLATIONS["General"])
         self.__navBar.add(LangClass.TRANSLATIONS["API Key"])
+        self.__navBar.add(LangClass.TRANSLATIONS["TTS-STT Settings"])
         self.__navBar.itemClicked.connect(self.__currentWidgetChanged)
 
         self.__stackedWidget.addWidget(self.__generalSettingsWidget)
         self.__stackedWidget.addWidget(self.__apiWidget)
+        self.__stackedWidget.addWidget(self.__voiceSettingsWidget)
 
         self.__stackedWidget.setCurrentIndex(self.__default_index)
         self.__navBar.setActiveButton(self.__default_index)
@@ -80,6 +82,7 @@ class SettingsDialog(QDialog):
     def getParam(self):
         return SettingsParamsContainer(
             **self.__generalSettingsWidget.getParam(),
+            **self.__voiceSettingsWidget.getParam(),
         )
 
     def __currentWidgetChanged(self, i):

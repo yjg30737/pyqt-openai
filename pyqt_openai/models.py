@@ -12,8 +12,8 @@ from pyqt_openai import (
     DEFAULT_USER_IMAGE_PATH,
     DEFAULT_AI_IMAGE_PATH,
     MAXIMUM_MESSAGES_IN_PARAMETER,
-    WHISPER_TTS_DEFAULT_VOICE,
-    WHISPER_TTS_DEFAULT_SPEED,
+    TTS_DEFAULT_VOICE,
+    TTS_DEFAULT_SPEED, TTS_DEFAULT_AUTO_PLAY, TTS_DEFAULT_AUTO_STOP_SILENCE_DURATION, TTS_DEFAULT_PROVIDER,
 )
 from pyqt_openai.lang.translations import LangClass
 
@@ -142,9 +142,12 @@ class SettingsParamsContainer(Container):
     show_as_markdown: bool = True
     apply_user_defined_styles: bool = False
     run_at_startup: bool = True
-    voice: str = WHISPER_TTS_DEFAULT_VOICE
-    voice_speed: int = WHISPER_TTS_DEFAULT_SPEED
 
+    voice_provider: str = TTS_DEFAULT_PROVIDER
+    voice: str = TTS_DEFAULT_VOICE
+    voice_speed: int = TTS_DEFAULT_SPEED
+    auto_play_voice: bool = TTS_DEFAULT_AUTO_PLAY
+    auto_stop_silence_duration: int = TTS_DEFAULT_AUTO_STOP_SILENCE_DURATION
 
 @dataclass
 class CustomizeParamsContainer(Container):

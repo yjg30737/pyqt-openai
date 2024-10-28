@@ -24,17 +24,18 @@ class VoiceSettingsWidget(QWidget):
 
         self.__voiceProviderCmbBox = QComboBox()
         self.__voiceProviderCmbBox.addItems(['OpenAI', 'edge-tts'])
-        # self.__voiceProviderCmbBox.setCurrentText(self.voice_provider)
+        self.__voiceProviderCmbBox.setCurrentText(self.voice_provider)
         self.__voiceProviderCmbBox.currentTextChanged.connect(self.__voiceProviderChanged)
 
-        self.__warningLbl = QLabel("You need to install <b>mpv</b> to use edge-tts.")
+        self.__warningLbl = QLabel("You need to install <a href='https://mpv.io/installation/'>mpv</a> to use edge-tts.")
+        self.__warningLbl.setOpenExternalLinks(True)
         self.__warningLbl.setStyleSheet("color: yellow;")
         self.__warningLbl.setVisible(self.voice_provider == 'edge-tts')
 
         detailsGroupBox = QGroupBox("Details")
 
         self.__voiceCmbBox = QComboBox()
-        self.__voiceCmbBox.addItems(WHISPER_TTS_VOICE_TYPE)
+        self.__voiceProviderChanged(self.voice_provider)
         self.__voiceCmbBox.setCurrentText(self.voice)
 
         self.__speedSpinBox = QDoubleSpinBox()
@@ -44,7 +45,7 @@ class VoiceSettingsWidget(QWidget):
 
         # Auto-Play voice when response is received
         self.__autoPlayChkBox = QCheckBox("Auto-Play Voice when Response is Received")
-        # self.__autoPlayChkBox.setChecked(self.auto_play)
+        self.__autoPlayChkBox.setChecked(self.auto_play)
 
         lay = QFormLayout()
         lay.addRow(LangClass.TRANSLATIONS["Voice"], self.__voiceCmbBox)
@@ -62,12 +63,12 @@ class VoiceSettingsWidget(QWidget):
         sttGrpBox = QGroupBox("Speech to Text")
 
         # Allow user to determine Auto-Stop Silence Duration
-        autoStopSilenceDurationSpinBox = QSpinBox()
-        autoStopSilenceDurationSpinBox.setRange(3, 10)
-        # autoStopSilenceDurationSpinBox.setValue(self.auto_stop_silence_duration)
+        self.__autoStopSilenceDurationSpinBox = QSpinBox()
+        self.__autoStopSilenceDurationSpinBox.setRange(3, 10)
+        self.__autoStopSilenceDurationSpinBox.setValue(self.auto_stop_silence_duration)
 
         lay = QFormLayout()
-        lay.addRow("Auto-Stop Silence Duration", autoStopSilenceDurationSpinBox)
+        lay.addRow("Auto-Stop Silence Duration", self.__autoStopSilenceDurationSpinBox)
 
         sttGrpBox.setLayout(lay)
 
@@ -95,12 +96,3 @@ class VoiceSettingsWidget(QWidget):
             self.__voiceCmbBox.clear()
             self.__voiceCmbBox.addItems(EDGE_TTS_VOICE_TYPE)
         self.__warningLbl.setVisible(not f)
-
-if __name__ == "__main__":
-    from PySide6.QtWidgets import QApplication
-    import sys
-
-    app = QApplication(sys.argv)
-    widget = VoiceSettingsWidget()
-    widget.show()
-    sys.exit(app.exec())

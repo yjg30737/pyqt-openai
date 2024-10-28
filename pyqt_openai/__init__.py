@@ -199,6 +199,7 @@ ICON_SPEAKER = os.path.join(ICON_PATH, "speaker.svg")
 ICON_PAYPAL = os.path.join(ICON_PATH, "paypal.png")
 ICON_KOFI = os.path.join(ICON_PATH, "kofi.png")
 ICON_PATREON = os.path.join(ICON_PATH, "patreon.svg")
+ICON_SHORTCUT = os.path.join(ICON_PATH, "shortcut.svg")
 
 ## CUSTOMIZE
 DEFAULT_ICON_SIZE = (24, 24)
@@ -355,11 +356,16 @@ PRESENCE_PENALTY_STEP = 0.01
 WHISPER_TTS_VOICE_TYPE = ["alloy", "echo", "fable", "onyx", "nova", "shimmer"]
 WHISPER_TTS_VOICE_SPEED_RANGE = 0.25, 4.0
 WHISPER_TTS_MODEL = "tts-1"
-WHISPER_TTS_DEFAULT_VOICE = "alloy"
-WHISPER_TTS_DEFAULT_SPEED = 1.0
 
 ## EDGE-TTS (TTS)
 EDGE_TTS_VOICE_TYPE = ["en-GB-SoniaNeural", "en-US-GuyNeural", "en-US-JennyNeural"]
+
+# TTS in general
+TTS_DEFAULT_PROVIDER = "OpenAI"
+TTS_DEFAULT_VOICE = "alloy"
+TTS_DEFAULT_SPEED = 1.0
+TTS_DEFAULT_AUTO_PLAY = False
+TTS_DEFAULT_AUTO_STOP_SILENCE_DURATION = 3
 
 STT_MODEL = "whisper-1"
 
@@ -667,8 +673,6 @@ CONFIG_DATA = {
         "llama_index_directory": "",
         "apply_user_defined_styles": False,
         "focus_mode": False,
-        "voice": WHISPER_TTS_DEFAULT_VOICE,
-        "voice_speed": WHISPER_TTS_DEFAULT_SPEED,
         "OPENAI_API_KEY": "",
         "GEMINI_API_KEY": "",
         "CLAUDE_API_KEY": "",
@@ -677,6 +681,13 @@ CONFIG_DATA = {
         "g4f_model": DEFAULT_LLM,
         "provider": G4F_PROVIDER_DEFAULT,
         "g4f_use_chat_history": G4F_USE_CHAT_HISTORY,
+
+        # STT and TTS settings
+        "voice_provider": TTS_DEFAULT_PROVIDER,
+        "voice": TTS_DEFAULT_VOICE,
+        "voice_speed": TTS_DEFAULT_SPEED,
+        "auto_play_voice": TTS_DEFAULT_AUTO_PLAY,
+        "auto_stop_silence_duration": TTS_DEFAULT_AUTO_STOP_SILENCE_DURATION
     },
     "DALLE": {
         "quality": "standard",
