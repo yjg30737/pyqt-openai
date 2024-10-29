@@ -14,7 +14,6 @@ from pyqt_openai import (
     DEFAULT_SHORTCUT_CONTROL_PROMPT_WINDOW,
     DEFAULT_SHORTCUT_SETTING,
     DEFAULT_SHORTCUT_SEND,
-    DEFAULT_SHORTCUT_SHOW_TOOLBAR,
     DEFAULT_SHORTCUT_SHOW_SECONDARY_TOOLBAR,
     DEFAULT_SHORTCUT_FOCUS_MODE,
 )
@@ -44,10 +43,6 @@ class ShortcutDialog(QDialog):
             "SHORTCUT_SUPPORT_PROMPT_COMMAND": {
                 "label": LangClass.TRANSLATIONS["Support Prompt Command"],
                 "value": DEFAULT_SHORTCUT_SUPPORT_PROMPT_COMMAND,
-            },
-            "SHORTCUT_SHOW_TOOLBAR": {
-                "label": LangClass.TRANSLATIONS["Show Toolbar"],
-                "value": DEFAULT_SHORTCUT_SHOW_TOOLBAR,
             },
             "SHOW_SECONDARY_TOOLBAR": {
                 "label": LangClass.TRANSLATIONS["Show Secondary Toolbar"],

@@ -244,7 +244,6 @@ DEFAULT_SHORTCUT_PROMPT_BEGINNING = "Ctrl+B"
 DEFAULT_SHORTCUT_PROMPT_ENDING = "Ctrl+E"
 DEFAULT_SHORTCUT_SUPPORT_PROMPT_COMMAND = "Ctrl+Shift+P"
 DEFAULT_SHORTCUT_STACK_ON_TOP = "Ctrl+Shift+S"
-DEFAULT_SHORTCUT_SHOW_TOOLBAR = "Ctrl+T"
 DEFAULT_SHORTCUT_SHOW_SECONDARY_TOOLBAR = "Ctrl+Shift+T"
 DEFAULT_SHORTCUT_FOCUS_MODE = "F10"
 DEFAULT_SHORTCUT_FULL_SCREEN = "F11"
@@ -639,7 +638,6 @@ CONFIG_DATA = {
         "notify_finish": True,
         "temperature": 1,
         "max_tokens": -1,
-        "show_toolbar": True,
         "show_secondary_toolbar": True,
         "top_p": 1,
         "chat_column_to_show": ["id", "name", "insert_dt", "update_dt"],

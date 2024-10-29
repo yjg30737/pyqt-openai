@@ -40,7 +40,6 @@ class GeneralSettingsWidget(QScrollArea):
         self.db = CONFIG_MANAGER.get_general_property("db")
         self.do_not_ask_again = CONFIG_MANAGER.get_general_property("do_not_ask_again")
         self.notify_finish = CONFIG_MANAGER.get_general_property("notify_finish")
-        self.show_toolbar = CONFIG_MANAGER.get_general_property("show_toolbar")
         self.show_secondary_toolbar = CONFIG_MANAGER.get_general_property(
             "show_secondary_toolbar"
         )
@@ -99,8 +98,6 @@ class GeneralSettingsWidget(QScrollArea):
             ]
         )
         self.__notifyFinishCheckBox.setChecked(self.notify_finish)
-        self.__showToolbarCheckBox = QCheckBox(LangClass.TRANSLATIONS["Show Toolbar"])
-        self.__showToolbarCheckBox.setChecked(self.show_toolbar)
         self.__showSecondaryToolBarChkBox = QCheckBox(
             LangClass.TRANSLATIONS["Show Secondary Toolbar"]
         )
@@ -232,7 +229,6 @@ class GeneralSettingsWidget(QScrollArea):
             "db": self.__dbLineEdit.text(),
             "do_not_ask_again": self.__doNotAskAgainCheckBox.isChecked(),
             "notify_finish": self.__notifyFinishCheckBox.isChecked(),
-            "show_toolbar": self.__showToolbarCheckBox.isChecked(),
             "show_secondary_toolbar": self.__showSecondaryToolBarChkBox.isChecked(),
             "chat_column_to_show": COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_CHAT
             + self.__chatColCheckBoxListWidget.getCheckedItemsText(),
