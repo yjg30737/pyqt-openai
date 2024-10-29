@@ -18,6 +18,8 @@ import traceback
 import wave
 import zipfile
 import numpy as np
+import subprocess
+import psutil
 
 from datetime import datetime
 from io import BytesIO
@@ -1049,18 +1051,12 @@ def init_llama():
         LLAMAINDEX_WRAPPER.set_directory(llama_index_directory)
 
 
-async def edge_tts_speech(text, voice, stop_event) -> None:
-    process = await asyncio.create_subprocess_exec(
-        "edge-playback",
-        f"--voice={voice}",
-        f"--text={text}",
-    )
-    while not stop_event.is_set():
-        await asyncio.sleep(0.1)
-        if process.returncode is not None:  # Checks if the process is complete
-            break
-    if process.returncode is None:
-        process.terminate()  # Terminate if still running
+def kill(proc_pid):
+    process = psutil.Process(proc_pid)
+    for proc in process.children(recursive=True):
+        proc.kill()
+    process.kill()
+
 
 # TTS
 class TTSThread(QThread):
@@ -1071,12 +1067,6 @@ class TTSThread(QThread):
         self.voice_provider = voice_provider
         self.input_args = input_args
         self.__stop = False
-
-    # In the TTSThread class
-    async def async_edge_tts_speech_wrapper(self):
-        stop_event = asyncio.Event()
-        self._stop_event = stop_event
-        await edge_tts_speech(self.input_args['input'], self.input_args['voice'], stop_event)
 
     def run(self):
         try:
@@ -1093,7 +1083,43 @@ class TTSThread(QThread):
                             break
                         player_stream.write(chunk)
             elif self.voice_provider == 'edge-tts':
-                asyncio.run(self.async_edge_tts_speech_wrapper())
+                media = tempfile.NamedTemporaryFile(suffix=".mp3", delete=False)
+                media.close()
+                mp3_fname = media.name
+
+                subtitle = tempfile.NamedTemporaryFile(suffix=".vtt", delete=False)
+                subtitle.close()
+                vtt_fname = subtitle.name
+
+                print(f"Media file: {mp3_fname}")
+                print(f"Subtitle file: {vtt_fname}\n")
+                with subprocess.Popen(
+                        [
+                            "edge-tts",
+                            f"--write-media={mp3_fname}",
+                            f"--write-subtitles={vtt_fname}",
+                            f"--voice={self.input_args['voice']}",
+                            f"--text={self.input_args['input']}",
+                        ]
+                ) as process:
+                    process.communicate()
+
+                proc = subprocess.Popen(
+                    [
+                        "mpv",
+                        f"--sub-file={vtt_fname}",
+                        mp3_fname,
+                    ], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+                )
+                while proc.poll() is None:
+                    time.sleep(0.1)
+                    if self.__stop:
+                        kill(proc.pid)
+                        return
+                if mp3_fname is not None and os.path.exists(mp3_fname):
+                    os.unlink(mp3_fname)
+                if vtt_fname is not None and os.path.exists(vtt_fname):
+                    os.unlink(vtt_fname)
         except Exception as e:
             error_text = f'<p style="color:red">{e}</p>'
 
