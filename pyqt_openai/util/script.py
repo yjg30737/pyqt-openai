@@ -1115,7 +1115,7 @@ class TTSThread(QThread):
                     time.sleep(0.1)
                     if self.__stop:
                         kill(proc.pid)
-                        return
+                        break
                 if mp3_fname is not None and os.path.exists(mp3_fname):
                     os.unlink(mp3_fname)
                 if vtt_fname is not None and os.path.exists(vtt_fname):
