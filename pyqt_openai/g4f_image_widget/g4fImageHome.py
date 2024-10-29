@@ -22,7 +22,7 @@ class G4FImageHome(QScrollArea):
         description.setFont(QFont(*MEDIUM_LABEL_PARAM))
         description.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        # TODO v1.6.0 "how does this work?" or "What is GPT4Free?" link (maybe)
+        # TODO v1.7.0 "how does this work?" or "What is GPT4Free?" link (maybe)
 
         lay = QVBoxLayout()
         lay.addWidget(title)

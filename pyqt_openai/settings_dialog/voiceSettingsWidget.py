@@ -46,8 +46,10 @@ class VoiceSettingsWidget(QWidget):
         self.__speedSpinBox.setValue(float(self.speed))
 
         # Auto-Play voice when response is received
-        self.__autoPlayChkBox = QCheckBox("Auto-Play Voice when Response is Received")
+        self.__autoPlayChkBox = QCheckBox("Auto-Play Voice when Response is Received (Work in Progress)")
         self.__autoPlayChkBox.setChecked(self.auto_play)
+        # TODO implement auto-play voice in v1.7.0
+        self.__autoPlayChkBox.setEnabled(False)
 
         lay = QFormLayout()
         lay.addRow(LangClass.TRANSLATIONS["Voice"], self.__voiceCmbBox)
@@ -68,9 +70,11 @@ class VoiceSettingsWidget(QWidget):
         self.__autoStopSilenceDurationSpinBox = QSpinBox()
         self.__autoStopSilenceDurationSpinBox.setRange(3, 10)
         self.__autoStopSilenceDurationSpinBox.setValue(self.auto_stop_silence_duration)
+        # TODO implement auto-play voice in v1.7.0
+        self.__autoStopSilenceDurationSpinBox.setEnabled(False)
 
         lay = QFormLayout()
-        lay.addRow("Auto-Stop Silence Duration", self.__autoStopSilenceDurationSpinBox)
+        lay.addRow("Auto-Stop Silence Duration (Work in Progress)", self.__autoStopSilenceDurationSpinBox)
 
         sttGrpBox.setLayout(lay)
 

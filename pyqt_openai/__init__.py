@@ -200,6 +200,7 @@ ICON_PAYPAL = os.path.join(ICON_PATH, "paypal.png")
 ICON_KOFI = os.path.join(ICON_PATH, "kofi.png")
 ICON_PATREON = os.path.join(ICON_PATH, "patreon.svg")
 ICON_SHORTCUT = os.path.join(ICON_PATH, "shortcut.svg")
+ICON_REALTIME_API = os.path.join(ICON_PATH, "realtime_api.svg")
 
 ## CUSTOMIZE
 DEFAULT_ICON_SIZE = (24, 24)
@@ -675,6 +676,8 @@ CONFIG_DATA = {
         "GEMINI_API_KEY": "",
         "CLAUDE_API_KEY": "",
         "LLAMA_API_KEY": "",
+        'show_realtime_api': False,
+
         # G4F
         "g4f_model": DEFAULT_LLM,
         "provider": G4F_PROVIDER_DEFAULT,

@@ -8,7 +8,7 @@ from PySide6.QtWidgets import (
     QSplitter,
     QFileDialog,
     QMessageBox,
-    QPushButton,
+    QPushButton, QStackedWidget,
 )
 
 from pyqt_openai import (
@@ -22,8 +22,9 @@ from pyqt_openai import (
     DEFAULT_SHORTCUT_LEFT_SIDEBAR_WINDOW,
     DEFAULT_SHORTCUT_CONTROL_PROMPT_WINDOW,
     DEFAULT_SHORTCUT_RIGHT_SIDEBAR_WINDOW,
-    QFILEDIALOG_DEFAULT_DIRECTORY,
+    QFILEDIALOG_DEFAULT_DIRECTORY, ICON_REALTIME_API,
 )
+from pyqt_openai.chat_widget.center.realtimeApiWidget import RealtimeApiWidget
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.chat_widget.center.chatWidget import ChatWidget
 from pyqt_openai.chat_widget.left_sidebar.chatNavWidget import ChatNavWidget
@@ -61,6 +62,7 @@ class ChatMainWidget(QWidget):
         self.__notify_finish = CONFIG_MANAGER.get_general_property("notify_finish")
 
         self.__show_chat_list = CONFIG_MANAGER.get_general_property("show_chat_list")
+        self.__show_realtime_api = CONFIG_MANAGER.get_general_property("show_realtime_api")
         self.__show_setting = CONFIG_MANAGER.get_general_property("show_setting")
         self.__show_prompt = CONFIG_MANAGER.get_general_property("show_prompt")
 
@@ -82,6 +84,8 @@ class ChatMainWidget(QWidget):
         self.__chatWidget = ChatWidget()
         self.__chatWidget.addThread.connect(self.__addThread)
         self.__chatWidget.onMenuCloseClicked.connect(self.__onMenuCloseClicked)
+
+        self.__realtimeApiWidget = RealtimeApiWidget()
 
         self.__browser = self.__chatWidget.getChatBrowser()
 
@@ -111,6 +115,15 @@ class ChatMainWidget(QWidget):
         self.__sideBarBtn.setChecked(self.__show_chat_list)
         self.__sideBarBtn.toggled.connect(self.toggleSideBar)
         self.__sideBarBtn.setShortcut(DEFAULT_SHORTCUT_LEFT_SIDEBAR_WINDOW)
+
+        self.__useRealtimeApiBtn = Button()
+        self.__useRealtimeApiBtn.setStyleAndIcon(ICON_REALTIME_API)
+        self.__useRealtimeApiBtn.setToolTip(
+            LangClass.TRANSLATIONS["Use Realtime API"]
+        )
+        self.__useRealtimeApiBtn.setCheckable(True)
+        self.__useRealtimeApiBtn.setChecked(False)
+        self.__useRealtimeApiBtn.toggled.connect(self.toggleRealtimeApiScreen)
 
         self.__settingBtn = Button()
         self.__settingBtn.setStyleAndIcon(ICON_SETTING)
@@ -146,6 +159,7 @@ class ChatMainWidget(QWidget):
 
         lay = QHBoxLayout()
         lay.addWidget(self.__sideBarBtn)
+        lay.addWidget(self.__useRealtimeApiBtn)
         lay.addWidget(self.__settingBtn)
         lay.addWidget(self.__promptBtn)
         lay.addWidget(sep)
@@ -181,9 +195,14 @@ class ChatMainWidget(QWidget):
             """
         )
 
+        self.__centerWidget = QStackedWidget()
+        self.__centerWidget.addWidget(self.__chatWidget)
+        self.__centerWidget.addWidget(self.__realtimeApiWidget)
+        self.__centerWidget.setCurrentIndex(1 if self.__show_realtime_api else 0)
+
         mainWidget = QSplitter()
         mainWidget.addWidget(self.__chatNavWidget)
-        mainWidget.addWidget(self.__chatWidget)
+        mainWidget.addWidget(self.__centerWidget)
         mainWidget.addWidget(self.__rightSideBar)
         mainWidget.setSizes([100, 500, 400])
         mainWidget.setChildrenCollapsible(False)
@@ -220,6 +239,11 @@ class ChatMainWidget(QWidget):
         self.__chatNavWidget.setVisible(x)
         self.__show_chat_list = x
         CONFIG_MANAGER.set_general_property("show_chat_list", self.__show_chat_list)
+
+    def toggleRealtimeApiScreen(self, x):
+        self.__centerWidget.setCurrentIndex(1 if x else 0)
+        self.__show_realtime_api = x
+        CONFIG_MANAGER.set_general_property("show_realtime_api", self.__show_realtime_api)
 
     def toggleSetting(self, x):
         self.__chatRightSideBarWidget.setVisible(x)

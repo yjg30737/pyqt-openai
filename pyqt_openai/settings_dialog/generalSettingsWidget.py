@@ -113,7 +113,6 @@ class GeneralSettingsWidget(QScrollArea):
         lay.addLayout(dbLayout)
         lay.addWidget(self.__doNotAskAgainCheckBox)
         lay.addWidget(self.__notifyFinishCheckBox)
-        lay.addWidget(self.__showToolbarCheckBox)
         lay.addWidget(self.__showSecondaryToolBarChkBox)
         lay.addWidget(self.__runAtStartupCheckBox)
 

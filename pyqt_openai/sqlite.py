@@ -429,21 +429,7 @@ class SqliteDatabase:
                 f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{MESSAGE_TABLE_NAME}'"
             )
             if self.__c.fetchone()[0] == 1:
-                # TODO WILL_BE_REMOVED_AFTER v1.6.0
-                # If there is no is_g4f column, add it
-                self.__c.execute(f"PRAGMA table_info({MESSAGE_TABLE_NAME})")
-                columns = self.__c.fetchall()
-                if "is_g4f" not in [col[1] for col in columns]:
-                    # Add is_g4f, provider to the table
-                    self.__c.execute(
-                        f"ALTER TABLE {MESSAGE_TABLE_NAME} ADD COLUMN is_g4f INT DEFAULT 0"
-                    )
-
-                # If there is no provider column, add it
-                if "provider" not in [col[1] for col in columns]:
-                    self.__c.execute(
-                        f"ALTER TABLE {MESSAGE_TABLE_NAME} ADD COLUMN provider VARCHAR(255) DEFAULT ''"
-                    )
+                pass
             else:
                 # Create message table and triggers
                 self.__c.execute(
