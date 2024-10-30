@@ -25,7 +25,9 @@ dependencies = [
     "replicate",
 
     "g4f",
-    "curl_cffi"
+    "curl_cffi",
+
+    "edge-tts"
 ]
 keywords = ['openai', 'pyqt', 'pyqt5', 'pyqt6', 'pyside6', 'desktop', 'app', 'chatbot', 'gpt', 'replicate', 'gemini', 'claude', 'llama', 'llm', 'gpt4free']
 

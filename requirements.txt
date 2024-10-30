@@ -14,3 +14,5 @@ replicate
 
 g4f
 curl_cffi
+
+edge-tts
