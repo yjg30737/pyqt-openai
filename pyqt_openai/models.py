@@ -112,6 +112,7 @@ class ImagePromptContainer(Container):
     model: str = ""
     width: str = ""
     height: str = ""
+    provider: str = ""
     prompt: str = ""
     negative_prompt: str = ""
     n: str = ""
@@ -121,7 +122,6 @@ class ImagePromptContainer(Container):
     revised_prompt: str = ""
     update_dt: str = ""
     insert_dt: str = ""
-    provider: str = ""
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

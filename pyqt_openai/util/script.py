@@ -26,6 +26,7 @@ from io import BytesIO
 from pathlib import Path
 
 import PIL.Image
+from g4f.gui.server.api import Api
 
 from pyqt_openai.widgets.scrollableErrorDialog import ScrollableErrorDialog
 
@@ -771,6 +772,10 @@ def get_provider_from_model(model):
     return None
 
 def get_g4f_image_models() -> list:
+    """
+    Get all the models that support image generation
+    Some of the image providers are not included in this list
+    """
     image_models = []
     index = []
     for provider in __providers__:
@@ -793,6 +798,24 @@ def get_g4f_image_models() -> list:
     models = [model['image_model'] for model in image_models]
     return models
 
+def get_g4f_image_providers(including_auto=False) -> list:
+    """
+    Get all the providers that support image generation
+    (Even though this is not a perfect way to get the providers that support image generation)
+    """
+    providers = Api.get_providers()
+    if including_auto:
+        providers = [G4F_PROVIDER_DEFAULT] + [provider for provider in providers]
+    return providers
+
+def get_g4f_image_models_from_provider(provider) -> list:
+    """
+    Get all the models that support image generation for a specific provider
+    (Again, this is not a perfect way to get the models that support image generation)
+    """
+    if provider == G4F_PROVIDER_DEFAULT:
+        return get_g4f_image_models()
+    return [model['model'] for model in Api.get_provider_models(provider)]
 
 def get_g4f_argument(model, messages, cur_text, stream):
     args = {"model": model, "messages": messages, "stream": stream}
