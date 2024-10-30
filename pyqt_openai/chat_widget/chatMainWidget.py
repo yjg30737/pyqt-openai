@@ -122,7 +122,7 @@ class ChatMainWidget(QWidget):
             LangClass.TRANSLATIONS["Use Realtime API"]
         )
         self.__useRealtimeApiBtn.setCheckable(True)
-        self.__useRealtimeApiBtn.setChecked(False)
+        self.__useRealtimeApiBtn.setChecked(self.__show_realtime_api)
         self.__useRealtimeApiBtn.toggled.connect(self.toggleRealtimeApiScreen)
 
         self.__settingBtn = Button()

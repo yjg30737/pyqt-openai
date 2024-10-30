@@ -561,7 +561,15 @@ class SqliteDatabase:
                 f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{IMAGE_TABLE_NAME}'"
             )
             if self.__c.fetchone()[0] == 1:
-                pass
+                # Add provider column if not exists
+                self.__c.execute(
+                    f"PRAGMA table_info({IMAGE_TABLE_NAME})"
+                )
+                columns = self.__c.fetchall()
+                if not any([col[1] == "provider" for col in columns]):
+                    self.__c.execute(
+                        f"ALTER TABLE {IMAGE_TABLE_NAME} ADD COLUMN provider VARCHAR(255)"
+                    )
             else:
                 self.__c.execute(
                     f"""CREATE TABLE {IMAGE_TABLE_NAME}
@@ -576,6 +584,7 @@ class SqliteDatabase:
                               width INT,
                               height INT,
                               negative_prompt TEXT,
+                              provider VARCHAR(255),
                               update_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
                               insert_dt DATETIME DEFAULT CURRENT_TIMESTAMP)"""
                 )

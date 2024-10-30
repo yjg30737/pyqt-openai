@@ -121,6 +121,7 @@ class ImagePromptContainer(Container):
     revised_prompt: str = ""
     update_dt: str = ""
     insert_dt: str = ""
+    provider: str = ""
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

@@ -164,7 +164,7 @@ class G4FImageRightSideBarWidget(ImageControlWidget):
         if arg['provider'] != G4F_PROVIDER_DEFAULT:
             arg["provider"] = convert_to_provider(arg['provider'])
 
-        t = G4FImageThread(arg, number_of_images, self.__model, random_prompt)
+        t = G4FImageThread(arg, number_of_images, random_prompt)
         self._setThread(t)
         super()._submit()
 

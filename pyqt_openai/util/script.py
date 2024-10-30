@@ -525,7 +525,7 @@ def get_g4f_models():
     return models
 
 
-def convert_to_provider(provider: str) -> ProviderType:
+def convert_to_provider(provider: str):
     if " " in provider:
         provider_list = [
             ProviderUtils.convert[p]
