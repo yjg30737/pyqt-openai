@@ -125,6 +125,7 @@ class ConfigManager:
         self.config["G4F_IMAGE"][key] = value
         self._save_yaml()
 
+
 def update_api_key(yaml_file_path):
     with open(yaml_file_path, "r") as file:
         data = yaml.safe_load(file)

@@ -29,9 +29,11 @@ class G4FImageThread(QThread):
     def run(self):
         try:
             provider = G4F_PROVIDER_DEFAULT
-            if self.__input_args['provider'] != G4F_PROVIDER_DEFAULT:
-                provider = self.__input_args['provider']
-                self.__input_args["provider"] = convert_to_provider(self.__input_args['provider'])
+            if self.__input_args["provider"] != G4F_PROVIDER_DEFAULT:
+                provider = self.__input_args["provider"]
+                self.__input_args["provider"] = convert_to_provider(
+                    self.__input_args["provider"]
+                )
 
             for _ in range(self.__number_of_images):
                 if self.__stop:
@@ -45,9 +47,7 @@ class G4FImageThread(QThread):
                     images.provider = self.__input_args["provider"]
                 else:
                     del self.__input_args["provider"]
-                response = images.generate(
-                    **self.__input_args
-                )
+                response = images.generate(**self.__input_args)
                 arg = {
                     **self.__input_args,
                     "provider": provider,

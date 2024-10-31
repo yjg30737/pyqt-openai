@@ -562,9 +562,7 @@ class SqliteDatabase:
             )
             if self.__c.fetchone()[0] == 1:
                 # Add provider column if not exists
-                self.__c.execute(
-                    f"PRAGMA table_info({IMAGE_TABLE_NAME})"
-                )
+                self.__c.execute(f"PRAGMA table_info({IMAGE_TABLE_NAME})")
                 columns = self.__c.fetchall()
                 if not any([col[1] == "provider" for col in columns]):
                     self.__c.execute(

@@ -23,7 +23,7 @@ ROOT_DIR = SRC_DIR.parent  # VividNode
 # For the sake of following the PEP8 standard, we will declare module-level dunder names.
 # PEP8 standard about dunder names: https://peps.python.org/pep-0008/#module-level-dunder-names
 
-__version__ = "1.5.0"
+__version__ = "1.6.0"
 __author__ = "Jung Gyu Yoon"
 
 # Constants
@@ -36,6 +36,7 @@ DEFAULT_APP_NAME = "VividNode"
 
 # For Windows
 AUTOSTART_REGISTRY_KEY = r"Software\Microsoft\Windows\CurrentVersion\Run"
+
 
 # Check if the application is frozen (compiled with PyInstaller)
 # If this is main.py, it will return False, that means it is not frozen.
@@ -80,6 +81,7 @@ UPDATE_DIR = get_config_directory()
 
 # The default updater path (relative to the application's root directory) - For Windows
 UPDATER_PATH = os.path.join(UPDATE_DIR, "Updater.exe")
+
 
 # Move the Updater.exe to the config folder
 def move_updater():
@@ -357,7 +359,12 @@ WHISPER_TTS_VOICE_SPEED_RANGE = 0.25, 4.0
 WHISPER_TTS_MODEL = "tts-1"
 
 ## EDGE-TTS (TTS)
-EDGE_TTS_VOICE_TYPE = ["en-GB-SoniaNeural", "en-US-GuyNeural", "en-US-JennyNeural", "en-US-AvaMultilingualNeural"]
+EDGE_TTS_VOICE_TYPE = [
+    "en-GB-SoniaNeural",
+    "en-US-GuyNeural",
+    "en-US-JennyNeural",
+    "en-US-AvaMultilingualNeural",
+]
 
 # TTS in general
 TTS_DEFAULT_PROVIDER = "OpenAI"
@@ -675,19 +682,17 @@ CONFIG_DATA = {
         "GEMINI_API_KEY": "",
         "CLAUDE_API_KEY": "",
         "LLAMA_API_KEY": "",
-        'show_realtime_api': False,
-
+        "show_realtime_api": False,
         # G4F
         "g4f_model": DEFAULT_LLM,
         "provider": G4F_PROVIDER_DEFAULT,
         "g4f_use_chat_history": G4F_USE_CHAT_HISTORY,
-
         # STT and TTS settings
         "voice_provider": TTS_DEFAULT_PROVIDER,
         "voice": TTS_DEFAULT_VOICE,
         "voice_speed": TTS_DEFAULT_SPEED,
         "auto_play_voice": TTS_DEFAULT_AUTO_PLAY,
-        "auto_stop_silence_duration": TTS_DEFAULT_AUTO_STOP_SILENCE_DURATION
+        "auto_stop_silence_duration": TTS_DEFAULT_AUTO_STOP_SILENCE_DURATION,
     },
     "DALLE": {
         "quality": "standard",
@@ -698,7 +703,6 @@ CONFIG_DATA = {
         "width": 1024,
         "height": 1024,
         "prompt_type": 1,
-
         "show_history": True,
         "show_setting": True,
         "prompt": "Astronaut in a jungle, cold color palette, muted colors, detailed, 8k",
@@ -714,7 +718,6 @@ CONFIG_DATA = {
         "model": "stability-ai/sdxl:39ed52f2a78e934b3ba6e2a89f5b1c712de7dfea535525255b1aa35c5565e08b",
         "width": 768,
         "height": 768,
-
         "show_history": True,
         "show_setting": True,
         "prompt": "Astronaut in a jungle, cold color palette, muted colors, detailed, 8k",
@@ -724,13 +727,11 @@ CONFIG_DATA = {
         "number_of_images_to_create": 2,
         "save_prompt_as_text": True,
         "show_prompt_on_image": False,
-
         "negative_prompt": "ugly, deformed, noisy, blurry, distorted",
     },
     "G4F_IMAGE": {
         "model": G4F_DEFAULT_IMAGE_MODEL,
         "provider": G4F_PROVIDER_DEFAULT,
-
         "show_history": True,
         "show_setting": True,
         "prompt": "Astronaut in a jungle, cold color palette, muted colors, detailed, 8k",
@@ -740,10 +741,10 @@ CONFIG_DATA = {
         "number_of_images_to_create": 2,
         "save_prompt_as_text": True,
         "show_prompt_on_image": False,
-
         "negative_prompt": "ugly, deformed, noisy, blurry, distorted",
-    }
+    },
 }
+
 
 # Dynamically add the API keys to the configuration data
 def update_general_config_with_api_keys(config_data, api_configs):
@@ -754,7 +755,7 @@ def update_general_config_with_api_keys(config_data, api_configs):
 update_general_config_with_api_keys(CONFIG_DATA, DEFAULT_API_CONFIGS)
 
 # Set the default llama index cache directory for preventing any issues such as PermissionError
-os.environ['NLTK_DATA'] = os.path.join(get_config_directory(), "llama_index_cache")
+os.environ["NLTK_DATA"] = os.path.join(get_config_directory(), "llama_index_cache")
 
 # Update the __all__ list with the PEP8 standard dunder names
 __all__ = ["__version__", "__author__"]

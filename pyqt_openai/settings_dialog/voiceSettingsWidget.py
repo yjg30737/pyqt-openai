@@ -1,7 +1,20 @@
-from PySide6.QtWidgets import QWidget, QComboBox, QFormLayout, QDoubleSpinBox, QGroupBox, QVBoxLayout, QSpinBox, \
-    QCheckBox, QLabel
+from PySide6.QtWidgets import (
+    QWidget,
+    QComboBox,
+    QFormLayout,
+    QDoubleSpinBox,
+    QGroupBox,
+    QVBoxLayout,
+    QSpinBox,
+    QCheckBox,
+    QLabel,
+)
 
-from pyqt_openai import WHISPER_TTS_VOICE_TYPE, WHISPER_TTS_VOICE_SPEED_RANGE, EDGE_TTS_VOICE_TYPE
+from pyqt_openai import (
+    WHISPER_TTS_VOICE_TYPE,
+    WHISPER_TTS_VOICE_SPEED_RANGE,
+    EDGE_TTS_VOICE_TYPE,
+)
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.lang.translations import LangClass
 
@@ -17,22 +30,28 @@ class VoiceSettingsWidget(QWidget):
         self.voice = CONFIG_MANAGER.get_general_property("voice")
         self.speed = CONFIG_MANAGER.get_general_property("voice_speed")
         self.auto_play = CONFIG_MANAGER.get_general_property("auto_play_voice")
-        self.auto_stop_silence_duration = CONFIG_MANAGER.get_general_property("auto_stop_silence_duration")
+        self.auto_stop_silence_duration = CONFIG_MANAGER.get_general_property(
+            "auto_stop_silence_duration"
+        )
 
     def __initUi(self):
         ttsGrpBox = QGroupBox("Text to Speech")
 
         self.__voiceProviderCmbBox = QComboBox()
-        self.__voiceProviderCmbBox.addItems(['OpenAI', 'edge-tts'])
+        self.__voiceProviderCmbBox.addItems(["OpenAI", "edge-tts"])
         self.__voiceProviderCmbBox.setCurrentText(self.voice_provider)
-        self.__voiceProviderCmbBox.currentTextChanged.connect(self.__voiceProviderChanged)
+        self.__voiceProviderCmbBox.currentTextChanged.connect(
+            self.__voiceProviderChanged
+        )
 
         # TODO LANGUAGE
-        self.__warningLbl = QLabel("You need to install mpv to use edge-tts. "
-                                   "<a href='https://mpv.io/installation/'>Link</a>")
+        self.__warningLbl = QLabel(
+            "You need to install mpv to use edge-tts. "
+            "<a href='https://mpv.io/installation/'>Link</a>"
+        )
         self.__warningLbl.setOpenExternalLinks(True)
         self.__warningLbl.setStyleSheet("color: yellow;")
-        self.__warningLbl.setVisible(self.voice_provider == 'edge-tts')
+        self.__warningLbl.setVisible(self.voice_provider == "edge-tts")
 
         detailsGroupBox = QGroupBox("Details")
 
@@ -46,7 +65,9 @@ class VoiceSettingsWidget(QWidget):
         self.__speedSpinBox.setValue(float(self.speed))
 
         # Auto-Play voice when response is received
-        self.__autoPlayChkBox = QCheckBox("Auto-Play Voice when Response is Received (Work in Progress)")
+        self.__autoPlayChkBox = QCheckBox(
+            "Auto-Play Voice when Response is Received (Work in Progress)"
+        )
         self.__autoPlayChkBox.setChecked(self.auto_play)
         # TODO implement auto-play voice in v1.7.0
         self.__autoPlayChkBox.setEnabled(False)
@@ -74,7 +95,10 @@ class VoiceSettingsWidget(QWidget):
         self.__autoStopSilenceDurationSpinBox.setEnabled(False)
 
         lay = QFormLayout()
-        lay.addRow("Auto-Stop Silence Duration (Work in Progress)", self.__autoStopSilenceDurationSpinBox)
+        lay.addRow(
+            "Auto-Stop Silence Duration (Work in Progress)",
+            self.__autoStopSilenceDurationSpinBox,
+        )
 
         sttGrpBox.setLayout(lay)
 
@@ -94,7 +118,7 @@ class VoiceSettingsWidget(QWidget):
         }
 
     def __voiceProviderChanged(self, text):
-        f = text == 'OpenAI'
+        f = text == "OpenAI"
         if f:
             self.__voiceCmbBox.clear()
             self.__voiceCmbBox.addItems(WHISPER_TTS_VOICE_TYPE)

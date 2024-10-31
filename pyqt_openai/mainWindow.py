@@ -44,7 +44,9 @@ from pyqt_openai import (
     ICON_PAYPAL,
     ICON_KOFI,
     ICON_PATREON,
-    PATREON_URL, ICON_UPDATE, ICON_SHORTCUT,
+    PATREON_URL,
+    ICON_UPDATE,
+    ICON_SHORTCUT,
 )
 from pyqt_openai.aboutDialog import AboutDialog
 from pyqt_openai.chat_widget.chatMainWidget import ChatMainWidget

@@ -8,7 +8,8 @@ from PySide6.QtWidgets import (
     QSplitter,
     QFileDialog,
     QMessageBox,
-    QPushButton, QStackedWidget,
+    QPushButton,
+    QStackedWidget,
 )
 
 from pyqt_openai import (
@@ -22,7 +23,8 @@ from pyqt_openai import (
     DEFAULT_SHORTCUT_LEFT_SIDEBAR_WINDOW,
     DEFAULT_SHORTCUT_CONTROL_PROMPT_WINDOW,
     DEFAULT_SHORTCUT_RIGHT_SIDEBAR_WINDOW,
-    QFILEDIALOG_DEFAULT_DIRECTORY, ICON_REALTIME_API,
+    QFILEDIALOG_DEFAULT_DIRECTORY,
+    ICON_REALTIME_API,
 )
 from pyqt_openai.chat_widget.center.realtimeApiWidget import RealtimeApiWidget
 from pyqt_openai.config_loader import CONFIG_MANAGER
@@ -62,7 +64,9 @@ class ChatMainWidget(QWidget):
         self.__notify_finish = CONFIG_MANAGER.get_general_property("notify_finish")
 
         self.__show_chat_list = CONFIG_MANAGER.get_general_property("show_chat_list")
-        self.__show_realtime_api = CONFIG_MANAGER.get_general_property("show_realtime_api")
+        self.__show_realtime_api = CONFIG_MANAGER.get_general_property(
+            "show_realtime_api"
+        )
         self.__show_setting = CONFIG_MANAGER.get_general_property("show_setting")
         self.__show_prompt = CONFIG_MANAGER.get_general_property("show_prompt")
 
@@ -118,9 +122,7 @@ class ChatMainWidget(QWidget):
 
         self.__useRealtimeApiBtn = Button()
         self.__useRealtimeApiBtn.setStyleAndIcon(ICON_REALTIME_API)
-        self.__useRealtimeApiBtn.setToolTip(
-            LangClass.TRANSLATIONS["Use Realtime API"]
-        )
+        self.__useRealtimeApiBtn.setToolTip(LangClass.TRANSLATIONS["Use Realtime API"])
         self.__useRealtimeApiBtn.setCheckable(True)
         self.__useRealtimeApiBtn.setChecked(self.__show_realtime_api)
         self.__useRealtimeApiBtn.toggled.connect(self.toggleRealtimeApiScreen)
@@ -243,7 +245,9 @@ class ChatMainWidget(QWidget):
     def toggleRealtimeApiScreen(self, x):
         self.__centerWidget.setCurrentIndex(1 if x else 0)
         self.__show_realtime_api = x
-        CONFIG_MANAGER.set_general_property("show_realtime_api", self.__show_realtime_api)
+        CONFIG_MANAGER.set_general_property(
+            "show_realtime_api", self.__show_realtime_api
+        )
 
     def toggleSetting(self, x):
         self.__chatRightSideBarWidget.setVisible(x)

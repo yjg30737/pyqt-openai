@@ -4,6 +4,7 @@ Mostly, these functions are used to perform chat-related tasks such as sending a
 or common tasks such as opening a directory, generating random strings, etc.
 Some of the functions are used to set PyQt settings, restart the application, show message boxes, etc.
 """
+
 import asyncio
 import base64
 import json
@@ -318,6 +319,7 @@ def is_prompt_group_name_valid(text):
         return False
     return True
 
+
 def is_prompt_entry_name_valid(group_id, text):
     """
     Check if the prompt entry name is valid or not and exists in the database
@@ -328,7 +330,8 @@ def is_prompt_entry_name_valid(group_id, text):
     # Check if the prompt entry with same name already exists
     exists_f = (
         True
-        if (True if text else False) and DB.selectPromptEntry(group_id=group_id, name=text)
+        if (True if text else False)
+        and DB.selectPromptEntry(group_id=group_id, name=text)
         else False
     )
     return exists_f
@@ -740,6 +743,7 @@ def get_image_url_from_local(image, is_openai=False):
     """
     Image is bytes, this function converts it to base64 and returns the image url
     """
+
     # Function to encode the image
     def encode_image(image):
         return base64.b64encode(image).decode("utf-8")
@@ -762,6 +766,7 @@ def get_provider_from_model(model):
             return provider
     return None
 
+
 def get_g4f_image_models() -> list:
     """
     Get all the models that support image generation
@@ -778,16 +783,19 @@ def get_g4f_image_models() -> list:
                 parent = __map__[provider.parent]
             if parent.__name__ not in index:
                 for model in provider.image_models:
-                    image_models.append({
-                        "provider": parent.__name__,
-                        "url": parent.url,
-                        "label": parent.label if hasattr(parent, "label") else None,
-                        "image_model": model,
-                    })
+                    image_models.append(
+                        {
+                            "provider": parent.__name__,
+                            "url": parent.url,
+                            "label": parent.label if hasattr(parent, "label") else None,
+                            "image_model": model,
+                        }
+                    )
                     index.append(parent.__name__)
 
-    models = [model['image_model'] for model in image_models]
+    models = [model["image_model"] for model in image_models]
     return models
+
 
 def get_g4f_image_providers(including_auto=False) -> list:
     """
@@ -799,6 +807,7 @@ def get_g4f_image_providers(including_auto=False) -> list:
         providers = [G4F_PROVIDER_DEFAULT] + [provider for provider in providers]
     return providers
 
+
 def get_g4f_image_models_from_provider(provider) -> list:
     """
     Get all the models that support image generation for a specific provider
@@ -806,7 +815,8 @@ def get_g4f_image_models_from_provider(provider) -> list:
     """
     if provider == G4F_PROVIDER_DEFAULT:
         return get_g4f_image_models()
-    return [model['model'] for model in Api.get_provider_models(provider)]
+    return [model["model"] for model in Api.get_provider_models(provider)]
+
 
 def get_g4f_argument(model, messages, cur_text, stream):
     args = {"model": model, "messages": messages, "stream": stream}
@@ -1092,11 +1102,13 @@ class TTSThread(QThread):
                     **self.input_args,
                     response_format="pcm",  # similar to WAV, but without a header chunk at the start.
                 ) as response:
-                    for chunk in response.iter_bytes(chunk_size=DEFAULT_TOKEN_CHUNK_SIZE):
+                    for chunk in response.iter_bytes(
+                        chunk_size=DEFAULT_TOKEN_CHUNK_SIZE
+                    ):
                         if self.__stop:
                             break
                         player_stream.write(chunk)
-            elif self.voice_provider == 'edge-tts':
+            elif self.voice_provider == "edge-tts":
                 media = tempfile.NamedTemporaryFile(suffix=".mp3", delete=False)
                 media.close()
                 mp3_fname = media.name
@@ -1108,13 +1120,13 @@ class TTSThread(QThread):
                 print(f"Media file: {mp3_fname}")
                 print(f"Subtitle file: {vtt_fname}\n")
                 with subprocess.Popen(
-                        [
-                            "edge-tts",
-                            f"--write-media={mp3_fname}",
-                            f"--write-subtitles={vtt_fname}",
-                            f"--voice={self.input_args['voice']}",
-                            f"--text={self.input_args['input']}",
-                        ]
+                    [
+                        "edge-tts",
+                        f"--write-media={mp3_fname}",
+                        f"--write-subtitles={vtt_fname}",
+                        f"--voice={self.input_args['voice']}",
+                        f"--text={self.input_args['input']}",
+                    ]
                 ) as process:
                     process.communicate()
 
@@ -1123,7 +1135,10 @@ class TTSThread(QThread):
                         "mpv",
                         f"--sub-file={vtt_fname}",
                         mp3_fname,
-                    ], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+                    ],
+                    shell=True,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
                 )
                 while proc.poll() is None:
                     time.sleep(0.1)
@@ -1138,7 +1153,7 @@ class TTSThread(QThread):
             error_text = f'<p style="color:red">{e}</p>'
 
             # TODO LANGUAGE
-            if self.voice_provider == 'OpenAI':
+            if self.voice_provider == "OpenAI":
                 error_text += "<br>(Are you registered valid OpenAI API Key? This feature requires OpenAI API Key.)"
 
             self.errorGenerated.emit(error_text)
@@ -1164,19 +1179,26 @@ def check_microphone_access():
     except Exception as e:
         return False
 
+
 class RecorderThread(QThread):
     recording_finished = Signal(str)
     errorGenerated = Signal(str)
 
     # Silence detection 사용 여부
 
-    def __init__(self, is_silence_detection=False, silence_duration=3, silence_threshold=500):
+    def __init__(
+        self, is_silence_detection=False, silence_duration=3, silence_threshold=500
+    ):
         super().__init__()
         self.__stop = False
         self.__is_silence_detection = is_silence_detection
         if self.__is_silence_detection:
-            self.__silence_duration = silence_duration  # Duration to detect silence (in seconds)
-            self.__silence_threshold = silence_threshold  # Amplitude threshold for silence
+            self.__silence_duration = (
+                silence_duration  # Duration to detect silence (in seconds)
+            )
+            self.__silence_threshold = (
+                silence_threshold  # Amplitude threshold for silence
+            )
 
     def stop(self):
         self.__stop = True
@@ -1218,7 +1240,9 @@ class RecorderThread(QThread):
                         # If silent, check if the silence duration threshold is reached
                         if silence_start_time is None:
                             silence_start_time = time.time()
-                        elif time.time() - silence_start_time >= self.__silence_duration:
+                        elif (
+                            time.time() - silence_start_time >= self.__silence_duration
+                        ):
                             break
                     else:
                         # Reset silence start time if sound is detected
@@ -1250,6 +1274,7 @@ class RecorderThread(QThread):
                 )
             else:
                 self.errorGenerated.emit(f'<p style="color:red">{e}</p>')
+
 
 class STTThread(QThread):
     stt_finished = Signal(str)

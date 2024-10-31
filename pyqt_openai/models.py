@@ -13,7 +13,10 @@ from pyqt_openai import (
     DEFAULT_AI_IMAGE_PATH,
     MAXIMUM_MESSAGES_IN_PARAMETER,
     TTS_DEFAULT_VOICE,
-    TTS_DEFAULT_SPEED, TTS_DEFAULT_AUTO_PLAY, TTS_DEFAULT_AUTO_STOP_SILENCE_DURATION, TTS_DEFAULT_PROVIDER,
+    TTS_DEFAULT_SPEED,
+    TTS_DEFAULT_AUTO_PLAY,
+    TTS_DEFAULT_AUTO_STOP_SILENCE_DURATION,
+    TTS_DEFAULT_PROVIDER,
 )
 from pyqt_openai.lang.translations import LangClass
 
@@ -148,6 +151,7 @@ class SettingsParamsContainer(Container):
     voice_speed: int = TTS_DEFAULT_SPEED
     auto_play_voice: bool = TTS_DEFAULT_AUTO_PLAY
     auto_stop_silence_duration: int = TTS_DEFAULT_AUTO_STOP_SILENCE_DURATION
+
 
 @dataclass
 class CustomizeParamsContainer(Container):

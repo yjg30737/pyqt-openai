@@ -13,7 +13,7 @@ class RealtimeApiWidget(QWidget):
     def initUI(self):
         lay = QVBoxLayout()
 
-        title = QLabel('Coming Soon...', self)
+        title = QLabel("Coming Soon...", self)
         title.setFont(QFont(*LARGE_LABEL_PARAM))
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
