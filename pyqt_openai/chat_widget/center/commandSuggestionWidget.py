@@ -1,9 +1,12 @@
+from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QListWidget, QWidget, QVBoxLayout, QLabel
 
 from pyqt_openai.lang.translations import LangClass
 
 
 class CommandSuggestionWidget(QWidget):
+    toggleCommandSuggestion = Signal(bool)
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.__initUi()
@@ -29,3 +32,9 @@ class CommandSuggestionWidget(QWidget):
         scrollbarHeight = self.__commandList.verticalScrollBar().sizeHint().height()
         totalHeight = contentHeight + itemHeight
         self.setMaximumHeight(totalHeight + scrollbarHeight)
+
+    def showEvent(self, event):
+        self.toggleCommandSuggestion.emit(True)
+
+    def hideEvent(self, event):
+        self.toggleCommandSuggestion.emit(False)

@@ -95,11 +95,6 @@ class TextEditPromptGroup(QWidget):
             if w.hasFocus():
                 return w
 
-    def setCommandEnabled(self, f: bool):
-        for w in self.__textGroup.values():
-            if isinstance(w, TextEditPrompt):
-                w.setCommandSuggestionEnabled(f)
-
     def adjustHeight(self) -> int:
         """
         Adjust overall height of text edit group based on their contents and return adjusted height

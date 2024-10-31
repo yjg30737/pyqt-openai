@@ -87,6 +87,9 @@ class Prompt(QWidget):
 
         # Create the command suggestion list
         self.__suggestionWidget = CommandSuggestionWidget()
+        self.__suggestionWidget.toggleCommandSuggestion.connect(
+            self.__setCommandSuggestionEnabled
+        )
         self.__suggestion_list = self.__suggestionWidget.getCommandList()
 
         self.__uploadedImageFileWidget = UploadedImageFileWidget()
@@ -247,6 +250,13 @@ class Prompt(QWidget):
             return [obj["name"] for obj in self.__p_grp]
         return self.__p_grp
 
+    def __setCommandSuggestionEnabled(self, f):
+        for w in self.__textEditGroup.getGroup().values():
+            if isinstance(w, JSONEditor):
+                pass
+            else:
+                w.setCommandSuggestionEnabled(f)
+
     def __updateSuggestions(self):
         w = self.__textEditGroup.getCurrentTextEdit()
         if w and self.__commandEnabled:
@@ -257,7 +267,6 @@ class Prompt(QWidget):
                 input_text_chunk = input_text_chunk[-1]
                 starts_with_f = input_text_chunk.startswith("/")
                 self.__suggestionWidget.setVisible(starts_with_f)
-                w.setCommandSuggestionEnabled(starts_with_f)
                 if starts_with_f:
                     command_word = input_text_chunk[1:]
                     # Set every prompt commands first
@@ -339,7 +348,6 @@ class Prompt(QWidget):
 
     def __supportPromptCommand(self, f):
         self.__commandEnabled = f
-        self.__textEditGroup.setCommandEnabled(f)
 
     def __readingFiles(self):
         filenames = QFileDialog.getOpenFileNames(
