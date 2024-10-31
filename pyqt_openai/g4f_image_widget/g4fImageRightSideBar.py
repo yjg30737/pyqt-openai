@@ -8,12 +8,10 @@ from PySide6.QtWidgets import (
     QSplitter, QComboBox,
 )
 
-from pyqt_openai import G4F_PROVIDER_DEFAULT
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.g4f_image_widget.g4fImageThread import G4FImageThread
 from pyqt_openai.lang.translations import LangClass
-from pyqt_openai.util.script import convert_to_provider, get_g4f_models, \
-    get_g4f_image_providers, get_g4f_image_models_from_provider, get_g4f_image_models
+from pyqt_openai.util.script import get_g4f_image_providers, get_g4f_image_models_from_provider, get_g4f_image_models
 from pyqt_openai.widgets.imageControlWidget import ImageControlWidget
 
 

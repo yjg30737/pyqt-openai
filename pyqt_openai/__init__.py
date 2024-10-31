@@ -358,7 +358,7 @@ WHISPER_TTS_VOICE_SPEED_RANGE = 0.25, 4.0
 WHISPER_TTS_MODEL = "tts-1"
 
 ## EDGE-TTS (TTS)
-EDGE_TTS_VOICE_TYPE = ["en-GB-SoniaNeural", "en-US-GuyNeural", "en-US-JennyNeural"]
+EDGE_TTS_VOICE_TYPE = ["en-GB-SoniaNeural", "en-US-GuyNeural", "en-US-JennyNeural", "en-US-AvaMultilingualNeural"]
 
 # TTS in general
 TTS_DEFAULT_PROVIDER = "OpenAI"
