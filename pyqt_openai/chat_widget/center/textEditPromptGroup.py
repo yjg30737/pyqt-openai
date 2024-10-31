@@ -50,7 +50,10 @@ class TextEditPromptGroup(QWidget):
         lay = QVBoxLayout()
         for w in self.__textGroup.values():
             # Connect every group text edit widget to the signal
-            w.textChanged.connect(self.onUpdateSuggestion)
+            if isinstance(w, JSONEditor):
+                pass
+            else:
+                w.textChanged.connect(self.onUpdateSuggestion)
             w.textChanged.connect(self.textChanged)
             w.moveCursorToOtherPrompt.connect(self.__moveCursorToOtherPrompt)
 
@@ -70,7 +73,7 @@ class TextEditPromptGroup(QWidget):
         self.__textGroup[PROMPT_MAIN_KEY_NAME].installEventFilter(self)
         self.__textGroup[PROMPT_MAIN_KEY_NAME].handleDrop.connect(self.handleDrop)
 
-    def executeCommand(self, item, grp):
+    def showPromptContent(self, item, grp):
         command_key = item.text()
         command = ""
         for i in range(len(grp)):
@@ -81,7 +84,7 @@ class TextEditPromptGroup(QWidget):
         if w:
             cursor = w.textCursor()
             cursor.deletePreviousChar()
-            cursor.select(QTextCursor.WordUnderCursor)
+            cursor.select(QTextCursor.SelectionType.WordUnderCursor)
             w.setTextCursor(cursor)
             w.insertPlainText(command)
 
@@ -91,11 +94,6 @@ class TextEditPromptGroup(QWidget):
         for w in self.__textGroup.values():
             if w.hasFocus():
                 return w
-
-    def setCommandEnabled(self, f: bool):
-        for w in self.__textGroup.values():
-            if isinstance(w, TextEditPrompt):
-                w.setCommandSuggestionEnabled(f)
 
     def adjustHeight(self) -> int:
         """

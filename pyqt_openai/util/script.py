@@ -4,14 +4,14 @@ Mostly, these functions are used to perform chat-related tasks such as sending a
 or common tasks such as opening a directory, generating random strings, etc.
 Some of the functions are used to set PyQt settings, restart the application, show message boxes, etc.
 """
-
-
+import asyncio
 import base64
 import json
 import os
 import random
 import re
 import string
+import subprocess
 import sys
 import tempfile
 import time
@@ -23,6 +23,9 @@ from io import BytesIO
 from pathlib import Path
 
 import PIL.Image
+import numpy as np
+import psutil
+from g4f.gui.server.api import Api
 
 from pyqt_openai.widgets.scrollableErrorDialog import ScrollableErrorDialog
 
@@ -34,7 +37,6 @@ import pyaudio
 from PySide6.QtCore import Qt, QUrl, QThread, Signal
 from PySide6.QtGui import QDesktopServices
 from PySide6.QtWidgets import QMessageBox, QFrame
-from g4f import ProviderType
 from g4f.Provider import ProviderUtils, __providers__, __map__
 from g4f.errors import ProviderNotFoundError
 from g4f.models import ModelUtils
@@ -45,7 +47,6 @@ from jinja2 import Template
 import pyqt_openai.util
 from pyqt_openai import (
     MAIN_INDEX,
-    PROMPT_NAME_REGEX,
     PROMPT_MAIN_KEY_NAME,
     PROMPT_BEGINNING_KEY_NAME,
     PROMPT_END_KEY_NAME,
@@ -294,13 +295,6 @@ def get_chatgpt_data_for_import(conv_arr):
                             # Currently there is no way to apply every aspect of the "code" content_type into the code.
                             # So let it be for now.
                             pass
-
-                            # image: content: dict_keys(['content_type', 'language', 'response_format_name', 'text'])
-                            # language = content['language']
-                            # response_format_name = content['response_format_name']
-                            # print(f'language: {language}')
-                            # print(f'response_format_name: {response_format_name}')
-                            # print(f'content: {content["text"]}')
                     elif role == "system":
                         # Won't use the system
                         pass
@@ -316,12 +310,13 @@ def is_prompt_group_name_valid(text):
     Check if the prompt group name is valid or not and exists in the database
     :param text: The text to check
     """
-    m = re.search(PROMPT_NAME_REGEX, text)
+    text = text.strip()
+    if not text:
+        return False
     # Check if the prompt group with same name already exists
     if DB.selectCertainPromptGroup(name=text):
         return False
-    return True if m else False
-
+    return True
 
 def is_prompt_entry_name_valid(group_id, text):
     """
@@ -329,11 +324,11 @@ def is_prompt_entry_name_valid(group_id, text):
     :param group_id: The group id to check
     :param text: The text to check
     """
-    m = re.search(PROMPT_NAME_REGEX, text)
+    text = text.strip()
     # Check if the prompt entry with same name already exists
     exists_f = (
         True
-        if (True if m else False) and DB.selectPromptEntry(group_id=group_id, name=text)
+        if (True if text else False) and DB.selectPromptEntry(group_id=group_id, name=text)
         else False
     )
     return exists_f
@@ -522,7 +517,7 @@ def get_g4f_models():
     return models
 
 
-def convert_to_provider(provider: str) -> ProviderType:
+def convert_to_provider(provider: str):
     if " " in provider:
         provider_list = [
             ProviderUtils.convert[p]
@@ -540,7 +535,6 @@ def convert_to_provider(provider: str) -> ProviderType:
 
 
 def get_g4f_providers(including_auto=False):
-    # providers = list(ProviderUtils.convert.keys())
     providers = list(
         provider.__name__ for provider in __providers__ if provider.working
     )
@@ -557,7 +551,7 @@ def get_g4f_models_by_provider(provider):
     return models
 
 
-def get_g4f_providers_by_model(model):
+def get_g4f_providers_by_model(model, including_auto=False):
     providers = get_g4f_providers()
     supported_providers = []
 
@@ -572,6 +566,9 @@ def get_g4f_providers_by_model(model):
     supported_providers = [
         provider.get_dict()["name"] for provider in supported_providers
     ]
+
+    if including_auto:
+        supported_providers = [G4F_PROVIDER_DEFAULT] + supported_providers
 
     return supported_providers
 
@@ -766,6 +763,10 @@ def get_provider_from_model(model):
     return None
 
 def get_g4f_image_models() -> list:
+    """
+    Get all the models that support image generation
+    Some of the image providers are not included in this list
+    """
     image_models = []
     index = []
     for provider in __providers__:
@@ -788,6 +789,24 @@ def get_g4f_image_models() -> list:
     models = [model['image_model'] for model in image_models]
     return models
 
+def get_g4f_image_providers(including_auto=False) -> list:
+    """
+    Get all the providers that support image generation
+    (Even though this is not a perfect way to get the providers that support image generation)
+    """
+    providers = Api.get_providers()
+    if including_auto:
+        providers = [G4F_PROVIDER_DEFAULT] + [provider for provider in providers]
+    return providers
+
+def get_g4f_image_models_from_provider(provider) -> list:
+    """
+    Get all the models that support image generation for a specific provider
+    (Again, this is not a perfect way to get the models that support image generation)
+    """
+    if provider == G4F_PROVIDER_DEFAULT:
+        return get_g4f_image_models()
+    return [model['model'] for model in Api.get_provider_models(provider)]
 
 def get_g4f_argument(model, messages, cur_text, stream):
     args = {"model": model, "messages": messages, "stream": stream}
@@ -1046,37 +1065,83 @@ def init_llama():
         LLAMAINDEX_WRAPPER.set_directory(llama_index_directory)
 
 
+def kill(proc_pid):
+    process = psutil.Process(proc_pid)
+    for proc in process.children(recursive=True):
+        proc.kill()
+    process.kill()
+
+
 # TTS
-class StreamThread(QThread):
+class TTSThread(QThread):
     errorGenerated = Signal(str)
 
-    def __init__(self, input_args):
+    def __init__(self, voice_provider, input_args):
         super().__init__()
+        self.voice_provider = voice_provider
         self.input_args = input_args
         self.__stop = False
 
     def run(self):
         try:
-            player_stream = pyaudio.PyAudio().open(
-                format=pyaudio.paInt16, channels=1, rate=24000, output=True
-            )
+            if self.voice_provider == "OpenAI":
+                player_stream = pyaudio.PyAudio().open(
+                    format=pyaudio.paInt16, channels=1, rate=24000, output=True
+                )
+                with OPENAI_CLIENT.audio.speech.with_streaming_response.create(
+                    **self.input_args,
+                    response_format="pcm",  # similar to WAV, but without a header chunk at the start.
+                ) as response:
+                    for chunk in response.iter_bytes(chunk_size=DEFAULT_TOKEN_CHUNK_SIZE):
+                        if self.__stop:
+                            break
+                        player_stream.write(chunk)
+            elif self.voice_provider == 'edge-tts':
+                media = tempfile.NamedTemporaryFile(suffix=".mp3", delete=False)
+                media.close()
+                mp3_fname = media.name
 
-            start_time = time.time()
+                subtitle = tempfile.NamedTemporaryFile(suffix=".vtt", delete=False)
+                subtitle.close()
+                vtt_fname = subtitle.name
 
-            with OPENAI_CLIENT.audio.speech.with_streaming_response.create(
-                **self.input_args,
-                response_format="pcm",  # similar to WAV, but without a header chunk at the start.
-            ) as response:
-                for chunk in response.iter_bytes(chunk_size=DEFAULT_TOKEN_CHUNK_SIZE):
+                print(f"Media file: {mp3_fname}")
+                print(f"Subtitle file: {vtt_fname}\n")
+                with subprocess.Popen(
+                        [
+                            "edge-tts",
+                            f"--write-media={mp3_fname}",
+                            f"--write-subtitles={vtt_fname}",
+                            f"--voice={self.input_args['voice']}",
+                            f"--text={self.input_args['input']}",
+                        ]
+                ) as process:
+                    process.communicate()
+
+                proc = subprocess.Popen(
+                    [
+                        "mpv",
+                        f"--sub-file={vtt_fname}",
+                        mp3_fname,
+                    ], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+                )
+                while proc.poll() is None:
+                    time.sleep(0.1)
                     if self.__stop:
+                        kill(proc.pid)
                         break
-                    player_stream.write(chunk)
+                if mp3_fname is not None and os.path.exists(mp3_fname):
+                    os.unlink(mp3_fname)
+                if vtt_fname is not None and os.path.exists(vtt_fname):
+                    os.unlink(vtt_fname)
         except Exception as e:
+            error_text = f'<p style="color:red">{e}</p>'
+
             # TODO LANGUAGE
-            self.errorGenerated.emit(
-                f'<p style="color:red">{e}</p>\n\n'
-                f"(Are you registered valid OpenAI API Key? This feature requires OpenAI API Key.)\n"
-            )
+            if self.voice_provider == 'OpenAI':
+                error_text += "<br>(Are you registered valid OpenAI API Key? This feature requires OpenAI API Key.)"
+
+            self.errorGenerated.emit(error_text)
 
     def stop(self):
         self.__stop = True
@@ -1099,21 +1164,26 @@ def check_microphone_access():
     except Exception as e:
         return False
 
-
 class RecorderThread(QThread):
     recording_finished = Signal(str)
     errorGenerated = Signal(str)
 
-    def __init__(self):
+    # Silence detection 사용 여부
+
+    def __init__(self, is_silence_detection=False, silence_duration=3, silence_threshold=500):
         super().__init__()
         self.__stop = False
+        self.__is_silence_detection = is_silence_detection
+        if self.__is_silence_detection:
+            self.__silence_duration = silence_duration  # Duration to detect silence (in seconds)
+            self.__silence_threshold = silence_threshold  # Amplitude threshold for silence
 
     def stop(self):
         self.__stop = True
 
     def run(self):
         try:
-            chunk = DEFAULT_TOKEN_CHUNK_SIZE  # Record in chunks of 1024 samples
+            chunk = 1024  # Record in chunks of 1024 samples
             sample_format = pyaudio.paInt16  # 16 bits per sample
             channels = 2
             fs = 44100  # Record at 44100 samples per second
@@ -1130,12 +1200,29 @@ class RecorderThread(QThread):
 
             frames = []  # Initialize array to store frames
 
-            # Store data in chunks for the specified time
+            silence_start_time = None  # Track silence start time
+
             while True:
                 if self.__stop:
                     break
+
                 data = stream.read(chunk)
                 frames.append(data)
+
+                if self.__is_silence_detection:
+                    # Convert the data to a numpy array for amplitude analysis
+                    audio_data = np.frombuffer(data, dtype=np.int16)
+                    amplitude = np.max(np.abs(audio_data))
+
+                    if amplitude < self.__silence_threshold:
+                        # If silent, check if the silence duration threshold is reached
+                        if silence_start_time is None:
+                            silence_start_time = time.time()
+                        elif time.time() - silence_start_time >= self.__silence_duration:
+                            break
+                    else:
+                        # Reset silence start time if sound is detected
+                        silence_start_time = None
 
             # Stop and close the stream
             stream.stop_stream()
@@ -1159,13 +1246,10 @@ class RecorderThread(QThread):
         except Exception as e:
             if str(e).find("-9996") != -1:
                 self.errorGenerated.emit(
-                    LangClass.TRANSLATIONS[
-                        "No valid input device found. Please connect a microphone or check your audio device settings."
-                    ]
+                    "No valid input device found. Please connect a microphone or check your audio device settings."
                 )
             else:
                 self.errorGenerated.emit(f'<p style="color:red">{e}</p>')
-
 
 class STTThread(QThread):
     stt_finished = Signal(str)
@@ -1289,9 +1373,9 @@ def stop_existing_thread():
         pyqt_openai.util.script.current_stream_thread = None
 
 
-def stream_to_speakers(input_args):
+def stream_to_speakers(voice_provider, input_args):
     stop_existing_thread()
 
-    stream_thread = StreamThread(input_args)
+    stream_thread = TTSThread(voice_provider, input_args)
     pyqt_openai.util.script.current_stream_thread = stream_thread
     return stream_thread

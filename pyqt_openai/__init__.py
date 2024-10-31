@@ -199,6 +199,8 @@ ICON_SPEAKER = os.path.join(ICON_PATH, "speaker.svg")
 ICON_PAYPAL = os.path.join(ICON_PATH, "paypal.png")
 ICON_KOFI = os.path.join(ICON_PATH, "kofi.png")
 ICON_PATREON = os.path.join(ICON_PATH, "patreon.svg")
+ICON_SHORTCUT = os.path.join(ICON_PATH, "shortcut.svg")
+ICON_REALTIME_API = os.path.join(ICON_PATH, "realtime_api.svg")
 
 ## CUSTOMIZE
 DEFAULT_ICON_SIZE = (24, 24)
@@ -243,7 +245,6 @@ DEFAULT_SHORTCUT_PROMPT_BEGINNING = "Ctrl+B"
 DEFAULT_SHORTCUT_PROMPT_ENDING = "Ctrl+E"
 DEFAULT_SHORTCUT_SUPPORT_PROMPT_COMMAND = "Ctrl+Shift+P"
 DEFAULT_SHORTCUT_STACK_ON_TOP = "Ctrl+Shift+S"
-DEFAULT_SHORTCUT_SHOW_TOOLBAR = "Ctrl+T"
 DEFAULT_SHORTCUT_SHOW_SECONDARY_TOOLBAR = "Ctrl+Shift+T"
 DEFAULT_SHORTCUT_FOCUS_MODE = "F10"
 DEFAULT_SHORTCUT_FULL_SCREEN = "F11"
@@ -288,7 +289,6 @@ PROMPT_BEGINNING_KEY_NAME = "prompt_beginning"
 PROMPT_JSON_KEY_NAME = "prompt_json"
 PROMPT_MAIN_KEY_NAME = "prompt_main"
 PROMPT_END_KEY_NAME = "prompt_ending"
-PROMPT_NAME_REGEX = "^[a-zA-Z_0-9]+$"
 INDENT_SIZE = 4
 NOTIFIER_MAX_CHAR = 100
 
@@ -355,8 +355,16 @@ PRESENCE_PENALTY_STEP = 0.01
 WHISPER_TTS_VOICE_TYPE = ["alloy", "echo", "fable", "onyx", "nova", "shimmer"]
 WHISPER_TTS_VOICE_SPEED_RANGE = 0.25, 4.0
 WHISPER_TTS_MODEL = "tts-1"
-WHISPER_TTS_DEFAULT_VOICE = "alloy"
-WHISPER_TTS_DEFAULT_SPEED = 1.0
+
+## EDGE-TTS (TTS)
+EDGE_TTS_VOICE_TYPE = ["en-GB-SoniaNeural", "en-US-GuyNeural", "en-US-JennyNeural", "en-US-AvaMultilingualNeural"]
+
+# TTS in general
+TTS_DEFAULT_PROVIDER = "OpenAI"
+TTS_DEFAULT_VOICE = "alloy"
+TTS_DEFAULT_SPEED = 1.0
+TTS_DEFAULT_AUTO_PLAY = False
+TTS_DEFAULT_AUTO_STOP_SILENCE_DURATION = 3
 
 STT_MODEL = "whisper-1"
 
@@ -412,6 +420,8 @@ DEFAULT_LLM = "gpt-4o"
 G4F_PROVIDER_DEFAULT = "Auto"
 
 G4F_USE_CHAT_HISTORY = True
+
+G4F_DEFAULT_IMAGE_MODEL = "flux"
 
 # Dictionary that stores the platform and model pairs
 PROVIDER_MODEL_DICT = {
@@ -628,7 +638,6 @@ CONFIG_DATA = {
         "notify_finish": True,
         "temperature": 1,
         "max_tokens": -1,
-        "show_toolbar": True,
         "show_secondary_toolbar": True,
         "top_p": 1,
         "chat_column_to_show": ["id", "name", "insert_dt", "update_dt"],
@@ -662,16 +671,23 @@ CONFIG_DATA = {
         "llama_index_directory": "",
         "apply_user_defined_styles": False,
         "focus_mode": False,
-        "voice": WHISPER_TTS_DEFAULT_VOICE,
-        "voice_speed": WHISPER_TTS_DEFAULT_SPEED,
         "OPENAI_API_KEY": "",
         "GEMINI_API_KEY": "",
         "CLAUDE_API_KEY": "",
         "LLAMA_API_KEY": "",
+        'show_realtime_api': False,
+
         # G4F
         "g4f_model": DEFAULT_LLM,
         "provider": G4F_PROVIDER_DEFAULT,
         "g4f_use_chat_history": G4F_USE_CHAT_HISTORY,
+
+        # STT and TTS settings
+        "voice_provider": TTS_DEFAULT_PROVIDER,
+        "voice": TTS_DEFAULT_VOICE,
+        "voice_speed": TTS_DEFAULT_SPEED,
+        "auto_play_voice": TTS_DEFAULT_AUTO_PLAY,
+        "auto_stop_silence_duration": TTS_DEFAULT_AUTO_STOP_SILENCE_DURATION
     },
     "DALLE": {
         "quality": "standard",
@@ -712,7 +728,8 @@ CONFIG_DATA = {
         "negative_prompt": "ugly, deformed, noisy, blurry, distorted",
     },
     "G4F_IMAGE": {
-        "model": "flux",
+        "model": G4F_DEFAULT_IMAGE_MODEL,
+        "provider": G4F_PROVIDER_DEFAULT,
 
         "show_history": True,
         "show_setting": True,

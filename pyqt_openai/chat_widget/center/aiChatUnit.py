@@ -110,13 +110,15 @@ class AIChatUnit(ChatUnit):
         if f:
             text = self._lbl.toPlainText()
             if text:
+                voice_provider = CONFIG_MANAGER.get_general_property("voice_provider")
+
                 args = {
                     "model": WHISPER_TTS_MODEL,
                     "voice": CONFIG_MANAGER.get_general_property("voice"),
                     "input": text,
                     "speed": CONFIG_MANAGER.get_general_property("voice_speed"),
                 }
-                self.thread = stream_to_speakers(args)
+                self.thread = stream_to_speakers(voice_provider, args)
                 self.thread.finished.connect(self.__on_thread_complete)
                 self.thread.errorGenerated.connect(
                     lambda x: QMessageBox.critical(self, "Error", x)

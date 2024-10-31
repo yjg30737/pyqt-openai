@@ -39,13 +39,12 @@ from pyqt_openai import (
     DEFAULT_SHORTCUT_FOCUS_MODE,
     ICON_FOCUS_MODE,
     ICON_SETTING,
-    DEFAULT_SHORTCUT_SHOW_TOOLBAR,
     DEFAULT_SHORTCUT_SHOW_SECONDARY_TOOLBAR,
     DEFAULT_SHORTCUT_STACK_ON_TOP,
     ICON_PAYPAL,
     ICON_KOFI,
     ICON_PATREON,
-    PATREON_URL, ICON_UPDATE,
+    PATREON_URL, ICON_UPDATE, ICON_SHORTCUT,
 )
 from pyqt_openai.aboutDialog import AboutDialog
 from pyqt_openai.chat_widget.chatMainWidget import ChatMainWidget
@@ -125,14 +124,6 @@ class MainWindow(QMainWindow):
         self.__stackAction.setCheckable(True)
         self.__stackAction.toggled.connect(self.__stackToggle)
 
-        self.__showToolBarAction = QAction(LangClass.TRANSLATIONS["Show Toolbar"], self)
-        self.__showToolBarAction.setShortcut(DEFAULT_SHORTCUT_SHOW_TOOLBAR)
-        self.__showToolBarAction.setCheckable(True)
-        self.__showToolBarAction.setChecked(
-            CONFIG_MANAGER.get_general_property("show_toolbar")
-        )
-        self.__showToolBarAction.toggled.connect(self.__toggleToolbar)
-
         self.__showSecondaryToolBarAction = QAction(
             LangClass.TRANSLATIONS["Show Secondary Toolbar"], self
         )
@@ -162,6 +153,7 @@ class MainWindow(QMainWindow):
         self.__fullScreenAction.triggered.connect(self.__fullScreenToggle)
 
         self.__aboutAction = QAction(LangClass.TRANSLATIONS["About..."], self)
+        self.__aboutAction.setIcon(QIcon(DEFAULT_APP_ICON))
         self.__aboutAction.triggered.connect(self.__showAboutDialog)
 
         # TODO LANGAUGE
@@ -174,6 +166,7 @@ class MainWindow(QMainWindow):
         self.__viewShortcutsAction = QAction(
             LangClass.TRANSLATIONS["View Shortcuts"], self
         )
+        self.__viewShortcutsAction.setIcon(QIcon(ICON_SHORTCUT))
         self.__viewShortcutsAction.triggered.connect(self.__showShortcutsDialog)
 
         self.__githubAction = QAction("Github", self)
@@ -247,11 +240,6 @@ class MainWindow(QMainWindow):
         else:
             self.showNormal()
 
-    def __toggleToolbar(self, f):
-        self.__toolbar.setVisible(f)
-        CONFIG_MANAGER.set_general_property("show_toolbar", f)
-        self.__showToolBarAction.setChecked(f)
-
     def __activateFocusMode(self, f):
         f = not f
         # Toggle GUI
@@ -259,11 +247,9 @@ class MainWindow(QMainWindow):
             currentWidget = self.__mainWidget.widget(i)
             currentWidget.showSecondaryToolBar(f)
             currentWidget.toggleButtons(f)
-        self.__toggleToolbar(f)
         self.__toggleSecondaryToolBar(f)
 
         # Toggle container
-        self.__settingsParamContainer.show_toolbar = f
         self.__settingsParamContainer.show_secondary_toolbar = f
         CONFIG_MANAGER.set_general_property("focus_mode", not f)
 
@@ -278,7 +264,6 @@ class MainWindow(QMainWindow):
         viewMenu.addAction(self.__focusModeAction)
         viewMenu.addAction(self.__fullScreenAction)
         viewMenu.addAction(self.__stackAction)
-        viewMenu.addAction(self.__showToolBarAction)
         viewMenu.addAction(self.__showSecondaryToolBarAction)
 
         helpMenu = QMenu(LangClass.TRANSLATIONS["Help"], self)
@@ -325,6 +310,10 @@ class MainWindow(QMainWindow):
     def __setToolBar(self):
         self.__toolbar = QToolBar()
         self.__toolbar.addAction(self.__chooseAiAction)
+        self.__toolbar.addAction(self.__showSecondaryToolBarAction)
+        self.__toolbar.addAction(self.__fullScreenAction)
+        self.__toolbar.addAction(self.__stackAction)
+        self.__toolbar.addAction(self.__focusModeAction)
         self.__toolbar.addAction(self.__settingsAction)
         self.__toolbar.addAction(self.__checkUpdateAction)
         self.__toolbar.addAction(self.__customizeAction)
@@ -333,6 +322,8 @@ class MainWindow(QMainWindow):
         self.__toolbar.addAction(self.__paypalAction)
         self.__toolbar.addAction(self.__kofiAction)
         self.__toolbar.addAction(self.__patreonAction)
+        self.__toolbar.addAction(self.__aboutAction)
+        self.__toolbar.addAction(self.__viewShortcutsAction)
         self.__toolbar.addAction(self.__transparentAction)
         self.__toolbar.setMovable(False)
 
@@ -341,7 +332,6 @@ class MainWindow(QMainWindow):
         # QToolbar's layout can't be set spacing with lay.setSpacing so i've just did this instead
         self.__toolbar.setStyleSheet("QToolBar { spacing: 2px; }")
 
-        self.__toggleToolbar(self.__settingsParamContainer.show_toolbar)
         for i in range(self.__mainWidget.count()):
             currentWidget = self.__mainWidget.widget(i)
             currentWidget.showSecondaryToolBar(
@@ -429,7 +419,6 @@ class MainWindow(QMainWindow):
     def __refreshContainer(self, container):
         if isinstance(container, SettingsParamsContainer):
             prev_db = CONFIG_MANAGER.get_general_property("db")
-            prev_show_toolbar = CONFIG_MANAGER.get_general_property("show_toolbar")
             prev_show_secondary_toolbar = CONFIG_MANAGER.get_general_property(
                 "show_secondary_toolbar"
             )
@@ -450,9 +439,6 @@ class MainWindow(QMainWindow):
                         "The name of the reference target database has been changed. The changes will take effect after a restart."
                     ],
                 )
-            # If show_toolbar is changed
-            if container.show_toolbar != prev_show_toolbar:
-                self.__toggleToolbar(container.show_toolbar)
             if container.run_at_startup != prev_run_at_startup:
                 set_auto_start_windows(container.run_at_startup)
             # If show_secondary_toolbar is changed

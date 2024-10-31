@@ -4,6 +4,7 @@ jinja2
 requests
 pyaudio
 pillow
+psutil
 
 openai
 anthropic
@@ -13,3 +14,5 @@ replicate
 
 g4f
 curl_cffi
+
+edge-tts
