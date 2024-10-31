@@ -47,6 +47,7 @@ from pyqt_openai.util.script import (
     STTThread,
 )
 from pyqt_openai.widgets.button import Button
+from pyqt_openai.widgets.jsonEditor import JSONEditor
 from pyqt_openai.widgets.toolButton import ToolButton
 
 
@@ -299,7 +300,7 @@ class Prompt(QWidget):
         self.__controlWidgetDuringGeneration.setVisible(f)
 
     def executeCommand(self, item):
-        self.__textEditGroup.executeCommand(item, self.__p_grp)
+        self.__textEditGroup.showPromptContent(item, self.__p_grp)
 
     def updateHeight(self):
         overallHeight = self.__textEditGroup.adjustHeight()

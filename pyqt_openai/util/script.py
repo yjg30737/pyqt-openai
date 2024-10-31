@@ -11,21 +11,20 @@ import os
 import random
 import re
 import string
+import subprocess
 import sys
 import tempfile
 import time
 import traceback
 import wave
 import zipfile
-import numpy as np
-import subprocess
-import psutil
-
 from datetime import datetime
 from io import BytesIO
 from pathlib import Path
 
 import PIL.Image
+import numpy as np
+import psutil
 from g4f.gui.server.api import Api
 
 from pyqt_openai.widgets.scrollableErrorDialog import ScrollableErrorDialog
@@ -38,7 +37,6 @@ import pyaudio
 from PySide6.QtCore import Qt, QUrl, QThread, Signal
 from PySide6.QtGui import QDesktopServices
 from PySide6.QtWidgets import QMessageBox, QFrame
-from g4f import ProviderType
 from g4f.Provider import ProviderUtils, __providers__, __map__
 from g4f.errors import ProviderNotFoundError
 from g4f.models import ModelUtils
@@ -49,7 +47,6 @@ from jinja2 import Template
 import pyqt_openai.util
 from pyqt_openai import (
     MAIN_INDEX,
-    PROMPT_NAME_REGEX,
     PROMPT_MAIN_KEY_NAME,
     PROMPT_BEGINNING_KEY_NAME,
     PROMPT_END_KEY_NAME,
@@ -298,13 +295,6 @@ def get_chatgpt_data_for_import(conv_arr):
                             # Currently there is no way to apply every aspect of the "code" content_type into the code.
                             # So let it be for now.
                             pass
-
-                            # image: content: dict_keys(['content_type', 'language', 'response_format_name', 'text'])
-                            # language = content['language']
-                            # response_format_name = content['response_format_name']
-                            # print(f'language: {language}')
-                            # print(f'response_format_name: {response_format_name}')
-                            # print(f'content: {content["text"]}')
                     elif role == "system":
                         # Won't use the system
                         pass
@@ -320,12 +310,13 @@ def is_prompt_group_name_valid(text):
     Check if the prompt group name is valid or not and exists in the database
     :param text: The text to check
     """
-    m = re.search(PROMPT_NAME_REGEX, text)
+    text = text.strip()
+    if not text:
+        return False
     # Check if the prompt group with same name already exists
     if DB.selectCertainPromptGroup(name=text):
         return False
-    return True if m else False
-
+    return True
 
 def is_prompt_entry_name_valid(group_id, text):
     """
@@ -333,11 +324,11 @@ def is_prompt_entry_name_valid(group_id, text):
     :param group_id: The group id to check
     :param text: The text to check
     """
-    m = re.search(PROMPT_NAME_REGEX, text)
+    text = text.strip()
     # Check if the prompt entry with same name already exists
     exists_f = (
         True
-        if (True if m else False) and DB.selectPromptEntry(group_id=group_id, name=text)
+        if (True if text else False) and DB.selectPromptEntry(group_id=group_id, name=text)
         else False
     )
     return exists_f

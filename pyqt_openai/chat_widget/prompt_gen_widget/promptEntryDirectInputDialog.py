@@ -29,16 +29,9 @@ class PromptEntryDirectInputDialog(QDialog):
 
         self.__name = QLineEdit()
         self.__name.setPlaceholderText(LangClass.TRANSLATIONS["Name"])
-        self.__name.textChanged.connect(
-            lambda x: self.__okBtn.setEnabled(x.strip() != "")
-        )
 
         self.__content = QPlainTextEdit()
         self.__content.setPlaceholderText(LangClass.TRANSLATIONS["Content"])
-        self.__content.textChanged.connect(
-            lambda x: self.__name.text().strip() != ""
-            and self.__okBtn.setEnabled(x.strip() != "")
-        )
 
         sep = getSeparator("horizontal")
 
@@ -67,6 +60,9 @@ class PromptEntryDirectInputDialog(QDialog):
 
     def getPromptName(self):
         return self.__name.text()
+
+    def getPromptContent(self):
+        return self.__content.toPlainText()
 
     def __accept(self):
         exists_f = is_prompt_entry_name_valid(self.__group_id, self.__name.text())
