@@ -13,7 +13,7 @@ from PySide6.QtWidgets import (
 from pyqt_openai import (
     WHISPER_TTS_VOICE_TYPE,
     WHISPER_TTS_VOICE_SPEED_RANGE,
-    EDGE_TTS_VOICE_TYPE,
+    EDGE_TTS_VOICE_TYPE, DEFAULT_HIGHLIGHT_TEXT_COLOR,
 )
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.lang.translations import LangClass
@@ -50,7 +50,7 @@ class VoiceSettingsWidget(QWidget):
             "<a href='https://mpv.io/installation/'>Link</a>"
         )
         self.__warningLbl.setOpenExternalLinks(True)
-        self.__warningLbl.setStyleSheet("color: yellow;")
+        self.__warningLbl.setStyleSheet(f"color: {DEFAULT_HIGHLIGHT_TEXT_COLOR};")
         self.__warningLbl.setVisible(self.voice_provider == "edge-tts")
 
         detailsGroupBox = QGroupBox("Details")
