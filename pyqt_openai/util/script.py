@@ -1157,17 +1157,30 @@ class TTSThread(QThread):
 
                 print(f"Media file: {mp3_fname}")
                 print(f"Subtitle file: {vtt_fname}\n")
-                with subprocess.Popen(
-                    [
-                        "edge-tts",
-                        f"--write-media={mp3_fname}",
-                        f"--write-subtitles={vtt_fname}",
-                        f"--voice={self.input_args['voice']}",
-                        f"--text={self.input_args['input']}",
-                    ],
-                    creationflags=subprocess.CREATE_NO_WINDOW
-                ) as process:
-                    process.communicate()
+
+                if sys.platform == "win32":
+                    with subprocess.Popen(
+                        [
+                            "edge-tts",
+                            f"--write-media={mp3_fname}",
+                            f"--write-subtitles={vtt_fname}",
+                            f"--voice={self.input_args['voice']}",
+                            f"--text={self.input_args['input']}",
+                        ],
+                        creationflags=subprocess.CREATE_NO_WINDOW
+                    ) as process:
+                        process.communicate()
+                else:
+                    with subprocess.Popen(
+                        [
+                            "edge-tts",
+                            f"--write-media={mp3_fname}",
+                            f"--write-subtitles={vtt_fname}",
+                            f"--voice={self.input_args['voice']}",
+                            f"--text={self.input_args['input']}",
+                        ],
+                    ) as process:
+                        process.communicate()
 
                 proc = subprocess.Popen(
                     [
