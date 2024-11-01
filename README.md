@@ -74,6 +74,7 @@ Although this is named 'pyqt-openai', the model does not use only OpenAI-related
 - As of October 14, 2024, PySide6 supports Python versions above 3.9 and below 3.13. If support for Python 3.13 is added in the future, you can remove this note.
 #### Handling Error Messages Related to Software Updates (Windows)
 - If you encounter the following error message when trying to update VividNode via the auto-update feature: **PermissionError: [Errno 13] Permission denied**, To resolve this issue, run VividNode as an administrator.
+- Also, if VividNode keeps asking "Wanna update?" even though you've updated it already, just install this again and everything will be fine.
 #### Incomplete or Inaccurate Translations
 - If you come across incomplete or unnatural translations, please update the **pyqt_openai/lang/translations.json** file.
 
