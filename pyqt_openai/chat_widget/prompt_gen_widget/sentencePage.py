@@ -99,7 +99,7 @@ class SentenceGroupList(QWidget):
         topWidget = QWidget()
         topWidget.setLayout(lay)
 
-        self.__list = QListWidget()
+        self.list = QListWidget()
 
         groups = DB.selectPromptGroup(prompt_type="sentence")
         if len(groups) <= 0:
@@ -110,25 +110,23 @@ class SentenceGroupList(QWidget):
             name = group.name
             self.__addGroupItem(id, name)
 
-        self.__list.currentRowChanged.connect(self.__currentRowChanged)
-        self.__list.itemChanged.connect(self.__itemChanged)
+        self.list.currentRowChanged.connect(self.__currentRowChanged)
+        self.list.itemChanged.connect(self.__itemChanged)
 
         lay = QVBoxLayout()
         lay.addWidget(topWidget)
-        lay.addWidget(self.__list)
+        lay.addWidget(self.list)
         lay.setContentsMargins(0, 0, 5, 0)
 
         self.setLayout(lay)
-
-        self.__list.setCurrentRow(0)
 
     def __addGroupItem(self, id, name):
         item = QListWidgetItem()
         item.setFlags(item.flags() | Qt.ItemFlag.ItemIsEditable)
         item.setData(Qt.ItemDataRole.UserRole, id)
         item.setText(name)
-        self.__list.addItem(item)
-        self.__list.setCurrentItem(item)
+        self.list.addItem(item)
+        self.list.setCurrentItem(item)
         self.added.emit(id)
 
         self.__delBtn.setEnabled(True)
@@ -142,8 +140,8 @@ class SentenceGroupList(QWidget):
             self.__addGroupItem(id, name)
 
     def __delete(self):
-        i = self.__list.currentRow()
-        item = self.__list.takeItem(i)
+        i = self.list.currentRow()
+        item = self.list.takeItem(i)
         id = item.data(Qt.ItemDataRole.UserRole)
         DB.deletePromptGroup(id)
         self.deleted.emit(id)
@@ -197,7 +195,7 @@ class SentenceGroupList(QWidget):
         self.itemChanged.emit(id)
 
     def __currentRowChanged(self, r_idx):
-        item = self.__list.item(r_idx)
+        item = self.list.item(r_idx)
         if item:
             id = item.data(Qt.ItemDataRole.UserRole)
             self.currentRowChanged.emit(id)
@@ -259,14 +257,11 @@ class PromptTable(QWidget):
 
         self.setLayout(lay)
 
-        self.setNothingRightNow()
-
     def showEntries(self, id):
         self.__group_id = id
 
         prompt_group = DB.selectCertainPromptGroup(id=self.__group_id)
-        if prompt_group and isinstance(prompt_group, list) and len(prompt_group) > 0:
-            self.__title = prompt_group[0].name
+        self.__title = prompt_group.name
         self.__entries = DB.selectPromptEntry(self.__group_id)
 
         self.__titleLbl.setText(self.__title)
@@ -332,11 +327,13 @@ class PromptTable(QWidget):
             item1.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
             self.__table.setItem(self.__table.rowCount() - 1, 0, item1)
 
-            item2 = QTableWidgetItem("")
+            content = dialog.getPromptContent()
+
+            item2 = QTableWidgetItem(content)
             item2.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
             self.__table.setItem(self.__table.rowCount() - 1, 1, item2)
 
-            id = DB.insertPromptEntry(self.__group_id, name)
+            id = DB.insertPromptEntry(self.__group_id, name, content)
             item1.setData(Qt.ItemDataRole.UserRole, id)
 
             self.__table.itemChanged.connect(self.__saveChangedPrompt)
@@ -364,6 +361,7 @@ class SentencePage(QWidget):
         leftWidget = SentenceGroupList()
         leftWidget.added.connect(self.add)
         leftWidget.deleted.connect(self.delete)
+
         leftWidget.currentRowChanged.connect(self.__showEntries)
         leftWidget.itemChanged.connect(self.__itemChanged)
 
@@ -380,6 +378,8 @@ class SentencePage(QWidget):
         lay.addWidget(mainWidget)
 
         self.setLayout(lay)
+
+        leftWidget.list.setCurrentRow(0)
 
     def __itemChanged(self, id):
         self.__table.showEntries(id)

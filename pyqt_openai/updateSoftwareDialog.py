@@ -69,13 +69,13 @@ class UpdateSoftwareDialog(QDialog):
         else:
             self.__updateManualLbl.setText(
                 f'<b>{LangClass.TRANSLATIONS["Update Available"]}</b>'
-                +
-                f'''<br>
+                + f"""<br>
             Automatic updates are currently supported only on Windows.  
             For manual updates, please click the link for the latest version and install the file appropriate for your operating system.  
             Linux - Install via tar  
             macOS - Install via dmg
-            ''')
+            """
+            )
         lay.addWidget(self.__updateManualLbl)
 
 
@@ -124,6 +124,7 @@ def check_for_updates_and_show_dialog(current_version, owner, repo):
             update_dialog = UpdateSoftwareDialog(owner, repo, recent_version)
             update_dialog.releaseNoteBrowser.setHtml(release_notes)
             update_dialog.exec()
+
 
 def update_software():
     # Replace with actual values

@@ -5,13 +5,18 @@ from PySide6.QtWidgets import (
     QPlainTextEdit,
     QFormLayout,
     QLabel,
-    QSplitter, QComboBox,
+    QSplitter,
+    QComboBox,
 )
 
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.g4f_image_widget.g4fImageThread import G4FImageThread
 from pyqt_openai.lang.translations import LangClass
-from pyqt_openai.util.script import get_g4f_image_models
+from pyqt_openai.util.script import (
+    get_g4f_image_providers,
+    get_g4f_image_models_from_provider,
+    get_g4f_image_models,
+)
 from pyqt_openai.widgets.imageControlWidget import ImageControlWidget
 
 
@@ -38,6 +43,7 @@ class G4FImageRightSideBarWidget(ImageControlWidget):
         )
 
         self.__model = CONFIG_MANAGER.get_g4f_image_property("model")
+        self.__provider = CONFIG_MANAGER.get_g4f_image_property("provider")
         self.__negative_prompt = CONFIG_MANAGER.get_g4f_image_property(
             "negative_prompt"
         )
@@ -45,11 +51,18 @@ class G4FImageRightSideBarWidget(ImageControlWidget):
     def _initUi(self):
         super()._initUi()
 
+        self.__providerCmbBox = QComboBox()
+        g4f_image_providers = get_g4f_image_providers(including_auto=True)
+        self.__providerCmbBox.addItems(g4f_image_providers)
+        self.__providerCmbBox.currentTextChanged.connect(self.__g4fProviderChanged)
+
         self.__modelCmbBox = QComboBox()
         g4f_image_models = get_g4f_image_models()
         self.__modelCmbBox.addItems(g4f_image_models)
         self.__modelCmbBox.setCurrentText(self.__model)
         self.__modelCmbBox.currentTextChanged.connect(self.__g4fModelChanged)
+
+        self.__providerCmbBox.setCurrentText(self.__provider)
 
         lay = QVBoxLayout()
         lay.addWidget(self._findPathWidget)
@@ -80,6 +93,7 @@ class G4FImageRightSideBarWidget(ImageControlWidget):
         promptWidget.setLayout(lay)
 
         lay = QFormLayout()
+        lay.addRow(LangClass.TRANSLATIONS["Provider"], self.__providerCmbBox)
         lay.addRow(LangClass.TRANSLATIONS["Model"], self.__modelCmbBox)
         otherParamWidget = QWidget()
         otherParamWidget.setLayout(lay)
@@ -102,6 +116,18 @@ class G4FImageRightSideBarWidget(ImageControlWidget):
     def __g4fModelChanged(self, text):
         self.__model = text
         CONFIG_MANAGER.set_g4f_image_property("model", self.__model)
+        #
+        # g4f_image_providers = get_g4f_providers_by_model(self.__model, including_auto=True)
+        # self.__providerCmbBox.clear()
+        # self.__providerCmbBox.addItems(g4f_image_providers)
+
+    def __g4fProviderChanged(self, text):
+        self.__provider = text
+        CONFIG_MANAGER.set_g4f_image_property("provider", self.__provider)
+
+        image_models = get_g4f_image_models_from_provider(self.__provider)
+        self.__modelCmbBox.clear()
+        self.__modelCmbBox.addItems(image_models)
 
     def __replicateTextChanged(self):
         sender = self.sender()
@@ -144,7 +170,7 @@ class G4FImageRightSideBarWidget(ImageControlWidget):
             self._randomImagePromptGeneratorWidget.getRandomPromptSourceArr()
         )
 
-        t = G4FImageThread(arg, number_of_images, self.__model, random_prompt)
+        t = G4FImageThread(arg, number_of_images, random_prompt)
         self._setThread(t)
         super()._submit()
 
@@ -153,6 +179,7 @@ class G4FImageRightSideBarWidget(ImageControlWidget):
         return {
             **obj,
             "model": self.__modelCmbBox.currentText(),
+            "provider": self.__providerCmbBox.currentText(),
             "prompt": self._promptTextEdit.toPlainText(),
             "negative_prompt": self._negativeTextEdit.toPlainText(),
         }

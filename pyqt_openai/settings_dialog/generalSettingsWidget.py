@@ -13,7 +13,6 @@ from PySide6.QtWidgets import (
     QLabel,
     QWidget,
     QSpinBox,
-    QDoubleSpinBox,
     QScrollArea,
 )
 
@@ -23,8 +22,6 @@ from pyqt_openai import (
     LANGUAGE_DICT,
     DB_NAME_REGEX,
     MAXIMUM_MESSAGES_IN_PARAMETER_RANGE,
-    WHISPER_TTS_VOICE_TYPE,
-    WHISPER_TTS_VOICE_SPEED_RANGE,
 )
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.lang.translations import LangClass
@@ -43,7 +40,6 @@ class GeneralSettingsWidget(QScrollArea):
         self.db = CONFIG_MANAGER.get_general_property("db")
         self.do_not_ask_again = CONFIG_MANAGER.get_general_property("do_not_ask_again")
         self.notify_finish = CONFIG_MANAGER.get_general_property("notify_finish")
-        self.show_toolbar = CONFIG_MANAGER.get_general_property("show_toolbar")
         self.show_secondary_toolbar = CONFIG_MANAGER.get_general_property(
             "show_secondary_toolbar"
         )
@@ -58,8 +54,6 @@ class GeneralSettingsWidget(QScrollArea):
         )
         self.show_as_markdown = CONFIG_MANAGER.get_general_property("show_as_markdown")
         self.run_at_startup = CONFIG_MANAGER.get_general_property("run_at_startup")
-        self.voice = CONFIG_MANAGER.get_general_property("voice")
-        self.speed = CONFIG_MANAGER.get_general_property("voice_speed")
 
     def __initUi(self):
         # Language setting
@@ -104,8 +98,6 @@ class GeneralSettingsWidget(QScrollArea):
             ]
         )
         self.__notifyFinishCheckBox.setChecked(self.notify_finish)
-        self.__showToolbarCheckBox = QCheckBox(LangClass.TRANSLATIONS["Show Toolbar"])
-        self.__showToolbarCheckBox.setChecked(self.show_toolbar)
         self.__showSecondaryToolBarChkBox = QCheckBox(
             LangClass.TRANSLATIONS["Show Secondary Toolbar"]
         )
@@ -121,7 +113,6 @@ class GeneralSettingsWidget(QScrollArea):
         lay.addLayout(dbLayout)
         lay.addWidget(self.__doNotAskAgainCheckBox)
         lay.addWidget(self.__notifyFinishCheckBox)
-        lay.addWidget(self.__showToolbarCheckBox)
         lay.addWidget(self.__showSecondaryToolBarChkBox)
         lay.addWidget(self.__runAtStartupCheckBox)
 
@@ -139,23 +130,12 @@ class GeneralSettingsWidget(QScrollArea):
         self.__show_as_markdown = QCheckBox(LangClass.TRANSLATIONS["Show as Markdown"])
         self.__show_as_markdown.setChecked(self.show_as_markdown)
 
-        self.__voiceCmbBox = QComboBox()
-        self.__voiceCmbBox.addItems(WHISPER_TTS_VOICE_TYPE)
-        self.__voiceCmbBox.setCurrentText(self.voice)
-
-        self.__speedSpinBox = QDoubleSpinBox()
-        self.__speedSpinBox.setRange(*WHISPER_TTS_VOICE_SPEED_RANGE)
-        self.__speedSpinBox.setSingleStep(0.1)
-        self.__speedSpinBox.setValue(float(self.speed))
-
         lay = QFormLayout()
         lay.addRow(
             LangClass.TRANSLATIONS["Maximum Messages in Parameter"],
             self.__maximumMessagesInParameterSpinBox,
         )
         lay.addRow(self.__show_as_markdown)
-        lay.addRow(LangClass.TRANSLATIONS["Voice"], self.__voiceCmbBox)
-        lay.addRow(LangClass.TRANSLATIONS["Voice Speed"], self.__speedSpinBox)
 
         chatBrowserGrpBox = QGroupBox(LangClass.TRANSLATIONS["Chat Browser"])
         chatBrowserGrpBox.setLayout(lay)
@@ -248,7 +228,6 @@ class GeneralSettingsWidget(QScrollArea):
             "db": self.__dbLineEdit.text(),
             "do_not_ask_again": self.__doNotAskAgainCheckBox.isChecked(),
             "notify_finish": self.__notifyFinishCheckBox.isChecked(),
-            "show_toolbar": self.__showToolbarCheckBox.isChecked(),
             "show_secondary_toolbar": self.__showSecondaryToolBarChkBox.isChecked(),
             "chat_column_to_show": COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_CHAT
             + self.__chatColCheckBoxListWidget.getCheckedItemsText(),
@@ -257,6 +236,4 @@ class GeneralSettingsWidget(QScrollArea):
             "maximum_messages_in_parameter": self.__maximumMessagesInParameterSpinBox.value(),
             "show_as_markdown": self.__show_as_markdown.isChecked(),
             "run_at_startup": self.__runAtStartupCheckBox.isChecked(),
-            "voice": self.__voiceCmbBox.currentText(),
-            "voice_speed": self.__speedSpinBox.value(),
         }

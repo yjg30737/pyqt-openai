@@ -12,17 +12,18 @@ class G4FImageHome(QScrollArea):
 
     def __initUi(self):
         # TODO LANGUAGE
-        title = QLabel("Welcome to GPT4Free\n" +
-                       "Image Generation Page !", self)
+        title = QLabel("Welcome to GPT4Free\n" + "Image Generation Page !", self)
         title.setFont(QFont(*LARGE_LABEL_PARAM))
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        description = QLabel("Generate images for free with the power of G4F." + CONTEXT_DELIMITER)
+        description = QLabel(
+            "Generate images for free with the power of G4F." + CONTEXT_DELIMITER
+        )
 
         description.setFont(QFont(*MEDIUM_LABEL_PARAM))
         description.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        # TODO v1.6.0 "how does this work?" or "What is GPT4Free?" link (maybe)
+        # TODO v1.7.0 "how does this work?" or "What is GPT4Free?" link (maybe)
 
         lay = QVBoxLayout()
         lay.addWidget(title)
