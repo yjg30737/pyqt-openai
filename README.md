@@ -38,9 +38,10 @@ This is the [default test scenario page](https://github.com/yjg30737/pyqt-openai
 
 ### Key Features:
 - **Chat Interface**: Enjoy a seamless chat experience with a customizable interface, fast thread and message search, and advanced conversation settings. You can also import/export chat histories and use prompt management tools for efficient prompt engineering.
-- **Image Generation**: Generate images using OpenAI’s DALL-E 3 or models from Replicate or GPT4Free, directly within your chat sessions. The app supports multi-image generation, automatic saving, and integrated image management.
+- **Image Generation**: Generate images using OpenAI’s DALL-E 3 or models from Replicate or GPT4Free, directly within your chat sessions. The app supports endless image generation, randomly generated prompt, automatic saving, and integrated image management.
 - **Focus and Accessibility Modes**: Utilize Focus Mode, “Always on Top” Mode, transparency adjustments, and background notifications to keep the chat accessible and responsive without overwhelming system resources.
 - **Customization and Shortcuts**: VividNode offers extensive customization options, including language settings, memory management, and a comprehensive list of keyboard shortcuts for faster operations.
+- **Support for interactive chatting (STT & TTS)**: It features a recording function using OpenAI's STT capabilities and allows responses to be heard in various voices through OpenAI Whisper or the TTS functionality of the Edge browser (using edge-tts, which is free).
 
 With VividNode, you can experience a more powerful and resource-efficient alternative to browser-based GPT interfaces, making it easier to manage both text and image-based interactions.
 
