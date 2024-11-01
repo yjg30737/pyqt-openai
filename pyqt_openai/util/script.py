@@ -26,7 +26,8 @@ from pathlib import Path
 import PIL.Image
 import numpy as np
 import psutil
-from g4f.gui.server.api import Api
+from g4f import ProviderType
+from g4f.providers.base_provider import ProviderModelMixin
 
 from pyqt_openai.widgets.scrollableErrorDialog import ScrollableErrorDialog
 
@@ -796,13 +797,32 @@ def get_g4f_image_models() -> list:
     models = [model["image_model"] for model in image_models]
     return models
 
-
 def get_g4f_image_providers(including_auto=False) -> list:
     """
     Get all the providers that support image generation
     (Even though this is not a perfect way to get the providers that support image generation)
+    (So i have to bring get_providers function directly from g4f library)
     """
-    providers = Api.get_providers()
+
+    def get_providers():
+        """
+        The function get from g4f/gui/server/api.py
+        """
+        return {
+            provider.__name__: (provider.label
+                                if hasattr(provider, "label")
+                                else provider.__name__) +
+                               (" (WebDriver)"
+                                if "webdriver" in provider.get_parameters()
+                                else "") +
+                               (" (Auth)"
+                                if provider.needs_auth
+                                else "")
+            for provider in __providers__
+            if provider.working
+        }
+
+    providers = get_providers()
     if including_auto:
         providers = [G4F_PROVIDER_DEFAULT] + [provider for provider in providers]
     return providers
@@ -812,10 +832,28 @@ def get_g4f_image_models_from_provider(provider) -> list:
     """
     Get all the models that support image generation for a specific provider
     (Again, this is not a perfect way to get the models that support image generation)
+    (So i have to bring get_provider_models function directly from g4f library)
     """
     if provider == G4F_PROVIDER_DEFAULT:
         return get_g4f_image_models()
-    return [model["model"] for model in Api.get_provider_models(provider)]
+
+    def get_provider_models(provider: str) -> list[dict]:
+        """
+        From g4f/gui/server/api.py
+        """
+        if provider in __map__:
+            provider: ProviderType = __map__[provider]
+            if issubclass(provider, ProviderModelMixin):
+                return [{"model": model, "default": model == provider.default_model} for model in provider.get_models()]
+            elif provider.supports_gpt_35_turbo or provider.supports_gpt_4:
+                return [
+                    *([{"model": "gpt-4", "default": not provider.supports_gpt_4}] if provider.supports_gpt_4 else []),
+                    *([{"model": "gpt-3.5-turbo",
+                        "default": not provider.supports_gpt_4}] if provider.supports_gpt_35_turbo else [])
+                ]
+            else:
+                return []
+    return [model["model"] for model in get_provider_models(provider)]
 
 
 def get_g4f_argument(model, messages, cur_text, stream):
