@@ -16,7 +16,7 @@ from pyqt_openai import (
     __version__,
     OWNER,
     PACKAGE_NAME,
-    UPDATE_DIR,
+    BIN_DIR,
     CURRENT_FILENAME,
     UPDATER_PATH,
     is_frozen,
@@ -143,7 +143,7 @@ def update_software():
 def run_updater(update_url):
     if sys.platform == "win32":
         subprocess.Popen(
-            [UPDATER_PATH, update_url, UPDATE_DIR, CURRENT_FILENAME], shell=True
+            [UPDATER_PATH, update_url, BIN_DIR, CURRENT_FILENAME], shell=True
         )
         sys.exit(0)
     pass

@@ -65,7 +65,7 @@ from pyqt_openai import (
     OPENAI_CHAT_ENDPOINT,
     STT_MODEL,
     DEFAULT_DATETIME_FORMAT,
-    DEFAULT_TOKEN_CHUNK_SIZE,
+    DEFAULT_TOKEN_CHUNK_SIZE, EDGE_TTS_PATH,
 )
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.globals import (
@@ -1158,10 +1158,12 @@ class TTSThread(QThread):
                 print(f"Media file: {mp3_fname}")
                 print(f"Subtitle file: {vtt_fname}\n")
 
+                _edge_tts_path = "edge-tts" if not is_frozen() else EDGE_TTS_PATH
+
                 if sys.platform == "win32":
                     with subprocess.Popen(
                         [
-                            "edge-tts",
+                            _edge_tts_path,
                             f"--write-media={mp3_fname}",
                             f"--write-subtitles={vtt_fname}",
                             f"--voice={self.input_args['voice']}",
@@ -1173,7 +1175,7 @@ class TTSThread(QThread):
                 else:
                     with subprocess.Popen(
                         [
-                            "edge-tts",
+                            _edge_tts_path,
                             f"--write-media={mp3_fname}",
                             f"--write-subtitles={vtt_fname}",
                             f"--voice={self.input_args['voice']}",
