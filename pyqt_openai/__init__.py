@@ -76,23 +76,25 @@ def get_config_directory():
 
     return config_dir
 
+BIN_DIR = get_config_directory()
 
-UPDATE_DIR = get_config_directory()
+UPDATER_NAME = "Updater.exe" if sys.platform == "win32" else "Updater"
+EDGE_TTS_NAME = "edge-tts.exe" if sys.platform == "win32" else "edge-tts"
 
 # The default updater path (relative to the application's root directory) - For Windows
-UPDATER_PATH = os.path.join(UPDATE_DIR, "Updater.exe")
+UPDATER_PATH = os.path.join(BIN_DIR, UPDATER_NAME)
+EDGE_TTS_PATH = os.path.join(BIN_DIR, EDGE_TTS_NAME)
 
+# Move the binary file to the config folder to prevent "file not found" error
+def move_bin(filename, dst_dir):
+    original_path = os.path.join(ROOT_DIR, filename)
+    if os.path.exists(original_path):
+        if os.path.exists(dst_dir):
+            os.remove(dst_dir)
+        shutil.move(original_path, dst_dir)
 
-# Move the Updater.exe to the config folder
-def move_updater():
-    original_updater_path = os.path.join(ROOT_DIR, "Updater.exe")
-    if os.path.exists(original_updater_path):
-        if os.path.exists(UPDATER_PATH):
-            os.remove(UPDATER_PATH)
-        shutil.move(original_updater_path, UPDATER_PATH)
-
-
-move_updater()
+move_bin(UPDATER_NAME, UPDATER_PATH)
+move_bin(EDGE_TTS_NAME, EDGE_TTS_PATH)
 
 CONTACT = "yjg30737@gmail.com"
 APP_INITIAL_WINDOW_SIZE = (1280, 768)
