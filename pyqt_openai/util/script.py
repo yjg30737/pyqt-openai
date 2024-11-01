@@ -1164,7 +1164,8 @@ class TTSThread(QThread):
                         f"--write-subtitles={vtt_fname}",
                         f"--voice={self.input_args['voice']}",
                         f"--text={self.input_args['input']}",
-                    ]
+                    ],
+                    creationflags=subprocess.CREATE_NO_WINDOW
                 ) as process:
                     process.communicate()
 
