@@ -75,6 +75,10 @@ Although this is named 'pyqt-openai', the model does not use only OpenAI-related
 #### Handling Error Messages Related to Software Updates (Windows)
 - If you encounter the following error message when trying to update VividNode via the auto-update feature: **PermissionError: [Errno 13] Permission denied**, To resolve this issue, run VividNode as an administrator.
 - Also, if VividNode keeps asking "Wanna update?" even though you've updated it already, just install this again and everything will be fine.
+#### Runtime error
+![image](https://github.com/user-attachments/assets/f53b44bb-1572-48ce-a9a0-a5da2b338d09)
+- If you see the error above, run the application again. It is likely to be shown in old version(below v1.5.0) so update to the latest version.
+ 
 #### Incomplete or Inaccurate Translations
 - If you come across incomplete or unnatural translations, please update the **pyqt_openai/lang/translations.json** file.
 
