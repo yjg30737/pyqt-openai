@@ -856,8 +856,8 @@ def get_g4f_image_models_from_provider(provider) -> list:
     return [model["model"] for model in get_provider_models(provider)]
 
 
-def get_g4f_argument(model, messages, cur_text, stream):
-    args = {"model": model, "messages": messages, "stream": stream}
+def get_g4f_argument(model, messages, cur_text, stream, images):
+    args = {"model": model, "messages": messages, "stream": stream, "images": images}
     args["messages"].append({"role": "user", "content": cur_text})
     return args
 
@@ -944,7 +944,7 @@ def get_argument(
 ):
     try:
         if is_g4f:
-            args = get_g4f_argument(model, messages, cur_text, stream)
+            args = get_g4f_argument(model, messages, cur_text, stream, images)
         else:
             args = get_api_argument(
                 model,
@@ -1000,6 +1000,7 @@ def get_api_response(args, get_content_only=True):
         provider = get_provider_from_model(args["model"])
         if provider == "OpenAI":
             response = OPENAI_CLIENT.chat.completions.create(**args)
+            print(response)
             if args["stream"]:
                 return stream_response(provider, response)
             else:
@@ -1385,6 +1386,7 @@ class ChatThread(QThread):
             self.__info.is_g4f = self.__is_g4f
             # For getting the provider if it is G4F
             get_content_only = not self.__info.is_g4f
+
             if self.__input_args["stream"]:
                 response = get_response(
                     self.__input_args, self.__is_g4f, get_content_only, self.__provider

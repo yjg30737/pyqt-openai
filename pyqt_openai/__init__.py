@@ -205,6 +205,7 @@ ICON_KOFI = os.path.join(ICON_PATH, "kofi.png")
 ICON_PATREON = os.path.join(ICON_PATH, "patreon.svg")
 ICON_SHORTCUT = os.path.join(ICON_PATH, "shortcut.svg")
 ICON_REALTIME_API = os.path.join(ICON_PATH, "realtime_api.svg")
+ICON_FILE = os.path.join(ICON_PATH, "file.svg")
 
 ## CUSTOMIZE
 DEFAULT_ICON_SIZE = (24, 24)
@@ -241,26 +242,33 @@ DEFAULT_TOAST_FOREGROUND_COLOR = "#EEEEEE"
 # DEFAULT_MARKDOWN_h6_color = '#000'
 # DEFAULT_MARKDOWN_a_color = '#000'
 
+
+
+command_key = "Ctrl"
+if sys.platform == "darwin":
+    command_key = "Cmd"
+
+
 ## SHORTCUT
 DEFAULT_SHORTCUT_GENERAL_ACTION = "Return"
-DEFAULT_SHORTCUT_FIND_PREV = "Ctrl+Shift+D"
-DEFAULT_SHORTCUT_FIND_NEXT = "Ctrl+D"
+DEFAULT_SHORTCUT_FIND_PREV = f"{command_key}+Shift+D"
+DEFAULT_SHORTCUT_FIND_NEXT = f"{command_key}+D"
 DEFAULT_SHORTCUT_FIND_CLOSE = "Escape"
-DEFAULT_SHORTCUT_PROMPT_BEGINNING = "Ctrl+B"
-DEFAULT_SHORTCUT_PROMPT_ENDING = "Ctrl+E"
-DEFAULT_SHORTCUT_SUPPORT_PROMPT_COMMAND = "Ctrl+Shift+P"
-DEFAULT_SHORTCUT_STACK_ON_TOP = "Ctrl+Shift+S"
-DEFAULT_SHORTCUT_SHOW_SECONDARY_TOOLBAR = "Ctrl+Shift+T"
+DEFAULT_SHORTCUT_PROMPT_BEGINNING = f"{command_key}+B"
+DEFAULT_SHORTCUT_PROMPT_ENDING = f"{command_key}+E"
+DEFAULT_SHORTCUT_SUPPORT_PROMPT_COMMAND = f"{command_key}+Shift+P"
+DEFAULT_SHORTCUT_STACK_ON_TOP = f"{command_key}+Shift+S"
+DEFAULT_SHORTCUT_SHOW_SECONDARY_TOOLBAR = f"{command_key}+Shift+T"
 DEFAULT_SHORTCUT_FOCUS_MODE = "F10"
 DEFAULT_SHORTCUT_FULL_SCREEN = "F11"
-DEFAULT_SHORTCUT_FIND = "Ctrl+F"
-DEFAULT_SHORTCUT_JSON_MODE = "Ctrl+J"
-DEFAULT_SHORTCUT_LEFT_SIDEBAR_WINDOW = "Ctrl+L"
-DEFAULT_SHORTCUT_RIGHT_SIDEBAR_WINDOW = "Ctrl+R"
-DEFAULT_SHORTCUT_CONTROL_PROMPT_WINDOW = "Ctrl+Shift+C"
-DEFAULT_SHORTCUT_RECORD = "Ctrl+Shift+R"
-DEFAULT_SHORTCUT_SETTING = "Ctrl+Alt+S"
-DEFAULT_SHORTCUT_SEND = "Ctrl+Return"
+DEFAULT_SHORTCUT_FIND = f"{command_key}+F"
+DEFAULT_SHORTCUT_JSON_MODE = f"{command_key}+J"
+DEFAULT_SHORTCUT_LEFT_SIDEBAR_WINDOW = f"{command_key}+L"
+DEFAULT_SHORTCUT_RIGHT_SIDEBAR_WINDOW = f"{command_key}+R"
+DEFAULT_SHORTCUT_CONTROL_PROMPT_WINDOW = f"{command_key}+Shift+C"
+DEFAULT_SHORTCUT_RECORD = f"{command_key}+Shift+R"
+DEFAULT_SHORTCUT_SETTING = f"{command_key}+Alt+S"
+DEFAULT_SHORTCUT_SEND = f"{command_key}+Return"
 
 ## DIRECTORY PATH & FILE'S NAME
 MAIN_INDEX = "main.py"
@@ -304,6 +312,8 @@ THREAD_TABLE_NAME_OLD = "conv_tb"
 THREAD_TRIGGER_NAME_OLD = "conv_tr"
 MESSAGE_TABLE_NAME_OLD = "conv_unit_tb"
 
+CHAT_FILE_TABLE_NAME = "chat_file_tb"
+
 THREAD_TABLE_NAME = "thread_tb"
 THREAD_TRIGGER_NAME = "thread_tr"
 MESSAGE_TABLE_NAME = "message_tb"
@@ -336,6 +346,7 @@ PROPERTY_PROMPT_UNIT_DEFAULT_VALUE = [
 
 PROMPT_GROUP_TABLE_NAME = "prompt_group_tb"
 PROMPT_ENTRY_TABLE_NAME = "prompt_entry_tb"
+
 
 # AI
 ## OPENAI
@@ -420,6 +431,13 @@ DEFAULT_API_CONFIGS = [
     {"display_name": "Gemini", "env_var_name": "GEMINI_API_KEY", "api_key": ""},
     {"display_name": "Claude", "env_var_name": "CLAUDE_API_KEY", "api_key": ""},
     {"display_name": "Llama", "env_var_name": "LLAMA_API_KEY", "api_key": ""},
+
+    # For G4F only
+    {"display_name": "DeepInfra", "env_var_name": "DEEPINFRA_API_KEY", "api_key": ""},
+    {"display_name": "Groq", "env_var_name": "GROQ_API_KEY", "api_key": ""},
+    {"display_name": "HuggingFace", "env_var_name": "HUGGINGFACE_API_KEY", "api_key": ""},
+    {"display_name": "OpenRouter", "env_var_name": "OPENROUTER_API_KEY", "api_key": ""},
+    {"display_name": "Perplexity API", "env_var_name": "PERPLEXITY_API_KEY", "api_key": ""}
 ]
 
 # This has to be managed separately since some of the arguments are different with usual models

@@ -6,7 +6,7 @@ from pyqt_openai import (
     ICON_INFO,
     ICON_FAVORITE_YES,
     ICON_SPEAKER,
-    WHISPER_TTS_MODEL,
+    WHISPER_TTS_MODEL, ICON_FILE,
 )
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.chat_widget.center.chatUnit import ChatUnit
@@ -15,6 +15,7 @@ from pyqt_openai.models import ChatMessageContainer
 from pyqt_openai.globals import DB
 from pyqt_openai.util.script import stream_to_speakers
 from pyqt_openai.widgets.button import Button
+from pyqt_openai.widgets.fileTableDialog import FileTableDialog
 
 
 class AIChatUnit(ChatUnit):
@@ -38,6 +39,10 @@ class AIChatUnit(ChatUnit):
         self.__infoBtn = Button()
         self.__infoBtn.setStyleAndIcon(ICON_INFO)
         self.__infoBtn.clicked.connect(self.__showResponseInfoDialog)
+
+        self.__fileListBtn = Button()
+        self.__fileListBtn.setStyleAndIcon(ICON_FILE)
+        self.__fileListBtn.clicked.connect(self.__showFileListDialog)
 
         self.__speakerBtn = Button()
         self.__speakerBtn.setStyleAndIcon(ICON_SPEAKER)
@@ -66,6 +71,11 @@ class AIChatUnit(ChatUnit):
     def __showResponseInfoDialog(self):
         if self.__result_info:
             dialog = ResponseInfoDialog(self.__result_info, parent=self)
+            dialog.exec()
+
+    def __showFileListDialog(self):
+        if self.__result_info:
+            dialog = FileTableDialog(self.__result_info, parent=self)
             dialog.exec()
 
     def afterResponse(self, arg):
