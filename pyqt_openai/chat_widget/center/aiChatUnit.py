@@ -50,9 +50,9 @@ class AIChatUnit(ChatUnit):
         self.__speakerBtn.toggled.connect(self.__speak)
         self.thread = None
 
-        self.getMenuWidget().layout().insertWidget(2, self.__favoriteBtn)
-        self.getMenuWidget().layout().insertWidget(3, self.__infoBtn)
-        self.getMenuWidget().layout().insertWidget(4, self.__speakerBtn)
+        self.getMenuWidget().layout().insertWidget(3, self.__favoriteBtn)
+        self.getMenuWidget().layout().insertWidget(4, self.__infoBtn)
+        self.getMenuWidget().layout().insertWidget(5, self.__speakerBtn)
 
         self.setBackgroundRole(QPalette.ColorRole.AlternateBase)
         self.setAutoFillBackground(True)
@@ -81,6 +81,7 @@ class AIChatUnit(ChatUnit):
     def afterResponse(self, arg):
         self.toggleGUI(True)
         self.__result_info = arg
+        self._nameLbl.setText(arg.model)
         self.__favorite(True if arg.favorite else False, insert_f=False)
 
         if arg.is_json_response_available:
@@ -94,10 +95,6 @@ class AIChatUnit(ChatUnit):
         self._copyBtn.setEnabled(f)
         self.__infoBtn.setEnabled(f)
         self.__speakerBtn.setEnabled(f)
-
-    def __setResponseInfo(self, arg: ChatMessageContainer):
-        self.__result_info = arg
-        self.__favorite(True if arg.favorite else False, insert_f=False)
 
     def getResponseInfo(self):
         """

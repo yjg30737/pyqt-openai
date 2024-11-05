@@ -48,6 +48,7 @@ class VoiceSettingsWidget(QWidget):
         self.__warningLbl = QLabel(
             "You need to install mpv to use edge-tts. "
             "<a href='https://mpv.io/installation/'>Link</a>"
+            "<br>Also edge-tts can only be used when run with python."
         )
         self.__warningLbl.setOpenExternalLinks(True)
         self.__warningLbl.setStyleSheet(f"color: {DEFAULT_HIGHLIGHT_TEXT_COLOR};")

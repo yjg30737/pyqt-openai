@@ -6,7 +6,7 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QHBoxLayout,
     QSpacerItem,
-    QSizePolicy,
+    QSizePolicy, QLabel,
 )
 
 from pyqt_openai import DEFAULT_ICON_SIZE, ICON_COPY
@@ -26,12 +26,16 @@ class ChatUnit(QWidget):
 
         self._icon = RoundedImage()
         self._icon.setMaximumSize(*DEFAULT_ICON_SIZE)
+        self._icon.setStyleSheet('margin-right: 3px;')
+
+        self._nameLbl = QLabel()
 
         self._copyBtn = Button()
         self._copyBtn.setStyleAndIcon(ICON_COPY)
         self._copyBtn.clicked.connect(self.__copy)
 
         lay.addWidget(self._icon)
+        lay.addWidget(self._nameLbl)
         lay.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.Policy.MinimumExpanding))
         lay.addWidget(self._copyBtn)
         lay.setContentsMargins(2, 2, 2, 2)

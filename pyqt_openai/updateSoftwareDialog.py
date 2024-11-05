@@ -21,6 +21,7 @@ from pyqt_openai import (
     UPDATER_PATH,
     is_frozen,
 )
+from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.lang.translations import LangClass
 
 
@@ -54,8 +55,7 @@ class UpdateSoftwareDialog(QDialog):
         self.__updateManualLbl = QLabel()
 
         lay.addWidget(self.releaseNoteBrowser)
-
-        if sys.platform == "win32":
+        if sys.platform == "win32" and not CONFIG_MANAGER.get_general_property('manual_update'):
             update_url = f"https://github.com/{self.__owner}/{self.__repo}/releases/download/{self.__recent_version}/VividNode.zip"
 
             buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
@@ -69,13 +69,14 @@ class UpdateSoftwareDialog(QDialog):
         else:
             self.__updateManualLbl.setText(
                 f'<b>{LangClass.TRANSLATIONS["Update Available"]}</b>'
-                + f"""<br>
-            Automatic updates are currently supported only on Windows.  
-            For manual updates, please click the link for the latest version and install the file appropriate for your operating system.  
-            Linux - Install via tar  
-            macOS - Install via dmg
+                + f"""<br> 
+            For manual updates, please click the link for the latest version and install the file appropriate for your operating system.<br>
+            Windows - Install via exe or zip<br>
+            Linux - Install via tar.gz<br>
+            macOS - Install via dmg<br>
             """
             )
+            self.__updateManualLbl.setWordWrap(True)
         lay.addWidget(self.__updateManualLbl)
 
 

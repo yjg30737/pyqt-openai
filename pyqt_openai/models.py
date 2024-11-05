@@ -145,6 +145,7 @@ class SettingsParamsContainer(Container):
     show_as_markdown: bool = True
     apply_user_defined_styles: bool = False
     run_at_startup: bool = True
+    manual_update: bool = True
 
     voice_provider: str = TTS_DEFAULT_PROVIDER
     voice: str = TTS_DEFAULT_VOICE

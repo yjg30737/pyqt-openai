@@ -8,7 +8,7 @@ from pyqt_openai import (
     DEFAULT_APP_NAME,
     HOW_TO_GET_OPENAI_API_KEY_URL,
     LARGE_LABEL_PARAM,
-    MEDIUM_LABEL_PARAM,
+    MEDIUM_LABEL_PARAM, QUICKSTART_MANUAL_URL,
 )
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.widgets.linkLabel import LinkLabel
@@ -30,7 +30,7 @@ class ChatHome(QScrollArea):
 
         self.__quickStartManualLbl = LinkLabel()
         self.__quickStartManualLbl.setText(LangClass.TRANSLATIONS["Quick Start Manual"])
-        self.__quickStartManualLbl.setUrl(HOW_TO_GET_OPENAI_API_KEY_URL)
+        self.__quickStartManualLbl.setUrl(QUICKSTART_MANUAL_URL)
         self.__quickStartManualLbl.setFont(QFont(*MEDIUM_LABEL_PARAM))
         self.__quickStartManualLbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
