@@ -6,7 +6,6 @@ from PySide6.QtWidgets import (
     QTableWidgetItem,
     QLabel,
     QLineEdit,
-    QDialogButtonBox,
     QWidget,
     QPushButton,
 )
@@ -57,7 +56,7 @@ class ApiWidget(QWidget):
             }
         )
 
-        # Set "get api key" here
+        # Set "get api key" to here
         for i, obj in enumerate(self.__api_keys):
             obj["get_api_key"] = {
                 "OpenAI": HOW_TO_GET_OPENAI_API_KEY_URL,
@@ -65,6 +64,11 @@ class ApiWidget(QWidget):
                 "Gemini": HOW_TO_GET_GEMINI_API_KEY_URL,
                 "Llama": HOW_TO_GET_LLAMA_API_KEY_URL,
                 "Replicate": HOW_TO_REPLICATE,
+                "DeepInfra": '',
+                "Groq": '',
+                "HuggingFace": '',
+                "OpenRouter": '',
+                "Perplexity API": '',
             }[obj["display_name"]]
 
     def __initUi(self):

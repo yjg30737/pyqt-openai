@@ -9,7 +9,7 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
 )
 
-from pyqt_openai.chat_widget.right_sidebar.apiWidget import ApiWidget
+from pyqt_openai.settings_dialog.apiWidget import ApiWidget
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import SettingsParamsContainer
 from pyqt_openai.settings_dialog.generalSettingsWidget import GeneralSettingsWidget

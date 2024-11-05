@@ -23,7 +23,7 @@ ROOT_DIR = SRC_DIR.parent  # VividNode
 # For the sake of following the PEP8 standard, we will declare module-level dunder names.
 # PEP8 standard about dunder names: https://peps.python.org/pep-0008/#module-level-dunder-names
 
-__version__ = "1.6.0"
+__version__ = "1.6.1"
 __author__ = "Jung Gyu Yoon"
 
 # Constants
@@ -79,11 +79,9 @@ def get_config_directory():
 BIN_DIR = get_config_directory()
 
 UPDATER_NAME = "Updater.exe" if sys.platform == "win32" else "Updater"
-EDGE_TTS_NAME = "edge-tts.exe" if sys.platform == "win32" else "edge-tts"
 
 # The default updater path (relative to the application's root directory) - For Windows
 UPDATER_PATH = os.path.join(BIN_DIR, UPDATER_NAME)
-EDGE_TTS_PATH = os.path.join(BIN_DIR, EDGE_TTS_NAME)
 
 # Move the binary file to the config folder to prevent "file not found" error
 def move_bin(filename, dst_dir):
@@ -94,7 +92,6 @@ def move_bin(filename, dst_dir):
         shutil.move(original_path, dst_dir)
 
 move_bin(UPDATER_NAME, UPDATER_PATH)
-move_bin(EDGE_TTS_NAME, EDGE_TTS_PATH)
 
 CONTACT = "yjg30737@gmail.com"
 APP_INITIAL_WINDOW_SIZE = (1280, 768)
@@ -205,6 +202,7 @@ ICON_KOFI = os.path.join(ICON_PATH, "kofi.png")
 ICON_PATREON = os.path.join(ICON_PATH, "patreon.svg")
 ICON_SHORTCUT = os.path.join(ICON_PATH, "shortcut.svg")
 ICON_REALTIME_API = os.path.join(ICON_PATH, "realtime_api.svg")
+ICON_FILE = os.path.join(ICON_PATH, "file.svg")
 
 ## CUSTOMIZE
 DEFAULT_ICON_SIZE = (24, 24)
@@ -213,6 +211,7 @@ DEFAULT_AI_IMAGE_PATH = ICON_OPENAI
 DEFAULT_FONT_SIZE = 12
 DEFAULT_FONT_FAMILY = "Arial"
 
+DEFAULT_HIGHLIGHT_TEXT_COLOR = "#A2D0DD"
 DEFAULT_BUTTON_HOVER_COLOR = "#A2D0DD"
 DEFAULT_BUTTON_PRESSED_COLOR = "#B3E0FF"
 DEFAULT_BUTTON_CHECKED_COLOR = "#B3E0FF"
@@ -240,26 +239,37 @@ DEFAULT_TOAST_FOREGROUND_COLOR = "#EEEEEE"
 # DEFAULT_MARKDOWN_h6_color = '#000'
 # DEFAULT_MARKDOWN_a_color = '#000'
 
+
+
+command_key = "Ctrl"
+if sys.platform == "darwin":
+    command_key = "Cmd"
+
+
 ## SHORTCUT
 DEFAULT_SHORTCUT_GENERAL_ACTION = "Return"
-DEFAULT_SHORTCUT_FIND_PREV = "Ctrl+Shift+D"
-DEFAULT_SHORTCUT_FIND_NEXT = "Ctrl+D"
+DEFAULT_SHORTCUT_FIND_PREV = f"{command_key}+Shift+D"
+DEFAULT_SHORTCUT_FIND_NEXT = f"{command_key}+D"
 DEFAULT_SHORTCUT_FIND_CLOSE = "Escape"
-DEFAULT_SHORTCUT_PROMPT_BEGINNING = "Ctrl+B"
-DEFAULT_SHORTCUT_PROMPT_ENDING = "Ctrl+E"
-DEFAULT_SHORTCUT_SUPPORT_PROMPT_COMMAND = "Ctrl+Shift+P"
-DEFAULT_SHORTCUT_STACK_ON_TOP = "Ctrl+Shift+S"
-DEFAULT_SHORTCUT_SHOW_SECONDARY_TOOLBAR = "Ctrl+Shift+T"
+DEFAULT_SHORTCUT_PROMPT_BEGINNING = f"{command_key}+B"
+DEFAULT_SHORTCUT_PROMPT_ENDING = f"{command_key}+E"
+DEFAULT_SHORTCUT_SUPPORT_PROMPT_COMMAND = f"{command_key}+Shift+P"
+DEFAULT_SHORTCUT_STACK_ON_TOP = f"{command_key}+Shift+S"
+DEFAULT_SHORTCUT_SHOW_SECONDARY_TOOLBAR = f"{command_key}+Shift+T"
 DEFAULT_SHORTCUT_FOCUS_MODE = "F10"
 DEFAULT_SHORTCUT_FULL_SCREEN = "F11"
-DEFAULT_SHORTCUT_FIND = "Ctrl+F"
-DEFAULT_SHORTCUT_JSON_MODE = "Ctrl+J"
-DEFAULT_SHORTCUT_LEFT_SIDEBAR_WINDOW = "Ctrl+L"
-DEFAULT_SHORTCUT_RIGHT_SIDEBAR_WINDOW = "Ctrl+R"
-DEFAULT_SHORTCUT_CONTROL_PROMPT_WINDOW = "Ctrl+Shift+C"
-DEFAULT_SHORTCUT_RECORD = "Ctrl+Shift+R"
-DEFAULT_SHORTCUT_SETTING = "Ctrl+Alt+S"
-DEFAULT_SHORTCUT_SEND = "Ctrl+Return"
+DEFAULT_SHORTCUT_FIND = f"{command_key}+F"
+DEFAULT_SHORTCUT_JSON_MODE = f"{command_key}+J"
+DEFAULT_SHORTCUT_LEFT_SIDEBAR_WINDOW = f"{command_key}+L"
+DEFAULT_SHORTCUT_RIGHT_SIDEBAR_WINDOW = f"{command_key}+R"
+DEFAULT_SHORTCUT_CONTROL_PROMPT_WINDOW = f"{command_key}+Shift+C"
+DEFAULT_SHORTCUT_RECORD = f"{command_key}+Shift+R"
+DEFAULT_SHORTCUT_SETTING = f"{command_key}+Alt+S"
+DEFAULT_SHORTCUT_SEND = f"{command_key}+Return"
+
+DEFAULT_SWITCH_PROMPT_UP = f"{command_key}+Up"
+DEFAULT_SWITCH_PROMPT_DOWN = f"{command_key}+Down"
+
 
 ## DIRECTORY PATH & FILE'S NAME
 MAIN_INDEX = "main.py"
@@ -303,6 +313,8 @@ THREAD_TABLE_NAME_OLD = "conv_tb"
 THREAD_TRIGGER_NAME_OLD = "conv_tr"
 MESSAGE_TABLE_NAME_OLD = "conv_unit_tb"
 
+CHAT_FILE_TABLE_NAME = "chat_file_tb"
+
 THREAD_TABLE_NAME = "thread_tb"
 THREAD_TRIGGER_NAME = "thread_tr"
 MESSAGE_TABLE_NAME = "message_tb"
@@ -335,6 +347,7 @@ PROPERTY_PROMPT_UNIT_DEFAULT_VALUE = [
 
 PROMPT_GROUP_TABLE_NAME = "prompt_group_tb"
 PROMPT_ENTRY_TABLE_NAME = "prompt_entry_tb"
+
 
 # AI
 ## OPENAI
@@ -418,7 +431,13 @@ DEFAULT_API_CONFIGS = [
     {"display_name": "OpenAI", "env_var_name": "OPENAI_API_KEY", "api_key": ""},
     {"display_name": "Gemini", "env_var_name": "GEMINI_API_KEY", "api_key": ""},
     {"display_name": "Claude", "env_var_name": "CLAUDE_API_KEY", "api_key": ""},
-    {"display_name": "Llama", "env_var_name": "LLAMA_API_KEY", "api_key": ""},
+
+    # For G4F only
+    {"display_name": "DeepInfra", "env_var_name": "DEEPINFRA_API_KEY", "api_key": ""},
+    {"display_name": "Groq", "env_var_name": "GROQ_API_KEY", "api_key": ""},
+    {"display_name": "HuggingFace", "env_var_name": "HUGGINGFACE_API_KEY", "api_key": ""},
+    {"display_name": "OpenRouter", "env_var_name": "OPENROUTER_API_KEY", "api_key": ""},
+    {"display_name": "Perplexity API", "env_var_name": "PERPLEXITY_API_KEY", "api_key": ""}
 ]
 
 # This has to be managed separately since some of the arguments are different with usual models
@@ -436,8 +455,7 @@ G4F_DEFAULT_IMAGE_MODEL = "flux"
 PROVIDER_MODEL_DICT = {
     "OpenAI": ["gpt-4o", "gpt-4o-mini"] + O1_MODELS,
     "Gemini": ["gemini-1.5-flash", "gemini-1.5-pro"],
-    "Claude": ["claude-3-5-sonnet-20240620"],
-    "Llama": ["llama3-70b"],
+    "Claude": ["claude-3-5-sonnet-20240620"]
 }
 
 # Constants related to the number of messages LLM will store
@@ -633,24 +651,25 @@ RANDOMIZING_PROMPT_SOURCE_ARR = [
 # ----------------------------
 CONFIG_DATA = {
     "General": {
-        "TAB_IDX": 0,
+        # Language
         "lang": "English",
-        "show_chat_list": True,
-        "stream": True,
+        # DB
         "db": "conv",
-        "model": DEFAULT_LLM,
+        # GUI & Application settings
+        "TAB_IDX": 0,
+        "show_chat_list": True,
         "show_setting": True,
-        "use_llama_index": False,
         "do_not_ask_again": False,
         "show_prompt": True,
-        "system": "You are a helpful assistant.",
         "notify_finish": True,
-        "temperature": 1,
-        "max_tokens": -1,
         "show_secondary_toolbar": True,
-        "top_p": 1,
+        "focus_mode": False,
+        "show_as_markdown": True,
+        "show_realtime_api": False,
+        "run_at_startup": True,
+        "manual_update": True,
+        # Columns
         "chat_column_to_show": ["id", "name", "insert_dt", "update_dt"],
-        "frequency_penalty": 0,
         "image_column_to_show": [
             "id",
             "model",
@@ -666,25 +685,28 @@ CONFIG_DATA = {
             "update_dt",
             "insert_dt",
         ],
+        # Parameters
+        "model": DEFAULT_LLM,
+        "system": "You are a helpful assistant.",
+        "stream": True,
+        "temperature": 1,
+        "max_tokens": -1,
+        "top_p": 1,
+        "frequency_penalty": 0,
         "presence_penalty": 0,
         "json_object": False,
         "maximum_messages_in_parameter": MAXIMUM_MESSAGES_IN_PARAMETER,
-        "show_as_markdown": True,
-        "run_at_startup": True,
         "use_max_tokens": False,
+        # Llama Index
+        "use_llama_index": False,
+        "llama_index_directory": "",
+        # Customize
         "background_image": "",
         "user_image": DEFAULT_USER_IMAGE_PATH,
         "ai_image": DEFAULT_AI_IMAGE_PATH,
         "font_size": DEFAULT_FONT_SIZE,
         "font_family": DEFAULT_FONT_FAMILY,
-        "llama_index_directory": "",
         "apply_user_defined_styles": False,
-        "focus_mode": False,
-        "OPENAI_API_KEY": "",
-        "GEMINI_API_KEY": "",
-        "CLAUDE_API_KEY": "",
-        "LLAMA_API_KEY": "",
-        "show_realtime_api": False,
         # G4F
         "g4f_model": DEFAULT_LLM,
         "provider": G4F_PROVIDER_DEFAULT,
@@ -747,12 +769,10 @@ CONFIG_DATA = {
     },
 }
 
-
 # Dynamically add the API keys to the configuration data
 def update_general_config_with_api_keys(config_data, api_configs):
     for config in api_configs:
         config_data["General"][config["env_var_name"]] = config["api_key"]
-
 
 update_general_config_with_api_keys(CONFIG_DATA, DEFAULT_API_CONFIGS)
 
