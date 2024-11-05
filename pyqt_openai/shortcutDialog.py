@@ -15,7 +15,7 @@ from pyqt_openai import (
     DEFAULT_SHORTCUT_SETTING,
     DEFAULT_SHORTCUT_SEND,
     DEFAULT_SHORTCUT_SHOW_SECONDARY_TOOLBAR,
-    DEFAULT_SHORTCUT_FOCUS_MODE,
+    DEFAULT_SHORTCUT_FOCUS_MODE, DEFAULT_SWITCH_PROMPT_UP, DEFAULT_SWITCH_PROMPT_DOWN,
 )
 from pyqt_openai.lang.translations import LangClass
 
@@ -83,6 +83,14 @@ class ShortcutDialog(QDialog):
             "SHORTCUT_SEND": {
                 "label": LangClass.TRANSLATIONS["Send"],
                 "value": DEFAULT_SHORTCUT_SEND,
+            },
+            "SWITCH_PROMPT_UP": {
+                "label": LangClass.TRANSLATIONS["Switch Prompt Up"],
+                "value": DEFAULT_SWITCH_PROMPT_UP,
+            },
+            "SWITCH_PROMPT_DOWN": {
+                "label": LangClass.TRANSLATIONS["Switch Prompt Down"],
+                "value": DEFAULT_SWITCH_PROMPT_DOWN,
             },
         }
         self.__initUi()

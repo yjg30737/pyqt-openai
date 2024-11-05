@@ -6,7 +6,7 @@ from pyqt_openai import (
     ICON_INFO,
     ICON_FAVORITE_YES,
     ICON_SPEAKER,
-    WHISPER_TTS_MODEL,
+    WHISPER_TTS_MODEL, ICON_FILE,
 )
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.chat_widget.center.chatUnit import ChatUnit
@@ -15,6 +15,7 @@ from pyqt_openai.models import ChatMessageContainer
 from pyqt_openai.globals import DB
 from pyqt_openai.util.script import stream_to_speakers
 from pyqt_openai.widgets.button import Button
+from pyqt_openai.widgets.fileTableDialog import FileTableDialog
 
 
 class AIChatUnit(ChatUnit):
@@ -39,15 +40,19 @@ class AIChatUnit(ChatUnit):
         self.__infoBtn.setStyleAndIcon(ICON_INFO)
         self.__infoBtn.clicked.connect(self.__showResponseInfoDialog)
 
+        self.__fileListBtn = Button()
+        self.__fileListBtn.setStyleAndIcon(ICON_FILE)
+        self.__fileListBtn.clicked.connect(self.__showFileListDialog)
+
         self.__speakerBtn = Button()
         self.__speakerBtn.setStyleAndIcon(ICON_SPEAKER)
         self.__speakerBtn.setCheckable(True)
         self.__speakerBtn.toggled.connect(self.__speak)
         self.thread = None
 
-        self.getMenuWidget().layout().insertWidget(2, self.__favoriteBtn)
-        self.getMenuWidget().layout().insertWidget(3, self.__infoBtn)
-        self.getMenuWidget().layout().insertWidget(4, self.__speakerBtn)
+        self.getMenuWidget().layout().insertWidget(3, self.__favoriteBtn)
+        self.getMenuWidget().layout().insertWidget(4, self.__infoBtn)
+        self.getMenuWidget().layout().insertWidget(5, self.__speakerBtn)
 
         self.setBackgroundRole(QPalette.ColorRole.AlternateBase)
         self.setAutoFillBackground(True)
@@ -68,9 +73,15 @@ class AIChatUnit(ChatUnit):
             dialog = ResponseInfoDialog(self.__result_info, parent=self)
             dialog.exec()
 
+    def __showFileListDialog(self):
+        if self.__result_info:
+            dialog = FileTableDialog(self.__result_info, parent=self)
+            dialog.exec()
+
     def afterResponse(self, arg):
         self.toggleGUI(True)
         self.__result_info = arg
+        self._nameLbl.setText(arg.model)
         self.__favorite(True if arg.favorite else False, insert_f=False)
 
         if arg.is_json_response_available:
@@ -84,10 +95,6 @@ class AIChatUnit(ChatUnit):
         self._copyBtn.setEnabled(f)
         self.__infoBtn.setEnabled(f)
         self.__speakerBtn.setEnabled(f)
-
-    def __setResponseInfo(self, arg: ChatMessageContainer):
-        self.__result_info = arg
-        self.__favorite(True if arg.favorite else False, insert_f=False)
 
     def getResponseInfo(self):
         """

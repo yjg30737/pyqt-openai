@@ -54,6 +54,7 @@ class GeneralSettingsWidget(QScrollArea):
         )
         self.show_as_markdown = CONFIG_MANAGER.get_general_property("show_as_markdown")
         self.run_at_startup = CONFIG_MANAGER.get_general_property("run_at_startup")
+        self.manual_update = CONFIG_MANAGER.get_general_property("manual_update")
 
     def __initUi(self):
         # Language setting
@@ -108,6 +109,16 @@ class GeneralSettingsWidget(QScrollArea):
         )
         self.__runAtStartupCheckBox.setChecked(self.run_at_startup)
 
+        self.__manual_updateCheckBox = QCheckBox(
+            LangClass.TRANSLATIONS["Manual Update"]
+        )
+        self.__manual_updateCheckBox.setChecked(self.manual_update)
+
+        self.__manual_UpdateWarning = QLabel(
+            LangClass.TRANSLATIONS["Auto-update is supported on Windows only."]
+        )
+        self.__manual_UpdateWarning.setStyleSheet("color: orange;")
+
         lay = QVBoxLayout()
         lay.addWidget(langWidget)
         lay.addLayout(dbLayout)
@@ -115,6 +126,8 @@ class GeneralSettingsWidget(QScrollArea):
         lay.addWidget(self.__notifyFinishCheckBox)
         lay.addWidget(self.__showSecondaryToolBarChkBox)
         lay.addWidget(self.__runAtStartupCheckBox)
+        lay.addWidget(self.__manual_updateCheckBox)
+        lay.addWidget(self.__manual_UpdateWarning)
 
         generalGrpBox = QGroupBox(LangClass.TRANSLATIONS["General"])
         generalGrpBox.setLayout(lay)
@@ -236,4 +249,5 @@ class GeneralSettingsWidget(QScrollArea):
             "maximum_messages_in_parameter": self.__maximumMessagesInParameterSpinBox.value(),
             "show_as_markdown": self.__show_as_markdown.isChecked(),
             "run_at_startup": self.__runAtStartupCheckBox.isChecked(),
+            "manual_update": self.__manual_updateCheckBox.isChecked(),
         }

@@ -15,7 +15,7 @@ from pyqt_openai import (
     PROMPT_GROUP_TABLE_NAME,
     PROMPT_ENTRY_TABLE_NAME,
     get_config_directory,
-    DEFAULT_DATETIME_FORMAT,
+    DEFAULT_DATETIME_FORMAT, CHAT_FILE_TABLE_NAME,
 )
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.models import (
@@ -552,6 +552,38 @@ class SqliteDatabase:
             return current_date
         except sqlite3.Error as e:
             print(f"An error occurred: {e}")
+            raise
+
+    def __createChatFile(self):
+
+        try:
+            # Check if the table exists
+            self.__c.execute(
+                f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{CHAT_FILE_TABLE_NAME}'"
+            )
+            if self.__c.fetchone()[0] == 1:
+                # Add provider column if not exists
+                self.__c.execute(f"PRAGMA table_info({CHAT_FILE_TABLE_NAME})")
+                columns = self.__c.fetchall()
+                if not any([col[1] == "provider" for col in columns]):
+                    self.__c.execute(
+                        f"ALTER TABLE {CHAT_FILE_TABLE_NAME} ADD COLUMN provider VARCHAR(255)"
+                    )
+            else:
+                self.__c.execute(
+                    f"""CREATE TABLE {CHAT_FILE_TABLE_NAME}
+                             (id INTEGER PRIMARY KEY,
+                              thread_id INTEGER,
+                              message_id INTEGER,
+                              name TEXT,
+                              data BLOB,
+                              update_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
+                              insert_dt DATETIME DEFAULT CURRENT_TIMESTAMP)"""
+                )
+                # Commit the transaction
+                self.__conn.commit()
+        except sqlite3.Error as e:
+            print(f"An error occurred while creating the table: {e}")
             raise
 
     def __createImage(self):

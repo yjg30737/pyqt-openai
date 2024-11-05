@@ -65,7 +65,7 @@ from pyqt_openai import (
     OPENAI_CHAT_ENDPOINT,
     STT_MODEL,
     DEFAULT_DATETIME_FORMAT,
-    DEFAULT_TOKEN_CHUNK_SIZE, EDGE_TTS_PATH,
+    DEFAULT_TOKEN_CHUNK_SIZE
 )
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.globals import (
@@ -856,8 +856,8 @@ def get_g4f_image_models_from_provider(provider) -> list:
     return [model["model"] for model in get_provider_models(provider)]
 
 
-def get_g4f_argument(model, messages, cur_text, stream):
-    args = {"model": model, "messages": messages, "stream": stream}
+def get_g4f_argument(model, messages, cur_text, stream, images):
+    args = {"model": model, "messages": messages, "stream": stream, "images": images}
     args["messages"].append({"role": "user", "content": cur_text})
     return args
 
@@ -944,7 +944,7 @@ def get_argument(
 ):
     try:
         if is_g4f:
-            args = get_g4f_argument(model, messages, cur_text, stream)
+            args = get_g4f_argument(model, messages, cur_text, stream, images)
         else:
             args = get_api_argument(
                 model,
@@ -1000,6 +1000,7 @@ def get_api_response(args, get_content_only=True):
         provider = get_provider_from_model(args["model"])
         if provider == "OpenAI":
             response = OPENAI_CLIENT.chat.completions.create(**args)
+            print(response)
             if args["stream"]:
                 return stream_response(provider, response)
             else:
@@ -1158,12 +1159,10 @@ class TTSThread(QThread):
                 print(f"Media file: {mp3_fname}")
                 print(f"Subtitle file: {vtt_fname}\n")
 
-                _edge_tts_path = "edge-tts" if not is_frozen() else EDGE_TTS_PATH
-
                 if sys.platform == "win32":
                     with subprocess.Popen(
                         [
-                            _edge_tts_path,
+                            "edge-tts",
                             f"--write-media={mp3_fname}",
                             f"--write-subtitles={vtt_fname}",
                             f"--voice={self.input_args['voice']}",
@@ -1175,7 +1174,7 @@ class TTSThread(QThread):
                 else:
                     with subprocess.Popen(
                         [
-                            _edge_tts_path,
+                            "edge-tts",
                             f"--write-media={mp3_fname}",
                             f"--write-subtitles={vtt_fname}",
                             f"--voice={self.input_args['voice']}",
@@ -1385,6 +1384,7 @@ class ChatThread(QThread):
             self.__info.is_g4f = self.__is_g4f
             # For getting the provider if it is G4F
             get_content_only = not self.__info.is_g4f
+
             if self.__input_args["stream"]:
                 response = get_response(
                     self.__input_args, self.__is_g4f, get_content_only, self.__provider
