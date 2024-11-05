@@ -13,7 +13,8 @@ from PySide6.QtWidgets import (
 from pyqt_openai import (
     WHISPER_TTS_VOICE_TYPE,
     WHISPER_TTS_VOICE_SPEED_RANGE,
-    EDGE_TTS_VOICE_TYPE, DEFAULT_HIGHLIGHT_TEXT_COLOR,
+    EDGE_TTS_VOICE_TYPE,
+    DEFAULT_HIGHLIGHT_TEXT_COLOR,
 )
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.lang.translations import LangClass

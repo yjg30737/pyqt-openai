@@ -6,7 +6,8 @@ from pyqt_openai import (
     ICON_INFO,
     ICON_FAVORITE_YES,
     ICON_SPEAKER,
-    WHISPER_TTS_MODEL, ICON_FILE,
+    WHISPER_TTS_MODEL,
+    ICON_FILE,
 )
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.chat_widget.center.chatUnit import ChatUnit

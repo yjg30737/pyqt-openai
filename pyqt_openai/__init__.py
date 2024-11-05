@@ -76,12 +76,14 @@ def get_config_directory():
 
     return config_dir
 
+
 BIN_DIR = get_config_directory()
 
 UPDATER_NAME = "Updater.exe" if sys.platform == "win32" else "Updater"
 
 # The default updater path (relative to the application's root directory) - For Windows
 UPDATER_PATH = os.path.join(BIN_DIR, UPDATER_NAME)
+
 
 # Move the binary file to the config folder to prevent "file not found" error
 def move_bin(filename, dst_dir):
@@ -90,6 +92,7 @@ def move_bin(filename, dst_dir):
         if os.path.exists(dst_dir):
             os.remove(dst_dir)
         shutil.move(original_path, dst_dir)
+
 
 move_bin(UPDATER_NAME, UPDATER_PATH)
 
@@ -238,7 +241,6 @@ DEFAULT_TOAST_FOREGROUND_COLOR = "#EEEEEE"
 # DEFAULT_MARKDOWN_h5_color = '#000'
 # DEFAULT_MARKDOWN_h6_color = '#000'
 # DEFAULT_MARKDOWN_a_color = '#000'
-
 
 
 command_key = "Ctrl"
@@ -431,13 +433,20 @@ DEFAULT_API_CONFIGS = [
     {"display_name": "OpenAI", "env_var_name": "OPENAI_API_KEY", "api_key": ""},
     {"display_name": "Gemini", "env_var_name": "GEMINI_API_KEY", "api_key": ""},
     {"display_name": "Claude", "env_var_name": "CLAUDE_API_KEY", "api_key": ""},
-
     # For G4F only
     {"display_name": "DeepInfra", "env_var_name": "DEEPINFRA_API_KEY", "api_key": ""},
     {"display_name": "Groq", "env_var_name": "GROQ_API_KEY", "api_key": ""},
-    {"display_name": "HuggingFace", "env_var_name": "HUGGINGFACE_API_KEY", "api_key": ""},
+    {
+        "display_name": "HuggingFace",
+        "env_var_name": "HUGGINGFACE_API_KEY",
+        "api_key": "",
+    },
     {"display_name": "OpenRouter", "env_var_name": "OPENROUTER_API_KEY", "api_key": ""},
-    {"display_name": "Perplexity API", "env_var_name": "PERPLEXITY_API_KEY", "api_key": ""}
+    {
+        "display_name": "Perplexity API",
+        "env_var_name": "PERPLEXITY_API_KEY",
+        "api_key": "",
+    },
 ]
 
 # This has to be managed separately since some of the arguments are different with usual models
@@ -455,7 +464,7 @@ G4F_DEFAULT_IMAGE_MODEL = "flux"
 PROVIDER_MODEL_DICT = {
     "OpenAI": ["gpt-4o", "gpt-4o-mini"] + O1_MODELS,
     "Gemini": ["gemini-1.5-flash", "gemini-1.5-pro"],
-    "Claude": ["claude-3-5-sonnet-20240620"]
+    "Claude": ["claude-3-5-sonnet-20240620"],
 }
 
 # Constants related to the number of messages LLM will store
@@ -769,10 +778,12 @@ CONFIG_DATA = {
     },
 }
 
+
 # Dynamically add the API keys to the configuration data
 def update_general_config_with_api_keys(config_data, api_configs):
     for config in api_configs:
         config_data["General"][config["env_var_name"]] = config["api_key"]
+
 
 update_general_config_with_api_keys(CONFIG_DATA, DEFAULT_API_CONFIGS)
 

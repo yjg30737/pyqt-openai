@@ -65,7 +65,7 @@ from pyqt_openai import (
     OPENAI_CHAT_ENDPOINT,
     STT_MODEL,
     DEFAULT_DATETIME_FORMAT,
-    DEFAULT_TOKEN_CHUNK_SIZE
+    DEFAULT_TOKEN_CHUNK_SIZE,
 )
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.globals import (
@@ -797,6 +797,7 @@ def get_g4f_image_models() -> list:
     models = [model["image_model"] for model in image_models]
     return models
 
+
 def get_g4f_image_providers(including_auto=False) -> list:
     """
     Get all the providers that support image generation
@@ -809,15 +810,11 @@ def get_g4f_image_providers(including_auto=False) -> list:
         The function get from g4f/gui/server/api.py
         """
         return {
-            provider.__name__: (provider.label
-                                if hasattr(provider, "label")
-                                else provider.__name__) +
-                               (" (WebDriver)"
-                                if "webdriver" in provider.get_parameters()
-                                else "") +
-                               (" (Auth)"
-                                if provider.needs_auth
-                                else "")
+            provider.__name__: (
+                provider.label if hasattr(provider, "label") else provider.__name__
+            )
+            + (" (WebDriver)" if "webdriver" in provider.get_parameters() else "")
+            + (" (Auth)" if provider.needs_auth else "")
             for provider in __providers__
             if provider.working
         }
@@ -844,15 +841,31 @@ def get_g4f_image_models_from_provider(provider) -> list:
         if provider in __map__:
             provider: ProviderType = __map__[provider]
             if issubclass(provider, ProviderModelMixin):
-                return [{"model": model, "default": model == provider.default_model} for model in provider.get_models()]
+                return [
+                    {"model": model, "default": model == provider.default_model}
+                    for model in provider.get_models()
+                ]
             elif provider.supports_gpt_35_turbo or provider.supports_gpt_4:
                 return [
-                    *([{"model": "gpt-4", "default": not provider.supports_gpt_4}] if provider.supports_gpt_4 else []),
-                    *([{"model": "gpt-3.5-turbo",
-                        "default": not provider.supports_gpt_4}] if provider.supports_gpt_35_turbo else [])
+                    *(
+                        [{"model": "gpt-4", "default": not provider.supports_gpt_4}]
+                        if provider.supports_gpt_4
+                        else []
+                    ),
+                    *(
+                        [
+                            {
+                                "model": "gpt-3.5-turbo",
+                                "default": not provider.supports_gpt_4,
+                            }
+                        ]
+                        if provider.supports_gpt_35_turbo
+                        else []
+                    ),
                 ]
             else:
                 return []
+
     return [model["model"] for model in get_provider_models(provider)]
 
 
@@ -1168,7 +1181,7 @@ class TTSThread(QThread):
                             f"--voice={self.input_args['voice']}",
                             f"--text={self.input_args['input']}",
                         ],
-                        creationflags=subprocess.CREATE_NO_WINDOW
+                        creationflags=subprocess.CREATE_NO_WINDOW,
                     ) as process:
                         process.communicate()
                 else:

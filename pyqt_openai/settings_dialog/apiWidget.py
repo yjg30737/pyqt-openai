@@ -64,11 +64,11 @@ class ApiWidget(QWidget):
                 "Gemini": HOW_TO_GET_GEMINI_API_KEY_URL,
                 "Llama": HOW_TO_GET_LLAMA_API_KEY_URL,
                 "Replicate": HOW_TO_REPLICATE,
-                "DeepInfra": '',
-                "Groq": '',
-                "HuggingFace": '',
-                "OpenRouter": '',
-                "Perplexity API": '',
+                "DeepInfra": "",
+                "Groq": "",
+                "HuggingFace": "",
+                "OpenRouter": "",
+                "Perplexity API": "",
             }[obj["display_name"]]
 
     def __initUi(self):
