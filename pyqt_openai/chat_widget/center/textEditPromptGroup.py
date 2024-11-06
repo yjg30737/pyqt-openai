@@ -163,6 +163,7 @@ class TextEditPromptGroup(QWidget):
         clipboard = QApplication.clipboard()
         mime_data = clipboard.mimeData()
 
+        # Image file
         if mime_data.hasImage():
             image = clipboard.image()
 
@@ -186,7 +187,8 @@ class TextEditPromptGroup(QWidget):
 
             # Emit the image data
             self.onPasteFile.emit(image_data)
-        elif mime_data.hasText():
+        # TXT file
+        elif mime_data.hasUrls() and mime_data.hasText():
             text = mime_data.text()
             self.onPasteText.emit(text)
         else:
