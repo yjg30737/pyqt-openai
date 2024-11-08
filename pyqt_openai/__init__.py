@@ -463,7 +463,7 @@ G4F_DEFAULT_IMAGE_MODEL = "flux"
 # Dictionary that stores the platform and model pairs
 PROVIDER_MODEL_DICT = {
     "OpenAI": ["gpt-4o", "gpt-4o-mini"] + O1_MODELS,
-    "Gemini": ["gemini-1.5-flash", "gemini-1.5-pro"],
+    "Gemini": ["gemini/gemini-1.5-flash", "gemini/gemini-1.5-pro"],
     "Claude": ["claude-3-5-sonnet-20240620"],
 }
 

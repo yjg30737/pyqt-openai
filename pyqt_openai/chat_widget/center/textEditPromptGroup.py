@@ -188,9 +188,9 @@ class TextEditPromptGroup(QWidget):
             # Emit the image data
             self.onPasteFile.emit(image_data)
         # TXT file
-        elif mime_data.hasUrls() and mime_data.hasText():
-            text = mime_data.text()
-            self.onPasteText.emit(text)
+        # elif mime_data.hasUrls() and mime_data.hasText():
+        #     text = mime_data.text()
+        #     self.onPasteText.emit(text)
         else:
             self.__textEdit.paste()
 

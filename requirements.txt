@@ -14,5 +14,6 @@ replicate
 
 g4f
 curl_cffi
+litellm
 
 edge-tts

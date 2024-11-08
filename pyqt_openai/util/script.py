@@ -19,6 +19,7 @@ import time
 import traceback
 import wave
 import zipfile
+
 from datetime import datetime
 from io import BytesIO
 from pathlib import Path
@@ -28,6 +29,7 @@ import numpy as np
 import psutil
 from g4f import ProviderType
 from g4f.providers.base_provider import ProviderModelMixin
+from litellm import completion
 
 from pyqt_openai.widgets.scrollableErrorDialog import ScrollableErrorDialog
 
@@ -72,8 +74,6 @@ from pyqt_openai.globals import (
     DB,
     OPENAI_CLIENT,
     CLAUDE_CLIENT,
-    LLAMA_CLIENT,
-    GEMINI_CLIENT,
     G4F_CLIENT,
     LLAMAINDEX_WRAPPER,
     REPLICATE_CLIENT,
@@ -718,12 +718,13 @@ def get_claude_argument(model, system, messages, cur_text, stream, images):
 def set_api_key(env_var_name, api_key):
     if env_var_name == "OPENAI_API_KEY":
         OPENAI_CLIENT.api_key = api_key
+        os.environ['OPENAI_API_KEY'] = api_key
     if env_var_name == "GEMINI_API_KEY":
         genai.configure(api_key=api_key)
+        os.environ["GEMINI_API_KEY"] = api_key
     if env_var_name == "CLAUDE_API_KEY":
         CLAUDE_CLIENT.api_key = api_key
-    if env_var_name == "LLAMA_API_KEY":
-        LLAMA_CLIENT.api_key = api_key
+        os.environ['ANTHROPIC_API_KEY'] = api_key
     if env_var_name == "REPLICATE_API_TOKEN":
         REPLICATE_CLIENT.api_key = api_key
         os.environ["REPLICATE_API_TOKEN"] = api_key
@@ -991,91 +992,18 @@ def stream_response(provider, response, is_g4f=False, get_content_only=True):
             for chunk in response:
                 yield chunk
     else:
-        if provider == "OpenAI":
-            for chunk in response:
-                response_text = chunk.choices[0].delta.content
-                yield response_text
-        elif provider == "Gemini":
-            for chunk in response:
-                yield chunk.text
-        elif provider == "Claude":
-            with response as stream:
-                for text in stream.text_stream:
-                    yield text
-        elif provider == "Llama":
-            for chunk in response:
-                response_text = chunk.choices[0].delta.content
-                yield response_text
+        for part in response:
+            yield part.choices[0].delta.content or ''
 
 
 def get_api_response(args, get_content_only=True):
     try:
         provider = get_provider_from_model(args["model"])
-        if provider == "OpenAI":
-            response = OPENAI_CLIENT.chat.completions.create(**args)
-            print(response)
-            if args["stream"]:
-                return stream_response(provider, response)
-            else:
-                if get_content_only:
-                    if args["model"] in O1_MODELS:
-                        return str(response.choices[0].message.content)
-                    return response.choices[0].message.content
-                else:
-                    return response
-        elif provider == "Gemini":
-            for message in args["messages"]:
-                message["parts"] = message.pop("content")
-                if message["role"] == "assistant":
-                    message["role"] = "model"
-
-            if len(args.get("images", [])) > 0:
-                # Supposedly this don't support history of chat as well as stream
-                response = GEMINI_CLIENT.generate_content(
-                    [args["messages"][-1]["parts"]] + args["images"]
-                )
-                return response.text
-            else:
-                chat = GEMINI_CLIENT.start_chat(history=args["messages"])
-
-                if args["stream"]:
-                    response = chat.send_message(
-                        args["messages"][-1]["parts"], stream=args["stream"]
-                    )
-                    return stream_response(provider, response)
-                else:
-                    response = chat.send_message(args["messages"][-1]["parts"])
-                    if get_content_only:
-                        return response.text
-                    else:
-                        return response
-        elif provider == "Claude":
-            if args["stream"]:
-                response = CLAUDE_CLIENT.messages.stream(
-                    model=args["model"],
-                    max_tokens=DEFAULT_TOKEN_CHUNK_SIZE,
-                    messages=args["messages"],
-                )
-                return stream_response(provider, response)
-            else:
-                response = CLAUDE_CLIENT.messages.create(
-                    model=args["model"],
-                    max_tokens=DEFAULT_TOKEN_CHUNK_SIZE,
-                    messages=args["messages"],
-                )
-                if get_content_only:
-                    return response.content[0].text
-                else:
-                    return response
-        elif provider == "Llama":
-            response = LLAMA_CLIENT.chat.completions.create(**args)
-            if args["stream"]:
-                return stream_response(provider, response)
-            else:
-                if get_content_only:
-                    return response.choices[0].message.content
-                else:
-                    return response
+        response = completion(drop_params=True, **args)
+        if args["stream"]:
+            return stream_response(provider, response)
+        else:
+            return response.choices[0].message.content or ""
     except Exception as e:
         print(e)
         raise e

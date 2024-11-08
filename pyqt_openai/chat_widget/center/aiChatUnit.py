@@ -43,17 +43,20 @@ class AIChatUnit(ChatUnit):
 
         self.__fileListBtn = Button()
         self.__fileListBtn.setStyleAndIcon(ICON_FILE)
+        self.__fileListBtn.setToolTip("File List")
         self.__fileListBtn.clicked.connect(self.__showFileListDialog)
 
         self.__speakerBtn = Button()
         self.__speakerBtn.setStyleAndIcon(ICON_SPEAKER)
         self.__speakerBtn.setCheckable(True)
         self.__speakerBtn.toggled.connect(self.__speak)
+
         self.thread = None
 
-        self.getMenuWidget().layout().insertWidget(3, self.__favoriteBtn)
-        self.getMenuWidget().layout().insertWidget(4, self.__infoBtn)
-        self.getMenuWidget().layout().insertWidget(5, self.__speakerBtn)
+        self.getMenuWidget().layout().insertWidget(3, self.__fileListBtn)
+        self.getMenuWidget().layout().insertWidget(4, self.__favoriteBtn)
+        self.getMenuWidget().layout().insertWidget(5, self.__infoBtn)
+        self.getMenuWidget().layout().insertWidget(6, self.__speakerBtn)
 
         self.setBackgroundRole(QPalette.ColorRole.AlternateBase)
         self.setAutoFillBackground(True)
@@ -76,7 +79,7 @@ class AIChatUnit(ChatUnit):
 
     def __showFileListDialog(self):
         if self.__result_info:
-            dialog = FileTableDialog(self.__result_info, parent=self)
+            dialog = FileTableDialog(parent=self)
             dialog.exec()
 
     def afterResponse(self, arg):

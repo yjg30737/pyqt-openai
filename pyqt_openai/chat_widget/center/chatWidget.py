@@ -124,6 +124,16 @@ class ChatWidget(QWidget):
         return self.__cur_id
 
     def __chat(self):
+        # If main prompt is empty, do nothing
+        # TODO LANGUAGE
+        if not self.__prompt.getContent():
+            QMessageBox.warning(
+                self,
+                LangClass.TRANSLATIONS["Warning"],
+                LangClass.TRANSLATIONS["Please write something before sending."],
+            )
+            return
+
         try:
             # Get necessary parameters
             stream = CONFIG_MANAGER.get_general_property("stream")
