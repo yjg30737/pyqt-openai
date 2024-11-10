@@ -341,6 +341,9 @@ class MainWindow(QMainWindow):
             )
 
     def __loadApiKeyInConf(self):
+        """
+        This function is used to utilize the existing OpenAI, Gemini, Anthropic, and Replicate modules. While these four modules are also available in LiteLLM, this function is additionally used to leverage various features such as image generation provided by these modules.
+        """
         set_api_key(
             "OPENAI_API_KEY", CONFIG_MANAGER.get_general_property("OPENAI_API_KEY")
         )
@@ -348,14 +351,12 @@ class MainWindow(QMainWindow):
             "GEMINI_API_KEY", CONFIG_MANAGER.get_general_property("GEMINI_API_KEY")
         )
         set_api_key(
-            "CLAUDE_API_KEY", CONFIG_MANAGER.get_general_property("CLAUDE_API_KEY")
+            "ANTHROPIC_API_KEY",
+            CONFIG_MANAGER.get_general_property("ANTHROPIC_API_KEY"),
         )
         set_api_key(
-            "LLAMA_API_KEY", CONFIG_MANAGER.get_general_property("LLAMA_API_KEY")
-        )
-        set_api_key(
-            "REPLICATE_API_TOKEN",
-            CONFIG_MANAGER.get_replicate_property("REPLICATE_API_TOKEN"),
+            "REPLICATE_API_KEY",
+            CONFIG_MANAGER.get_replicate_property("REPLICATE_API_KEY"),
         )
 
         # Set llama index directory if it exists

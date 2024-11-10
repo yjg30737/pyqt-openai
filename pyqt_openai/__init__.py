@@ -125,7 +125,6 @@ HOW_TO_EXPORT_CHATGPT_CONVERSATION_HISTORY_URL = "https://medium.com/@yjg30737/h
 HOW_TO_REPLICATE = "https://medium.com/@yjg30737/10a2cb983ceb"
 HOW_TO_GET_CLAUDE_API_KEY_URL = "https://medium.com/@yjg30737/how-to-get-started-with-claude-api-step-by-step-guide-92b5e35ae0a0"
 HOW_TO_GET_GEMINI_API_KEY_URL = "https://medium.com/@yjg30737/e61a84d64c69"
-HOW_TO_GET_LLAMA_API_KEY_URL = "https://medium.com/@yjg30737/0dc1900e3606"
 REPORT_ERROR_URL = (
     "https://github.com/yjg30737/pyqt-openai?tab=readme-ov-file#troubleshooting"
 )
@@ -425,27 +424,422 @@ DEFAULT_DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 OPENAI_CHAT_ENDPOINT = "/v1/chat/completions"
 
 # Other models' configuration data
-DEFAULT_GEMINI_MODEL = "gemini-1.5-flash"
-LLAMA_REQUEST_URL = "https://api.llama-api.com"
+DEFAULT_GEMINI_MODEL = "gemini/gemini-1.5-flash"
 
 # Overall API configuration data
 DEFAULT_API_CONFIGS = [
-    {"display_name": "OpenAI", "env_var_name": "OPENAI_API_KEY", "api_key": ""},
-    {"display_name": "Gemini", "env_var_name": "GEMINI_API_KEY", "api_key": ""},
-    {"display_name": "Claude", "env_var_name": "CLAUDE_API_KEY", "api_key": ""},
-    # For G4F only
-    {"display_name": "DeepInfra", "env_var_name": "DEEPINFRA_API_KEY", "api_key": ""},
-    {"display_name": "Groq", "env_var_name": "GROQ_API_KEY", "api_key": ""},
+    # OpenAI
     {
-        "display_name": "HuggingFace",
+        "display_name": "OpenAI",
+        "env_var_name": "OPENAI_API_KEY",
+        "api_key": "",
+        "manual_url": HOW_TO_GET_OPENAI_API_KEY_URL,
+    },
+    # Azure
+    {
+        "display_name": "Azure",
+        "env_var_name": "AZURE_API_KEY",
+        "api_key": "",
+        "manual_url": "",
+    },
+    {
+        "display_name": "Azure Base",
+        "env_var_name": "AZURE_API_BASE",
+        "api_key": "",
+        "manual_url": "",
+    },
+    {
+        "display_name": "Azure Version",
+        "env_var_name": "AZURE_API_VERSION",
+        "api_key": "",
+        "manual_url": "",
+    },
+    {
+        "display_name": "Azure AD Token",
+        "env_var_name": "AZURE_AD_TOKEN",
+        "api_key": "",
+        "manual_url": "",
+    },
+    {
+        "display_name": "Azure API Type",
+        "env_var_name": "AZURE_API_TYPE",
+        "api_key": "",
+        "manual_url": "",
+    },
+    # Azure AI Studio
+    {
+        "display_name": "Azure AI",
+        "env_var_name": "AZURE_AI_API_KEY",
+        "api_key": "",
+        "manual_url": "",
+    },
+    {
+        "display_name": "Azure AI Base",
+        "env_var_name": "AZURE_AI_API_BASE",
+        "api_key": "",
+        "manual_url": "",
+    },
+    # Gemini
+    {
+        "display_name": "Gemini",
+        "env_var_name": "GEMINI_API_KEY",
+        "api_key": "",
+        "manual_url": HOW_TO_GET_GEMINI_API_KEY_URL,
+    },
+    # Anthropic
+    {
+        "display_name": "Anthropic",
+        "env_var_name": "ANTHROPIC_API_KEY",
+        "api_key": "",
+        "manual_url": HOW_TO_GET_CLAUDE_API_KEY_URL,
+    },
+    # AWS Sagemaker
+    {
+        "display_name": "AWS Access Key",
+        "env_var_name": "AWS_ACCESS_KEY_ID",
+        "api_key": "",
+        "manual_url": "",
+    },
+    {
+        "display_name": "AWS Secret Key",
+        "env_var_name": "AWS_SECRET_ACCESS_KEY",
+        "api_key": "",
+        "manual_url": "",
+    },
+    {
+        "display_name": "AWS Region",
+        "env_var_name": "AWS_REGION_NAME",
+        "api_key": "",
+        "manual_url": "",
+    },
+    # AWS Bedrock
+    {
+        "display_name": "AWS Bedrock Access Key",
+        "env_var_name": "AWS_ACCESS_KEY_ID",
+        "api_key": "",
+        "manual_url": "",
+    },
+    {
+        "display_name": "AWS Bedrock Secret Key",
+        "env_var_name": "AWS_SECRET_ACCESS_KEY",
+        "api_key": "",
+        "manual_url": "",
+    },
+    {
+        "display_name": "AWS Bedrock Region",
+        "env_var_name": "AWS_REGION_NAME",
+        "api_key": "",
+        "manual_url": "",
+    },
+    # LiteLLM Proxy
+    {
+        "display_name": "LiteLLM Proxy",
+        "env_var_name": "LITELLM_PROXY_API_KEY",
+        "api_key": "",
+        "manual_url": "",
+    },
+    {
+        "display_name": "LiteLLM Proxy Base",
+        "env_var_name": "LITELLM_PROXY_API_BASE",
+        "api_key": "",
+        "manual_url": "",
+    },
+    # Mistral AI API
+    {
+        "display_name": "Mistral AI",
+        "env_var_name": "MISTRAL_API_KEY",
+        "api_key": "",
+        "manual_url": "",
+    },
+    # Codestral API
+    {
+        "display_name": "Codestral",
+        "env_var_name": "CODESTRAL_API_KEY",
+        "api_key": "",
+        "manual_url": "",
+    },
+    # Cohere
+    {
+        "display_name": "Cohere",
+        "env_var_name": "COHERE_API_KEY",
+        "api_key": "",
+        "manual_url": "",
+    },
+    # Anyscale
+    {
+        "display_name": "Anyscale",
+        "env_var_name": "ANYSCALE_API_KEY",
+        "api_key": "",
+        "manual_url": "",
+    },
+    # Huggingface
+    {
+        "display_name": "Huggingface",
         "env_var_name": "HUGGINGFACE_API_KEY",
         "api_key": "",
+        "manual_url": "",
     },
-    {"display_name": "OpenRouter", "env_var_name": "OPENROUTER_API_KEY", "api_key": ""},
+    # Databricks
     {
-        "display_name": "Perplexity API",
-        "env_var_name": "PERPLEXITY_API_KEY",
+        "display_name": "Databricks",
+        "env_var_name": "DATABRICKS_API_KEY",
         "api_key": "",
+        "manual_url": "",
+    },
+    {
+        "display_name": "Databricks Base",
+        "env_var_name": "DATABRICKS_API_BASE",
+        "api_key": "",
+        "manual_url": "",
+    },
+    # IBM Watsonx
+    {
+        "display_name": "IBM Watsonx",
+        "env_var_name": "WATSONX_URL",
+        "api_key": "",
+        "manual_url": "",
+    },
+    {
+        "display_name": "IBM Watsonx API Key",
+        "env_var_name": "WATSONX_APIKEY",
+        "api_key": "",
+        "manual_url": "",
+    },
+    {
+        "display_name": "IBM Watsonx Token",
+        "env_var_name": "WATSONX_TOKEN",
+        "api_key": "",
+        "manual_url": "",
+    },
+    {
+        "display_name": "IBM Watsonx Project ID",
+        "env_var_name": "WATSONX_PROJECT_ID",
+        "api_key": "",
+        "manual_url": "",
+    },
+    {
+        "display_name": "IBM Watsonx Deployment Space",
+        "env_var_name": "WATSONX_DEPLOYMENT_SPACE_ID",
+        "api_key": "",
+        "manual_url": "",
+    },
+    # Predibase
+    {
+        "display_name": "Predibase",
+        "env_var_name": "PREDIBASE_API_KEY",
+        "api_key": "",
+        "manual_url": "",
+    },
+    # Nvidia NIM
+    {
+        "display_name": "Nvidia NIM",
+        "env_var_name": "NVIDIA_NIM_API_KEY",
+        "api_key": "",
+        "manual_url": "",
+    },
+    # XAI
+    {
+        "display_name": "XAI",
+        "env_var_name": "XAI_API_KEY",
+        "api_key": "",
+        "manual_url": "",
+    },
+    # LM Studio
+    {
+        "display_name": "LM Studio Base",
+        "env_var_name": "LM_STUDIO_API_BASE",
+        "api_key": "",
+        "manual_url": "",
+    },
+    {
+        "display_name": "LM Studio",
+        "env_var_name": "LM_STUDIO_API_KEY",
+        "api_key": "",
+        "manual_url": "",
+    },
+    # Cerebras
+    {
+        "display_name": "Cerebras",
+        "env_var_name": "CEREBRAS_API_KEY",
+        "api_key": "",
+        "manual_url": "",
+    },
+    # Volcano Engine (Volcengine)
+    {
+        "display_name": "Volcengine",
+        "env_var_name": "VOLCENGINE_API_KEY",
+        "api_key": "",
+        "manual_url": "",
+    },
+    # Perplexity AI
+    {
+        "display_name": "Perplexity AI",
+        "env_var_name": "PERPLEXITYAI_API_KEY",
+        "api_key": "",
+        "manual_url": "",
+    },
+    # FriendliAI
+    {
+        "display_name": "Friendli Token",
+        "env_var_name": "FRIENDLI_TOKEN",
+        "api_key": "",
+        "manual_url": "",
+    },
+    {
+        "display_name": "Friendli API Base",
+        "env_var_name": "FRIENDLI_API_BASE",
+        "api_key": "",
+        "manual_url": "",
+    },
+    # Groq
+    {
+        "display_name": "Groq",
+        "env_var_name": "GROQ_API_KEY",
+        "api_key": "",
+        "manual_url": "",
+    },
+    # Github
+    {
+        "display_name": "Github",
+        "env_var_name": "GITHUB_API_KEY",
+        "api_key": "",
+        "manual_url": "",
+    },
+    # Deepseek
+    {
+        "display_name": "Deepseek",
+        "env_var_name": "DEEPSEEK_API_KEY",
+        "api_key": "",
+        "manual_url": "",
+    },
+    # Fireworks AI
+    {
+        "display_name": "Fireworks AI",
+        "env_var_name": "FIREWORKS_AI_API_KEY",
+        "api_key": "",
+        "manual_url": "",
+    },
+    # Clarifai
+    {
+        "display_name": "Clarifai",
+        "env_var_name": "CLARIFAI_API_KEY",
+        "api_key": "",
+        "manual_url": "",
+    },
+    # Xinference [Xorbits Inference]
+    {
+        "display_name": "Xinference Base",
+        "env_var_name": "XINFERENCE_API_BASE",
+        "api_key": "",
+        "manual_url": "",
+    },
+    {
+        "display_name": "Xinference",
+        "env_var_name": "XINFERENCE_API_KEY",
+        "api_key": "",
+        "manual_url": "",
+    },
+    # Cloudflare Workers AI
+    {
+        "display_name": "Cloudflare",
+        "env_var_name": "CLOUDFLARE_API_KEY",
+        "api_key": "",
+        "manual_url": "",
+    },
+    {
+        "display_name": "Cloudflare Account",
+        "env_var_name": "CLOUDFLARE_ACCOUNT_ID",
+        "api_key": "",
+        "manual_url": "",
+    },
+    # DeepInfra
+    {
+        "display_name": "DeepInfra",
+        "env_var_name": "DEEPINFRA_API_KEY",
+        "api_key": "",
+        "manual_url": "",
+    },
+    # AI21
+    {
+        "display_name": "AI21",
+        "env_var_name": "AI21_API_KEY",
+        "api_key": "",
+        "manual_url": "",
+    },
+    # NLP Cloud
+    {
+        "display_name": "NLP Cloud",
+        "env_var_name": "NLP_CLOUD_API_KEY",
+        "api_key": "",
+        "manual_url": "",
+    },
+    # Replicate
+    {
+        "display_name": "Replicate",
+        "env_var_name": "REPLICATE_API_KEY",
+        "api_key": "",
+        "manual_url": HOW_TO_REPLICATE,
+    },
+    # Together AI
+    {
+        "display_name": "Together AI",
+        "env_var_name": "TOGETHERAI_API_KEY",
+        "api_key": "",
+        "manual_url": "",
+    },
+    # Voyage AI
+    {
+        "display_name": "Voyage AI",
+        "env_var_name": "VOYAGE_API_KEY",
+        "api_key": "",
+        "manual_url": "",
+    },
+    # Jina AI
+    {
+        "display_name": "Jina AI",
+        "env_var_name": "JINA_AI_API_KEY",
+        "api_key": "",
+        "manual_url": "",
+    },
+    # Aleph Alpha
+    {
+        "display_name": "Aleph Alpha",
+        "env_var_name": "ALEPHALPHA_API_KEY",
+        "api_key": "",
+        "manual_url": "",
+    },
+    # Baseten
+    {
+        "display_name": "Baseten",
+        "env_var_name": "BASETEN_API_KEY",
+        "api_key": "",
+        "manual_url": "",
+    },
+    # OpenRouter
+    {
+        "display_name": "OpenRouter",
+        "env_var_name": "OPENROUTER_API_KEY",
+        "api_key": "",
+        "manual_url": "",
+    },
+    {
+        "display_name": "OpenRouter Site",
+        "env_var_name": "OR_SITE_URL",
+        "api_key": "",
+        "manual_url": "",
+    },
+    {
+        "display_name": "OpenRouter App Name",
+        "env_var_name": "OR_APP_NAME",
+        "api_key": "",
+        "manual_url": "",
+    },
+    # Sambanova
+    {
+        "display_name": "Sambanova",
+        "env_var_name": "SAMBANOVA_API_KEY",
+        "api_key": "",
+        "manual_url": "",
     },
 ]
 
@@ -464,7 +858,7 @@ G4F_DEFAULT_IMAGE_MODEL = "flux"
 PROVIDER_MODEL_DICT = {
     "OpenAI": ["gpt-4o", "gpt-4o-mini"] + O1_MODELS,
     "Gemini": ["gemini/gemini-1.5-flash", "gemini/gemini-1.5-pro"],
-    "Claude": ["claude-3-5-sonnet-20240620"],
+    "Anthropic": ["claude-3-5-sonnet-20240620"],
 }
 
 # Constants related to the number of messages LLM will store
@@ -747,7 +1141,6 @@ CONFIG_DATA = {
         "show_prompt_on_image": False,
     },
     "REPLICATE": {
-        "REPLICATE_API_TOKEN": "",
         "model": "stability-ai/sdxl:39ed52f2a78e934b3ba6e2a89f5b1c712de7dfea535525255b1aa35c5565e08b",
         "width": 768,
         "height": 768,

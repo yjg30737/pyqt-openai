@@ -25,7 +25,7 @@ class ReplicateWrapper:
     @api_key.setter
     def api_key(self, value):
         self.__api_key = value
-        os.environ["REPLICATE_API_TOKEN"] = self.__api_key
+        os.environ["REPLICATE_API_KEY"] = self.__api_key
 
     def is_available(self):
         return True if self.__api_key is not None else False

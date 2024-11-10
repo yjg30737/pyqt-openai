@@ -73,7 +73,7 @@ from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.globals import (
     DB,
     OPENAI_CLIENT,
-    CLAUDE_CLIENT,
+    ANTHROPIC_CLIENT,
     G4F_CLIENT,
     LLAMAINDEX_WRAPPER,
     REPLICATE_CLIENT,
@@ -716,18 +716,22 @@ def get_claude_argument(model, system, messages, cur_text, stream, images):
 
 
 def set_api_key(env_var_name, api_key):
+    api_key = api_key.strip() if api_key else ""
     if env_var_name == "OPENAI_API_KEY":
         OPENAI_CLIENT.api_key = api_key
-        os.environ['OPENAI_API_KEY'] = api_key
+        os.environ["OPENAI_API_KEY"] = api_key
     if env_var_name == "GEMINI_API_KEY":
         genai.configure(api_key=api_key)
         os.environ["GEMINI_API_KEY"] = api_key
     if env_var_name == "CLAUDE_API_KEY":
-        CLAUDE_CLIENT.api_key = api_key
-        os.environ['ANTHROPIC_API_KEY'] = api_key
-    if env_var_name == "REPLICATE_API_TOKEN":
+        ANTHROPIC_CLIENT.api_key = api_key
+        os.environ["ANTHROPIC_API_KEY"] = api_key
+    if env_var_name == "REPLICATE_API_KEY":
         REPLICATE_CLIENT.api_key = api_key
-        os.environ["REPLICATE_API_TOKEN"] = api_key
+        os.environ["REPLICATE_API_KEY"] = api_key
+
+    # Set environment variables dynamically
+    os.environ[env_var_name] = api_key
 
 
 def get_openai_model_endpoint(model):
@@ -918,18 +922,10 @@ def get_api_argument(
                 model, system, messages, cur_text, stream, images
             )
 
-        elif provider == "Claude":
+        elif provider == "Anthropic":
             args = get_claude_argument(
                 model, system, messages, cur_text, stream, images
             )
-        elif provider == "Llama":
-            args = {
-                "model": model,
-                "messages": messages,
-                "stream": stream,
-                "max_tokens": DEFAULT_TOKEN_CHUNK_SIZE,
-            }
-            args["messages"].append({"role": "user", "content": cur_text})
         else:
             raise Exception(f"Provider not found for model {model}")
         return args
@@ -993,7 +989,7 @@ def stream_response(provider, response, is_g4f=False, get_content_only=True):
                 yield chunk
     else:
         for part in response:
-            yield part.choices[0].delta.content or ''
+            yield part.choices[0].delta.content or ""
 
 
 def get_api_response(args, get_content_only=True):
