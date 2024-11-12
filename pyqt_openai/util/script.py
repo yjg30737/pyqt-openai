@@ -73,7 +73,6 @@ from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.globals import (
     DB,
     OPENAI_CLIENT,
-    ANTHROPIC_CLIENT,
     G4F_CLIENT,
     LLAMAINDEX_WRAPPER,
     REPLICATE_CLIENT,
@@ -718,13 +717,10 @@ def get_claude_argument(model, system, messages, cur_text, stream, images):
 def set_api_key(env_var_name, api_key):
     api_key = api_key.strip() if api_key else ""
     if env_var_name == "OPENAI_API_KEY":
-        OPENAI_CLIENT.api_key = api_key
         os.environ["OPENAI_API_KEY"] = api_key
     if env_var_name == "GEMINI_API_KEY":
-        genai.configure(api_key=api_key)
         os.environ["GEMINI_API_KEY"] = api_key
     if env_var_name == "CLAUDE_API_KEY":
-        ANTHROPIC_CLIENT.api_key = api_key
         os.environ["ANTHROPIC_API_KEY"] = api_key
     if env_var_name == "REPLICATE_API_KEY":
         REPLICATE_CLIENT.api_key = api_key
@@ -898,36 +894,23 @@ def get_api_argument(
     json_content=None,
 ):
     try:
-        provider = get_provider_from_model(model)
-        if provider == "OpenAI":
-            args = get_gpt_argument(
-                model,
-                system,
-                messages,
-                cur_text,
-                temperature,
-                top_p,
-                frequency_penalty,
-                presence_penalty,
-                stream,
-                use_max_tokens,
-                max_tokens,
-                images,
-                is_llama_available=is_llama_available,
-                is_json_response_available=is_json_response_available,
-                json_content=json_content,
-            )
-        elif provider == "Gemini":
-            args = get_gemini_argument(
-                model, system, messages, cur_text, stream, images
-            )
-
-        elif provider == "Anthropic":
-            args = get_claude_argument(
-                model, system, messages, cur_text, stream, images
-            )
-        else:
-            raise Exception(f"Provider not found for model {model}")
+        args = get_gpt_argument(
+            model,
+            system,
+            messages,
+            cur_text,
+            temperature,
+            top_p,
+            frequency_penalty,
+            presence_penalty,
+            stream,
+            use_max_tokens,
+            max_tokens,
+            images,
+            is_llama_available=is_llama_available,
+            is_json_response_available=is_json_response_available,
+            json_content=json_content,
+        )
         return args
     except Exception as e:
         print(e)
@@ -979,7 +962,7 @@ def get_argument(
         raise e
 
 
-def stream_response(provider, response, is_g4f=False, get_content_only=True):
+def stream_response(response, is_g4f=False, get_content_only=True):
     if is_g4f:
         if get_content_only:
             for chunk in response:
@@ -994,10 +977,10 @@ def stream_response(provider, response, is_g4f=False, get_content_only=True):
 
 def get_api_response(args, get_content_only=True):
     try:
-        provider = get_provider_from_model(args["model"])
+        print(args)
         response = completion(drop_params=True, **args)
         if args["stream"]:
-            return stream_response(provider, response)
+            return stream_response(response)
         else:
             return response.choices[0].message.content or ""
     except Exception as e:
@@ -1010,7 +993,6 @@ def get_g4f_response(args, get_content_only=True):
         response = G4F_CLIENT.chat.completions.create(**args)
         if args["stream"]:
             return stream_response(
-                provider="",
                 response=response,
                 is_g4f=True,
                 get_content_only=get_content_only,
@@ -1174,8 +1156,7 @@ class RecorderThread(QThread):
     recording_finished = Signal(str)
     errorGenerated = Signal(str)
 
-    # Silence detection 사용 여부
-
+    # Silence detection parameters
     def __init__(
         self, is_silence_detection=False, silence_duration=3, silence_threshold=500
     ):

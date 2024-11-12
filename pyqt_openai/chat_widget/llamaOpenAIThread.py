@@ -1,8 +1,8 @@
 from llama_index.core.base.response.schema import StreamingResponse
 from PySide6.QtCore import QThread, Signal
 
-import pyqt_openai.util.script
 from pyqt_openai.models import ChatMessageContainer
+
 
 
 # TODO
@@ -27,16 +27,16 @@ class LlamaOpenAIThread(QThread):
 
     def run(self):
         try:
-            resp = pyqt_openai.util.script.get_response(self.__query_text)
+            resp = self.__wrapper.get_response(self.__query_text)
             f = isinstance(resp, StreamingResponse)
             if f:
-                for response_text in resp.response_gen:
+                for chunk in resp.response_gen:
                     if self.__stop:
                         self.__info.finish_reason = "stopped by user"
+                        self.streamFinished.emit(self.__info)
                         break
                     else:
-                        self.replyGenerated.emit(response_text, True, self.__info)
-                self.streamFinished.emit(self.__info)
+                        self.replyGenerated.emit(chunk, True, self.__info)
             else:
                 self.__info.content = resp.response
                 self.replyGenerated.emit(self.__info.content, False, self.__info)
