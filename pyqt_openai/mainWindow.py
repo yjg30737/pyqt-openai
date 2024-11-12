@@ -65,7 +65,6 @@ from pyqt_openai.util.script import (
     restart_app,
     show_message_box_after_change_to_restart,
     set_auto_start_windows,
-    set_api_key,
     init_llama,
 )
 from pyqt_openai.widgets.navWidget import NavBar
@@ -103,7 +102,7 @@ class MainWindow(QMainWindow):
         self.__setTrayMenu()
         self.__setToolBar()
 
-        self.__loadApiKeyInConf()
+        init_llama()
 
         self.setCentralWidget(self.__mainWidget)
         self.resize(*APP_INITIAL_WINDOW_SIZE)
@@ -339,28 +338,6 @@ class MainWindow(QMainWindow):
             currentWidget.showSecondaryToolBar(
                 self.__settingsParamContainer.show_secondary_toolbar
             )
-
-    def __loadApiKeyInConf(self):
-        """
-        This function is used to utilize the existing OpenAI, Gemini, Anthropic, and Replicate modules. While these four modules are also available in LiteLLM, this function is additionally used to leverage various features such as image generation provided by these modules.
-        """
-        set_api_key(
-            "OPENAI_API_KEY", CONFIG_MANAGER.get_general_property("OPENAI_API_KEY")
-        )
-        set_api_key(
-            "GEMINI_API_KEY", CONFIG_MANAGER.get_general_property("GEMINI_API_KEY")
-        )
-        set_api_key(
-            "ANTHROPIC_API_KEY",
-            CONFIG_MANAGER.get_general_property("ANTHROPIC_API_KEY"),
-        )
-        set_api_key(
-            "REPLICATE_API_KEY",
-            CONFIG_MANAGER.get_replicate_property("REPLICATE_API_KEY"),
-        )
-
-        # Set llama index directory if it exists
-        init_llama()
 
     def __showAboutDialog(self):
         aboutDialog = AboutDialog(self)

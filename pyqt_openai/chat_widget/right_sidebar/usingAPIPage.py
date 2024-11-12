@@ -33,11 +33,11 @@ from pyqt_openai import (
     O1_MODELS,
     SMALL_LABEL_PARAM,
 )
+from pyqt_openai.chat_widget.right_sidebar.modelSearchBar import ModelSearchBar
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.util.script import (
     getSeparator,
-    get_chat_model,
     get_openai_chat_model,
     init_llama,
 )
@@ -114,14 +114,13 @@ class UsingAPIPage(QWidget):
         saveSystemBtn = QPushButton(LangClass.TRANSLATIONS["Save System"])
         saveSystemBtn.clicked.connect(self.__saveSystem)
 
-        modelCmbBox = QComboBox()
-        modelCmbBox.addItems(get_chat_model())
-        modelCmbBox.setCurrentText(self.__model)
-        modelCmbBox.currentTextChanged.connect(self.__modelChanged)
+        modelSearchBar = ModelSearchBar()
+        modelSearchBar.setText(self.__model)
+        modelSearchBar.textChanged.connect(self.__modelChanged)
 
         lay = QHBoxLayout()
         lay.addWidget(QLabel(LangClass.TRANSLATIONS["Model"]))
-        lay.addWidget(modelCmbBox)
+        lay.addWidget(modelSearchBar)
         lay.setContentsMargins(0, 0, 0, 0)
 
         setApiBtn = ModernButton()

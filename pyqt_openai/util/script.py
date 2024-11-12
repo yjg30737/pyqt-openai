@@ -725,6 +725,7 @@ def set_api_key(env_var_name, api_key):
     if env_var_name == "REPLICATE_API_KEY":
         REPLICATE_CLIENT.api_key = api_key
         os.environ["REPLICATE_API_KEY"] = api_key
+        os.environ["REPLICATE_API_TOKEN"] = api_key
 
     # Set environment variables dynamically
     os.environ[env_var_name] = api_key
@@ -977,7 +978,6 @@ def stream_response(response, is_g4f=False, get_content_only=True):
 
 def get_api_response(args, get_content_only=True):
     try:
-        print(args)
         response = completion(drop_params=True, **args)
         if args["stream"]:
             return stream_response(response)
