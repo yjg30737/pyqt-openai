@@ -65,7 +65,7 @@ from pyqt_openai.util.script import (
     restart_app,
     show_message_box_after_change_to_restart,
     set_auto_start_windows,
-    init_llama,
+    init_llama, set_api_key,
 )
 from pyqt_openai.widgets.navWidget import NavBar
 
@@ -102,7 +102,7 @@ class MainWindow(QMainWindow):
         self.__setTrayMenu()
         self.__setToolBar()
 
-        init_llama()
+        self.__loadApiKeys()
 
         self.setCentralWidget(self.__mainWidget)
         self.resize(*APP_INITIAL_WINDOW_SIZE)
@@ -111,6 +111,11 @@ class MainWindow(QMainWindow):
         self.__chatMainWidget.refreshCustomizedInformation(
             self.__customizeParamsContainer
         )
+
+    def __loadApiKeys(self):
+        set_api_key('OPENAI_API_KEY', CONFIG_MANAGER.get_general_property('OPENAI_API_KEY'))
+        set_api_key('REPLICATE_API_KEY', CONFIG_MANAGER.get_general_property('REPLICATE_API_KEY'))
+        init_llama()
 
     def __setActions(self):
         self.__langAction = QAction()
