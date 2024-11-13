@@ -51,7 +51,7 @@ class ModernButton(QPushButton):
     def adjust_brightness(self, hex_color, factor):
         """Adjust the brightness of a given hex color"""
         hex_color = hex_color.lstrip("#")
-        r, g, b = tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
+        r, g, b = tuple(int(hex_color[i : i + 2], 16) for i in (0, 2, 4))
 
         # Convert RGB to HLS
         h, l, s = colorsys.rgb_to_hls(r / 255.0, g / 255.0, b / 255.0)

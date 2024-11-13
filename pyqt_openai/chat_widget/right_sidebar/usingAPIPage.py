@@ -13,7 +13,8 @@ from PySide6.QtWidgets import (
     QScrollArea,
     QGroupBox,
     QHBoxLayout,
-    QTextBrowser, QPlainTextEdit,
+    QTextBrowser,
+    QPlainTextEdit,
 )
 
 from pyqt_openai import (
@@ -69,9 +70,11 @@ class UsingAPIPage(QWidget):
         self.__use_max_tokens = CONFIG_MANAGER.get_general_property("use_max_tokens")
         self.__use_llama_index = CONFIG_MANAGER.get_general_property("use_llama_index")
 
-        self.__warningMessage = ("Note: For models other than OpenAI and Anthropic, please enter the model name in the format [ProviderName]/[ModelName].\n"
-                                 "For more information about ProviderName and ModelName, please refer to litellm documentation.\n"
-                                 "Certain models may not support JSON Mode or LlamaIndex.")
+        self.__warningMessage = (
+            "Note: For models other than OpenAI and Anthropic, please enter the model name in the format [ProviderName]/[ModelName].\n"
+            "For more information about ProviderName and ModelName, please refer to litellm documentation.\n"
+            "Certain models may not support JSON Mode or LlamaIndex."
+        )
 
     def __initUi(self):
         manualBrowser = QTextBrowser()
@@ -140,10 +143,10 @@ class UsingAPIPage(QWidget):
         self.__warningLbl.setWordWrap(True)
         self.__warningLbl.setFont(QFont(SMALL_LABEL_PARAM))
         # TODO LANGUAGE
-        self.__warningLbl.setText(
-            self.__warningMessage
+        self.__warningLbl.setText(self.__warningMessage)
+        self.__warningLbl.setTextInteractionFlags(
+            Qt.TextInteractionFlag.TextSelectableByMouse
         )
-        self.__warningLbl.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
 
         advancedSettingsScrollArea = QScrollArea()
 
@@ -309,14 +312,13 @@ class UsingAPIPage(QWidget):
         self.__model = v
         CONFIG_MANAGER.set_general_property("model", v)
         # TODO LANGUAGE
-        additional_message = "\nNote: The selected model is only available at Tier 3 or higher."
+        additional_message = (
+            "\nNote: The selected model is only available at Tier 3 or higher."
+        )
         if self.__model in O1_MODELS:
-            self.__warningLbl.setText(
-                self.__warningMessage + additional_message
-            )
+            self.__warningLbl.setText(self.__warningMessage + additional_message)
         else:
             self.__warningLbl.setText(self.__warningMessage)
-
 
     def __streamChecked(self, f):
         self.__stream = f

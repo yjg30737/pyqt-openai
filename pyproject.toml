@@ -30,7 +30,7 @@ dependencies = [
 
     "edge-tts"
 ]
-keywords = ['openai', 'pyqt', 'pyqt5', 'pyqt6', 'pyside6', 'desktop', 'app', 'chatbot', 'gpt', 'replicate', 'gemini', 'claude', 'llama', 'llm', 'gpt4free']
+keywords = ['openai', 'pyqt', 'pyqt5', 'pyqt6', 'pyside6', 'desktop', 'app', 'chatbot', 'gpt', 'replicate', 'gemini', 'claude', 'llama', 'llm', 'gpt4free', 'litellm']
 
 requires-python = "<3.13, >=3.10"
 # PySide6 is not available for Python 3.13 yet

@@ -433,7 +433,7 @@ DEFAULT_API_CONFIGS = [
         "display_name": "OpenAI",
         "env_var_name": "OPENAI_API_KEY",
         "api_key": "",
-        "manual_url": HOW_TO_GET_OPENAI_API_KEY_URL
+        "manual_url": HOW_TO_GET_OPENAI_API_KEY_URL,
     },
     # Azure
     {
@@ -441,35 +441,35 @@ DEFAULT_API_CONFIGS = [
         "env_var_name": "AZURE_API_KEY",
         "api_key": "",
         "manual_url": "",
-        "prefix": "azure"
+        "prefix": "azure",
     },
     {
         "display_name": "Azure Base",
         "env_var_name": "AZURE_API_BASE",
         "api_key": "",
         "manual_url": "",
-        "prefix": "azure"
+        "prefix": "azure",
     },
     {
         "display_name": "Azure Version",
         "env_var_name": "AZURE_API_VERSION",
         "api_key": "",
         "manual_url": "",
-        "prefix": "azure"
+        "prefix": "azure",
     },
     {
         "display_name": "Azure AD Token",
         "env_var_name": "AZURE_AD_TOKEN",
         "api_key": "",
         "manual_url": "",
-        "prefix": "azure"
+        "prefix": "azure",
     },
     {
         "display_name": "Azure API Type",
         "env_var_name": "AZURE_API_TYPE",
         "api_key": "",
         "manual_url": "",
-        "prefix": "azure"
+        "prefix": "azure",
     },
     # Azure AI Studio
     {
@@ -477,14 +477,14 @@ DEFAULT_API_CONFIGS = [
         "env_var_name": "AZURE_AI_API_KEY",
         "api_key": "",
         "manual_url": "",
-        "prefix": "azure_ai"
+        "prefix": "azure_ai",
     },
     {
         "display_name": "Azure AI Base",
         "env_var_name": "AZURE_AI_API_BASE",
         "api_key": "",
         "manual_url": "",
-        "prefix": "azure_ai"
+        "prefix": "azure_ai",
     },
     # Gemini
     {
@@ -492,14 +492,14 @@ DEFAULT_API_CONFIGS = [
         "env_var_name": "GEMINI_API_KEY",
         "api_key": "",
         "manual_url": HOW_TO_GET_GEMINI_API_KEY_URL,
-        "prefix": "gemini"
+        "prefix": "gemini",
     },
     # Anthropic
     {
         "display_name": "Anthropic",
         "env_var_name": "ANTHROPIC_API_KEY",
         "api_key": "",
-        "manual_url": HOW_TO_GET_CLAUDE_API_KEY_URL
+        "manual_url": HOW_TO_GET_CLAUDE_API_KEY_URL,
     },
     # AWS Sagemaker
     {
@@ -507,21 +507,21 @@ DEFAULT_API_CONFIGS = [
         "env_var_name": "AWS_ACCESS_KEY_ID",
         "api_key": "",
         "manual_url": "",
-        "prefix": "sagemaker"
+        "prefix": "sagemaker",
     },
     {
         "display_name": "AWS Secret Key",
         "env_var_name": "AWS_SECRET_ACCESS_KEY",
         "api_key": "",
         "manual_url": "",
-        "prefix": "sagemaker"
+        "prefix": "sagemaker",
     },
     {
         "display_name": "AWS Region",
         "env_var_name": "AWS_REGION_NAME",
         "api_key": "",
         "manual_url": "",
-        "prefix": "sagemaker"
+        "prefix": "sagemaker",
     },
     # AWS Bedrock
     {
@@ -529,21 +529,21 @@ DEFAULT_API_CONFIGS = [
         "env_var_name": "AWS_ACCESS_KEY_ID",
         "api_key": "",
         "manual_url": "",
-        "prefix": "bedrock"
+        "prefix": "bedrock",
     },
     {
         "display_name": "AWS Bedrock Secret Key",
         "env_var_name": "AWS_SECRET_ACCESS_KEY",
         "api_key": "",
         "manual_url": "",
-        "prefix": "bedrock"
+        "prefix": "bedrock",
     },
     {
         "display_name": "AWS Bedrock Region",
         "env_var_name": "AWS_REGION_NAME",
         "api_key": "",
         "manual_url": "",
-        "prefix": "bedrock"
+        "prefix": "bedrock",
     },
     # LiteLLM Proxy
     {
@@ -551,14 +551,14 @@ DEFAULT_API_CONFIGS = [
         "env_var_name": "LITELLM_PROXY_API_KEY",
         "api_key": "",
         "manual_url": "",
-        "prefix": "litellm_proxy"
+        "prefix": "litellm_proxy",
     },
     {
         "display_name": "LiteLLM Proxy Base",
         "env_var_name": "LITELLM_PROXY_API_BASE",
         "api_key": "",
         "manual_url": "",
-        "prefix": "litellm_proxy"
+        "prefix": "litellm_proxy",
     },
     # Mistral AI API
     {
@@ -566,7 +566,7 @@ DEFAULT_API_CONFIGS = [
         "env_var_name": "MISTRAL_API_KEY",
         "api_key": "",
         "manual_url": "",
-        "prefix": "mistral"
+        "prefix": "mistral",
     },
     # Codestral API
     {
@@ -574,7 +574,7 @@ DEFAULT_API_CONFIGS = [
         "env_var_name": "CODESTRAL_API_KEY",
         "api_key": "",
         "manual_url": "",
-        "prefix": "codestral"
+        "prefix": "codestral",
     },
     # Cohere
     {
@@ -582,7 +582,7 @@ DEFAULT_API_CONFIGS = [
         "env_var_name": "COHERE_API_KEY",
         "api_key": "",
         "manual_url": "",
-        "prefix": "cohere"
+        "prefix": "cohere",
     },
     # Anyscale
     {
@@ -590,7 +590,7 @@ DEFAULT_API_CONFIGS = [
         "env_var_name": "ANYSCALE_API_KEY",
         "api_key": "",
         "manual_url": "",
-        "prefix": "anyscale"
+        "prefix": "anyscale",
     },
     # Huggingface
     {
@@ -598,7 +598,7 @@ DEFAULT_API_CONFIGS = [
         "env_var_name": "HUGGINGFACE_API_KEY",
         "api_key": "",
         "manual_url": "",
-        "prefix": "huggingface"
+        "prefix": "huggingface",
     },
     # Databricks
     {
@@ -606,14 +606,14 @@ DEFAULT_API_CONFIGS = [
         "env_var_name": "DATABRICKS_API_KEY",
         "api_key": "",
         "manual_url": "",
-        "prefix": "databricks"
+        "prefix": "databricks",
     },
     {
         "display_name": "Databricks Base",
         "env_var_name": "DATABRICKS_API_BASE",
         "api_key": "",
         "manual_url": "",
-        "prefix": "databricks"
+        "prefix": "databricks",
     },
     # IBM Watsonx
     {
@@ -621,35 +621,35 @@ DEFAULT_API_CONFIGS = [
         "env_var_name": "WATSONX_URL",
         "api_key": "",
         "manual_url": "",
-        "prefix": "watsonx"
+        "prefix": "watsonx",
     },
     {
         "display_name": "IBM Watsonx API Key",
         "env_var_name": "WATSONX_APIKEY",
         "api_key": "",
         "manual_url": "",
-        "prefix": "watsonx"
+        "prefix": "watsonx",
     },
     {
         "display_name": "IBM Watsonx Token",
         "env_var_name": "WATSONX_TOKEN",
         "api_key": "",
         "manual_url": "",
-        "prefix": "watsonx"
+        "prefix": "watsonx",
     },
     {
         "display_name": "IBM Watsonx Project ID",
         "env_var_name": "WATSONX_PROJECT_ID",
         "api_key": "",
         "manual_url": "",
-        "prefix": "watsonx"
+        "prefix": "watsonx",
     },
     {
         "display_name": "IBM Watsonx Deployment Space",
         "env_var_name": "WATSONX_DEPLOYMENT_SPACE_ID",
         "api_key": "",
         "manual_url": "",
-        "prefix": "watsonx"
+        "prefix": "watsonx",
     },
     # Predibase
     {
@@ -657,7 +657,7 @@ DEFAULT_API_CONFIGS = [
         "env_var_name": "PREDIBASE_API_KEY",
         "api_key": "",
         "manual_url": "",
-        "prefix": "predibase"
+        "prefix": "predibase",
     },
     # Nvidia NIM
     {
@@ -665,7 +665,7 @@ DEFAULT_API_CONFIGS = [
         "env_var_name": "NVIDIA_NIM_API_KEY",
         "api_key": "",
         "manual_url": "",
-        "prefix": "nvidia_nim"
+        "prefix": "nvidia_nim",
     },
     # XAI
     {
@@ -673,7 +673,7 @@ DEFAULT_API_CONFIGS = [
         "env_var_name": "XAI_API_KEY",
         "api_key": "",
         "manual_url": "",
-        "prefix": "xai"
+        "prefix": "xai",
     },
     # LM Studio
     {
@@ -681,14 +681,14 @@ DEFAULT_API_CONFIGS = [
         "env_var_name": "LM_STUDIO_API_BASE",
         "api_key": "",
         "manual_url": "",
-        "prefix": "lm_studio"
+        "prefix": "lm_studio",
     },
     {
         "display_name": "LM Studio",
         "env_var_name": "LM_STUDIO_API_KEY",
         "api_key": "",
         "manual_url": "",
-        "prefix": "lm_studio"
+        "prefix": "lm_studio",
     },
     # Cerebras
     {
@@ -696,7 +696,7 @@ DEFAULT_API_CONFIGS = [
         "env_var_name": "CEREBRAS_API_KEY",
         "api_key": "",
         "manual_url": "",
-        "prefix": "cerebras"
+        "prefix": "cerebras",
     },
     # Volcano Engine (Volcengine)
     {
@@ -704,7 +704,7 @@ DEFAULT_API_CONFIGS = [
         "env_var_name": "VOLCENGINE_API_KEY",
         "api_key": "",
         "manual_url": "",
-        "prefix": "volcengine"
+        "prefix": "volcengine",
     },
     # Perplexity AI
     {
@@ -712,7 +712,7 @@ DEFAULT_API_CONFIGS = [
         "env_var_name": "PERPLEXITYAI_API_KEY",
         "api_key": "",
         "manual_url": "",
-        "prefix": "perplexity"
+        "prefix": "perplexity",
     },
     # FriendliAI
     {
@@ -720,14 +720,14 @@ DEFAULT_API_CONFIGS = [
         "env_var_name": "FRIENDLI_TOKEN",
         "api_key": "",
         "manual_url": "",
-        "prefix": "friendliai"
+        "prefix": "friendliai",
     },
     {
         "display_name": "Friendli API Base",
         "env_var_name": "FRIENDLI_API_BASE",
         "api_key": "",
         "manual_url": "",
-        "prefix": "friendliai"
+        "prefix": "friendliai",
     },
     # Groq
     {
@@ -735,7 +735,7 @@ DEFAULT_API_CONFIGS = [
         "env_var_name": "GROQ_API_KEY",
         "api_key": "",
         "manual_url": "",
-        "prefix": "groq"
+        "prefix": "groq",
     },
     # Github
     {
@@ -743,7 +743,7 @@ DEFAULT_API_CONFIGS = [
         "env_var_name": "GITHUB_API_KEY",
         "api_key": "",
         "manual_url": "",
-        "prefix": "github"
+        "prefix": "github",
     },
     # Deepseek
     {
@@ -751,7 +751,7 @@ DEFAULT_API_CONFIGS = [
         "env_var_name": "DEEPSEEK_API_KEY",
         "api_key": "",
         "manual_url": "",
-        "prefix": "deepseek"
+        "prefix": "deepseek",
     },
     # Fireworks AI
     {
@@ -759,7 +759,7 @@ DEFAULT_API_CONFIGS = [
         "env_var_name": "FIREWORKS_AI_API_KEY",
         "api_key": "",
         "manual_url": "",
-        "prefix": "fireworks_ai"
+        "prefix": "fireworks_ai",
     },
     # Clarifai
     {
@@ -767,7 +767,7 @@ DEFAULT_API_CONFIGS = [
         "env_var_name": "CLARIFAI_API_KEY",
         "api_key": "",
         "manual_url": "",
-        "prefix": "clarifai"
+        "prefix": "clarifai",
     },
     # Xinference [Xorbits Inference]
     {
@@ -775,14 +775,14 @@ DEFAULT_API_CONFIGS = [
         "env_var_name": "XINFERENCE_API_BASE",
         "api_key": "",
         "manual_url": "",
-        "prefix": "xinference"
+        "prefix": "xinference",
     },
     {
         "display_name": "Xinference",
         "env_var_name": "XINFERENCE_API_KEY",
         "api_key": "",
         "manual_url": "",
-        "prefix": "xinference"
+        "prefix": "xinference",
     },
     # Cloudflare Workers AI
     {
@@ -790,14 +790,14 @@ DEFAULT_API_CONFIGS = [
         "env_var_name": "CLOUDFLARE_API_KEY",
         "api_key": "",
         "manual_url": "",
-        "prefix": "cloudflare"
+        "prefix": "cloudflare",
     },
     {
         "display_name": "Cloudflare Account",
         "env_var_name": "CLOUDFLARE_ACCOUNT_ID",
         "api_key": "",
         "manual_url": "",
-        "prefix": "cloudflare"
+        "prefix": "cloudflare",
     },
     # DeepInfra
     {
@@ -805,7 +805,7 @@ DEFAULT_API_CONFIGS = [
         "env_var_name": "DEEPINFRA_API_KEY",
         "api_key": "",
         "manual_url": "",
-        "prefix": "deepinfra"
+        "prefix": "deepinfra",
     },
     # AI21
     {
@@ -813,7 +813,7 @@ DEFAULT_API_CONFIGS = [
         "env_var_name": "AI21_API_KEY",
         "api_key": "",
         "manual_url": "",
-        "prefix": "ai21"
+        "prefix": "ai21",
     },
     # NLP Cloud
     {
@@ -821,7 +821,7 @@ DEFAULT_API_CONFIGS = [
         "env_var_name": "NLP_CLOUD_API_KEY",
         "api_key": "",
         "manual_url": "",
-        "prefix": "nlp_cloud"
+        "prefix": "nlp_cloud",
     },
     # Replicate
     {
@@ -829,7 +829,7 @@ DEFAULT_API_CONFIGS = [
         "env_var_name": "REPLICATE_API_KEY",
         "api_key": "",
         "manual_url": HOW_TO_REPLICATE,
-        "prefix": "replicate"
+        "prefix": "replicate",
     },
     # Together AI
     {
@@ -837,7 +837,7 @@ DEFAULT_API_CONFIGS = [
         "env_var_name": "TOGETHERAI_API_KEY",
         "api_key": "",
         "manual_url": "",
-        "prefix": "together_ai"
+        "prefix": "together_ai",
     },
     # Voyage AI
     {
@@ -845,7 +845,7 @@ DEFAULT_API_CONFIGS = [
         "env_var_name": "VOYAGE_API_KEY",
         "api_key": "",
         "manual_url": "",
-        "prefix": "voyage"
+        "prefix": "voyage",
     },
     # Jina AI
     {
@@ -853,7 +853,7 @@ DEFAULT_API_CONFIGS = [
         "env_var_name": "JINA_AI_API_KEY",
         "api_key": "",
         "manual_url": "",
-        "prefix": "jina_ai"
+        "prefix": "jina_ai",
     },
     # Aleph Alpha
     {
@@ -861,7 +861,7 @@ DEFAULT_API_CONFIGS = [
         "env_var_name": "ALEPHALPHA_API_KEY",
         "api_key": "",
         "manual_url": "",
-        "prefix": "alephalpha"
+        "prefix": "alephalpha",
     },
     # Baseten
     {
@@ -869,7 +869,7 @@ DEFAULT_API_CONFIGS = [
         "env_var_name": "BASETEN_API_KEY",
         "api_key": "",
         "manual_url": "",
-        "prefix": "baseten"
+        "prefix": "baseten",
     },
     # OpenRouter
     {
@@ -877,21 +877,21 @@ DEFAULT_API_CONFIGS = [
         "env_var_name": "OPENROUTER_API_KEY",
         "api_key": "",
         "manual_url": "",
-        "prefix": "openrouter"
+        "prefix": "openrouter",
     },
     {
         "display_name": "OpenRouter Site",
         "env_var_name": "OR_SITE_URL",
         "api_key": "",
         "manual_url": "",
-        "prefix": "openrouter"
+        "prefix": "openrouter",
     },
     {
         "display_name": "OpenRouter App Name",
         "env_var_name": "OR_APP_NAME",
         "api_key": "",
         "manual_url": "",
-        "prefix": "openrouter"
+        "prefix": "openrouter",
     },
     # Sambanova
     {
@@ -899,7 +899,7 @@ DEFAULT_API_CONFIGS = [
         "env_var_name": "SAMBANOVA_API_KEY",
         "api_key": "",
         "manual_url": "",
-        "prefix": "sambanova"
+        "prefix": "sambanova",
     },
 ]
 
