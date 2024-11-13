@@ -8,7 +8,8 @@ from pyqt_openai import (
     DEFAULT_APP_NAME,
     HOW_TO_GET_OPENAI_API_KEY_URL,
     LARGE_LABEL_PARAM,
-    MEDIUM_LABEL_PARAM, QUICKSTART_MANUAL_URL,
+    MEDIUM_LABEL_PARAM,
+    QUICKSTART_MANUAL_URL,
 )
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.widgets.linkLabel import LinkLabel

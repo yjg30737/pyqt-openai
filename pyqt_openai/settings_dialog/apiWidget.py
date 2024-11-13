@@ -11,23 +11,11 @@ from PySide6.QtWidgets import (
 )
 
 from pyqt_openai import (
-    HOW_TO_GET_OPENAI_API_KEY_URL,
-    HOW_TO_GET_CLAUDE_API_KEY_URL,
-    HOW_TO_GET_GEMINI_API_KEY_URL,
-    HOW_TO_GET_LLAMA_API_KEY_URL,
     DEFAULT_API_CONFIGS,
-    HOW_TO_REPLICATE,
 )
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.util.script import set_api_key
 from pyqt_openai.widgets.linkLabel import LinkLabel
-
-
-# FIXME Are there any ways to get authentification from the claude, gemini?
-# def is_api_key_valid(endpoint, api_key):
-#     response = requests.get(endpoint, headers={'Authorization': f'Bearer {api_key}'})
-#     f = response.status_code == 200
-#     print(f)
 
 
 class ApiWidget(QWidget):
@@ -44,32 +32,9 @@ class ApiWidget(QWidget):
                 "display_name": conf["display_name"],
                 "env_var_name": conf["env_var_name"],
                 "api_key": CONFIG_MANAGER.get_general_property(conf["env_var_name"]),
+                "manual_url": conf["manual_url"],
             }
             self.__api_keys.append(_conf)
-
-        # Add REPLICATE API
-        self.__api_keys.append(
-            {
-                "display_name": "Replicate",
-                "env_var_name": "REPLICATE_API_TOKEN",
-                "api_key": CONFIG_MANAGER.get_replicate_property("REPLICATE_API_TOKEN"),
-            }
-        )
-
-        # Set "get api key" to here
-        for i, obj in enumerate(self.__api_keys):
-            obj["get_api_key"] = {
-                "OpenAI": HOW_TO_GET_OPENAI_API_KEY_URL,
-                "Claude": HOW_TO_GET_CLAUDE_API_KEY_URL,
-                "Gemini": HOW_TO_GET_GEMINI_API_KEY_URL,
-                "Llama": HOW_TO_GET_LLAMA_API_KEY_URL,
-                "Replicate": HOW_TO_REPLICATE,
-                "DeepInfra": '',
-                "Groq": '',
-                "HuggingFace": '',
-                "OpenRouter": '',
-                "Perplexity API": '',
-            }[obj["display_name"]]
 
     def __initUi(self):
         self.setWindowTitle("API Key")
@@ -95,7 +60,7 @@ class ApiWidget(QWidget):
             getApiKeyLbl = LinkLabel()
             getApiKeyLbl.setText("Link")
             getApiKeyLbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            getApiKeyLbl.setUrl(obj["get_api_key"])
+            getApiKeyLbl.setUrl(obj["manual_url"])
             self.__tableWidget.setCellWidget(i, 2, getApiKeyLbl)
 
         saveBtn = QPushButton("Save")
@@ -123,8 +88,5 @@ class ApiWidget(QWidget):
         }
         # Save the api keys to the conf file
         for k, v in api_keys.items():
-            if k == "REPLICATE_API_TOKEN":
-                CONFIG_MANAGER.set_replicate_property(k, v)
-            else:
-                CONFIG_MANAGER.set_general_property(k, v)
+            CONFIG_MANAGER.set_general_property(k, v)
             set_api_key(k, v)

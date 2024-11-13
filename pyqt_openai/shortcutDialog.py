@@ -15,7 +15,9 @@ from pyqt_openai import (
     DEFAULT_SHORTCUT_SETTING,
     DEFAULT_SHORTCUT_SEND,
     DEFAULT_SHORTCUT_SHOW_SECONDARY_TOOLBAR,
-    DEFAULT_SHORTCUT_FOCUS_MODE, DEFAULT_SWITCH_PROMPT_UP, DEFAULT_SWITCH_PROMPT_DOWN,
+    DEFAULT_SHORTCUT_FOCUS_MODE,
+    DEFAULT_SWITCH_PROMPT_UP,
+    DEFAULT_SWITCH_PROMPT_DOWN, DEFAULT_SHORTCUT_RECORD, DEFAULT_SHORTCUT_STACK_ON_TOP,
 )
 from pyqt_openai.lang.translations import LangClass
 
@@ -56,6 +58,10 @@ class ShortcutDialog(QDialog):
                 "label": LangClass.TRANSLATIONS["Full Screen"],
                 "value": DEFAULT_SHORTCUT_FULL_SCREEN,
             },
+            "SHORTCUT_STACK_ON_TOP": {
+                "label": LangClass.TRANSLATIONS["Stack On Top"],
+                "value": DEFAULT_SHORTCUT_STACK_ON_TOP,
+            },
             "SHORTCUT_FIND": {
                 "label": LangClass.TRANSLATIONS["Find"],
                 "value": DEFAULT_SHORTCUT_FIND,
@@ -91,6 +97,10 @@ class ShortcutDialog(QDialog):
             "SWITCH_PROMPT_DOWN": {
                 "label": LangClass.TRANSLATIONS["Switch Prompt Down"],
                 "value": DEFAULT_SWITCH_PROMPT_DOWN,
+            },
+            "SHORTCUT_RECORD": {
+                "label": LangClass.TRANSLATIONS["Record"],
+                "value": DEFAULT_SHORTCUT_RECORD,
             },
         }
         self.__initUi()

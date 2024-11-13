@@ -6,8 +6,6 @@ from PySide6.QtWidgets import (
     QSpinBox,
     QFormLayout,
     QSizePolicy,
-    QComboBox,
-    QTextEdit,
     QLabel,
     QVBoxLayout,
     QCheckBox,
@@ -15,7 +13,7 @@ from PySide6.QtWidgets import (
     QScrollArea,
     QGroupBox,
     QHBoxLayout,
-    QTextBrowser,
+    QTextBrowser, QPlainTextEdit,
 )
 
 from pyqt_openai import (
@@ -33,12 +31,11 @@ from pyqt_openai import (
     O1_MODELS,
     SMALL_LABEL_PARAM,
 )
+from pyqt_openai.chat_widget.right_sidebar.modelSearchBar import ModelSearchBar
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.util.script import (
     getSeparator,
-    get_chat_model,
-    get_openai_chat_model,
     init_llama,
 )
 from pyqt_openai.widgets.linkLabel import LinkLabel
@@ -71,6 +68,10 @@ class UsingAPIPage(QWidget):
 
         self.__use_max_tokens = CONFIG_MANAGER.get_general_property("use_max_tokens")
         self.__use_llama_index = CONFIG_MANAGER.get_general_property("use_llama_index")
+
+        self.__warningMessage = ("Note: For models other than OpenAI and Anthropic, please enter the model name in the format [ProviderName]/[ModelName].\n"
+                                 "For more information about ProviderName and ModelName, please refer to litellm documentation.\n"
+                                 "Certain models may not support JSON Mode or LlamaIndex.")
 
     def __initUi(self):
         manualBrowser = QTextBrowser()
@@ -106,22 +107,25 @@ class UsingAPIPage(QWidget):
             + LangClass.TRANSLATIONS["You can write your own system instructions here."]
         )
 
-        self.__systemTextEdit = QTextEdit()
-        self.__systemTextEdit.setText(self.__system)
+        self.__systemTextEdit = QPlainTextEdit()
+        self.__systemTextEdit.setPlainText(self.__system)
         self.__systemTextEdit.setSizePolicy(
             QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Preferred
         )
+        self.__systemTextEdit.setMaximumHeight(100)
         saveSystemBtn = QPushButton(LangClass.TRANSLATIONS["Save System"])
         saveSystemBtn.clicked.connect(self.__saveSystem)
 
-        modelCmbBox = QComboBox()
-        modelCmbBox.addItems(get_chat_model())
-        modelCmbBox.setCurrentText(self.__model)
-        modelCmbBox.currentTextChanged.connect(self.__modelChanged)
+        modelSearchBar = ModelSearchBar()
+        modelSearchBar.setText(self.__model)
+        modelSearchBar.textChanged.connect(self.__modelChanged)
+
+        prefixListBtn = ModernButton()
+        prefixListBtn.setText("Prefix List")
 
         lay = QHBoxLayout()
         lay.addWidget(QLabel(LangClass.TRANSLATIONS["Model"]))
-        lay.addWidget(modelCmbBox)
+        lay.addWidget(modelSearchBar)
         lay.setContentsMargins(0, 0, 0, 0)
 
         setApiBtn = ModernButton()
@@ -133,9 +137,13 @@ class UsingAPIPage(QWidget):
 
         self.__warningLbl = QLabel()
         self.__warningLbl.setStyleSheet("color: orange;")
-        self.__warningLbl.setVisible(False)
         self.__warningLbl.setWordWrap(True)
         self.__warningLbl.setFont(QFont(SMALL_LABEL_PARAM))
+        # TODO LANGUAGE
+        self.__warningLbl.setText(
+            self.__warningMessage
+        )
+        self.__warningLbl.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
 
         advancedSettingsScrollArea = QScrollArea()
 
@@ -301,19 +309,14 @@ class UsingAPIPage(QWidget):
         self.__model = v
         CONFIG_MANAGER.set_general_property("model", v)
         # TODO LANGUAGE
+        additional_message = "\nNote: The selected model is only available at Tier 3 or higher."
         if self.__model in O1_MODELS:
             self.__warningLbl.setText(
-                "Note: The selected model is only available at Tier 3 or higher."
+                self.__warningMessage + additional_message
             )
-            self.__warningLbl.setVisible(True)
         else:
-            self.__warningLbl.setText(
-                "Note: The selected model does not support LlamaIndex, JSON mode."
-            )
-            f = v in get_openai_chat_model()
-            self.__jsonChkBox.setEnabled(f)
-            self.__llamaChkBox.setEnabled(f)
-            self.__warningLbl.setVisible(not f)
+            self.__warningLbl.setText(self.__warningMessage)
+
 
     def __streamChecked(self, f):
         self.__stream = f

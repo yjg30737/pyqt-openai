@@ -15,7 +15,8 @@ from pyqt_openai import (
     PROMPT_GROUP_TABLE_NAME,
     PROMPT_ENTRY_TABLE_NAME,
     get_config_directory,
-    DEFAULT_DATETIME_FORMAT, CHAT_FILE_TABLE_NAME,
+    DEFAULT_DATETIME_FORMAT,
+    CHAT_FILE_TABLE_NAME,
 )
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.models import (
