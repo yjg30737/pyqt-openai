@@ -10,6 +10,7 @@ from pyqt_openai import (
     get_config_directory,
     ROOT_DIR,
     SRC_DIR,
+    DEFAULT_API_CONFIGS,
 )
 
 _config_cache = None
@@ -130,13 +131,34 @@ def update_api_key(yaml_file_path):
     with open(yaml_file_path, "r") as file:
         data = yaml.safe_load(file)
 
+    # Rename API_KEY to OPENAI_API_KEY
     if "General" in data and "API_KEY" in data["General"]:
         data["General"]["OPENAI_API_KEY"] = data["General"].pop("API_KEY")
+
+    # Rename CLAUDE_API_KEY to ANTHROPIC_API_KEY
+    if "General" in data and "CLAUDE_API_KEY" in data["General"]:
+        data["General"]["ANTHROPIC_API_KEY"] = data["General"].pop("CLAUDE_API_KEY")
+        os.environ["ANTHROPIC_API_KEY"] = data["General"]["ANTHROPIC_API_KEY"]
+
+    # REPLICATE_API_TOKEN IS USED IN REPLICATE PACKAGE.
+    # REPLICATE_API_KEY IS USED IN LITELLM.
+    if "REPLICATE" in data and "REPLICATE_API_TOKEN" in data["REPLICATE"]:
+        os.environ["REPLICATE_API_KEY"] = data["REPLICATE"]["REPLICATE_API_TOKEN"]
 
     with open(yaml_file_path, "w") as file:
         yaml.safe_dump(data, file)
 
 
-init_yaml()
+def load_api_keys():
+    env_vars = [item["env_var_name"] for item in DEFAULT_API_CONFIGS]
 
+    # Set API keys
+    for key, value in CONFIG_MANAGER.get_general().items():
+        if key in env_vars:
+            os.environ[key] = value
+
+
+init_yaml()
+update_api_key(INI_FILE_NAME)
 CONFIG_MANAGER = ConfigManager()
+load_api_keys()

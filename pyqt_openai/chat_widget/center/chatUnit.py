@@ -6,7 +6,8 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QHBoxLayout,
     QSpacerItem,
-    QSizePolicy, QLabel,
+    QSizePolicy,
+    QLabel,
 )
 
 from pyqt_openai import DEFAULT_ICON_SIZE, ICON_COPY
@@ -26,7 +27,7 @@ class ChatUnit(QWidget):
 
         self._icon = RoundedImage()
         self._icon.setMaximumSize(*DEFAULT_ICON_SIZE)
-        self._icon.setStyleSheet('margin-right: 3px;')
+        self._icon.setStyleSheet("margin-right: 3px;")
 
         self._nameLbl = QLabel()
 

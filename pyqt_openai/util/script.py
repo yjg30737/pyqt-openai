@@ -19,6 +19,7 @@ import time
 import traceback
 import wave
 import zipfile
+
 from datetime import datetime
 from io import BytesIO
 from pathlib import Path
@@ -28,6 +29,7 @@ import numpy as np
 import psutil
 from g4f import ProviderType
 from g4f.providers.base_provider import ProviderModelMixin
+from litellm import completion
 
 from pyqt_openai.widgets.scrollableErrorDialog import ScrollableErrorDialog
 
@@ -65,15 +67,12 @@ from pyqt_openai import (
     OPENAI_CHAT_ENDPOINT,
     STT_MODEL,
     DEFAULT_DATETIME_FORMAT,
-    DEFAULT_TOKEN_CHUNK_SIZE
+    DEFAULT_TOKEN_CHUNK_SIZE,
 )
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.globals import (
     DB,
     OPENAI_CLIENT,
-    CLAUDE_CLIENT,
-    LLAMA_CLIENT,
-    GEMINI_CLIENT,
     G4F_CLIENT,
     LLAMAINDEX_WRAPPER,
     REPLICATE_CLIENT,
@@ -473,7 +472,7 @@ def handle_exception(exc_type, exc_value, exc_traceback):
     print(f"Unhandled exception: {error_msg}")
 
     msg_box = ScrollableErrorDialog(error_msg)
-    msg_box.exec_()
+    msg_box.exec()
 
 
 def set_auto_start_windows(enable: bool):
@@ -716,17 +715,20 @@ def get_claude_argument(model, system, messages, cur_text, stream, images):
 
 
 def set_api_key(env_var_name, api_key):
+    api_key = api_key.strip() if api_key else ""
     if env_var_name == "OPENAI_API_KEY":
-        OPENAI_CLIENT.api_key = api_key
+        os.environ["OPENAI_API_KEY"] = api_key
     if env_var_name == "GEMINI_API_KEY":
-        genai.configure(api_key=api_key)
+        os.environ["GEMINI_API_KEY"] = api_key
     if env_var_name == "CLAUDE_API_KEY":
-        CLAUDE_CLIENT.api_key = api_key
-    if env_var_name == "LLAMA_API_KEY":
-        LLAMA_CLIENT.api_key = api_key
-    if env_var_name == "REPLICATE_API_TOKEN":
+        os.environ["ANTHROPIC_API_KEY"] = api_key
+    if env_var_name == "REPLICATE_API_KEY":
         REPLICATE_CLIENT.api_key = api_key
+        os.environ["REPLICATE_API_KEY"] = api_key
         os.environ["REPLICATE_API_TOKEN"] = api_key
+
+    # Set environment variables dynamically
+    os.environ[env_var_name] = api_key
 
 
 def get_openai_model_endpoint(model):
@@ -797,6 +799,7 @@ def get_g4f_image_models() -> list:
     models = [model["image_model"] for model in image_models]
     return models
 
+
 def get_g4f_image_providers(including_auto=False) -> list:
     """
     Get all the providers that support image generation
@@ -809,15 +812,11 @@ def get_g4f_image_providers(including_auto=False) -> list:
         The function get from g4f/gui/server/api.py
         """
         return {
-            provider.__name__: (provider.label
-                                if hasattr(provider, "label")
-                                else provider.__name__) +
-                               (" (WebDriver)"
-                                if "webdriver" in provider.get_parameters()
-                                else "") +
-                               (" (Auth)"
-                                if provider.needs_auth
-                                else "")
+            provider.__name__: (
+                provider.label if hasattr(provider, "label") else provider.__name__
+            )
+            + (" (WebDriver)" if "webdriver" in provider.get_parameters() else "")
+            + (" (Auth)" if provider.needs_auth else "")
             for provider in __providers__
             if provider.working
         }
@@ -844,15 +843,31 @@ def get_g4f_image_models_from_provider(provider) -> list:
         if provider in __map__:
             provider: ProviderType = __map__[provider]
             if issubclass(provider, ProviderModelMixin):
-                return [{"model": model, "default": model == provider.default_model} for model in provider.get_models()]
+                return [
+                    {"model": model, "default": model == provider.default_model}
+                    for model in provider.get_models()
+                ]
             elif provider.supports_gpt_35_turbo or provider.supports_gpt_4:
                 return [
-                    *([{"model": "gpt-4", "default": not provider.supports_gpt_4}] if provider.supports_gpt_4 else []),
-                    *([{"model": "gpt-3.5-turbo",
-                        "default": not provider.supports_gpt_4}] if provider.supports_gpt_35_turbo else [])
+                    *(
+                        [{"model": "gpt-4", "default": not provider.supports_gpt_4}]
+                        if provider.supports_gpt_4
+                        else []
+                    ),
+                    *(
+                        [
+                            {
+                                "model": "gpt-3.5-turbo",
+                                "default": not provider.supports_gpt_4,
+                            }
+                        ]
+                        if provider.supports_gpt_35_turbo
+                        else []
+                    ),
                 ]
             else:
                 return []
+
     return [model["model"] for model in get_provider_models(provider)]
 
 
@@ -880,44 +895,23 @@ def get_api_argument(
     json_content=None,
 ):
     try:
-        provider = get_provider_from_model(model)
-        if provider == "OpenAI":
-            args = get_gpt_argument(
-                model,
-                system,
-                messages,
-                cur_text,
-                temperature,
-                top_p,
-                frequency_penalty,
-                presence_penalty,
-                stream,
-                use_max_tokens,
-                max_tokens,
-                images,
-                is_llama_available=is_llama_available,
-                is_json_response_available=is_json_response_available,
-                json_content=json_content,
-            )
-        elif provider == "Gemini":
-            args = get_gemini_argument(
-                model, system, messages, cur_text, stream, images
-            )
-
-        elif provider == "Claude":
-            args = get_claude_argument(
-                model, system, messages, cur_text, stream, images
-            )
-        elif provider == "Llama":
-            args = {
-                "model": model,
-                "messages": messages,
-                "stream": stream,
-                "max_tokens": DEFAULT_TOKEN_CHUNK_SIZE,
-            }
-            args["messages"].append({"role": "user", "content": cur_text})
-        else:
-            raise Exception(f"Provider not found for model {model}")
+        args = get_gpt_argument(
+            model,
+            system,
+            messages,
+            cur_text,
+            temperature,
+            top_p,
+            frequency_penalty,
+            presence_penalty,
+            stream,
+            use_max_tokens,
+            max_tokens,
+            images,
+            is_llama_available=is_llama_available,
+            is_json_response_available=is_json_response_available,
+            json_content=json_content,
+        )
         return args
     except Exception as e:
         print(e)
@@ -969,7 +963,7 @@ def get_argument(
         raise e
 
 
-def stream_response(provider, response, is_g4f=False, get_content_only=True):
+def stream_response(response, is_g4f=False, get_content_only=True):
     if is_g4f:
         if get_content_only:
             for chunk in response:
@@ -978,91 +972,17 @@ def stream_response(provider, response, is_g4f=False, get_content_only=True):
             for chunk in response:
                 yield chunk
     else:
-        if provider == "OpenAI":
-            for chunk in response:
-                response_text = chunk.choices[0].delta.content
-                yield response_text
-        elif provider == "Gemini":
-            for chunk in response:
-                yield chunk.text
-        elif provider == "Claude":
-            with response as stream:
-                for text in stream.text_stream:
-                    yield text
-        elif provider == "Llama":
-            for chunk in response:
-                response_text = chunk.choices[0].delta.content
-                yield response_text
+        for part in response:
+            yield part.choices[0].delta.content or ""
 
 
 def get_api_response(args, get_content_only=True):
     try:
-        provider = get_provider_from_model(args["model"])
-        if provider == "OpenAI":
-            response = OPENAI_CLIENT.chat.completions.create(**args)
-            print(response)
-            if args["stream"]:
-                return stream_response(provider, response)
-            else:
-                if get_content_only:
-                    if args["model"] in O1_MODELS:
-                        return str(response.choices[0].message.content)
-                    return response.choices[0].message.content
-                else:
-                    return response
-        elif provider == "Gemini":
-            for message in args["messages"]:
-                message["parts"] = message.pop("content")
-                if message["role"] == "assistant":
-                    message["role"] = "model"
-
-            if len(args.get("images", [])) > 0:
-                # Supposedly this don't support history of chat as well as stream
-                response = GEMINI_CLIENT.generate_content(
-                    [args["messages"][-1]["parts"]] + args["images"]
-                )
-                return response.text
-            else:
-                chat = GEMINI_CLIENT.start_chat(history=args["messages"])
-
-                if args["stream"]:
-                    response = chat.send_message(
-                        args["messages"][-1]["parts"], stream=args["stream"]
-                    )
-                    return stream_response(provider, response)
-                else:
-                    response = chat.send_message(args["messages"][-1]["parts"])
-                    if get_content_only:
-                        return response.text
-                    else:
-                        return response
-        elif provider == "Claude":
-            if args["stream"]:
-                response = CLAUDE_CLIENT.messages.stream(
-                    model=args["model"],
-                    max_tokens=DEFAULT_TOKEN_CHUNK_SIZE,
-                    messages=args["messages"],
-                )
-                return stream_response(provider, response)
-            else:
-                response = CLAUDE_CLIENT.messages.create(
-                    model=args["model"],
-                    max_tokens=DEFAULT_TOKEN_CHUNK_SIZE,
-                    messages=args["messages"],
-                )
-                if get_content_only:
-                    return response.content[0].text
-                else:
-                    return response
-        elif provider == "Llama":
-            response = LLAMA_CLIENT.chat.completions.create(**args)
-            if args["stream"]:
-                return stream_response(provider, response)
-            else:
-                if get_content_only:
-                    return response.choices[0].message.content
-                else:
-                    return response
+        response = completion(drop_params=True, **args)
+        if args["stream"]:
+            return stream_response(response)
+        else:
+            return response.choices[0].message.content or ""
     except Exception as e:
         print(e)
         raise e
@@ -1073,7 +993,6 @@ def get_g4f_response(args, get_content_only=True):
         response = G4F_CLIENT.chat.completions.create(**args)
         if args["stream"]:
             return stream_response(
-                provider="",
                 response=response,
                 is_g4f=True,
                 get_content_only=get_content_only,
@@ -1168,7 +1087,7 @@ class TTSThread(QThread):
                             f"--voice={self.input_args['voice']}",
                             f"--text={self.input_args['input']}",
                         ],
-                        creationflags=subprocess.CREATE_NO_WINDOW
+                        creationflags=subprocess.CREATE_NO_WINDOW,
                     ) as process:
                         process.communicate()
                 else:
@@ -1237,8 +1156,7 @@ class RecorderThread(QThread):
     recording_finished = Signal(str)
     errorGenerated = Signal(str)
 
-    # Silence detection 사용 여부
-
+    # Silence detection parameters
     def __init__(
         self, is_silence_detection=False, silence_duration=3, silence_threshold=500
     ):

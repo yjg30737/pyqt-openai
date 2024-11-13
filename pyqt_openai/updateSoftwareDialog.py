@@ -55,7 +55,9 @@ class UpdateSoftwareDialog(QDialog):
         self.__updateManualLbl = QLabel()
 
         lay.addWidget(self.releaseNoteBrowser)
-        if sys.platform == "win32" and not CONFIG_MANAGER.get_general_property('manual_update'):
+        if sys.platform == "win32" and not CONFIG_MANAGER.get_general_property(
+            "manual_update"
+        ):
             update_url = f"https://github.com/{self.__owner}/{self.__repo}/releases/download/{self.__recent_version}/VividNode.zip"
 
             buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
@@ -70,10 +72,12 @@ class UpdateSoftwareDialog(QDialog):
             self.__updateManualLbl.setText(
                 f'<b>{LangClass.TRANSLATIONS["Update Available"]}</b>'
                 + f"""<br> 
-            For manual updates, please click the link for the latest version and install the file appropriate for your operating system.<br>
+            For manual updates, please click the link for the latest version and install the file appropriate for your operating system.<br><br>
             Windows - Install via exe or zip<br>
             Linux - Install via tar.gz<br>
             macOS - Install via dmg<br>
+            <br>
+            If you want to enable automatic updates, please go to the settings and enable the option.
             """
             )
             self.__updateManualLbl.setWordWrap(True)

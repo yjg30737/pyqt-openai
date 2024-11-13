@@ -11,6 +11,7 @@ from pyqt_openai import (
     PROMPT_JSON_KEY_NAME,
     CONTEXT_DELIMITER,
     IMAGE_FILE_EXT_LIST,
+    TEXT_FILE_EXT_LIST,
 )
 from pyqt_openai.chat_widget.center.textEditPrompt import TextEditPrompt
 from pyqt_openai.lang.translations import LangClass
@@ -22,6 +23,7 @@ class TextEditPromptGroup(QWidget):
     onUpdateSuggestion = Signal()
     onSendKeySignalToSuggestion = Signal(str)
     onPasteFile = Signal(QByteArray)
+    onPasteText = Signal(str)
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -153,11 +155,16 @@ class TextEditPromptGroup(QWidget):
                 with open(url, "rb") as f:
                     data = f.read()
                     self.onPasteFile.emit(data)
+            elif Path(url).suffix in TEXT_FILE_EXT_LIST:
+                with open(url, "r") as f:
+                    data = f.read()
+                    self.onPasteText.emit(data)
 
     def handlePaste(self):
         clipboard = QApplication.clipboard()
         mime_data = clipboard.mimeData()
 
+        # Image file
         if mime_data.hasImage():
             image = clipboard.image()
 
@@ -181,6 +188,10 @@ class TextEditPromptGroup(QWidget):
 
             # Emit the image data
             self.onPasteFile.emit(image_data)
+        # TXT file
+        # elif mime_data.hasUrls() and mime_data.hasText():
+        #     text = mime_data.text()
+        #     self.onPasteText.emit(text)
         else:
             self.__textEdit.paste()
 
