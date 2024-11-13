@@ -717,6 +717,7 @@ def get_claude_argument(model, system, messages, cur_text, stream, images):
 def set_api_key(env_var_name, api_key):
     api_key = api_key.strip() if api_key else ""
     if env_var_name == "OPENAI_API_KEY":
+        OPENAI_CLIENT.api_key = api_key
         os.environ["OPENAI_API_KEY"] = api_key
     if env_var_name == "GEMINI_API_KEY":
         os.environ["GEMINI_API_KEY"] = api_key
