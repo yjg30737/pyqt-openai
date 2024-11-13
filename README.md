@@ -3,7 +3,7 @@
   <img src="https://github.com/user-attachments/assets/ab169535-8af0-40c7-848d-59a7e5e4b304"/>
 
   <b>A cross-platform AI desktop chatbot application for LLM such as GPT, Claude, Gemini, Llama chatbot interaction and image generation, offering customizable features, local chat history, and enhanced performance—no browser required!<br><br>
-  Basically for free, powered by GPT4Free(since v1.3.0).</b>
+  Basically for free, powered by GPT4Free and LiteLLM.</b>
 
 <hr>
 
@@ -15,22 +15,6 @@
 ![image](https://github.com/user-attachments/assets/9231c79f-e4db-4c61-9b21-740e4fb609ec)
 
 <hr>
-
-## Help Needed 🆘
-
-**Managing this project alone has become quite challenging so i'm reaching out for support.**
-If you have experience with coding, documentation, design, or even providing constructive feedback, I would greatly appreciate your involvement. Your contribution could make a significant difference.
-
-Your contribution, even just a fix a simple typo in readme or simple refactoring can be very helpful. Of course there are a lot of official TODOs i need helping hand as well. So [see here](https://github.com/yjg30737/pyqt-openai/blob/main/CONTRIBUTING.md) if you are willing to contribute.
-
-You can contact me 24/7 by sending me an email to **yjg30737@gmail.com** or join [**Discord server**](https://discord.gg/cHekprskVE) to talk in real time.
-
-## Test Scenario
-This is the [default test scenario page](https://github.com/yjg30737/pyqt-openai/wiki/Test-Scenario). If you want to test it out and be sure nothing is wrong, try it :)
-
-## Contributors
-* **Me (WizMiner)** 😊
-  * Creator of VividNode 🐐
 
 ## What is VividNode? 🤔
 
@@ -66,6 +50,9 @@ Although this is named 'pyqt-openai', the model does not use only OpenAI-related
 ## How to Use 🧐
 **<a href="https://medium.com/@yjg30737/what-is-vividnode-how-to-use-it-4d8a9269a3c0">QuickStart</a>**
 
+## Test Scenario
+This is the [default test scenario page](https://github.com/yjg30737/pyqt-openai/wiki/Test-Scenario). If you want to test it out and be sure nothing is wrong, try it :)
+
 ## Troubleshooting
 ### Common Issues
 #### Issues Related to PyAudio
@@ -83,6 +70,19 @@ Although this is named 'pyqt-openai', the model does not use only OpenAI-related
 - If you come across incomplete or unnatural translations, please update the **pyqt_openai/lang/translations.json** file.
 
 If the solutions listed here don’t resolve your issue, please report it by [opening an issue](https://github.com/yjg30737/pyqt-openai/issues).
+
+## Help Needed 🆘
+
+**Managing this project alone has become quite challenging so i'm reaching out for support.**
+If you have experience with coding, documentation, design, or even providing constructive feedback, I would greatly appreciate your involvement. Your contribution could make a significant difference.
+
+Your contribution, even just a fix a simple typo in readme or simple refactoring can be very helpful. Of course there are a lot of official TODOs i need helping hand as well. So [see here](https://github.com/yjg30737/pyqt-openai/blob/main/CONTRIBUTING.md) if you are willing to contribute.
+
+You can contact me 24/7 by sending me an email to **yjg30737@gmail.com** or join [**Discord server**](https://discord.gg/cHekprskVE) to talk in real time
+
+## Contributors
+* **Me (WizMiner)** 😊
+  * Creator of VividNode 🐐
 
 ## Disclaimer
 Please do not distribute this commercially without my permission, by claiming it as your own creation.
