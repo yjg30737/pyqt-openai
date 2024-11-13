@@ -472,7 +472,7 @@ def handle_exception(exc_type, exc_value, exc_traceback):
     print(f"Unhandled exception: {error_msg}")
 
     msg_box = ScrollableErrorDialog(error_msg)
-    msg_box.exec_()
+    msg_box.exec()
 
 
 def set_auto_start_windows(enable: bool):

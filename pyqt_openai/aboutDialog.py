@@ -53,6 +53,7 @@ class AboutDialog(QDialog):
         <br/><br/>Contact: {CONTACT}<br/>
         <p>Powered by PySide6</p>
         <p>Powered by GPT4Free</p>
+        <p>Powered by LiteLLM</p>
         """
         )
 
