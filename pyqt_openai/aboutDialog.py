@@ -54,6 +54,7 @@ class AboutDialog(QDialog):
         <p>Powered by PySide6</p>
         <p>Powered by GPT4Free</p>
         <p>Powered by LiteLLM</p>
+        <p>Powered by LlamaIndex</p>
         """
         )
 

@@ -15,7 +15,7 @@ from pyqt_openai import IMAGE_FILE_EXT_LIST_STR, DEFAULT_ICON_SIZE
 from pyqt_openai.fontWidget import FontWidget
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import CustomizeParamsContainer
-from pyqt_openai.util.script import getSeparator
+from pyqt_openai.util.common import getSeparator
 from pyqt_openai.widgets.circleProfileImage import RoundedImage
 from pyqt_openai.widgets.findPathWidget import FindPathWidget
 from pyqt_openai.widgets.normalImageView import NormalImageView

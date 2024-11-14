@@ -11,7 +11,7 @@ from PySide6.QtWidgets import (
 from pyqt_openai import G4F_PROVIDER_DEFAULT
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.lang.translations import LangClass
-from pyqt_openai.util.script import (
+from pyqt_openai.util.common import (
     get_g4f_providers,
     get_g4f_models_by_provider,
     get_chat_model,

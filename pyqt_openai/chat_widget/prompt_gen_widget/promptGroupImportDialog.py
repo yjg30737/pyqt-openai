@@ -22,7 +22,7 @@ from pyqt_openai import (
     FORM_PROMPT_GROUP_SAMPLE,
 )
 from pyqt_openai.lang.translations import LangClass
-from pyqt_openai.util.script import (
+from pyqt_openai.util.common import (
     validate_prompt_group_json,
     is_prompt_group_name_valid,
     showJsonSample,

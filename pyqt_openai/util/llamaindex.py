@@ -3,7 +3,7 @@ import os.path
 from llama_index.core import VectorStoreIndex, SimpleDirectoryReader
 
 
-class GPTLLamaIndexWrapper:
+class LlamaIndexWrapper:
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._directory = ""

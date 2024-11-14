@@ -23,7 +23,7 @@ ROOT_DIR = SRC_DIR.parent  # VividNode
 # For the sake of following the PEP8 standard, we will declare module-level dunder names.
 # PEP8 standard about dunder names: https://peps.python.org/pep-0008/#module-level-dunder-names
 
-__version__ = "1.7.0"
+__version__ = "1.7.1"
 __author__ = "Jung Gyu Yoon"
 
 # Constants
@@ -1139,6 +1139,7 @@ CONFIG_DATA = {
             "model",
             "width",
             "height",
+            "provider",
             "prompt",
             "negative_prompt",
             "n",

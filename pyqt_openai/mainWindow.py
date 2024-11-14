@@ -61,7 +61,7 @@ from pyqt_openai.replicate_widget.replicateMainWidget import ReplicateMainWidget
 from pyqt_openai.settings_dialog.settingsDialog import SettingsDialog
 from pyqt_openai.shortcutDialog import ShortcutDialog
 from pyqt_openai.updateSoftwareDialog import update_software
-from pyqt_openai.util.script import (
+from pyqt_openai.util.common import (
     restart_app,
     show_message_box_after_change_to_restart,
     set_auto_start_windows,
