@@ -1139,6 +1139,7 @@ CONFIG_DATA = {
             "model",
             "width",
             "height",
+            "provider",
             "prompt",
             "negative_prompt",
             "n",

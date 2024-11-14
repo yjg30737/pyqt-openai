@@ -66,7 +66,7 @@ from pyqt_openai import (
     OPENAI_CHAT_ENDPOINT,
     STT_MODEL,
     DEFAULT_DATETIME_FORMAT,
-    DEFAULT_TOKEN_CHUNK_SIZE,
+    DEFAULT_TOKEN_CHUNK_SIZE, DEFAULT_API_CONFIGS,
 )
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.globals import (
@@ -1335,3 +1335,7 @@ def stream_to_speakers(voice_provider, input_args):
     stream_thread = TTSThread(voice_provider, input_args)
     pyqt_openai.util.common.current_tts_thread = stream_thread
     return stream_thread
+
+
+def get_litellm_prefixes():
+    return [{'Provider': obj.get('display_name', ''), 'Prefix': obj.get('prefix', '')} for obj in DEFAULT_API_CONFIGS]

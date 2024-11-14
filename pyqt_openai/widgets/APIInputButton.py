@@ -5,7 +5,7 @@ from PySide6.QtWidgets import QPushButton
 from pyqt_openai.settings_dialog.settingsDialog import SettingsDialog
 
 
-class ModernButton(QPushButton):
+class APIInputButton(QPushButton):
     def __init__(self, base_color="#007BFF"):
         super().__init__()
         self.setObjectName("modernButton")
