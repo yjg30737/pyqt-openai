@@ -10,7 +10,7 @@ from PySide6.QtWidgets import (
 
 from pyqt_openai import SENTENCE_PROMPT_GROUP_SAMPLE, FORM_PROMPT_GROUP_SAMPLE
 from pyqt_openai.lang.translations import LangClass
-from pyqt_openai.util.script import showJsonSample
+from pyqt_openai.util.common import showJsonSample
 from pyqt_openai.widgets.checkBoxListWidget import CheckBoxListWidget
 from pyqt_openai.widgets.jsonEditor import JSONEditor
 

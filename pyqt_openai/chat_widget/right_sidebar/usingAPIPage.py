@@ -35,12 +35,12 @@ from pyqt_openai import (
 from pyqt_openai.chat_widget.right_sidebar.modelSearchBar import ModelSearchBar
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.lang.translations import LangClass
-from pyqt_openai.util.script import (
+from pyqt_openai.util.common import (
     getSeparator,
     init_llama,
 )
 from pyqt_openai.widgets.linkLabel import LinkLabel
-from pyqt_openai.widgets.modernButton import ModernButton
+from pyqt_openai.widgets.APIInputButton import APIInputButton
 
 
 class UsingAPIPage(QWidget):
@@ -123,15 +123,12 @@ class UsingAPIPage(QWidget):
         modelSearchBar.setText(self.__model)
         modelSearchBar.textChanged.connect(self.__modelChanged)
 
-        prefixListBtn = ModernButton()
-        prefixListBtn.setText("Prefix List")
-
         lay = QHBoxLayout()
         lay.addWidget(QLabel(LangClass.TRANSLATIONS["Model"]))
         lay.addWidget(modelSearchBar)
         lay.setContentsMargins(0, 0, 0, 0)
 
-        setApiBtn = ModernButton()
+        setApiBtn = APIInputButton()
         # TODO LANGUAGE
         setApiBtn.setText("Set API Key")
 

@@ -14,7 +14,7 @@ from pyqt_openai import (
     DEFAULT_API_CONFIGS,
 )
 from pyqt_openai.config_loader import CONFIG_MANAGER
-from pyqt_openai.util.script import set_api_key
+from pyqt_openai.util.common import set_api_key
 from pyqt_openai.widgets.linkLabel import LinkLabel
 
 
@@ -39,7 +39,7 @@ class ApiWidget(QWidget):
     def __initUi(self):
         self.setWindowTitle("API Key")
 
-        columns = ["Provider", "API Key", "Get API Key"]
+        columns = ["Provider", "API Key", "Manual URL"]
         self.__tableWidget = QTableWidget()
         self.__tableWidget.setColumnCount(len(columns))
         self.__tableWidget.setHorizontalHeaderLabels(columns)
@@ -51,6 +51,8 @@ class ApiWidget(QWidget):
         for i, obj in enumerate(self.__api_keys):
             self.__tableWidget.insertRow(i)
             modelItem = QTableWidgetItem(obj["display_name"])
+            # Make item not editable
+            modelItem.setFlags(modelItem.flags() & ~Qt.ItemFlag.ItemIsEditable)
             self.__tableWidget.setItem(i, 0, modelItem)
 
             apiKeyLineEdit = QLineEdit(obj["api_key"])

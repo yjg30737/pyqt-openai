@@ -45,7 +45,6 @@ from g4f.Provider import ProviderUtils, __providers__, __map__
 from g4f.errors import ProviderNotFoundError
 from g4f.models import ModelUtils
 from g4f.providers.retry_provider import IterProvider
-from google import generativeai as genai
 from jinja2 import Template
 
 import pyqt_openai.util
@@ -67,7 +66,7 @@ from pyqt_openai import (
     OPENAI_CHAT_ENDPOINT,
     STT_MODEL,
     DEFAULT_DATETIME_FORMAT,
-    DEFAULT_TOKEN_CHUNK_SIZE,
+    DEFAULT_TOKEN_CHUNK_SIZE, DEFAULT_API_CONFIGS,
 )
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.globals import (
@@ -585,78 +584,6 @@ def get_chat_model(is_g4f=False):
         ]
         return all_models
 
-
-def get_gpt_argument(
-    model,
-    system,
-    messages,
-    cur_text,
-    temperature,
-    top_p,
-    frequency_penalty,
-    presence_penalty,
-    stream,
-    use_max_tokens,
-    max_tokens,
-    images,
-    is_llama_available=False,
-    is_json_response_available=0,
-    json_content=None,
-):
-    try:
-        if model in O1_MODELS:
-            stream = False
-        else:
-            system_obj = get_message_obj("system", system)
-            messages = [system_obj] + messages
-
-        # Form argument
-        openai_arg = {
-            "model": model,
-            "messages": messages,
-            "temperature": temperature,
-            "top_p": top_p,
-            "frequency_penalty": frequency_penalty,
-            "presence_penalty": presence_penalty,
-            "stream": stream,
-        }
-        if is_json_response_available:
-            openai_arg["response_format"] = {"type": "json_object"}
-            cur_text += f" JSON {json_content}"
-
-        # If there is at least one image, it should add
-        if len(images) > 0:
-            multiple_images_content = []
-            for image in images:
-                multiple_images_content.append(
-                    {
-                        "type": "image_url",
-                        "image_url": {
-                            "url": get_image_url_from_local(image, is_openai=True),
-                        },
-                    }
-                )
-
-            multiple_images_content = [
-                {"type": "text", "text": cur_text}
-            ] + multiple_images_content[:]
-            openai_arg["messages"].append(
-                {"role": "user", "content": multiple_images_content}
-            )
-        else:
-            openai_arg["messages"].append({"role": "user", "content": cur_text})
-
-        if is_llama_available:
-            del openai_arg["messages"]
-        if use_max_tokens:
-            openai_arg["max_tokens"] = max_tokens
-
-        return openai_arg
-    except Exception as e:
-        print(e)
-        raise e
-
-
 def get_gemini_argument(model, system, messages, cur_text, stream, images):
     try:
         args = {
@@ -896,24 +823,54 @@ def get_api_argument(
     json_content=None,
 ):
     try:
-        args = get_gpt_argument(
-            model,
-            system,
-            messages,
-            cur_text,
-            temperature,
-            top_p,
-            frequency_penalty,
-            presence_penalty,
-            stream,
-            use_max_tokens,
-            max_tokens,
-            images,
-            is_llama_available=is_llama_available,
-            is_json_response_available=is_json_response_available,
-            json_content=json_content,
-        )
-        return args
+        if model in O1_MODELS:
+            stream = False
+        else:
+            system_obj = get_message_obj("system", system)
+            messages = [system_obj] + messages
+
+        # Form argument
+        arg = {
+            "model": model,
+            "messages": messages,
+            "temperature": temperature,
+            "top_p": top_p,
+            "frequency_penalty": frequency_penalty,
+            "presence_penalty": presence_penalty,
+            "stream": stream,
+        }
+        if is_json_response_available:
+            arg["response_format"] = {"type": "json_object"}
+            cur_text += f" JSON {json_content}"
+
+        # If there is at least one image, it should add
+        if len(images) > 0:
+            multiple_images_content = []
+            for image in images:
+                multiple_images_content.append(
+                    {
+                        "type": "image_url",
+                        "image_url": {
+                            "url": get_image_url_from_local(image, is_openai=True),
+                        },
+                    }
+                )
+
+            multiple_images_content = [
+                {"type": "text", "text": cur_text}
+            ] + multiple_images_content[:]
+            arg["messages"].append(
+                {"role": "user", "content": multiple_images_content}
+            )
+        else:
+            arg["messages"].append({"role": "user", "content": cur_text})
+
+        if is_llama_available:
+            del arg["messages"]
+        if use_max_tokens:
+            arg["max_tokens"] = max_tokens
+
+        return arg
     except Exception as e:
         print(e)
         raise e
@@ -1028,6 +985,7 @@ def get_response(args, is_g4f=False, get_content_only=True, provider=""):
         raise e
 
 
+# This has to be here because of the circular import problem
 def init_llama():
     llama_index_directory = CONFIG_MANAGER.get_general_property("llama_index_directory")
     if llama_index_directory and CONFIG_MANAGER.get_general_property("use_llama_index"):
@@ -1362,18 +1320,22 @@ You can try the following:
 
 
 # To manage only one TTS stream at a time
-current_stream_thread = None
+current_tts_thread = None
 
 
-def stop_existing_thread():
-    if pyqt_openai.util.script.current_stream_thread:
-        pyqt_openai.util.script.current_stream_thread.stop()
-        pyqt_openai.util.script.current_stream_thread = None
+def stop_existing_tts_thread():
+    if pyqt_openai.util.common.current_tts_thread:
+        pyqt_openai.util.common.current_tts_thread.stop()
+        pyqt_openai.util.common.current_tts_thread = None
 
 
 def stream_to_speakers(voice_provider, input_args):
-    stop_existing_thread()
+    stop_existing_tts_thread()
 
     stream_thread = TTSThread(voice_provider, input_args)
-    pyqt_openai.util.script.current_stream_thread = stream_thread
+    pyqt_openai.util.common.current_tts_thread = stream_thread
     return stream_thread
+
+
+def get_litellm_prefixes():
+    return [{'Provider': obj.get('display_name', ''), 'Prefix': obj.get('prefix', '')} for obj in DEFAULT_API_CONFIGS]

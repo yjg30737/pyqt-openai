@@ -43,7 +43,7 @@ from pyqt_openai.models import (
     CustomizeParamsContainer,
 )
 from pyqt_openai.globals import DB, LLAMAINDEX_WRAPPER
-from pyqt_openai.util.script import (
+from pyqt_openai.util.common import (
     open_directory,
     get_generic_ext_out_of_qt_ext,
     message_list_to_txt,

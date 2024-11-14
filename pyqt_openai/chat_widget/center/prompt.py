@@ -41,7 +41,7 @@ from pyqt_openai.chat_widget.center.uploadedImageFileWidget import (
     UploadedImageFileWidget,
 )
 from pyqt_openai.lang.translations import LangClass
-from pyqt_openai.util.script import (
+from pyqt_openai.util.common import (
     get_content_of_text_file_for_send,
     RecorderThread,
     STTThread,

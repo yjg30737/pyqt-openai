@@ -2,7 +2,7 @@ from PySide6.QtCore import QThread, Signal
 
 from pyqt_openai.globals import REPLICATE_CLIENT
 from pyqt_openai.models import ImagePromptContainer
-from pyqt_openai.util.script import generate_random_prompt
+from pyqt_openai.util.common import generate_random_prompt
 
 
 class ReplicateThread(QThread):

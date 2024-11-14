@@ -21,7 +21,7 @@ from pyqt_openai import (
     HOW_TO_EXPORT_CHATGPT_CONVERSATION_HISTORY_URL,
 )
 from pyqt_openai.lang.translations import LangClass
-from pyqt_openai.util.script import (
+from pyqt_openai.util.common import (
     get_chatgpt_data_for_import,
     get_chatgpt_data_for_preview,
 )
