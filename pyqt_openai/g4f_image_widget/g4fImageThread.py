@@ -3,8 +3,8 @@ from PySide6.QtCore import QThread, Signal
 from pyqt_openai import G4F_PROVIDER_DEFAULT
 from pyqt_openai.globals import G4F_CLIENT
 from pyqt_openai.models import ImagePromptContainer
-from pyqt_openai.util.replicate_script import download_image_as_base64
-from pyqt_openai.util.script import generate_random_prompt, convert_to_provider
+from pyqt_openai.util.replicate import download_image_as_base64
+from pyqt_openai.util.common import generate_random_prompt, convert_to_provider
 
 
 class G4FImageThread(QThread):

@@ -35,7 +35,7 @@ from pyqt_openai import (
 from pyqt_openai.chat_widget.right_sidebar.modelSearchBar import ModelSearchBar
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.lang.translations import LangClass
-from pyqt_openai.util.script import (
+from pyqt_openai.util.common import (
     getSeparator,
     init_llama,
 )

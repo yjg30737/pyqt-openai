@@ -44,7 +44,7 @@ from pyqt_openai.chat_widget.prompt_gen_widget.promptGroupImportDialog import (
 )
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.globals import DB
-from pyqt_openai.util.script import open_directory, get_prompt_data
+from pyqt_openai.util.common import open_directory, get_prompt_data
 from pyqt_openai.widgets.button import Button
 
 

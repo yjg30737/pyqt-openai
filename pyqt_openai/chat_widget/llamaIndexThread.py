@@ -5,7 +5,7 @@ from pyqt_openai.models import ChatMessageContainer
 
 
 # Should combine with ChatThread
-class LlamaOpenAIThread(QThread):
+class LlamaIndexThread(QThread):
     replyGenerated = Signal(str, bool, ChatMessageContainer)
     streamFinished = Signal(ChatMessageContainer)
 
@@ -37,6 +37,15 @@ class LlamaOpenAIThread(QThread):
                         self.replyGenerated.emit(chunk, True, self.__info)
             else:
                 self.__info.content = resp.response
+                # self.__info.prompt_tokens = ""
+                # self.__info.completion_tokens = ""
+                # self.__info.total_tokens = ""
+
+            self.__info.finish_reason = "stop"
+
+            if self.__input_args["stream"]:
+                self.streamFinished.emit(self.__info)
+            else:
                 self.replyGenerated.emit(self.__info.content, False, self.__info)
         except Exception as e:
             self.__info.finish_reason = "Error"

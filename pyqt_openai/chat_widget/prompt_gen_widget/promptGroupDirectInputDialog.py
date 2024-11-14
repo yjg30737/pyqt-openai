@@ -10,7 +10,7 @@ from PySide6.QtWidgets import (
 )
 
 from pyqt_openai.lang.translations import LangClass
-from pyqt_openai.util.script import is_prompt_group_name_valid, getSeparator
+from pyqt_openai.util.common import is_prompt_group_name_valid, getSeparator
 
 
 class PromptGroupDirectInputDialog(QDialog):

@@ -6,12 +6,12 @@ from g4f.client import Client
 from openai import OpenAI
 
 from pyqt_openai.sqlite import SqliteDatabase
-from pyqt_openai.util.llamapage_script import GPTLLamaIndexWrapper
-from pyqt_openai.util.replicate_script import ReplicateWrapper
+from pyqt_openai.util.llamaindex import LlamaIndexWrapper
+from pyqt_openai.util.replicate import ReplicateWrapper
 
 DB = SqliteDatabase()
 
-LLAMAINDEX_WRAPPER = GPTLLamaIndexWrapper()
+LLAMAINDEX_WRAPPER = LlamaIndexWrapper()
 
 G4F_CLIENT = Client()
 

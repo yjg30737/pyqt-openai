@@ -23,7 +23,7 @@ from pyqt_openai.replicate_widget.replicateHome import ReplicateHome
 from pyqt_openai.replicate_widget.replicateRightSideBar import (
     ReplicateRightSideBarWidget,
 )
-from pyqt_openai.util.script import (
+from pyqt_openai.util.common import (
     get_image_filename_for_saving,
     open_directory,
     get_image_prompt_filename_for_saving,

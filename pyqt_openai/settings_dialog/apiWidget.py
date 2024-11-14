@@ -14,7 +14,7 @@ from pyqt_openai import (
     DEFAULT_API_CONFIGS,
 )
 from pyqt_openai.config_loader import CONFIG_MANAGER
-from pyqt_openai.util.script import set_api_key
+from pyqt_openai.util.common import set_api_key
 from pyqt_openai.widgets.linkLabel import LinkLabel
 
 

@@ -1,7 +1,7 @@
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QLineEdit, QCompleter
 
-from pyqt_openai.util.script import get_chat_model
+from pyqt_openai.util.common import get_chat_model
 
 
 class ModelSearchBar(QLineEdit):

@@ -14,7 +14,7 @@ from pyqt_openai.chat_widget.center.aiChatUnit import AIChatUnit
 from pyqt_openai.chat_widget.center.userChatUnit import UserChatUnit
 from pyqt_openai.models import ChatMessageContainer
 from pyqt_openai.globals import DB
-from pyqt_openai.util.script import is_valid_regex
+from pyqt_openai.util.common import is_valid_regex
 
 
 class ChatBrowser(QScrollArea):

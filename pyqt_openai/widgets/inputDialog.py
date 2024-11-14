@@ -9,7 +9,7 @@ from PySide6.QtWidgets import (
 )
 
 from pyqt_openai.lang.translations import LangClass
-from pyqt_openai.util.script import getSeparator
+from pyqt_openai.util.common import getSeparator
 
 
 class InputDialog(QDialog):

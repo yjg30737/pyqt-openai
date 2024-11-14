@@ -15,10 +15,10 @@ from pyqt_openai.chat_widget.center.chatBrowser import ChatBrowser
 from pyqt_openai.chat_widget.center.chatHome import ChatHome
 from pyqt_openai.chat_widget.center.menuWidget import MenuWidget
 from pyqt_openai.chat_widget.center.prompt import Prompt
-from pyqt_openai.chat_widget.llamaOpenAIThread import LlamaOpenAIThread
+from pyqt_openai.chat_widget.llamaIndexThread import LlamaIndexThread
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.globals import LLAMAINDEX_WRAPPER, DB
-from pyqt_openai.util.script import get_argument, ChatThread
+from pyqt_openai.util.common import get_argument, ChatThread
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ChatMessageContainer
 from pyqt_openai.widgets.notifier import NotifierWidget
@@ -261,10 +261,9 @@ class ChatWidget(QWidget):
             query_text = self.__prompt.getContent()
             self.__browser.showLabel(query_text, False, container)
 
-            # Get parameters for OpenAI
+            # Run a different thread based on whether the llama-index is enabled or not.
             if is_llama_available:
-                # Run a different thread based on whether the llama-index is enabled or not.
-                self.__t = LlamaOpenAIThread(
+                self.__t = LlamaIndexThread(
                     param, container, LLAMAINDEX_WRAPPER, query_text
                 )
             else:

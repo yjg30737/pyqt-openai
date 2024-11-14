@@ -15,7 +15,7 @@ from PySide6.QtWidgets import (
 
 from pyqt_openai import TEXT_FILE_EXT_LIST, QFILEDIALOG_DEFAULT_DIRECTORY
 from pyqt_openai.lang.translations import LangClass
-from pyqt_openai.util.script import getSeparator
+from pyqt_openai.util.common import getSeparator
 
 
 class FileListWidget(QWidget):
