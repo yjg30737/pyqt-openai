@@ -19,6 +19,7 @@ import time
 import traceback
 import wave
 import zipfile
+import csv
 
 from datetime import datetime
 from io import BytesIO
@@ -66,7 +67,7 @@ from pyqt_openai import (
     OPENAI_CHAT_ENDPOINT,
     STT_MODEL,
     DEFAULT_DATETIME_FORMAT,
-    DEFAULT_TOKEN_CHUNK_SIZE, DEFAULT_API_CONFIGS,
+    DEFAULT_TOKEN_CHUNK_SIZE, DEFAULT_API_CONFIGS, INDENT_SIZE,
 )
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.globals import (
@@ -330,7 +331,7 @@ def is_prompt_entry_name_valid(group_id, text):
     exists_f = (
         True
         if (True if text else False)
-        and DB.selectPromptEntry(group_id=group_id, name=text)
+        and DB.selectPromptEntry(group_id=group_id, act=text)
         else False
     )
     return exists_f
@@ -365,12 +366,12 @@ def validate_prompt_group_json(json_data):
             if not isinstance(data_item, dict):
                 return False
 
-            # Check if 'name' and 'content' keys exist in data_item
-            if "name" not in data_item or "content" not in data_item:
+            # Check if 'act' and 'prompt' keys exist in data_item
+            if "act" not in data_item or "prompt" not in data_item:
                 return False
 
-            # Check if 'name' in data_item is not empty
-            if not data_item["name"]:
+            # Check if 'act' in data_item is not empty
+            if not data_item["act"]:
                 return False
 
     return True
@@ -381,7 +382,7 @@ def get_prompt_data(prompt_type="form"):
     for group in DB.selectPromptGroup(prompt_type=prompt_type):
         group_obj = {"name": group.name, "data": []}
         for entry in DB.selectPromptEntry(group.id):
-            group_obj["data"].append({"name": entry.name, "content": entry.content})
+            group_obj["data"].append({"act": entry.act, "prompt": entry.prompt})
         data.append(group_obj)
     return data
 
@@ -1339,3 +1340,30 @@ def stream_to_speakers(voice_provider, input_args):
 
 def get_litellm_prefixes():
     return [{'Provider': obj.get('display_name', ''), 'Prefix': obj.get('prefix', '')} for obj in DEFAULT_API_CONFIGS]
+
+
+def export_prompt(data, filename, ext):
+    # Check if the extension is valid
+    if ext not in [".json", ".csv"]:
+        raise ValueError("Unsupported file extension. Only '.json' and '.csv' are allowed.")
+
+    # Handle JSON export
+    if ext == ".json":
+        with open(filename, "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=INDENT_SIZE)
+    elif ext == ".csv":
+        # Create a zip file
+        with zipfile.ZipFile(filename, mode='w', compression=zipfile.ZIP_DEFLATED) as zipf:
+            for d in data:
+                # Create individual CSV files for each item in data
+                csv_filename = d['name'] + ext
+                with open(csv_filename, mode='w', encoding='utf-8', newline='') as f:
+                    writer = csv.DictWriter(f, fieldnames=['act', 'prompt'])
+                    writer.writeheader()  # Write the column headers
+                    writer.writerows(d['data'])  # Write the rows
+
+                # Add the CSV file to the zip archive
+                zipf.write(csv_filename, arcname=csv_filename)
+
+                # Remove the CSV file after adding it to the zip
+                os.remove(csv_filename)

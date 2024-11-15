@@ -129,6 +129,8 @@ REPORT_ERROR_URL = (
     "https://github.com/yjg30737/pyqt-openai?tab=readme-ov-file#troubleshooting"
 )
 
+AWESOME_CHATGPT_PROMPTS_URL = "https://huggingface.co/datasets/fka/awesome-chatgpt-prompts/tree/main"
+
 COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_CHAT = ["id"]
 COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_IMAGE = ["id", "data"]
 DEFAULT_LANGUAGE = "en_US"
@@ -206,6 +208,11 @@ ICON_SHORTCUT = os.path.join(ICON_PATH, "shortcut.svg")
 ICON_REALTIME_API = os.path.join(ICON_PATH, "realtime_api.svg")
 ICON_FILE = os.path.join(ICON_PATH, "file.svg")
 
+## IMAGE
+IMAGE_PATH = os.path.join(EXEC_PATH, "img")
+
+IMAGE_IMPORT_PROMPT_WITH_CSV_RIGHT_FORM = os.path.join(IMAGE_PATH, "import_prompt_with_csv_right_form.png")
+
 ## CUSTOMIZE
 DEFAULT_ICON_SIZE = (24, 24)
 DEFAULT_USER_IMAGE_PATH = ICON_USER
@@ -227,6 +234,8 @@ DEFAULT_LINK_HOVER_COLOR = "#FF0000"
 
 DEFAULT_TOAST_BACKGROUND_COLOR = "#444444"
 DEFAULT_TOAST_FOREGROUND_COLOR = "#EEEEEE"
+
+DEFAULT_WARNING_COLOR = "#FFA500"
 
 ## MARKDOWN
 # I am not planning to use it at the moment.
@@ -297,6 +306,7 @@ IMAGE_FILE_EXT_LIST = [".png", ".jpg", ".jpeg", ".gif", ".bmp"]
 IMAGE_FILE_EXT_LIST_STR = "Image File (*.png *.jpg *.jpeg *.gif *.bmp)"
 TEXT_FILE_EXT_LIST_STR = "Text File (*.txt)"
 JSON_FILE_EXT_LIST_STR = "JSON File (*.json)"
+CSV_FILE_EXT_LIST_STR = "CSV File (*.csv)"
 READ_FILE_EXT_LIST_STR = f"{TEXT_FILE_EXT_LIST_STR};;{IMAGE_FILE_EXT_LIST_STR}"
 
 ## PROMPT
@@ -417,7 +427,7 @@ OPENAI_ENDPOINT_DICT = {
 DEFAULT_TOKEN_CHUNK_SIZE = 1024
 
 # This doesn't need endpoint
-DALLE_ARR = ["dall-e-2", "dall-e-3"]
+OPENAI_DEFAULT_IMAGE_MODEL = "dall-e-3"
 
 DEFAULT_DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 

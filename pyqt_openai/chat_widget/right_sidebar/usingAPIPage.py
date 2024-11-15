@@ -30,7 +30,7 @@ from pyqt_openai import (
     FREQUENCY_PENALTY_STEP,
     LLAMAINDEX_URL,
     O1_MODELS,
-    SMALL_LABEL_PARAM,
+    SMALL_LABEL_PARAM, DEFAULT_WARNING_COLOR,
 )
 from pyqt_openai.chat_widget.right_sidebar.modelSearchBar import ModelSearchBar
 from pyqt_openai.config_loader import CONFIG_MANAGER
@@ -136,7 +136,7 @@ class UsingAPIPage(QWidget):
         selectModelWidget.setLayout(lay)
 
         self.__warningLbl = QLabel()
-        self.__warningLbl.setStyleSheet("color: orange;")
+        self.__warningLbl.setStyleSheet(f"color: {DEFAULT_WARNING_COLOR};")
         self.__warningLbl.setWordWrap(True)
         self.__warningLbl.setFont(QFont(SMALL_LABEL_PARAM))
         # TODO LANGUAGE

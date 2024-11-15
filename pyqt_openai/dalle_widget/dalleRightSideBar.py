@@ -9,6 +9,7 @@ from PySide6.QtWidgets import (
     QRadioButton,
 )
 
+from pyqt_openai import OPENAI_DEFAULT_IMAGE_MODEL
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.dalle_widget.dalleThread import DallEThread
 from pyqt_openai.lang.translations import LangClass
@@ -218,7 +219,7 @@ class DallERightSideBarWidget(ImageControlWidget):
         obj = super().getArgument()
         return {
             **obj,
-            "model": "dall-e-3",
+            "model": OPENAI_DEFAULT_IMAGE_MODEL,
             "prompt": self._promptTextEdit.toPlainText(),
             "n": self.__n,
             "size": f"{self.__width}x{self.__height}",

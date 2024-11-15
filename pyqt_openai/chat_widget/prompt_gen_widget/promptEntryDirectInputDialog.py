@@ -58,10 +58,10 @@ class PromptEntryDirectInputDialog(QDialog):
 
         self.setLayout(lay)
 
-    def getPromptName(self):
+    def getAct(self):
         return self.__name.text()
 
-    def getPromptContent(self):
+    def getPrompt(self):
         return self.__content.toPlainText()
 
     def __accept(self):

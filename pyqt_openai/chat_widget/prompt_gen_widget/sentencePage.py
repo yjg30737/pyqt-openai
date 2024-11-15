@@ -1,4 +1,3 @@
-import json
 import os
 
 from PySide6.QtCore import Signal, Qt
@@ -22,13 +21,12 @@ from PySide6.QtWidgets import (
 )
 
 from pyqt_openai import (
-    JSON_FILE_EXT_LIST_STR,
     ICON_ADD,
     ICON_DELETE,
     ICON_IMPORT,
     ICON_EXPORT,
     QFILEDIALOG_DEFAULT_DIRECTORY,
-    INDENT_SIZE,
+    JSON_FILE_EXT_LIST_STR,
 )
 from pyqt_openai.chat_widget.prompt_gen_widget.promptEntryDirectInputDialog import (
     PromptEntryDirectInputDialog,
@@ -42,9 +40,9 @@ from pyqt_openai.chat_widget.prompt_gen_widget.promptGroupExportDialog import (
 from pyqt_openai.chat_widget.prompt_gen_widget.promptGroupImportDialog import (
     PromptGroupImportDialog,
 )
-from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.globals import DB
-from pyqt_openai.util.common import open_directory, get_prompt_data
+from pyqt_openai.lang.translations import LangClass
+from pyqt_openai.util.common import open_directory, get_prompt_data, export_prompt
 from pyqt_openai.widgets.button import Button
 
 
@@ -151,7 +149,7 @@ class SentenceGroupList(QWidget):
             self.__delBtn.setEnabled(False)
 
     def __import(self):
-        dialog = PromptGroupImportDialog(parent=self)
+        dialog = PromptGroupImportDialog(parent=self, prompt_type="sentence")
         reply = dialog.exec()
         if reply == QDialog.DialogCode.Accepted:
             # Get the data
@@ -160,7 +158,7 @@ class SentenceGroupList(QWidget):
             for group in result:
                 id = DB.insertPromptGroup(group["name"], prompt_type="sentence")
                 for entry in group["data"]:
-                    DB.insertPromptEntry(id, entry["name"], entry["content"])
+                    DB.insertPromptEntry(id, entry["act"], entry["prompt"])
                 name = group["name"]
                 self.__addGroupItem(id, name)
 
@@ -171,19 +169,22 @@ class SentenceGroupList(QWidget):
                 self,
                 LangClass.TRANSLATIONS["Save"],
                 QFILEDIALOG_DEFAULT_DIRECTORY,
-                JSON_FILE_EXT_LIST_STR,
+                f"CSV files Compressed File (*.zip);;{JSON_FILE_EXT_LIST_STR}",
             )
             if file_data[0]:
                 filename = file_data[0]
                 # Get the data
                 data = get_prompt_data("sentence")
-                dialog = PromptGroupExportDialog(data, self)
+                # Get extension
+                ext = os.path.splitext(filename)[1]
+                # If it is a compressed file, it is a compressed csv, so change the extension to csv
+                if ext == ".zip":
+                    ext = ".csv"
+                dialog = PromptGroupExportDialog(data=data, ext=ext, parent=self)
                 reply = dialog.exec()
                 if reply == QDialog.DialogCode.Accepted:
                     data = dialog.getSelected()
-                    # Save the data
-                    with open(filename, "w") as f:
-                        json.dump(data, f, indent=INDENT_SIZE)
+                    export_prompt(data, filename, ext)
                     open_directory(os.path.dirname(filename))
         except Exception as e:
             QMessageBox.critical(self, LangClass.TRANSLATIONS["Error"], str(e))
@@ -268,14 +269,14 @@ class PromptTable(QWidget):
 
         self.__table.setRowCount(len(self.__entries))
         for i in range(len(self.__entries)):
-            name = self.__entries[i].name
-            value = self.__entries[i].content
+            act = self.__entries[i].act
+            prompt = self.__entries[i].prompt
 
-            item1 = QTableWidgetItem(name)
+            item1 = QTableWidgetItem(act)
             item1.setData(Qt.ItemDataRole.UserRole, self.__entries[i].id)
             item1.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
 
-            item2 = QTableWidgetItem(value)
+            item2 = QTableWidgetItem(prompt)
             item2.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
 
             self.__table.setItem(i, 0, item1)
@@ -306,13 +307,13 @@ class PromptTable(QWidget):
         self.updated.emit(prompt)
 
     def __saveChangedPrompt(self, item: QTableWidgetItem):
-        name_item = self.__table.item(item.row(), 0)
-        id = name_item.data(Qt.ItemDataRole.UserRole)
-        name = name_item.text()
+        act = self.__table.item(item.row(), 0)
+        id = act.data(Qt.ItemDataRole.UserRole)
+        act = act.text()
 
-        prompt_item = self.__table.item(item.row(), 1)
-        prompt = prompt_item.text() if prompt_item else ""
-        DB.updatePromptEntry(id, name, prompt)
+        prompt = self.__table.item(item.row(), 1)
+        prompt = prompt.text() if prompt else ""
+        DB.updatePromptEntry(id, act, prompt)
 
     def __add(self):
         dialog = PromptEntryDirectInputDialog(self.__group_id, self)
@@ -320,20 +321,20 @@ class PromptTable(QWidget):
         if reply == QDialog.DialogCode.Accepted:
             self.__table.itemChanged.disconnect(self.__saveChangedPrompt)
 
-            name = dialog.getPromptName()
+            act = dialog.getAct()
             self.__table.setRowCount(self.__table.rowCount() + 1)
 
-            item1 = QTableWidgetItem(name)
+            item1 = QTableWidgetItem(act)
             item1.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
             self.__table.setItem(self.__table.rowCount() - 1, 0, item1)
 
-            content = dialog.getPromptContent()
+            prompt = dialog.getPrompt()
 
-            item2 = QTableWidgetItem(content)
+            item2 = QTableWidgetItem(prompt)
             item2.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
             self.__table.setItem(self.__table.rowCount() - 1, 1, item2)
 
-            id = DB.insertPromptEntry(self.__group_id, name, content)
+            id = DB.insertPromptEntry(self.__group_id, act, prompt)
             item1.setData(Qt.ItemDataRole.UserRole, id)
 
             self.__table.itemChanged.connect(self.__saveChangedPrompt)
