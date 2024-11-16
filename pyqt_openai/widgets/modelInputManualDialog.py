@@ -2,7 +2,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QFont
 from PySide6.QtWidgets import QDialog, QLabel, QHBoxLayout
 
-from pyqt_openai import SMALL_LABEL_PARAM
+from pyqt_openai import SMALL_LABEL_PARAM, DEFAULT_WARNING_COLOR
 
 
 class ModelInputManualDialog(QDialog):
@@ -24,7 +24,7 @@ class ModelInputManualDialog(QDialog):
         self.setWindowTitle('Model Input Manual')
         self.__warningLbl = QLabel()
         self.__warningLbl.setStyleSheet(
-            "color: orange;"
+            f"color: {DEFAULT_WARNING_COLOR};"
         )  # Text color remains orange for visibility.
         self.__warningLbl.setWordWrap(True)
         self.__warningLbl.setFont(QFont(SMALL_LABEL_PARAM))

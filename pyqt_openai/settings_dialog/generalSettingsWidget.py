@@ -21,7 +21,7 @@ from pyqt_openai import (
     COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_IMAGE,
     LANGUAGE_DICT,
     DB_NAME_REGEX,
-    MAXIMUM_MESSAGES_IN_PARAMETER_RANGE,
+    MAXIMUM_MESSAGES_IN_PARAMETER_RANGE, DEFAULT_WARNING_COLOR,
 )
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.lang.translations import LangClass
@@ -110,14 +110,14 @@ class GeneralSettingsWidget(QScrollArea):
         self.__runAtStartupCheckBox.setChecked(self.run_at_startup)
 
         self.__manual_updateCheckBox = QCheckBox(
-            LangClass.TRANSLATIONS["Manual Update"]
+            LangClass.TRANSLATIONS["Manual Update (<-> Auto Update)"]
         )
         self.__manual_updateCheckBox.setChecked(self.manual_update)
 
         self.__manual_UpdateWarning = QLabel(
             LangClass.TRANSLATIONS["Auto-update is supported on Windows only."]
         )
-        self.__manual_UpdateWarning.setStyleSheet("color: orange;")
+        self.__manual_UpdateWarning.setStyleSheet(f"color: {DEFAULT_WARNING_COLOR};")
 
         lay = QVBoxLayout()
         lay.addWidget(langWidget)

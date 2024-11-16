@@ -176,7 +176,7 @@ class PromptGroupContainer(Container):
 class PromptEntryContainer(Container):
     id: str = ""
     group_id: str = ""
-    name: str = ""
-    content: str = ""
+    act: str = ""
+    prompt: str = ""
     insert_dt: str = ""
     update_dt: str = ""

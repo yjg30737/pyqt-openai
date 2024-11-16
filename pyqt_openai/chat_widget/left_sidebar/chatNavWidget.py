@@ -16,9 +16,9 @@ from PySide6.QtWidgets import (
 
 import pyqt_openai.globals
 from pyqt_openai import THREAD_ORDERBY, ICON_ADD, ICON_IMPORT, ICON_SAVE, ICON_REFRESH
-from pyqt_openai.chat_widget.left_sidebar.chatImportDialog import ChatImportDialog
-from pyqt_openai.chat_widget.left_sidebar.exportDialog import ExportDialog
 from pyqt_openai.chat_widget.left_sidebar.importDialog import ImportDialog
+from pyqt_openai.chat_widget.left_sidebar.exportDialog import ExportDialog
+from pyqt_openai.chat_widget.left_sidebar.selectChatImportTypeDialog import SelectChatImportTypeDialog
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ChatThreadContainer
 from pyqt_openai.globals import DB
@@ -168,11 +168,11 @@ class ChatNavWidget(BaseNavWidget):
         self._model.select()
 
     def __import(self):
-        dialog = ImportDialog(parent=self)
+        dialog = SelectChatImportTypeDialog(parent=self)
         reply = dialog.exec()
         if reply == QDialog.Accepted:
             import_type = dialog.getImportType()
-            chatImportDialog = ChatImportDialog(import_type=import_type, parent=self)
+            chatImportDialog = ImportDialog(import_type=import_type, parent=self)
             reply = chatImportDialog.exec()
             if reply == QDialog.Accepted:
                 data = chatImportDialog.getData()

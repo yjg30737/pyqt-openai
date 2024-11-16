@@ -51,10 +51,7 @@ class AboutDialog(QDialog):
         descWidget3.setText(
             f"""
         <br/><br/>Contact: {CONTACT}<br/>
-        <p>Powered by PySide6</p>
-        <p>Powered by GPT4Free</p>
-        <p>Powered by LiteLLM</p>
-        <p>Powered by LlamaIndex</p>
+        <p>Powered by<br><br> PySide6, GPT4Free, LiteLLM,<br>LlamaIndex</p>
         """
         )
 

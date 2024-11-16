@@ -1,4 +1,6 @@
+import csv
 import json
+import random
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
@@ -18,15 +20,14 @@ from PySide6.QtWidgets import (
 
 from pyqt_openai import (
     JSON_FILE_EXT_LIST_STR,
-    SENTENCE_PROMPT_GROUP_SAMPLE,
-    FORM_PROMPT_GROUP_SAMPLE,
+    FORM_PROMPT_GROUP_SAMPLE, CSV_FILE_EXT_LIST_STR,
 )
+from pyqt_openai.chat_widget.prompt_gen_widget.importPromptManualDialog import ImportPromptManualDialog
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.util.common import (
     validate_prompt_group_json,
     is_prompt_group_name_valid,
-    showJsonSample,
-    getSeparator,
+    getSeparator, showJsonSample,
 )
 from pyqt_openai.widgets.checkBoxListWidget import CheckBoxListWidget
 from pyqt_openai.widgets.findPathWidget import FindPathWidget
@@ -46,18 +47,25 @@ class PromptGroupImportDialog(QDialog):
     def __initUi(self):
         self.setWindowTitle(LangClass.TRANSLATIONS["Import Prompt Group"])
         self.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.WindowCloseButtonHint)
+        self.__jsonSampleWidget = JSONEditor()
 
         findPathWidget = FindPathWidget()
-        findPathWidget.setExtOfFiles(JSON_FILE_EXT_LIST_STR)
+        EXT = JSON_FILE_EXT_LIST_STR if self.__promptType == "form" else f"{CSV_FILE_EXT_LIST_STR};;{JSON_FILE_EXT_LIST_STR}"
+
+        findPathWidget.setExtOfFiles(EXT)
         findPathWidget.getLineEdit().setPlaceholderText(
-            LangClass.TRANSLATIONS["Select a json file to import"]
+            # TODO LANGUAGE
+            LangClass.TRANSLATIONS["Select a file to import..."]
         )
         findPathWidget.added.connect(self.__setPath)
 
-        btn = QPushButton(LangClass.TRANSLATIONS["What is the right form of json?"])
-        btn.clicked.connect(self.__showJsonSample)
-
-        self.__jsonSampleWidget = JSONEditor()
+        manualBtn = QPushButton()
+        if self.__promptType == "form":
+            manualBtn.setText(LangClass.TRANSLATIONS["What is the right form of json to be imported?"])
+            manualBtn.clicked.connect(self.__showJsonSample)
+        else:
+            manualBtn.setText(LangClass.TRANSLATIONS["How to import a prompt group"])
+            manualBtn.clicked.connect(self.__showManual)
 
         sep = getSeparator("horizontal")
 
@@ -109,7 +117,7 @@ class PromptGroupImportDialog(QDialog):
         lay = QVBoxLayout()
         lay.addWidget(findPathWidget)
         lay.addWidget(sep)
-        lay.addWidget(btn)
+        lay.addWidget(manualBtn)
         lay.addWidget(splitter)
         lay.addWidget(self.__buttonBox)
 
@@ -125,12 +133,11 @@ class PromptGroupImportDialog(QDialog):
         )
 
     def __showJsonSample(self):
-        json_sample = (
-            FORM_PROMPT_GROUP_SAMPLE
-            if self.__promptType == "form"
-            else SENTENCE_PROMPT_GROUP_SAMPLE
-        )
-        showJsonSample(self.__jsonSampleWidget, json_sample)
+        showJsonSample(self.__jsonSampleWidget, FORM_PROMPT_GROUP_SAMPLE)
+
+    def __showManual(self):
+        dialog = ImportPromptManualDialog(self)
+        dialog.exec()
 
     def __refreshTable(self):
         self.__tableWidget.clearContents()
@@ -138,23 +145,23 @@ class PromptGroupImportDialog(QDialog):
 
     def __setEntries(self, data):
         for d in data:
-            name = d["name"]
-            content = d["content"]
+            act = d["act"]
+            prompt = d["prompt"]
             self.__tableWidget.setRowCount(self.__tableWidget.rowCount() + 1)
             self.__tableWidget.setItem(
-                self.__tableWidget.rowCount() - 1, 0, QTableWidgetItem(name)
+                self.__tableWidget.rowCount() - 1, 0, QTableWidgetItem(act)
             )
             self.__tableWidget.setItem(
-                self.__tableWidget.rowCount() - 1, 1, QTableWidgetItem(content)
+                self.__tableWidget.rowCount() - 1, 1, QTableWidgetItem(prompt)
             )
 
     def __setPrompt(self, json_data):
         self.__listWidget.clear()
 
         self.__refreshTable()
-        for prompt in json_data:
-            name = prompt["name"]
-            data = prompt["data"]
+        for d in json_data:
+            name = d["name"]
+            data = d["data"]
             self.__listWidget.addItem(name)
             self.__setEntries(data)
 
@@ -163,18 +170,42 @@ class PromptGroupImportDialog(QDialog):
 
     def __setPath(self, path):
         self.__path = path
-        data = json.load(open(path))
-        if validate_prompt_group_json(data):
-            self.__buttonBox.button(QDialogButtonBox.StandardButton.Ok).setEnabled(True)
-            self.__setPrompt(json_data=data)
+        # If path is .json file, load the file
+        if self.__path.endswith(".json"):
+            data = json.load(open(path))
+            if validate_prompt_group_json(data):
+                self.__buttonBox.button(QDialogButtonBox.StandardButton.Ok).setEnabled(True)
+                self.__setPrompt(json_data=data)
+            else:
+                QMessageBox.critical(
+                    self,
+                    LangClass.TRANSLATIONS["Error"],
+                    LangClass.TRANSLATIONS[
+                        "Check whether the file is a valid JSON file for importing."
+                    ],
+                )
         else:
-            QMessageBox.critical(
-                self,
-                LangClass.TRANSLATIONS["Error"],
-                LangClass.TRANSLATIONS[
-                    "Check whether the file is a valid JSON file for importing."
-                ],
-            )
+            # If path is .csv file, load the file
+            if self.__path.endswith(".csv"):
+                try:
+                    with open(path, newline='', encoding='utf-8') as csvfile:
+                        reader = csv.DictReader(csvfile)
+                        data = [row for row in reader]
+                        # Make data to be the same format as JSON
+                        data = [{
+                            # Random text with 10 characters (a-z, A-Z, 0-9) for temporary name
+                            "name": f"prompt_{random.randint(1000000000, 9999999999)}",
+                            "data": data,
+                        }]
+
+                        self.__buttonBox.button(QDialogButtonBox.StandardButton.Ok).setEnabled(True)
+                        self.__setPrompt(json_data=data)
+                except Exception as e:
+                    QMessageBox.critical(
+                        self,
+                        LangClass.TRANSLATIONS["Error"],
+                        f"Error loading CSV file: {e}",
+                    )
 
     def __showEntries(self, r_idx):
         name = self.__listWidget.item(r_idx).text()
