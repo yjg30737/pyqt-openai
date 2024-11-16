@@ -9,8 +9,11 @@ psutil
 openai
 anthropic
 google-generativeai
-llama-index
 replicate
+
+llama-index
+docx2txt
+openpyxl
 
 g4f
 curl_cffi

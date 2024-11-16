@@ -1,12 +1,13 @@
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QFont
-from PySide6.QtWidgets import QTextBrowser
+from PySide6.QtWidgets import QTextBrowser, QMessageBox
 from PySide6.QtWidgets import QWidget, QLabel, QVBoxLayout
 
 from pyqt_openai import SMALL_LABEL_PARAM
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.chat_widget.right_sidebar.llama_widget.filesWidget import FilesWidget
 from pyqt_openai.chat_widget.right_sidebar.llama_widget.supportedFileFormatsWidget import SupportedFileFormatsWidget
+from pyqt_openai.globals import LLAMAINDEX_WRAPPER
 from pyqt_openai.lang.translations import LangClass
 
 
@@ -26,6 +27,7 @@ class LlamaPage(QWidget):
         self.__filesWidget.onDirectorySelected.connect(self.__onDirectorySelected)
 
         self.__supportedFileFormatsWidget = SupportedFileFormatsWidget()
+        self.__supportedFileFormatsWidget.checkedSignal.connect(self.__formatCheckedSignal)
 
         self.__txtBrowser = QTextBrowser()
         self.__txtBrowser.setPlaceholderText(
@@ -49,10 +51,18 @@ class LlamaPage(QWidget):
         selected_dirname = self.__filesWidget.getDirectory()
         self.onDirectorySelected.emit(selected_dirname)
 
-    def __setTextInBrowser(self, txt_file):
-        with open(txt_file, "r", encoding="utf-8") as f:
-            self.__txtBrowser.setText(f.read())
+    def __setTextInBrowser(self, file):
+        try:
+            with open(file, "r", encoding="utf-8") as f:
+                self.__txtBrowser.setText(f.read())
+        except UnicodeDecodeError as e:
+            self.__txtBrowser.setText('Some files like Excel files cannot be previewed.')
+        except Exception as e:
+            print(e)
 
     def setDirectory(self):
         directory = CONFIG_MANAGER.get_general_property("llama_index_directory")
         self.__filesWidget.setDirectory(directory, called_from_btn=False)
+
+    def __formatCheckedSignal(self, ext):
+        self.__filesWidget.setExtension(ext)

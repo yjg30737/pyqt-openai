@@ -279,7 +279,7 @@ class UsingAPIPage(QWidget):
         self.__llamaChkBox = QCheckBox()
         self.__llamaChkBox.setChecked(self.__use_llama_index)
         self.__llamaChkBox.toggled.connect(self.__use_llama_indexChecked)
-        self.__llamaChkBox.setText(LangClass.TRANSLATIONS["Use LlamaIndex"])
+        self.__llamaChkBox.setText(LangClass.TRANSLATIONS["Use LlamaIndex (You need OpenAI API key)"])
 
         lay = QVBoxLayout()
         lay.addWidget(manualBrowser)

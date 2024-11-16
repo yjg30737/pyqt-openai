@@ -578,7 +578,7 @@ def get_chat_model(is_g4f=False):
     else:
         all_models = []
         for obj in DEFAULT_API_CONFIGS:
-            all_models.extend(obj["model_list"])
+            all_models.extend(obj.get("model_list", []))
         return all_models
 
 def get_gemini_argument(model, system, messages, cur_text, stream, images):
@@ -678,7 +678,7 @@ def get_message_obj(role, content):
 # Check which provider a specific model belongs to
 def get_provider_from_model(model):
     for obj in DEFAULT_API_CONFIGS:
-        if model in obj["model_list"]:
+        if model in obj.get("model_list", []):
             return obj["display_name"]
     return None
 

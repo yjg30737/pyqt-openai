@@ -487,7 +487,7 @@ DEFAULT_API_CONFIGS = [
         "env_var_name": "ANTHROPIC_API_KEY",
         "api_key": "",
         "manual_url": HOW_TO_GET_CLAUDE_API_KEY_URL,
-        "model_list": ["claude-3-5-sonnet-20240620"]
+        "model_list": ["claude-3-haiku-20240307", "claude-3-5-sonnet-20240620"]
     },
     # AWS Sagemaker
     {
@@ -903,6 +903,10 @@ G4F_DEFAULT_IMAGE_MODEL = "flux"
 MAXIMUM_MESSAGES_IN_PARAMETER = 40
 MAXIMUM_MESSAGES_IN_PARAMETER_RANGE = 2, 1000
 
+# llamaIndex
+LLAMA_INDEX_DEFAULT_SUPPORTED_FORMATS_LIST = ['.txt']
+LLAMA_INDEX_DEFAULT_ALL_SUPPORTED_FORMATS_LIST = ['.txt', '.docx', '.hwp', '.ipynb', '.csv', '.jpeg', '.jpg', '.mbox', '.md', '.mp3', '.mp4', '.pdf', '.png', '.ppt', '.pptx', '.pptm']
+
 # PROMPT
 ## DEFAULT JSON FILENAME FOR PROMPT
 AWESOME_CHATGPT_PROMPTS_FILENAME = "prompt_res/awesome_chatgpt_prompts.json"
@@ -1142,6 +1146,7 @@ CONFIG_DATA = {
         # Llama Index
         "use_llama_index": False,
         "llama_index_directory": "",
+        "llama_index_supported_formats": LLAMA_INDEX_DEFAULT_SUPPORTED_FORMATS_LIST,
         # Customize
         "background_image": "",
         "user_image": DEFAULT_USER_IMAGE_PATH,
