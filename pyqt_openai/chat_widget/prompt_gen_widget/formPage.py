@@ -143,7 +143,7 @@ class FormGroupList(QWidget):
             for group in result:
                 id = DB.insertPromptGroup(group["name"], prompt_type="form")
                 for entry in group["data"]:
-                    DB.insertPromptEntry(id, entry["name"], entry["content"])
+                    DB.insertPromptEntry(id, entry["act"], entry["prompt"])
                 name = group["name"]
                 self.__addGroupItem(id, name)
 
@@ -160,7 +160,7 @@ class FormGroupList(QWidget):
                 filename = file_data[0]
                 # Get the data
                 data = get_prompt_data(prompt_type="form")
-                dialog = PromptGroupExportDialog(data, self)
+                dialog = PromptGroupExportDialog(data=data, parent=self)
                 reply = dialog.exec()
                 if reply == QDialog.DialogCode.Accepted:
                     data = dialog.getSelected()
@@ -267,11 +267,11 @@ class PromptTable(QWidget):
         self.updated.emit(prompt_text)
 
     def __saveChangedPrompt(self, item: QTableWidgetItem):
-        name = self.__table.item(item.row(), 0)
-        id = name.data(Qt.ItemDataRole.UserRole)
-        name = name.text()
-        content = self.__table.item(item.row(), 1).text()
-        DB.updatePromptEntry(id, name, content)
+        act = self.__table.item(item.row(), 0)
+        id = act.data(Qt.ItemDataRole.UserRole)
+        act = act.text()
+        prompt = self.__table.item(item.row(), 1).text()
+        DB.updatePromptEntry(id, act, prompt)
 
     def __add(self):
         dialog = PromptEntryDirectInputDialog(self.__group_id, self)
@@ -279,10 +279,10 @@ class PromptTable(QWidget):
         if reply == QDialog.DialogCode.Accepted:
             self.__table.itemChanged.disconnect(self.__saveChangedPrompt)
 
-            name = dialog.getPromptName()
+            act = dialog.getAct()
             self.__table.setRowCount(self.__table.rowCount() + 1)
 
-            item1 = QTableWidgetItem(name)
+            item1 = QTableWidgetItem(act)
             item1.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
             self.__table.setItem(self.__table.rowCount() - 1, 0, item1)
 
@@ -290,7 +290,7 @@ class PromptTable(QWidget):
             item2.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
             self.__table.setItem(self.__table.rowCount() - 1, 1, item2)
 
-            id = DB.insertPromptEntry(self.__group_id, name, "")
+            id = DB.insertPromptEntry(self.__group_id, act, "")
             item1.setData(Qt.ItemDataRole.UserRole, id)
 
             self.__table.itemChanged.connect(self.__saveChangedPrompt)

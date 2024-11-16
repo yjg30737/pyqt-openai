@@ -23,7 +23,7 @@ ROOT_DIR = SRC_DIR.parent  # VividNode
 # For the sake of following the PEP8 standard, we will declare module-level dunder names.
 # PEP8 standard about dunder names: https://peps.python.org/pep-0008/#module-level-dunder-names
 
-__version__ = "1.7.1"
+__version__ = "1.8.0"
 __author__ = "Jung Gyu Yoon"
 
 # Constants
@@ -129,6 +129,8 @@ REPORT_ERROR_URL = (
     "https://github.com/yjg30737/pyqt-openai?tab=readme-ov-file#troubleshooting"
 )
 
+AWESOME_CHATGPT_PROMPTS_URL = "https://huggingface.co/datasets/fka/awesome-chatgpt-prompts/tree/main"
+
 COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_CHAT = ["id"]
 COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_IMAGE = ["id", "data"]
 DEFAULT_LANGUAGE = "en_US"
@@ -206,6 +208,11 @@ ICON_SHORTCUT = os.path.join(ICON_PATH, "shortcut.svg")
 ICON_REALTIME_API = os.path.join(ICON_PATH, "realtime_api.svg")
 ICON_FILE = os.path.join(ICON_PATH, "file.svg")
 
+## IMAGE
+IMAGE_PATH = os.path.join(EXEC_PATH, "img")
+
+IMAGE_IMPORT_PROMPT_WITH_CSV_RIGHT_FORM = os.path.join(IMAGE_PATH, "import_prompt_with_csv_right_form.png")
+
 ## CUSTOMIZE
 DEFAULT_ICON_SIZE = (24, 24)
 DEFAULT_USER_IMAGE_PATH = ICON_USER
@@ -227,6 +234,8 @@ DEFAULT_LINK_HOVER_COLOR = "#FF0000"
 
 DEFAULT_TOAST_BACKGROUND_COLOR = "#444444"
 DEFAULT_TOAST_FOREGROUND_COLOR = "#EEEEEE"
+
+DEFAULT_WARNING_COLOR = "#FFA500"
 
 ## MARKDOWN
 # I am not planning to use it at the moment.
@@ -297,6 +306,7 @@ IMAGE_FILE_EXT_LIST = [".png", ".jpg", ".jpeg", ".gif", ".bmp"]
 IMAGE_FILE_EXT_LIST_STR = "Image File (*.png *.jpg *.jpeg *.gif *.bmp)"
 TEXT_FILE_EXT_LIST_STR = "Text File (*.txt)"
 JSON_FILE_EXT_LIST_STR = "JSON File (*.json)"
+CSV_FILE_EXT_LIST_STR = "CSV File (*.csv)"
 READ_FILE_EXT_LIST_STR = f"{TEXT_FILE_EXT_LIST_STR};;{IMAGE_FILE_EXT_LIST_STR}"
 
 ## PROMPT
@@ -391,40 +401,15 @@ TTS_DEFAULT_AUTO_STOP_SILENCE_DURATION = 3
 
 STT_MODEL = "whisper-1"
 
-# Endpoint
-# https://platform.openai.com/docs/models/model-endpoint-compatibility
-OPENAI_ENDPOINT_DICT = {
-    "/v1/chat/completions": ["gpt-4o", "gpt-4o-mini", "o1-preview", "o1-mini"],
-    "/v1/completions": [
-        "text-davinci-003",
-        "text-davinci-002",
-        "text-curie-001",
-        "text-babbage-001",
-        "text-ada-001",
-        "davinci",
-        "curie",
-        "babbage",
-        "ada",
-    ],
-    "/v1/edits": ["text-davinci-edit-001", "code-davinci-edit-001"],
-    "/v1/audio/transcriptions": ["whisper-1"],
-    "/v1/audio/translations": ["whisper-1"],
-    "/v1/fine-tunes": ["davinci", "curie", "babbage", "ada"],
-    "/v1/embeddings": ["text-embedding-ada-002", "text-search-ada-doc-001"],
-    "/vi/moderations": ["text-moderation-stable", "text-moderation-latest"],
-}
-
 DEFAULT_TOKEN_CHUNK_SIZE = 1024
 
 # This doesn't need endpoint
-DALLE_ARR = ["dall-e-2", "dall-e-3"]
+OPENAI_DEFAULT_IMAGE_MODEL = "dall-e-3"
 
 DEFAULT_DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
-OPENAI_CHAT_ENDPOINT = "/v1/chat/completions"
-
-# Other models' configuration data
-DEFAULT_GEMINI_MODEL = "gemini/gemini-1.5-flash"
+# This has to be managed separately since some of the arguments are different with usual models
+O1_MODELS = ["o1-preview", "o1-mini"]
 
 # Overall API configuration data
 DEFAULT_API_CONFIGS = [
@@ -434,6 +419,7 @@ DEFAULT_API_CONFIGS = [
         "env_var_name": "OPENAI_API_KEY",
         "api_key": "",
         "manual_url": HOW_TO_GET_OPENAI_API_KEY_URL,
+        "model_list": ["gpt-4o", "gpt-4o-mini"] + O1_MODELS
     },
     # Azure
     {
@@ -493,6 +479,7 @@ DEFAULT_API_CONFIGS = [
         "api_key": "",
         "manual_url": HOW_TO_GET_GEMINI_API_KEY_URL,
         "prefix": "gemini",
+        "model_list": ["gemini/gemini-1.5-flash", "gemini/gemini-1.5-pro"]
     },
     # Anthropic
     {
@@ -500,6 +487,7 @@ DEFAULT_API_CONFIGS = [
         "env_var_name": "ANTHROPIC_API_KEY",
         "api_key": "",
         "manual_url": HOW_TO_GET_CLAUDE_API_KEY_URL,
+        "model_list": ["claude-3-haiku-20240307", "claude-3-5-sonnet-20240620"]
     },
     # AWS Sagemaker
     {
@@ -903,10 +891,6 @@ DEFAULT_API_CONFIGS = [
     },
 ]
 
-
-# This has to be managed separately since some of the arguments are different with usual models
-O1_MODELS = ["o1-preview", "o1-mini"]
-
 DEFAULT_LLM = "gpt-4o"
 
 G4F_PROVIDER_DEFAULT = "Auto"
@@ -915,16 +899,13 @@ G4F_USE_CHAT_HISTORY = True
 
 G4F_DEFAULT_IMAGE_MODEL = "flux"
 
-# Dictionary that stores the platform and model pairs
-PROVIDER_MODEL_DICT = {
-    "OpenAI": ["gpt-4o", "gpt-4o-mini"] + O1_MODELS,
-    "Gemini": ["gemini/gemini-1.5-flash", "gemini/gemini-1.5-pro"],
-    "Anthropic": ["claude-3-5-sonnet-20240620"],
-}
-
 # Constants related to the number of messages LLM will store
 MAXIMUM_MESSAGES_IN_PARAMETER = 40
 MAXIMUM_MESSAGES_IN_PARAMETER_RANGE = 2, 1000
+
+# llamaIndex
+LLAMA_INDEX_DEFAULT_SUPPORTED_FORMATS_LIST = ['.txt']
+LLAMA_INDEX_DEFAULT_ALL_SUPPORTED_FORMATS_LIST = ['.txt', '.docx', '.hwp', '.ipynb', '.csv', '.jpeg', '.jpg', '.mbox', '.md', '.mp3', '.mp4', '.pdf', '.png', '.ppt', '.pptx', '.pptm']
 
 # PROMPT
 ## DEFAULT JSON FILENAME FOR PROMPT
@@ -1165,6 +1146,7 @@ CONFIG_DATA = {
         # Llama Index
         "use_llama_index": False,
         "llama_index_directory": "",
+        "llama_index_supported_formats": LLAMA_INDEX_DEFAULT_SUPPORTED_FORMATS_LIST,
         # Customize
         "background_image": "",
         "user_image": DEFAULT_USER_IMAGE_PATH,

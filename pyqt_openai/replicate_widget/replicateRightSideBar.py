@@ -172,7 +172,7 @@ class ReplicateRightSideBarWidget(ImageControlWidget):
             self._randomImagePromptGeneratorWidget.getRandomPromptSourceArr()
         )
 
-        t = ReplicateThread(arg, number_of_images, self.__model, random_prompt)
+        t = ReplicateThread(arg, number_of_images, random_prompt)
         self._setThread(t)
         super()._submit()
 
@@ -180,6 +180,7 @@ class ReplicateRightSideBarWidget(ImageControlWidget):
         obj = super().getArgument()
         return {
             **obj,
+            "model": self.__model,
             "prompt": self._promptTextEdit.toPlainText(),
             "negative_prompt": self._negativeTextEdit.toPlainText(),
             "width": self.__width,

@@ -9,6 +9,7 @@ from PySide6.QtWidgets import (
 )
 
 from pyqt_openai import SENTENCE_PROMPT_GROUP_SAMPLE, FORM_PROMPT_GROUP_SAMPLE
+from pyqt_openai.chat_widget.prompt_gen_widget.promptCsvRightFormSampleDialog import PromptCSVRightFormSampleDialog
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.util.common import showJsonSample
 from pyqt_openai.widgets.checkBoxListWidget import CheckBoxListWidget
@@ -16,27 +17,28 @@ from pyqt_openai.widgets.jsonEditor import JSONEditor
 
 
 class PromptGroupExportDialog(QDialog):
-    def __init__(self, data, prompt_type="form", parent=None):
+    def __init__(self, data, prompt_type="form", ext='.json', parent=None):
         super().__init__(parent)
-        self.__initVal(data, prompt_type)
+        self.__initVal(data, prompt_type, ext)
         self.__initUi()
 
-    def __initVal(self, data, prompt_type):
+    def __initVal(self, data, prompt_type, ext):
         self.__data = data
         self.__promptType = prompt_type
+        self.__ext = ext
 
     def __initUi(self):
         self.setWindowTitle(LangClass.TRANSLATIONS["Export Prompt Group"])
         self.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.WindowCloseButtonHint)
 
-        btn = QPushButton(
-            LangClass.TRANSLATIONS[
-                "Preview of the JSON format to be created after export"
-            ]
-        )
-        btn.clicked.connect(self.__showJsonSample)
+        btnText = LangClass.TRANSLATIONS["Preview of the JSON format to be created after export"] if self.__ext == '.json' else LangClass.TRANSLATIONS["Preview of the CSV format to be created after export"]
+        btn = QPushButton(btnText)
 
-        self.__jsonSampleWidget = JSONEditor()
+        if self.__ext == '.json':
+            btn.clicked.connect(self.__showJsonSample)
+            self.__jsonSampleWidget = JSONEditor()
+        elif self.__ext == '.csv':
+            btn.clicked.connect(self.__showCSVSample)
 
         allCheckBox = QCheckBox(LangClass.TRANSLATIONS["Select All"])
         self.__listWidget = CheckBoxListWidget()
@@ -76,6 +78,10 @@ class PromptGroupExportDialog(QDialog):
             else SENTENCE_PROMPT_GROUP_SAMPLE
         )
         showJsonSample(self.__jsonSampleWidget, json_sample)
+
+    def __showCSVSample(self):
+        dialog = PromptCSVRightFormSampleDialog(self)
+        dialog.exec()
 
     def getSelected(self):
         """

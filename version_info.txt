@@ -5,8 +5,8 @@
 #
 VSVersionInfo(
   ffi=FixedFileInfo(
-    filevers=(1, 7, 1),
-    prodvers=(1, 7, 1),
+    filevers=(1, 8, 0),
+    prodvers=(1, 8, 0),
     mask=0x3f,
     flags=0x0,
     OS=0x4,
@@ -19,10 +19,10 @@ VSVersionInfo(
       [
       StringTable(
         u'040904B0',
-        [StringStruct(u'FileVersion', u'1.7.1'),
+        [StringStruct(u'FileVersion', u'1.8.0'),
         StringStruct(u'ProductName', u'VividNode'),
         StringStruct(u'LegalCopyright', u'Copyright © 2024 Jung Gyu Yoon'),
-        StringStruct(u'ProductVersion', u'1.7.1')])
+        StringStruct(u'ProductVersion', u'1.8.0')])
       ]),
     VarFileInfo([VarStruct(u'Translation', [1033, 1200])])
   ]

@@ -100,13 +100,6 @@ class ChatMainWidget(QWidget):
 
         self.__chatWidget.setG4F(self.__chatRightSideBarWidget.currentTabIdx())
 
-        try:
-            self.__chatRightSideBarWidget.onDirectorySelected.connect(
-                LLAMAINDEX_WRAPPER.set_directory
-            )
-        except Exception as e:
-            QMessageBox.critical(self, LangClass.TRANSLATIONS["Error"], str(e))
-
         self.__promptGeneratorWidget = PromptGeneratorWidget()
 
         self.__sideBarBtn = Button()

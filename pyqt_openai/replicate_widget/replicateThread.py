@@ -10,9 +10,8 @@ class ReplicateThread(QThread):
     errorGenerated = Signal(str)
     allReplyGenerated = Signal()
 
-    # TODO remove model as far as possible
     def __init__(
-        self, input_args, number_of_images, model, randomizing_prompt_source_arr=None
+        self, input_args, number_of_images, randomizing_prompt_source_arr=None
     ):
         super().__init__()
         self.__input_args = input_args
@@ -21,7 +20,6 @@ class ReplicateThread(QThread):
         self.__randomizing_prompt_source_arr = randomizing_prompt_source_arr
 
         self.__number_of_images = number_of_images
-        self.__model = model
 
     def stop(self):
         self.__stop = True
@@ -36,7 +34,7 @@ class ReplicateThread(QThread):
                         self.__randomizing_prompt_source_arr
                     )
                 result = REPLICATE_CLIENT.get_image_response(
-                    model=self.__model, input_args=self.__input_args
+                    model=self.__input_args['model'], input_args=self.__input_args
                 )
                 self.replyGenerated.emit(result)
             self.allReplyGenerated.emit()

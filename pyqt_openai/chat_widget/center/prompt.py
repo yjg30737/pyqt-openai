@@ -232,14 +232,14 @@ class Prompt(QWidget):
             if group.prompt_type == "form":
                 value = ""
                 for entry in entries:
-                    content = entry.content
-                    if content and content.strip():
-                        value += f"{entry.name}: {content}\n"
+                    prompt = entry.prompt
+                    if prompt and prompt.strip():
+                        value += f"{entry.act}: {prompt}\n"
                 command_obj_lst.append({"name": group.name, "value": value})
             elif group.prompt_type == "sentence":
                 for entry in entries:
                     command_obj_lst.append(
-                        {"name": f"{entry.name}({group.name})", "value": entry.content}
+                        {"name": f"{entry.act}({group.name})", "value": entry.prompt}
                     )
         self.__p_grp = [
             {"name": obj["name"], "value": obj["value"]} for obj in command_obj_lst

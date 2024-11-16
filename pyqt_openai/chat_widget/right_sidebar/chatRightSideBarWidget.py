@@ -1,17 +1,18 @@
 from functools import partial
 
 from PySide6.QtCore import Signal
-from PySide6.QtWidgets import QScrollArea, QWidget, QTabWidget, QGridLayout
+from PySide6.QtWidgets import QScrollArea, QWidget, QTabWidget, QGridLayout, QMessageBox
 
 from pyqt_openai.chat_widget.right_sidebar.usingAPIPage import UsingAPIPage
 from pyqt_openai.chat_widget.right_sidebar.llama_widget.llamaPage import LlamaPage
 from pyqt_openai.chat_widget.right_sidebar.usingG4FPage import UsingG4FPage
 from pyqt_openai.config_loader import CONFIG_MANAGER
+from pyqt_openai.globals import LLAMAINDEX_WRAPPER
+from pyqt_openai.lang.translations import LangClass
 
 
 class ChatRightSideBarWidget(QScrollArea):
     onTabChanged = Signal(int)
-    onDirectorySelected = Signal(str)
     onToggleJSON = Signal(bool)
 
     def __init__(self, parent=None):
@@ -65,7 +66,11 @@ class ChatRightSideBarWidget(QScrollArea):
     def __onDirectorySelected(self, selected_dirname):
         self.__llama_index_directory = selected_dirname
         CONFIG_MANAGER.set_general_property("llama_index_directory", selected_dirname)
-        self.onDirectorySelected.emit(selected_dirname)
+        try:
+            LLAMAINDEX_WRAPPER.set_directory(selected_dirname)
+        except Exception as e:
+            QMessageBox.critical(self, LangClass.TRANSLATIONS["Error"], str(e))
+
 
     def currentTabIdx(self):
         return self.__cur_idx

@@ -81,7 +81,8 @@ class SqliteDatabase:
                 f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{PROMPT_GROUP_TABLE_NAME}'"
             )
             if self.__c.fetchone()[0] == 1:
-                pass
+                # TODO WILL_REMOVED_IN_FUTURE AFTER v2.0.0
+                self.__createPromptEntry()
             else:
                 self.__c.execute(
                     f"""CREATE TABLE {PROMPT_GROUP_TABLE_NAME}
@@ -178,15 +179,61 @@ class SqliteDatabase:
                 f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{PROMPT_ENTRY_TABLE_NAME}'"
             )
             if self.__c.fetchone()[0] == 1:
-                # Let it pass if the table already exists
-                pass
+                # TODO WILL_REMOVED_IN_FUTURE AFTER v2.0.0
+                # Update name->act and content->prompt if the table exists
+                self.__c.execute(f"PRAGMA table_info({PROMPT_ENTRY_TABLE_NAME})")
+                existing_columns = {row[1]: row for row in self.__c.fetchall()}  # Map column names to info
+
+                # Check if 'name' or 'content' exists
+                if "name" in existing_columns or "content" in existing_columns:
+                    try:
+                        self.__c.execute("PRAGMA foreign_keys=OFF")  # Disable foreign key constraints temporarily
+
+                        # Rename table to a temporary name
+                        temp_table = f"{PROMPT_ENTRY_TABLE_NAME}_backup"
+                        self.__c.execute(f"ALTER TABLE {PROMPT_ENTRY_TABLE_NAME} RENAME TO {temp_table}")
+
+                        # Create the updated table structure
+                        self.__c.execute(
+                            f"""CREATE TABLE {PROMPT_ENTRY_TABLE_NAME} (
+                                                    id INTEGER PRIMARY KEY,
+                                                    group_id INTEGER NOT NULL,
+                                                    act VARCHAR(255) NOT NULL,
+                                                    prompt TEXT NOT NULL,
+                                                    insert_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
+                                                    update_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
+                                                    FOREIGN KEY (group_id) REFERENCES {PROMPT_GROUP_TABLE_NAME}(id)
+                                                    ON DELETE CASCADE)
+                                """
+                        )
+
+                        # Copy data from the old table to the new table, renaming columns
+                        self.__c.execute(
+                            f"""INSERT INTO {PROMPT_ENTRY_TABLE_NAME} (id, group_id, act, prompt, insert_dt, update_dt)
+                                    SELECT id, group_id,
+                                           name AS act, content AS prompt,
+                                           insert_dt, update_dt
+                                    FROM {temp_table}
+                                """
+                        )
+
+                        # Drop the temporary table
+                        self.__c.execute(f"DROP TABLE {temp_table}")
+                        self.__c.execute("PRAGMA foreign_keys=ON")  # Re-enable foreign key constraints
+                        self.__conn.commit()
+                    except Exception as e:
+                        print("Error during column rename:", e)
+                        self.__conn.rollback()
+                        self.__c.execute("PRAGMA foreign_keys=ON")  # Ensure foreign keys are re-enabled
+                else:
+                    print(f"Table {PROMPT_ENTRY_TABLE_NAME} already updated.")
             else:
                 self.__c.execute(
                     f"""CREATE TABLE {PROMPT_ENTRY_TABLE_NAME} (
                                     id INTEGER PRIMARY KEY,
                                     group_id INTEGER NOT NULL,
-                                    name VARCHAR(255) NOT NULL,
-                                    content TEXT NOT NULL,
+                                    act VARCHAR(255) NOT NULL,
+                                    prompt TEXT NOT NULL,
                                     insert_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
                                     update_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
                                     FOREIGN KEY (group_id) REFERENCES {PROMPT_GROUP_TABLE_NAME}(id)
@@ -198,12 +245,12 @@ class SqliteDatabase:
             print(f"An error occurred: {e}")
             raise
 
-    def insertPromptEntry(self, group_id, name, content=""):
+    def insertPromptEntry(self, group_id, act, prompt=""):
         try:
             # Insert a row into the table
             self.__c.execute(
-                f"INSERT INTO {PROMPT_ENTRY_TABLE_NAME} (group_id, name, content) VALUES (?, ?, ?)",
-                (group_id, name, content),
+                f"INSERT INTO {PROMPT_ENTRY_TABLE_NAME} (group_id, act, prompt) VALUES (?, ?, ?)",
+                (group_id, act, prompt),
             )
             new_id = self.__c.lastrowid
             # Commit the transaction
@@ -214,27 +261,29 @@ class SqliteDatabase:
             raise
 
     def selectPromptEntry(
-        self, group_id, id=None, name=None
+            self, group_id, id=None, act=None
     ) -> List[PromptEntryContainer]:
         try:
             query = f"SELECT * FROM {PROMPT_ENTRY_TABLE_NAME} WHERE group_id={group_id}"
             if id:
                 query += f" AND id={id}"
-            if name:
-                query += f' AND name="{name}"'
-            return [
-                PromptEntryContainer(**elem)
-                for elem in self.__c.execute(query).fetchall()
-            ]
+            if act:
+                query += f' AND act="{act}"'
+
+            # Fetch rows only once
+            rows = self.__c.execute(query).fetchall()
+
+            # Convert to PromptEntryContainer list
+            return [PromptEntryContainer(**dict(row)) for row in rows]
         except sqlite3.Error as e:
             print(f"An error occurred: {e}")
             raise
 
-    def updatePromptEntry(self, id, name, content):
+    def updatePromptEntry(self, id, act, prompt):
         try:
             self.__c.execute(
-                f"UPDATE {PROMPT_ENTRY_TABLE_NAME} SET name=?, content=? WHERE id={id}",
-                (name, content),
+                f"UPDATE {PROMPT_ENTRY_TABLE_NAME} SET act=?, prompt=? WHERE id={id}",
+                (act, prompt),
             )
             self.__conn.commit()
         except sqlite3.Error as e:

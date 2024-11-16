@@ -7,6 +7,7 @@ Some of the functions are used to set PyQt settings, restart the application, sh
 
 import asyncio
 import base64
+import csv
 import json
 import os
 import random
@@ -19,7 +20,6 @@ import time
 import traceback
 import wave
 import zipfile
-
 from datetime import datetime
 from io import BytesIO
 from pathlib import Path
@@ -60,13 +60,10 @@ from pyqt_openai import (
     AUTOSTART_REGISTRY_KEY,
     is_frozen,
     G4F_PROVIDER_DEFAULT,
-    PROVIDER_MODEL_DICT,
     O1_MODELS,
-    OPENAI_ENDPOINT_DICT,
-    OPENAI_CHAT_ENDPOINT,
     STT_MODEL,
     DEFAULT_DATETIME_FORMAT,
-    DEFAULT_TOKEN_CHUNK_SIZE, DEFAULT_API_CONFIGS,
+    DEFAULT_TOKEN_CHUNK_SIZE, DEFAULT_API_CONFIGS, INDENT_SIZE,
 )
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.globals import (
@@ -330,7 +327,7 @@ def is_prompt_entry_name_valid(group_id, text):
     exists_f = (
         True
         if (True if text else False)
-        and DB.selectPromptEntry(group_id=group_id, name=text)
+        and DB.selectPromptEntry(group_id=group_id, act=text)
         else False
     )
     return exists_f
@@ -365,12 +362,12 @@ def validate_prompt_group_json(json_data):
             if not isinstance(data_item, dict):
                 return False
 
-            # Check if 'name' and 'content' keys exist in data_item
-            if "name" not in data_item or "content" not in data_item:
+            # Check if 'act' and 'prompt' keys exist in data_item
+            if "act" not in data_item or "prompt" not in data_item:
                 return False
 
-            # Check if 'name' in data_item is not empty
-            if not data_item["name"]:
+            # Check if 'act' in data_item is not empty
+            if not data_item["act"]:
                 return False
 
     return True
@@ -381,7 +378,7 @@ def get_prompt_data(prompt_type="form"):
     for group in DB.selectPromptGroup(prompt_type=prompt_type):
         group_obj = {"name": group.name, "data": []}
         for entry in DB.selectPromptEntry(group.id):
-            group_obj["data"].append({"name": entry.name, "content": entry.content})
+            group_obj["data"].append({"act": entry.act, "prompt": entry.prompt})
         data.append(group_obj)
     return data
 
@@ -579,9 +576,9 @@ def get_chat_model(is_g4f=False):
     if is_g4f:
         return get_g4f_models()
     else:
-        all_models = [
-            model for models in PROVIDER_MODEL_DICT.values() for model in models
-        ]
+        all_models = []
+        for obj in DEFAULT_API_CONFIGS:
+            all_models.extend(obj.get("model_list", []))
         return all_models
 
 def get_gemini_argument(model, system, messages, cur_text, stream, images):
@@ -658,18 +655,6 @@ def set_api_key(env_var_name, api_key):
     # Set environment variables dynamically
     os.environ[env_var_name] = api_key
 
-
-def get_openai_model_endpoint(model):
-    for k, v in OPENAI_ENDPOINT_DICT.items():
-        endpoint_group = list(v)
-        if model in endpoint_group:
-            return k
-
-
-def get_openai_chat_model():
-    return OPENAI_ENDPOINT_DICT[OPENAI_CHAT_ENDPOINT]
-
-
 def get_image_url_from_local(image, is_openai=False):
     """
     Image is bytes, this function converts it to base64 and returns the image url
@@ -692,9 +677,9 @@ def get_message_obj(role, content):
 
 # Check which provider a specific model belongs to
 def get_provider_from_model(model):
-    for provider, models in PROVIDER_MODEL_DICT.items():
-        if model in models:
-            return provider
+    for obj in DEFAULT_API_CONFIGS:
+        if model in obj.get("model_list", []):
+            return obj["display_name"]
     return None
 
 
@@ -1339,3 +1324,30 @@ def stream_to_speakers(voice_provider, input_args):
 
 def get_litellm_prefixes():
     return [{'Provider': obj.get('display_name', ''), 'Prefix': obj.get('prefix', '')} for obj in DEFAULT_API_CONFIGS]
+
+
+def export_prompt(data, filename, ext):
+    # Check if the extension is valid
+    if ext not in [".json", ".csv"]:
+        raise ValueError("Unsupported file extension. Only '.json' and '.csv' are allowed.")
+
+    # Handle JSON export
+    if ext == ".json":
+        with open(filename, "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=INDENT_SIZE)
+    elif ext == ".csv":
+        # Create a zip file
+        with zipfile.ZipFile(filename, mode='w', compression=zipfile.ZIP_DEFLATED) as zipf:
+            for d in data:
+                # Create individual CSV files for each item in data
+                csv_filename = d['name'] + ext
+                with open(csv_filename, mode='w', encoding='utf-8', newline='') as f:
+                    writer = csv.DictWriter(f, fieldnames=['act', 'prompt'])
+                    writer.writeheader()  # Write the column headers
+                    writer.writerows(d['data'])  # Write the rows
+
+                # Add the CSV file to the zip archive
+                zipf.write(csv_filename, arcname=csv_filename)
+
+                # Remove the CSV file after adding it to the zip
+                os.remove(csv_filename)

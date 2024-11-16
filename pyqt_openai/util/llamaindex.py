@@ -2,6 +2,8 @@ import os.path
 
 from llama_index.core import VectorStoreIndex, SimpleDirectoryReader
 
+from pyqt_openai.config_loader import CONFIG_MANAGER
+
 
 class LlamaIndexWrapper:
     def __init__(self, *args, **kwargs):
@@ -10,11 +12,13 @@ class LlamaIndexWrapper:
         self._query_engine = None
         self._index = None
 
-    def set_directory(self, directory):
+    def set_directory(self, directory, ext=[]):
         try:
+            if not ext:
+                ext = CONFIG_MANAGER.get_general_property("llama_index_supported_formats")
             self._directory = directory
             documents = SimpleDirectoryReader(
-                input_dir=self._directory, required_exts=[".txt"]
+                input_dir=self._directory, required_exts=ext
             ).load_data()
             self._index = VectorStoreIndex.from_documents(documents)
         except Exception as e:
