@@ -18,7 +18,7 @@ from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.util.common import getSeparator
 
 
-class FileListWidget(QWidget):
+class FilesWidget(QWidget):
     itemUpdate = Signal(bool)
     onDirectorySelected = Signal()
     clicked = Signal(str)

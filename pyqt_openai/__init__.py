@@ -401,29 +401,6 @@ TTS_DEFAULT_AUTO_STOP_SILENCE_DURATION = 3
 
 STT_MODEL = "whisper-1"
 
-# Endpoint
-# https://platform.openai.com/docs/models/model-endpoint-compatibility
-OPENAI_ENDPOINT_DICT = {
-    "/v1/chat/completions": ["gpt-4o", "gpt-4o-mini", "o1-preview", "o1-mini"],
-    "/v1/completions": [
-        "text-davinci-003",
-        "text-davinci-002",
-        "text-curie-001",
-        "text-babbage-001",
-        "text-ada-001",
-        "davinci",
-        "curie",
-        "babbage",
-        "ada",
-    ],
-    "/v1/edits": ["text-davinci-edit-001", "code-davinci-edit-001"],
-    "/v1/audio/transcriptions": ["whisper-1"],
-    "/v1/audio/translations": ["whisper-1"],
-    "/v1/fine-tunes": ["davinci", "curie", "babbage", "ada"],
-    "/v1/embeddings": ["text-embedding-ada-002", "text-search-ada-doc-001"],
-    "/vi/moderations": ["text-moderation-stable", "text-moderation-latest"],
-}
-
 DEFAULT_TOKEN_CHUNK_SIZE = 1024
 
 # This doesn't need endpoint
@@ -431,10 +408,8 @@ OPENAI_DEFAULT_IMAGE_MODEL = "dall-e-3"
 
 DEFAULT_DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
-OPENAI_CHAT_ENDPOINT = "/v1/chat/completions"
-
-# Other models' configuration data
-DEFAULT_GEMINI_MODEL = "gemini/gemini-1.5-flash"
+# This has to be managed separately since some of the arguments are different with usual models
+O1_MODELS = ["o1-preview", "o1-mini"]
 
 # Overall API configuration data
 DEFAULT_API_CONFIGS = [
@@ -444,6 +419,7 @@ DEFAULT_API_CONFIGS = [
         "env_var_name": "OPENAI_API_KEY",
         "api_key": "",
         "manual_url": HOW_TO_GET_OPENAI_API_KEY_URL,
+        "model_list": ["gpt-4o", "gpt-4o-mini"] + O1_MODELS
     },
     # Azure
     {
@@ -503,6 +479,7 @@ DEFAULT_API_CONFIGS = [
         "api_key": "",
         "manual_url": HOW_TO_GET_GEMINI_API_KEY_URL,
         "prefix": "gemini",
+        "model_list": ["gemini/gemini-1.5-flash", "gemini/gemini-1.5-pro"]
     },
     # Anthropic
     {
@@ -510,6 +487,7 @@ DEFAULT_API_CONFIGS = [
         "env_var_name": "ANTHROPIC_API_KEY",
         "api_key": "",
         "manual_url": HOW_TO_GET_CLAUDE_API_KEY_URL,
+        "model_list": ["claude-3-5-sonnet-20240620"]
     },
     # AWS Sagemaker
     {
@@ -913,10 +891,6 @@ DEFAULT_API_CONFIGS = [
     },
 ]
 
-
-# This has to be managed separately since some of the arguments are different with usual models
-O1_MODELS = ["o1-preview", "o1-mini"]
-
 DEFAULT_LLM = "gpt-4o"
 
 G4F_PROVIDER_DEFAULT = "Auto"
@@ -924,13 +898,6 @@ G4F_PROVIDER_DEFAULT = "Auto"
 G4F_USE_CHAT_HISTORY = True
 
 G4F_DEFAULT_IMAGE_MODEL = "flux"
-
-# Dictionary that stores the platform and model pairs
-PROVIDER_MODEL_DICT = {
-    "OpenAI": ["gpt-4o", "gpt-4o-mini"] + O1_MODELS,
-    "Gemini": ["gemini/gemini-1.5-flash", "gemini/gemini-1.5-pro"],
-    "Anthropic": ["claude-3-5-sonnet-20240620"],
-}
 
 # Constants related to the number of messages LLM will store
 MAXIMUM_MESSAGES_IN_PARAMETER = 40

@@ -5,7 +5,8 @@ from PySide6.QtWidgets import QWidget, QLabel, QVBoxLayout
 
 from pyqt_openai import SMALL_LABEL_PARAM
 from pyqt_openai.config_loader import CONFIG_MANAGER
-from pyqt_openai.chat_widget.right_sidebar.llama_widget.listWidget import FileListWidget
+from pyqt_openai.chat_widget.right_sidebar.llama_widget.filesWidget import FilesWidget
+from pyqt_openai.chat_widget.right_sidebar.llama_widget.supportedFileFormatsWidget import SupportedFileFormatsWidget
 from pyqt_openai.lang.translations import LangClass
 
 
@@ -20,9 +21,11 @@ class LlamaPage(QWidget):
         self.__apiCheckPreviewLbl = QLabel()
         self.__apiCheckPreviewLbl.setFont(QFont(*SMALL_LABEL_PARAM))
 
-        self.__listWidget = FileListWidget()
-        self.__listWidget.clicked.connect(self.__setTextInBrowser)
-        self.__listWidget.onDirectorySelected.connect(self.__onDirectorySelected)
+        self.__filesWidget = FilesWidget()
+        self.__filesWidget.clicked.connect(self.__setTextInBrowser)
+        self.__filesWidget.onDirectorySelected.connect(self.__onDirectorySelected)
+
+        self.__supportedFileFormatsWidget = SupportedFileFormatsWidget()
 
         self.__txtBrowser = QTextBrowser()
         self.__txtBrowser.setPlaceholderText(
@@ -33,7 +36,8 @@ class LlamaPage(QWidget):
         self.__txtBrowser.setMaximumHeight(150)
 
         lay = QVBoxLayout()
-        lay.addWidget(self.__listWidget)
+        lay.addWidget(self.__supportedFileFormatsWidget)
+        lay.addWidget(self.__filesWidget)
         lay.addWidget(self.__txtBrowser)
         lay.setAlignment(Qt.AlignmentFlag.AlignTop)
 
@@ -42,7 +46,7 @@ class LlamaPage(QWidget):
         self.setDirectory()
 
     def __onDirectorySelected(self):
-        selected_dirname = self.__listWidget.getDirectory()
+        selected_dirname = self.__filesWidget.getDirectory()
         self.onDirectorySelected.emit(selected_dirname)
 
     def __setTextInBrowser(self, txt_file):
@@ -51,4 +55,4 @@ class LlamaPage(QWidget):
 
     def setDirectory(self):
         directory = CONFIG_MANAGER.get_general_property("llama_index_directory")
-        self.__listWidget.setDirectory(directory, called_from_btn=False)
+        self.__filesWidget.setDirectory(directory, called_from_btn=False)

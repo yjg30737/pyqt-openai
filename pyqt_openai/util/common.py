@@ -7,6 +7,7 @@ Some of the functions are used to set PyQt settings, restart the application, sh
 
 import asyncio
 import base64
+import csv
 import json
 import os
 import random
@@ -19,8 +20,6 @@ import time
 import traceback
 import wave
 import zipfile
-import csv
-
 from datetime import datetime
 from io import BytesIO
 from pathlib import Path
@@ -61,10 +60,7 @@ from pyqt_openai import (
     AUTOSTART_REGISTRY_KEY,
     is_frozen,
     G4F_PROVIDER_DEFAULT,
-    PROVIDER_MODEL_DICT,
     O1_MODELS,
-    OPENAI_ENDPOINT_DICT,
-    OPENAI_CHAT_ENDPOINT,
     STT_MODEL,
     DEFAULT_DATETIME_FORMAT,
     DEFAULT_TOKEN_CHUNK_SIZE, DEFAULT_API_CONFIGS, INDENT_SIZE,
@@ -580,9 +576,9 @@ def get_chat_model(is_g4f=False):
     if is_g4f:
         return get_g4f_models()
     else:
-        all_models = [
-            model for models in PROVIDER_MODEL_DICT.values() for model in models
-        ]
+        all_models = []
+        for obj in DEFAULT_API_CONFIGS:
+            all_models.extend(obj["model_list"])
         return all_models
 
 def get_gemini_argument(model, system, messages, cur_text, stream, images):
@@ -659,18 +655,6 @@ def set_api_key(env_var_name, api_key):
     # Set environment variables dynamically
     os.environ[env_var_name] = api_key
 
-
-def get_openai_model_endpoint(model):
-    for k, v in OPENAI_ENDPOINT_DICT.items():
-        endpoint_group = list(v)
-        if model in endpoint_group:
-            return k
-
-
-def get_openai_chat_model():
-    return OPENAI_ENDPOINT_DICT[OPENAI_CHAT_ENDPOINT]
-
-
 def get_image_url_from_local(image, is_openai=False):
     """
     Image is bytes, this function converts it to base64 and returns the image url
@@ -693,9 +677,9 @@ def get_message_obj(role, content):
 
 # Check which provider a specific model belongs to
 def get_provider_from_model(model):
-    for provider, models in PROVIDER_MODEL_DICT.items():
-        if model in models:
-            return provider
+    for obj in DEFAULT_API_CONFIGS:
+        if model in obj["model_list"]:
+            return obj["display_name"]
     return None
 
 
