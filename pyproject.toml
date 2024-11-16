@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pyqt-openai"
-version = "1.7.1"
+version = "1.8.0"
 description = "Python multipurpose chatbot that user can use GPT, other AI models altogether (Release Name: VividNode)"
 authors = [{ name = "Jung Gyu Yoon", email = "yjg30737@gmail.com" }]
 license = { text = "MIT" }
