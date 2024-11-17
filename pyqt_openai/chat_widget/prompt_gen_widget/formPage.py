@@ -230,14 +230,14 @@ class PromptTable(QWidget):
         )
 
         for i in range(len(self.__entries)):
-            name = self.__entries[i].name
-            content = self.__entries[i].content
+            act = self.__entries[i].act
+            prompt = self.__entries[i].prompt
 
-            item1 = QTableWidgetItem(name)
+            item1 = QTableWidgetItem(act)
             item1.setData(Qt.ItemDataRole.UserRole, self.__entries[i].id)
             item1.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
 
-            item2 = QTableWidgetItem(content)
+            item2 = QTableWidgetItem(prompt)
             item2.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
 
             self.__table.setItem(i, 0, item1)
