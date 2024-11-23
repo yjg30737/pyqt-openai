@@ -1,5 +1,5 @@
 import pyperclip
-
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QTextBrowser,
     QSplitter,
@@ -10,10 +10,8 @@ from PySide6.QtWidgets import (
     QTabWidget,
     QScrollArea,
 )
-from PySide6.QtCore import Qt
 
-from pyqt_openai.chat_widget.prompt_gen_widget.formPage import FormPage
-from pyqt_openai.chat_widget.prompt_gen_widget.sentencePage import SentencePage
+from pyqt_openai.chat_widget.prompt_gen_widget.promptPage import PromptPage
 from pyqt_openai.lang.translations import LangClass
 
 
@@ -25,10 +23,10 @@ class PromptGeneratorWidget(QScrollArea):
     def __initUi(self):
         promptLbl = QLabel(LangClass.TRANSLATIONS["Prompt"])
 
-        formPage = FormPage()
+        formPage = PromptPage(prompt_type='form')
         formPage.updated.connect(self.__textChanged)
 
-        sentencePage = SentencePage()
+        sentencePage = PromptPage(prompt_type='sentence')
         sentencePage.updated.connect(self.__textChanged)
 
         self.__prompt = QTextBrowser()
