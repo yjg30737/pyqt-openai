@@ -62,20 +62,20 @@ class FormGroupList(QWidget):
         self.__addBtn = Button()
         self.__delBtn = Button()
 
+        self.__importBtn = Button()
+        self.__importBtn.setToolTip(LangClass.TRANSLATIONS["Import"])
+
+        self.__exportBtn = Button()
+        self.__exportBtn.setToolTip(LangClass.TRANSLATIONS["Export"])
+
         self.__addBtn.setStyleAndIcon(ICON_ADD)
         self.__delBtn.setStyleAndIcon(ICON_DELETE)
+        self.__importBtn.setStyleAndIcon(ICON_IMPORT)
+        self.__exportBtn.setStyleAndIcon(ICON_EXPORT)
 
         self.__addBtn.clicked.connect(self.__add)
         self.__delBtn.clicked.connect(self.__delete)
-
-        self.__importBtn = Button()
-        self.__importBtn.setStyleAndIcon(ICON_IMPORT)
-        self.__importBtn.setToolTip(LangClass.TRANSLATIONS["Import"])
         self.__importBtn.clicked.connect(self.__import)
-
-        self.__exportBtn = Button()
-        self.__exportBtn.setStyleAndIcon(ICON_EXPORT)
-        self.__exportBtn.setToolTip(LangClass.TRANSLATIONS["Export"])
         self.__exportBtn.clicked.connect(self.__export)
 
         lay = QHBoxLayout()
@@ -92,11 +92,15 @@ class FormGroupList(QWidget):
         topWidget.setLayout(lay)
 
         groups = DB.selectPromptGroup(prompt_type="form")
+        if len(groups) <= 0:
+            self.__delBtn.setEnabled(False)
 
         self.list = QListWidget()
 
         for group in groups:
-            self.__addGroupItem(group.id, group.name)
+            id = group.id
+            name = group.name
+            self.__addGroupItem(id, name)
 
         self.list.currentRowChanged.connect(self.__currentRowChanged)
         self.list.itemChanged.connect(self.__itemChanged)
@@ -108,8 +112,6 @@ class FormGroupList(QWidget):
 
         self.setLayout(lay)
 
-        self.list.setCurrentRow(0)
-
     def __addGroupItem(self, id, name):
         item = QListWidgetItem()
         item.setFlags(item.flags() | Qt.ItemFlag.ItemIsEditable)
@@ -118,6 +120,8 @@ class FormGroupList(QWidget):
         self.list.addItem(item)
         self.list.setCurrentItem(item)
         self.added.emit(id)
+
+        self.__delBtn.setEnabled(True)
 
     def __add(self):
         dialog = PromptGroupDirectInputDialog(self)
@@ -132,10 +136,14 @@ class FormGroupList(QWidget):
         item = self.list.takeItem(i)
         id = item.data(Qt.ItemDataRole.UserRole)
         DB.deletePromptGroup(id)
-        self.deleted.emit(i)
+        self.deleted.emit(id)
+
+        groups = DB.selectPromptGroup(prompt_type="form")
+        if len(groups) <= 0:
+            self.__delBtn.setEnabled(False)
 
     def __import(self):
-        dialog = PromptGroupImportDialog(parent=self)
+        dialog = PromptGroupImportDialog(parent=self, prompt_type="form")
         reply = dialog.exec()
         if reply == QDialog.DialogCode.Accepted:
             # Get the data
@@ -232,24 +240,25 @@ class PromptTable(QWidget):
         self.__table.horizontalHeader().setSectionResizeMode(
             1, QHeaderView.ResizeMode.Stretch
         )
+        self.__table.currentItemChanged.connect(self.__rowChanged)
         self.__table.itemChanged.connect(self.__saveChangedPrompt)
 
-        for i in range(len(self.__entries)):
-            act = self.__entries[i].act
-            prompt = self.__entries[i].prompt
-
-            item1 = QTableWidgetItem(act)
-            item1.setData(Qt.ItemDataRole.UserRole, self.__entries[i].id)
-            item1.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-
-            item2 = QTableWidgetItem(prompt)
-            item2.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-
-            self.__table.setItem(i, 0, item1)
-            self.__table.setItem(i, 1, item2)
-
-        self.__table.itemChanged.connect(self.__generatePrompt)
-        self.__table.itemChanged.connect(self.__saveChangedPrompt)
+        # for i in range(len(self.__entries)):
+        #     act = self.__entries[i].act
+        #     prompt = self.__entries[i].prompt
+        #
+        #     item1 = QTableWidgetItem(act)
+        #     item1.setData(Qt.ItemDataRole.UserRole, self.__entries[i].id)
+        #     item1.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+        #
+        #     item2 = QTableWidgetItem(prompt)
+        #     item2.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+        #
+        #     self.__table.setItem(i, 0, item1)
+        #     self.__table.setItem(i, 1, item2)
+        #
+        # self.__table.itemChanged.connect(self.__generatePrompt)
+        # self.__table.itemChanged.connect(self.__saveChangedPrompt)
 
         lay = QVBoxLayout()
         lay.addWidget(topWidget)
@@ -308,6 +317,17 @@ class PromptTable(QWidget):
     def getId(self):
         return self.__group_id
 
+    def __rowChanged(self, new_item: QTableWidgetItem, old_item: QTableWidgetItem):
+        prompt = ""
+        # To avoid AttributeError
+        if new_item:
+            prompt = (
+                self.__table.item(new_item.row(), 1).text()
+                if new_item.column() == 0
+                else new_item.text()
+            )
+        self.updated.emit(prompt)
+
     def __saveChangedPrompt(self, item: QTableWidgetItem):
         act = self.__table.item(item.row(), 0)
         id = act.data(Qt.ItemDataRole.UserRole)
@@ -360,20 +380,20 @@ class FormPage(QWidget):
         self.__groups = DB.selectPromptGroup(prompt_type="form")
 
     def __initUi(self):
-        self.__leftWidget = FormGroupList()
-        self.__leftWidget.added.connect(self.add)
-        self.__leftWidget.deleted.connect(self.delete)
+        leftWidget = FormGroupList()
+        leftWidget.added.connect(self.add)
+        leftWidget.deleted.connect(self.delete)
 
-        self.__leftWidget.currentRowChanged.connect(self.__showEntries)
+        leftWidget.currentRowChanged.connect(self.__showEntries)
 
         self.__table = PromptTable()
         if len(self.__groups) > 0:
-            self.__leftWidget.list.setCurrentRow(0)
+            leftWidget.list.setCurrentRow(0)
             self.__table.showEntries(self.__groups[0].id)
         self.__table.updated.connect(self.updated)
 
         mainWidget = QSplitter()
-        mainWidget.addWidget(self.__leftWidget)
+        mainWidget.addWidget(leftWidget)
         mainWidget.addWidget(self.__table)
         mainWidget.setChildrenCollapsible(False)
         mainWidget.setSizes([300, 700])

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pyqt-openai"
-version = "1.8.1"
+version = "1.8.2"
 description = "Python multipurpose chatbot that user can use GPT, other AI models altogether (Release Name: VividNode)"
 authors = [{ name = "Jung Gyu Yoon", email = "yjg30737@gmail.com" }]
 license = { text = "MIT" }
@@ -27,8 +27,7 @@ dependencies = [
     "docx2txt",
     "openpyxl",
 
-    "g4f",
-
+    "g4f==0.3.3.4",
     "curl_cffi",
     "litellm",
 

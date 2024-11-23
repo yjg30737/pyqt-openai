@@ -60,16 +60,16 @@ class SentenceGroupList(QWidget):
         self.__addBtn = Button()
         self.__delBtn = Button()
 
-        self.__addBtn.setStyleAndIcon(ICON_ADD)
-        self.__delBtn.setStyleAndIcon(ICON_DELETE)
-
         self.__importBtn = Button()
-        self.__importBtn.setStyleAndIcon(ICON_IMPORT)
         self.__importBtn.setToolTip(LangClass.TRANSLATIONS["Import"])
 
         self.__exportBtn = Button()
-        self.__exportBtn.setStyleAndIcon(ICON_EXPORT)
         self.__exportBtn.setToolTip(LangClass.TRANSLATIONS["Export"])
+
+        self.__addBtn.setStyleAndIcon(ICON_ADD)
+        self.__delBtn.setStyleAndIcon(ICON_DELETE)
+        self.__importBtn.setStyleAndIcon(ICON_IMPORT)
+        self.__exportBtn.setStyleAndIcon(ICON_EXPORT)
 
         self.__addBtn.clicked.connect(self.__add)
         self.__delBtn.clicked.connect(self.__delete)
@@ -79,13 +79,7 @@ class SentenceGroupList(QWidget):
         lay = QHBoxLayout()
         # Should've added "Sentence Group" to the translation, but it's not in the
         # translation file for incomplete JSON response issue
-        lay.addWidget(
-            QLabel(
-                LangClass.TRANSLATIONS["Sentence"]
-                + " "
-                + LangClass.TRANSLATIONS["Group"]
-            )
-        )
+        lay.addWidget(QLabel(LangClass.TRANSLATIONS["Sentence Group"]))
         lay.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.Policy.MinimumExpanding))
         lay.addWidget(self.__addBtn)
         lay.addWidget(self.__delBtn)
@@ -97,11 +91,11 @@ class SentenceGroupList(QWidget):
         topWidget = QWidget()
         topWidget.setLayout(lay)
 
-        self.list = QListWidget()
-
         groups = DB.selectPromptGroup(prompt_type="sentence")
         if len(groups) <= 0:
             self.__delBtn.setEnabled(False)
+
+        self.list = QListWidget()
 
         for group in groups:
             id = group.id
@@ -346,9 +340,6 @@ class PromptTable(QWidget):
             id = self.__table.item(i, 0).data(Qt.ItemDataRole.UserRole)
             self.__table.removeRow(i)
             DB.deletePromptEntry(self.__group_id, id)
-
-    def clearContents(self):
-        self.__table.clearContents()
 
 
 class SentencePage(QWidget):
