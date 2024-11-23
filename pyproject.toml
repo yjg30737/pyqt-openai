@@ -28,6 +28,7 @@ dependencies = [
     "openpyxl",
 
     "g4f",
+
     "curl_cffi",
     "litellm",
 

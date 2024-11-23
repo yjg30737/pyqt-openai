@@ -1,4 +1,5 @@
-import json, os
+import json
+import os
 
 from PySide6.QtCore import Signal, Qt
 from PySide6.QtWidgets import (
@@ -7,7 +8,6 @@ from PySide6.QtWidgets import (
     QMessageBox,
     QSizePolicy,
     QSpacerItem,
-    QStackedWidget,
     QLabel,
     QAbstractItemView,
     QTableWidgetItem,
@@ -30,11 +30,11 @@ from pyqt_openai import (
     QFILEDIALOG_DEFAULT_DIRECTORY,
     INDENT_SIZE,
 )
-from pyqt_openai.chat_widget.prompt_gen_widget.promptGroupDirectInputDialog import (
-    PromptGroupDirectInputDialog,
-)
 from pyqt_openai.chat_widget.prompt_gen_widget.promptEntryDirectInputDialog import (
     PromptEntryDirectInputDialog,
+)
+from pyqt_openai.chat_widget.prompt_gen_widget.promptGroupDirectInputDialog import (
+    PromptGroupDirectInputDialog,
 )
 from pyqt_openai.chat_widget.prompt_gen_widget.promptGroupExportDialog import (
     PromptGroupExportDialog,
@@ -42,8 +42,8 @@ from pyqt_openai.chat_widget.prompt_gen_widget.promptGroupExportDialog import (
 from pyqt_openai.chat_widget.prompt_gen_widget.promptGroupImportDialog import (
     PromptGroupImportDialog,
 )
-from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.globals import DB
+from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.util.common import open_directory, get_prompt_data
 from pyqt_openai.widgets.button import Button
 
@@ -186,10 +186,6 @@ class FormGroupList(QWidget):
 
 
 class PromptTable(QWidget):
-    """
-    benchmarked https://gptforwork.com/tools/prompt-generator
-    """
-
     updated = Signal(str)
 
     def __init__(self, parent=None):

@@ -1,4 +1,7 @@
+from abc import ABCMeta
+
 from PySide6.QtCore import QThread, Signal
+from g4f.providers.retry_provider import IterListProvider
 
 from pyqt_openai import G4F_PROVIDER_DEFAULT
 from pyqt_openai.globals import G4F_CLIENT
@@ -47,6 +50,12 @@ class G4FImageThread(QThread):
                     images.provider = self.__input_args["provider"]
                 else:
                     del self.__input_args["provider"]
+                    provider = images.models.get(self.__input_args['model'], images.provider)
+                    if isinstance(provider, IterListProvider):
+                        if provider.providers:
+                            provider = provider.providers[0]
+                            provider = provider.__name__
+
                 response = images.generate(**self.__input_args)
                 arg = {
                     **self.__input_args,

@@ -698,16 +698,17 @@ def get_g4f_image_models() -> list:
             if hasattr(provider, "parent"):
                 parent = __map__[provider.parent]
             if parent.__name__ not in index:
-                for model in provider.image_models:
-                    image_models.append(
-                        {
-                            "provider": parent.__name__,
-                            "url": parent.url,
-                            "label": parent.label if hasattr(parent, "label") else None,
-                            "image_model": model,
-                        }
-                    )
-                    index.append(parent.__name__)
+                if provider.image_models:
+                    for model in provider.image_models:
+                        image_models.append(
+                            {
+                                "provider": parent.__name__,
+                                "url": parent.url,
+                                "label": parent.label if hasattr(parent, "label") else None,
+                                "image_model": model,
+                            }
+                        )
+                        index.append(parent.__name__)
 
     models = [model["image_model"] for model in image_models]
     return models
