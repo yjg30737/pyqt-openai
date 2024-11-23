@@ -356,7 +356,11 @@ class SentencePage(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.__initVal()
         self.__initUi()
+
+    def __initVal(self):
+        self.__groups = DB.selectPromptGroup(prompt_type="sentence")
 
     def __initUi(self):
         leftWidget = SentenceGroupList()
@@ -364,9 +368,11 @@ class SentencePage(QWidget):
         leftWidget.deleted.connect(self.delete)
 
         leftWidget.currentRowChanged.connect(self.__showEntries)
-        leftWidget.itemChanged.connect(self.__itemChanged)
 
         self.__table = PromptTable()
+        if len(self.__groups) > 0:
+            leftWidget.list.setCurrentRow(0)
+            self.__table.showEntries(self.__groups[0].id)
         self.__table.updated.connect(self.updated)
 
         mainWidget = QSplitter()
@@ -380,14 +386,6 @@ class SentencePage(QWidget):
 
         self.setLayout(lay)
 
-        leftWidget.list.setCurrentRow(0)
-
-    def __itemChanged(self, id):
-        self.__table.showEntries(id)
-
-    def __showEntries(self, id):
-        self.__table.showEntries(id)
-
     def add(self, id):
         self.__table.showEntries(id)
 
@@ -396,3 +394,6 @@ class SentencePage(QWidget):
             self.__table.setNothingRightNow()
         elif len(DB.selectPromptGroup(prompt_type="sentence")) == 0:
             self.__table.setNothingRightNow()
+
+    def __showEntries(self, id):
+        self.__table.showEntries(id)

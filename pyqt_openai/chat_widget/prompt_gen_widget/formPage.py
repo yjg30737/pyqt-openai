@@ -52,6 +52,7 @@ class FormGroupList(QWidget):
     added = Signal(int)
     deleted = Signal(int)
     currentRowChanged = Signal(int)
+    itemChanged = Signal(int)
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -92,30 +93,30 @@ class FormGroupList(QWidget):
 
         groups = DB.selectPromptGroup(prompt_type="form")
 
-        self.__list = QListWidget()
+        self.list = QListWidget()
 
         for group in groups:
             self.__addGroupItem(group.id, group.name)
 
-        self.__list.currentRowChanged.connect(self.currentRowChanged)
-        self.__list.itemChanged.connect(self.__itemChanged)
+        self.list.currentRowChanged.connect(self.__currentRowChanged)
+        self.list.itemChanged.connect(self.__itemChanged)
 
         lay = QVBoxLayout()
         lay.addWidget(topWidget)
-        lay.addWidget(self.__list)
+        lay.addWidget(self.list)
         lay.setContentsMargins(0, 0, 5, 0)
 
         self.setLayout(lay)
 
-        self.__list.setCurrentRow(0)
+        self.list.setCurrentRow(0)
 
     def __addGroupItem(self, id, name):
         item = QListWidgetItem()
         item.setFlags(item.flags() | Qt.ItemFlag.ItemIsEditable)
         item.setData(Qt.ItemDataRole.UserRole, id)
         item.setText(name)
-        self.__list.addItem(item)
-        self.__list.setCurrentItem(item)
+        self.list.addItem(item)
+        self.list.setCurrentItem(item)
         self.added.emit(id)
 
     def __add(self):
@@ -127,8 +128,8 @@ class FormGroupList(QWidget):
             self.__addGroupItem(id, name)
 
     def __delete(self):
-        i = self.__list.currentRow()
-        item = self.__list.takeItem(i)
+        i = self.list.currentRow()
+        item = self.list.takeItem(i)
         id = item.data(Qt.ItemDataRole.UserRole)
         DB.deletePromptGroup(id)
         self.deleted.emit(i)
@@ -175,6 +176,13 @@ class FormGroupList(QWidget):
     def __itemChanged(self, item):
         id = item.data(Qt.ItemDataRole.UserRole)
         DB.updatePromptGroup(id, item.text())
+        self.itemChanged.emit(id)
+
+    def __currentRowChanged(self, r_idx):
+        item = self.list.item(r_idx)
+        if item:
+            id = item.data(Qt.ItemDataRole.UserRole)
+            self.currentRowChanged.emit(id)
 
 
 class PromptTable(QWidget):
@@ -184,16 +192,14 @@ class PromptTable(QWidget):
 
     updated = Signal(str)
 
-    def __init__(self, id, parent=None):
+    def __init__(self, parent=None):
         super().__init__(parent)
-        self.__initVal(id)
+        self.__initVal()
         self.__initUi()
 
-    def __initVal(self, id):
-        self.__group_id = id
-
-        self.__title = DB.selectCertainPromptGroup(self.__group_id).name
-        self.__entries = DB.selectPromptEntry(self.__group_id)
+    def __initVal(self):
+        self.__title = ""
+        self.__entries = []
 
     def __initUi(self):
         self.__addBtn = Button()
@@ -205,8 +211,10 @@ class PromptTable(QWidget):
         self.__addBtn.clicked.connect(self.__add)
         self.__delBtn.clicked.connect(self.__delete)
 
+        self.__titleLbl = QLabel()
+
         lay = QHBoxLayout()
-        lay.addWidget(QLabel(self.__title))
+        lay.addWidget(self.__titleLbl)
         lay.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.Policy.MinimumExpanding))
         lay.addWidget(self.__addBtn)
         lay.addWidget(self.__delBtn)
@@ -219,15 +227,16 @@ class PromptTable(QWidget):
         self.__table = QTableWidget()
         self.__table.setColumnCount(2)
         self.__table.setRowCount(len(self.__entries))
-        self.__table.horizontalHeader().setSectionResizeMode(
-            1, QHeaderView.ResizeMode.Stretch
-        )
         self.__table.setSelectionBehavior(
             QAbstractItemView.SelectionBehavior.SelectRows
         )
         self.__table.setHorizontalHeaderLabels(
             [LangClass.TRANSLATIONS["Name"], LangClass.TRANSLATIONS["Value"]]
         )
+        self.__table.horizontalHeader().setSectionResizeMode(
+            1, QHeaderView.ResizeMode.Stretch
+        )
+        self.__table.itemChanged.connect(self.__saveChangedPrompt)
 
         for i in range(len(self.__entries)):
             act = self.__entries[i].act
@@ -253,6 +262,33 @@ class PromptTable(QWidget):
 
         self.setLayout(lay)
 
+    def showEntries(self, id):
+        self.__group_id = id
+
+        prompt_group = DB.selectCertainPromptGroup(id=self.__group_id)
+        self.__title = prompt_group.name
+        self.__entries = DB.selectPromptEntry(self.__group_id)
+
+        self.__titleLbl.setText(self.__title)
+
+        self.__table.setRowCount(len(self.__entries))
+        for i in range(len(self.__entries)):
+            act = self.__entries[i].act
+            prompt = self.__entries[i].prompt
+
+            item1 = QTableWidgetItem(act)
+            item1.setData(Qt.ItemDataRole.UserRole, self.__entries[i].id)
+            item1.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+
+            item2 = QTableWidgetItem(prompt)
+            item2.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+
+            self.__table.setItem(i, 0, item1)
+            self.__table.setItem(i, 1, item2)
+
+        self.__addBtn.setEnabled(True)
+        self.__delBtn.setEnabled(True)
+
     def getPromptText(self):
         prompt_text = ""
         for i in range(self.__table.rowCount()):
@@ -266,11 +302,23 @@ class PromptTable(QWidget):
         prompt_text = self.getPromptText()
         self.updated.emit(prompt_text)
 
+    def setNothingRightNow(self):
+        self.__title = ""
+        self.__titleLbl.setText(self.__title)
+        self.__table.clearContents()
+        self.__addBtn.setEnabled(False)
+        self.__delBtn.setEnabled(False)
+
+    def getId(self):
+        return self.__group_id
+
     def __saveChangedPrompt(self, item: QTableWidgetItem):
         act = self.__table.item(item.row(), 0)
         id = act.data(Qt.ItemDataRole.UserRole)
         act = act.text()
-        prompt = self.__table.item(item.row(), 1).text()
+
+        prompt = self.__table.item(item.row(), 1)
+        prompt = prompt.text() if prompt else ""
         DB.updatePromptEntry(id, act, prompt)
 
     def __add(self):
@@ -316,21 +364,21 @@ class FormPage(QWidget):
         self.__groups = DB.selectPromptGroup(prompt_type="form")
 
     def __initUi(self):
-        leftWidget = FormGroupList()
-        leftWidget.added.connect(self.__added)
-        leftWidget.deleted.connect(self.__deleted)
-        leftWidget.currentRowChanged.connect(self.__showEntries)
+        self.__leftWidget = FormGroupList()
+        self.__leftWidget.added.connect(self.add)
+        self.__leftWidget.deleted.connect(self.delete)
 
-        self.__rightWidget = QStackedWidget()
+        self.__leftWidget.currentRowChanged.connect(self.__showEntries)
 
-        for group in self.__groups:
-            promptTable = PromptTable(id=group.id)
-            promptTable.updated.connect(self.updated)
-            self.__rightWidget.addWidget(promptTable)
+        self.__table = PromptTable()
+        if len(self.__groups) > 0:
+            self.__leftWidget.list.setCurrentRow(0)
+            self.__table.showEntries(self.__groups[0].id)
+        self.__table.updated.connect(self.updated)
 
         mainWidget = QSplitter()
-        mainWidget.addWidget(leftWidget)
-        mainWidget.addWidget(self.__rightWidget)
+        mainWidget.addWidget(self.__leftWidget)
+        mainWidget.addWidget(self.__table)
         mainWidget.setChildrenCollapsible(False)
         mainWidget.setSizes([300, 700])
 
@@ -339,18 +387,14 @@ class FormPage(QWidget):
 
         self.setLayout(lay)
 
-    def __added(self, id):
-        promptTable = PromptTable(id)
-        promptTable.updated.connect(self.updated)
-        self.__rightWidget.addWidget(promptTable)
-        self.__rightWidget.setCurrentWidget(promptTable)
+    def add(self, id):
+        self.__table.showEntries(id)
 
-    def __deleted(self, n):
-        w = self.__rightWidget.widget(n)
-        self.__rightWidget.removeWidget(w)
+    def delete(self, id):
+        if self.__table.getId() == id:
+            self.__table.setNothingRightNow()
+        elif len(DB.selectPromptGroup(prompt_type="form")) == 0:
+            self.__table.setNothingRightNow()
 
-    def __showEntries(self, n):
-        self.__rightWidget.setCurrentIndex(n)
-        w = self.__rightWidget.currentWidget()
-        if w and isinstance(w, PromptTable):
-            self.updated.emit(w.getPromptText())
+    def __showEntries(self, id):
+        self.__table.showEntries(id)
