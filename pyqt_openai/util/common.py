@@ -63,7 +63,7 @@ from pyqt_openai import (
     O1_MODELS,
     STT_MODEL,
     DEFAULT_DATETIME_FORMAT,
-    DEFAULT_TOKEN_CHUNK_SIZE, DEFAULT_API_CONFIGS, INDENT_SIZE,
+    DEFAULT_TOKEN_CHUNK_SIZE, DEFAULT_API_CONFIGS, INDENT_SIZE, FAMOUS_LLM_LIST,
 )
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.globals import (
@@ -711,6 +711,8 @@ def get_g4f_image_models() -> list:
                         index.append(parent.__name__)
 
     models = [model["image_model"] for model in image_models]
+    # Filter out the models in FAMOUS_LLM_LIST
+    models = [model for model in models if model not in FAMOUS_LLM_LIST]
     return models
 
 

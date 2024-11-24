@@ -411,6 +411,9 @@ DEFAULT_DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 # This has to be managed separately since some of the arguments are different with usual models
 O1_MODELS = ["o1-preview", "o1-mini"]
 
+# For filtering out famous LLMs for image models
+FAMOUS_LLM_LIST = ["gpt", "claude", "gemini", "llama", "meta", "qwen", "falcon"]
+
 # Overall API configuration data
 DEFAULT_API_CONFIGS = [
     # OpenAI
