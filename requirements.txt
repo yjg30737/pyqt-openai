@@ -5,6 +5,7 @@ requests
 pyaudio
 pillow
 psutil
+filetype
 
 openai
 anthropic

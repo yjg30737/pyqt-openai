@@ -17,6 +17,7 @@ dependencies = [
     "pyaudio",
     "pillow",
     "psutil",
+    "filetype",
 
     "openai",
     "anthropic",
