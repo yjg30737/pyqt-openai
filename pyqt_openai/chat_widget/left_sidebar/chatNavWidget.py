@@ -14,14 +14,13 @@ from PySide6.QtWidgets import (
     QDialog,
 )
 
-import pyqt_openai.globals
 from pyqt_openai import THREAD_ORDERBY, ICON_ADD, ICON_IMPORT, ICON_SAVE, ICON_REFRESH
-from pyqt_openai.chat_widget.left_sidebar.importDialog import ImportDialog
 from pyqt_openai.chat_widget.left_sidebar.exportDialog import ExportDialog
+from pyqt_openai.chat_widget.left_sidebar.importDialog import ImportDialog
 from pyqt_openai.chat_widget.left_sidebar.selectChatImportTypeDialog import SelectChatImportTypeDialog
+from pyqt_openai.globals import DB
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ChatThreadContainer
-from pyqt_openai.globals import DB
 from pyqt_openai.widgets.baseNavWidget import BaseNavWidget
 from pyqt_openai.widgets.button import Button
 
