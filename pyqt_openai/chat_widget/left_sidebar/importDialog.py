@@ -150,9 +150,8 @@ class ImportDialog(QDialog):
             if self.__import_type == "general":
                 self.__path = path
                 self.__data = json.load(open(path))
-                # Sort by update_dt
                 self.__data = sorted(
-                    self.__data, key=lambda x: x[THREAD_ORDERBY], reverse=True
+                    self.__data, key=lambda x: x[THREAD_ORDERBY] or "", reverse=True
                 )
                 # Get most recent one
                 if most_recent_n is not None:
@@ -166,11 +165,6 @@ class ImportDialog(QDialog):
                         self.__checkBoxTableWidget.setItem(
                             r_idx, c_idx + 1, QTableWidgetItem(str(v))
                         )
-                # for i, d in enumerate(self.__data):
-                #     self.__checkBoxTableWidget.setItem(i, 1, QTableWidgetItem(d['id']))
-                #     self.__checkBoxTableWidget.setItem(i, 2, QTableWidgetItem(d['name']))
-                #     self.__checkBoxTableWidget.setItem(i, 3, QTableWidgetItem(d['insert_dt']))
-                #     self.__checkBoxTableWidget.setItem(i, 4, QTableWidgetItem(d['update_dt']))
             elif self.__import_type == "chatgpt":
                 result_dict = get_chatgpt_data_for_preview(path, most_recent_n)
                 columns = result_dict["columns"]
