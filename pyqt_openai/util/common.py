@@ -17,6 +17,7 @@ import subprocess
 import sys
 import tempfile
 import time
+import filetype
 import traceback
 import wave
 import zipfile
@@ -63,7 +64,7 @@ from pyqt_openai import (
     O1_MODELS,
     STT_MODEL,
     DEFAULT_DATETIME_FORMAT,
-    DEFAULT_TOKEN_CHUNK_SIZE, DEFAULT_API_CONFIGS, INDENT_SIZE,
+    DEFAULT_TOKEN_CHUNK_SIZE, DEFAULT_API_CONFIGS, INDENT_SIZE, FAMOUS_LLM_LIST,
 )
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.globals import (
@@ -581,63 +582,6 @@ def get_chat_model(is_g4f=False):
             all_models.extend(obj.get("model_list", []))
         return all_models
 
-def get_gemini_argument(model, system, messages, cur_text, stream, images):
-    try:
-        args = {
-            "system": system,
-            "model": model,
-            "messages": messages,
-            "stream": stream,
-        }
-        if len(images) > 0:
-            args["images"] = [PIL.Image.open(BytesIO(image)) for image in images]
-        args["messages"].append({"role": "user", "content": cur_text})
-        return args
-    except Exception as e:
-        print(e)
-        raise e
-
-
-def get_claude_argument(model, system, messages, cur_text, stream, images):
-    try:
-        args = {
-            "model": model,
-            "system": system,
-            "messages": messages,
-            "max_tokens": DEFAULT_TOKEN_CHUNK_SIZE,
-            "stream": stream,
-        }
-        # TODO REFACTORING (FOR COMMON FUNCTION FOR VISION)
-        # Vision
-        if len(images) > 0:
-            multiple_images_content = []
-            for image in images:
-                multiple_images_content.append(
-                    {
-                        "type": "image",
-                        "source": {
-                            "type": "base64",
-                            "media_type": "image/png",
-                            "data": get_image_url_from_local(image),
-                        },
-                    }
-                )
-
-            multiple_images_content = multiple_images_content[:] + [
-                {"type": "text", "text": cur_text}
-            ]
-
-            args["messages"].append(
-                {"role": "user", "content": multiple_images_content}
-            )
-        else:
-            args["messages"].append({"role": "user", "content": cur_text})
-        return args
-    except Exception as e:
-        print(e)
-        raise e
-
-
 def set_api_key(env_var_name, api_key):
     api_key = api_key.strip() if api_key else ""
     if env_var_name == "OPENAI_API_KEY":
@@ -655,7 +599,14 @@ def set_api_key(env_var_name, api_key):
     # Set environment variables dynamically
     os.environ[env_var_name] = api_key
 
-def get_image_url_from_local(image, is_openai=False):
+def get_mime_type_from_bytes(byte_data):
+    kind = filetype.guess(byte_data)
+    if kind is None:
+        raise ValueError("Could not determine MIME type from bytes")
+    print(kind.mime)
+    return kind.mime
+
+def get_image_url_from_local(image):
     """
     Image is bytes, this function converts it to base64 and returns the image url
     """
@@ -665,10 +616,7 @@ def get_image_url_from_local(image, is_openai=False):
         return base64.b64encode(image).decode("utf-8")
 
     base64_image = encode_image(image)
-    if is_openai:
-        return f"data:image/jpeg;base64,{base64_image}"
-    else:
-        return base64_image
+    return f"data:{get_mime_type_from_bytes(image)};base64,{base64_image}"
 
 
 def get_message_obj(role, content):
@@ -698,18 +646,21 @@ def get_g4f_image_models() -> list:
             if hasattr(provider, "parent"):
                 parent = __map__[provider.parent]
             if parent.__name__ not in index:
-                for model in provider.image_models:
-                    image_models.append(
-                        {
-                            "provider": parent.__name__,
-                            "url": parent.url,
-                            "label": parent.label if hasattr(parent, "label") else None,
-                            "image_model": model,
-                        }
-                    )
-                    index.append(parent.__name__)
+                if provider.image_models:
+                    for model in provider.image_models:
+                        image_models.append(
+                            {
+                                "provider": parent.__name__,
+                                "url": parent.url,
+                                "label": parent.label if hasattr(parent, "label") else None,
+                                "image_model": model,
+                            }
+                        )
+                        index.append(parent.__name__)
 
     models = [model["image_model"] for model in image_models]
+    # Filter out the models in FAMOUS_LLM_LIST
+    models = [model for model in models if model not in FAMOUS_LLM_LIST]
     return models
 
 
@@ -836,7 +787,7 @@ def get_api_argument(
                     {
                         "type": "image_url",
                         "image_url": {
-                            "url": get_image_url_from_local(image, is_openai=True),
+                            "url": get_image_url_from_local(image),
                         },
                     }
                 )

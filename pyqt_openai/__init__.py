@@ -23,7 +23,7 @@ ROOT_DIR = SRC_DIR.parent  # VividNode
 # For the sake of following the PEP8 standard, we will declare module-level dunder names.
 # PEP8 standard about dunder names: https://peps.python.org/pep-0008/#module-level-dunder-names
 
-__version__ = "1.8.1"
+__version__ = "1.8.2"
 __author__ = "Jung Gyu Yoon"
 
 # Constants
@@ -410,6 +410,9 @@ DEFAULT_DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 # This has to be managed separately since some of the arguments are different with usual models
 O1_MODELS = ["o1-preview", "o1-mini"]
+
+# For filtering out famous LLMs for image models
+FAMOUS_LLM_LIST = ["gpt", "claude", "gemini", "llama", "meta", "qwen", "falcon"]
 
 # Overall API configuration data
 DEFAULT_API_CONFIGS = [

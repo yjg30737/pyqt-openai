@@ -5,6 +5,7 @@ requests
 pyaudio
 pillow
 psutil
+filetype
 
 openai
 anthropic
@@ -15,7 +16,8 @@ llama-index
 docx2txt
 openpyxl
 
-g4f
+g4f==0.3.3.4
+
 curl_cffi
 litellm
 
