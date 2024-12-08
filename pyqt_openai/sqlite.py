@@ -226,7 +226,7 @@ class SqliteDatabase:
                         self.__conn.rollback()
                         self.__c.execute("PRAGMA foreign_keys=ON")  # Ensure foreign keys are re-enabled
                 else:
-                    print(f"Table {PROMPT_ENTRY_TABLE_NAME} already updated.")
+                    pass
             else:
                 self.__c.execute(
                     f"""CREATE TABLE {PROMPT_ENTRY_TABLE_NAME} (

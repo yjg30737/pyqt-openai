@@ -180,6 +180,7 @@ class G4FImageRightSideBarWidget(ImageControlWidget):
             **obj,
             "model": self.__modelCmbBox.currentText(),
             "provider": self.__providerCmbBox.currentText(),
+            "response_format": "url",
             "prompt": self._promptTextEdit.toPlainText(),
             "negative_prompt": self._negativeTextEdit.toPlainText(),
         }
