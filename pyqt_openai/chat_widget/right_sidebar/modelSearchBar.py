@@ -1,5 +1,7 @@
-from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QLineEdit, QCompleter
+from __future__ import annotations
+
+from qtpy.QtCore import Qt
+from qtpy.QtWidgets import QCompleter, QLineEdit
 
 from pyqt_openai.util.common import get_chat_model
 

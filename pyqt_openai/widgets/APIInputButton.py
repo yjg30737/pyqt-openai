@@ -1,31 +1,37 @@
+from __future__ import annotations
+
 import colorsys
 
-from PySide6.QtWidgets import QPushButton
+from qtpy.QtWidgets import QPushButton
 
 from pyqt_openai.settings_dialog.settingsDialog import SettingsDialog
 
 
 class APIInputButton(QPushButton):
-    """
-    Stylish button for opening the API settings dialog.
-    """
-    def __init__(self, base_color="#007BFF"):
+    """Stylish button for opening the API settings dialog."""
+    def __init__(
+        self,
+        base_color: str = "#007BFF",
+    ):
         super().__init__()
         self.setObjectName("modernButton")
-        self.base_color = base_color  # Default base color
+        self.base_color: str = base_color  # Default base color
         self.__initUi()
 
     def __initUi(self):
         self.clicked.connect(
-            lambda _: SettingsDialog(default_index=1, parent=self).exec()
+            lambda _: SettingsDialog(default_index=1, parent=self).exec(),
         )
         self.updateStylesheet(self.base_color)
 
-    def updateStylesheet(self, base_color):
-        """Generate dynamic styles based on the base color"""
-        hover_color = self.adjust_brightness(base_color, 0.8)  # Brighten
-        pressed_color = self.adjust_brightness(base_color, 0.6)  # Darken
-        border_color = pressed_color  # Use the same color for border
+    def updateStylesheet(
+        self,
+        base_color: str,
+    ):
+        """Generate dynamic styles based on the base color."""
+        hover_color: str = self.adjust_brightness(base_color, 0.8)  # Brighten
+        pressed_color: str = self.adjust_brightness(base_color, 0.6)  # Darken
+        border_color: str = pressed_color  # Use the same color for border
 
         # Dynamically generated stylesheet
         self.setStyleSheet(
@@ -48,11 +54,15 @@ class APIInputButton(QPushButton):
                 background-color: {pressed_color};
                 border-color: {border_color};
             }}
-            """
+            """,
         )
 
-    def adjust_brightness(self, hex_color, factor):
-        """Adjust the brightness of a given hex color"""
+    def adjust_brightness(
+        self,
+        hex_color: str,
+        factor: float,
+    ) -> str:
+        """Adjust the brightness of a given hex color."""
         hex_color = hex_color.lstrip("#")
         r, g, b = tuple(int(hex_color[i : i + 2], 16) for i in (0, 2, 4))
 

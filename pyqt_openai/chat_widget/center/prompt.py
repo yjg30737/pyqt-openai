@@ -1,38 +1,38 @@
+from __future__ import annotations
+
 from pathlib import Path
 
-from PySide6.QtCore import Qt, Signal
-from PySide6.QtGui import QAction
-from PySide6.QtWidgets import (
-    QVBoxLayout,
-    QPushButton,
+from qtpy.QtCore import Qt, Signal
+from qtpy.QtGui import QAction
+from qtpy.QtWidgets import (
     QFileDialog,
-    QToolButton,
-    QMenu,
-    QWidget,
     QHBoxLayout,
+    QMenu,
     QMessageBox,
+    QPushButton,
+    QToolButton,
+    QVBoxLayout,
+    QWidget,
 )
 
 from pyqt_openai import (
-    READ_FILE_EXT_LIST_STR,
+    DEFAULT_SHORTCUT_PROMPT_BEGINNING,
+    DEFAULT_SHORTCUT_PROMPT_ENDING,
+    DEFAULT_SHORTCUT_RECORD,
+    DEFAULT_SHORTCUT_SEND,
+    DEFAULT_SHORTCUT_SUPPORT_PROMPT_COMMAND,
+    ICON_RECORD,
+    ICON_SEND,
+    ICON_VERTICAL_THREE_DOTS,
+    IMAGE_FILE_EXT_LIST,
     PROMPT_BEGINNING_KEY_NAME,
     PROMPT_END_KEY_NAME,
     PROMPT_JSON_KEY_NAME,
-    DEFAULT_SHORTCUT_PROMPT_BEGINNING,
-    DEFAULT_SHORTCUT_PROMPT_ENDING,
-    DEFAULT_SHORTCUT_SUPPORT_PROMPT_COMMAND,
-    ICON_VERTICAL_THREE_DOTS,
-    ICON_SEND,
     PROMPT_MAIN_KEY_NAME,
-    IMAGE_FILE_EXT_LIST,
-    TEXT_FILE_EXT_LIST,
     QFILEDIALOG_DEFAULT_DIRECTORY,
-    DEFAULT_SHORTCUT_SEND,
-    DEFAULT_SHORTCUT_RECORD,
-    ICON_RECORD,
+    READ_FILE_EXT_LIST_STR,
+    TEXT_FILE_EXT_LIST,
 )
-from pyqt_openai.config_loader import CONFIG_MANAGER
-from pyqt_openai.globals import DB
 from pyqt_openai.chat_widget.center.commandSuggestionWidget import (
     CommandSuggestionWidget,
 )
@@ -40,11 +40,13 @@ from pyqt_openai.chat_widget.center.textEditPromptGroup import TextEditPromptGro
 from pyqt_openai.chat_widget.center.uploadedImageFileWidget import (
     UploadedImageFileWidget,
 )
+from pyqt_openai.config_loader import CONFIG_MANAGER
+from pyqt_openai.globals import DB
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.util.common import (
-    get_content_of_text_file_for_send,
     RecorderThread,
     STTThread,
+    get_content_of_text_file_for_send,
 )
 from pyqt_openai.widgets.button import Button
 from pyqt_openai.widgets.jsonEditor import JSONEditor
@@ -88,7 +90,7 @@ class Prompt(QWidget):
         # Create the command suggestion list
         self.__suggestionWidget = CommandSuggestionWidget()
         self.__suggestionWidget.toggleCommandSuggestion.connect(
-            self.__setCommandSuggestionEnabled
+            self.__setCommandSuggestionEnabled,
         )
         self.__suggestion_list = self.__suggestionWidget.getCommandList()
 
@@ -100,10 +102,10 @@ class Prompt(QWidget):
         # set command suggestion
         self.__textEditGroup.onUpdateSuggestion.connect(self.__updateSuggestions)
         self.__textEditGroup.onSendKeySignalToSuggestion.connect(
-            self.__sendKeySignalToSuggestion
+            self.__sendKeySignalToSuggestion,
         )
         self.__textEditGroup.onPasteFile.connect(
-            self.__uploadedImageFileWidget.addImageBuffer
+            self.__uploadedImageFileWidget.addImageBuffer,
         )
 
         self.__suggestion_list.itemClicked.connect(self.executeCommand)
@@ -121,7 +123,7 @@ class Prompt(QWidget):
         self.__sendBtn = Button()
         self.__sendBtn.setStyleAndIcon(ICON_SEND)
         self.__sendBtn.setToolTip(
-            LangClass.TRANSLATIONS["Send"] + f" ({DEFAULT_SHORTCUT_SEND})"
+            LangClass.TRANSLATIONS["Send"] + f" ({DEFAULT_SHORTCUT_SEND})",
         )
         self.__sendBtn.setShortcut(DEFAULT_SHORTCUT_SEND)
 
@@ -239,7 +241,7 @@ class Prompt(QWidget):
             elif group.prompt_type == "sentence":
                 for entry in entries:
                     command_obj_lst.append(
-                        {"name": f"{entry.act}({group.name})", "value": entry.prompt}
+                        {"name": f"{entry.act}({group.name})", "value": entry.prompt},
                     )
         self.__p_grp = [
             {"name": obj["name"], "value": obj["value"]} for obj in command_obj_lst
@@ -293,14 +295,14 @@ class Prompt(QWidget):
     def __sendKeySignalToSuggestion(self, key):
         if key == "up":
             self.__suggestion_list.setCurrentRow(
-                max(0, self.__suggestion_list.currentRow() - 1)
+                max(0, self.__suggestion_list.currentRow() - 1),
             )
         elif key == "down":
             self.__suggestion_list.setCurrentRow(
                 min(
                     self.__suggestion_list.currentRow() + 1,
                     self.__suggestion_list.count() - 1,
-                )
+                ),
             )
         elif key == "enter":
             self.executeCommand(self.__suggestion_list.currentItem())
@@ -318,7 +320,7 @@ class Prompt(QWidget):
             overallHeight
             + self.__suggestionWidget.height()
             + self.__uploadedImageFileWidget.height()
-            + 100
+            + 100,
         )
 
     def getMainPromptInput(self):
@@ -424,7 +426,7 @@ class Prompt(QWidget):
         self.stt_thread = STTThread(filename)
         self.stt_thread.stt_finished.connect(self.on_stt_finished)
         self.stt_thread.errorGenerated.connect(
-            lambda x: QMessageBox.critical(self, LangClass.TRANSLATIONS["Error"], x)
+            lambda x: QMessageBox.critical(self, LangClass.TRANSLATIONS["Error"], x),
         )
         self.stt_thread.start()
 

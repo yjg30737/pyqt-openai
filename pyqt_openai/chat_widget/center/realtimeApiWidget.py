@@ -1,6 +1,8 @@
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel
-from PySide6.QtGui import QFont
-from PySide6.QtCore import Qt
+from __future__ import annotations
+
+from qtpy.QtCore import Qt
+from qtpy.QtGui import QFont
+from qtpy.QtWidgets import QLabel, QVBoxLayout, QWidget
 
 from pyqt_openai import LARGE_LABEL_PARAM
 

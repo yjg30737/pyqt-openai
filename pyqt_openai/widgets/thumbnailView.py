@@ -1,20 +1,20 @@
+from __future__ import annotations
+
 import os
 
-from PySide6.QtCore import Qt, QPointF, Signal
-from PySide6.QtGui import QPixmap, QColor, QBrush, QLinearGradient
-from PySide6.QtWidgets import (
-    QGraphicsScene,
-    QGraphicsPixmapItem,
-    QGraphicsView,
-    QApplication,
-    QWidget,
-    QHBoxLayout,
-    QFileDialog,
-)
+from typing import TYPE_CHECKING
 
-from pyqt_openai import ICON_SAVE, ICON_ADD, ICON_DELETE, ICON_COPY
+from qtpy.QtCore import QPointF, Qt, Signal
+from qtpy.QtGui import QBrush, QColor, QLinearGradient, QPixmap
+from qtpy.QtWidgets import QApplication, QFileDialog, QGraphicsPixmapItem, QGraphicsScene, QGraphicsView, QHBoxLayout, QWidget
+
+from pyqt_openai import ICON_ADD, ICON_COPY, ICON_DELETE, ICON_SAVE
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.widgets.button import Button
+
+if TYPE_CHECKING:
+    from qtpy.QtCore import QEvent
+    from qtpy.QtGui import QEnterEvent, QMouseEvent, QResizeEvent, QWheelEvent
 
 
 class ThumbnailView(QGraphicsView):
@@ -26,12 +26,12 @@ class ThumbnailView(QGraphicsView):
         self.__initUi()
 
     def __initVal(self):
-        self._scene = QGraphicsScene()
-        self._p = QPixmap()
-        self._item = QGraphicsPixmapItem()
-        self.__aspectRatioMode = Qt.AspectRatioMode.KeepAspectRatio
+        self._scene: QGraphicsScene = QGraphicsScene()
+        self._p: QPixmap = QPixmap()
+        self._item: QGraphicsPixmapItem = QGraphicsPixmapItem()
+        self.__aspectRatioMode: Qt.AspectRatioMode = Qt.AspectRatioMode.KeepAspectRatio
 
-        self.__factor = 1.1  # Zoom factor
+        self.__factor: float = 1.1  # Zoom factor
 
     def __initUi(self):
         self.__setControlWidget()
@@ -40,11 +40,11 @@ class ThumbnailView(QGraphicsView):
         # to make buttons appear and apply gradient
         # above the top of an image when you hover the mouse cursor over it
         self.setMouseTracking(True)
-        self.__defaultBrush = self.foregroundBrush()
+        self.__defaultBrush: QBrush = self.foregroundBrush()
         gradient = QLinearGradient(QPointF(0, 0), QPointF(0, self.viewport().height()))
         gradient.setColorAt(0, QColor(0, 0, 0, 200))
         gradient.setColorAt(1, QColor(0, 0, 0, 0))
-        self.__brush = QBrush(gradient)
+        self.__brush: QBrush = QBrush(gradient)
 
         self.setMinimumSize(150, 150)
 
@@ -75,52 +75,63 @@ class ThumbnailView(QGraphicsView):
         lay.addWidget(zoomInBtn)
         lay.addWidget(zoomOutBtn)
 
-        self.__controlWidget = QWidget(self)
+        self.__controlWidget: QWidget = QWidget(self)
         self.__controlWidget.setLayout(lay)
 
         self.__controlWidget.hide()
 
     def __refreshSceneAndView(self):
-        self._item = self._scene.addPixmap(self._p)
+        self._item: QGraphicsPixmapItem = self._scene.addPixmap(self._p)
         self._item.setTransformationMode(Qt.TransformationMode.SmoothTransformation)
         rect = (
             self.sceneRect()
-            if (self._item.boundingRect().width() > self.sceneRect().width())
-            or (self._item.boundingRect().height() > self.sceneRect().height())
+            if (self._item.boundingRect().width() > self.sceneRect().width()) or (self._item.boundingRect().height() > self.sceneRect().height())
             else self._item.boundingRect()
         )
         self.fitInView(rect, self.__aspectRatioMode)
         self.setScene(self._scene)
 
-    def setFilename(self, filename: str):
+    def setFilename(
+        self,
+        filename: str,
+    ):
         self._scene = QGraphicsScene()
         self._p = QPixmap(filename)
         self.__refreshSceneAndView()
 
-    def setContent(self, content):
+    def setContent(
+        self,
+        content: bytes,
+    ):
         self._scene = QGraphicsScene()
         self._p.loadFromData(content)
         self.__refreshSceneAndView()
 
-    def setPixmap(self, pixmap):
+    def setPixmap(
+        self,
+        pixmap: QPixmap,
+    ):
         self._scene = QGraphicsScene()
         self._p = pixmap
         self.__refreshSceneAndView()
 
-    def setAspectRatioMode(self, mode):
+    def setAspectRatioMode(
+        self,
+        mode: Qt.AspectRatioMode,
+    ):
         self.__aspectRatioMode = mode
 
     def __copy(self):
         QApplication.clipboard().setPixmap(self._p)
 
     def __save(self):
-        filename = QFileDialog.getSaveFileName(
+        filename: tuple[str, str] = QFileDialog.getSaveFileName(
             self,
             LangClass.TRANSLATIONS["Save"],
             os.path.expanduser("~"),
             "Image file (*.png)",
         )
-        if filename[0]:
+        if filename[0] and filename[0].strip():
             filename = filename[0]
             if filename:
                 self._p.save(filename)
@@ -131,7 +142,10 @@ class ThumbnailView(QGraphicsView):
     def __zoomOut(self):
         self.scale(1 / self.__factor, 1 / self.__factor)
 
-    def enterEvent(self, event):
+    def enterEvent(
+        self,
+        event: QEnterEvent,
+    ):
         # Show the button when the mouse enters the view
         if self._item.pixmap().width():
             self.__controlWidget.move(self.rect().x(), self.rect().y())
@@ -139,22 +153,34 @@ class ThumbnailView(QGraphicsView):
             self.__controlWidget.show()
         return super().enterEvent(event)
 
-    def leaveEvent(self, event):
+    def leaveEvent(
+        self,
+        event: QEvent,
+    ):
         # Hide the button when the mouse leaves the view
         self.__controlWidget.hide()
         self.setForegroundBrush(self.__defaultBrush)
         return super().leaveEvent(event)
 
-    def resizeEvent(self, event):
+    def resizeEvent(
+        self,
+        event: QResizeEvent,
+    ):
         if self._item.pixmap().width():
             self.setScene(self._scene)
         return super().resizeEvent(event)
 
-    def mousePressEvent(self, event):
+    def mousePressEvent(
+        self,
+        event: QMouseEvent,
+    ):
         self.clicked.emit(self._p)
         return super().mousePressEvent(event)
 
-    def wheelEvent(self, event):
+    def wheelEvent(
+        self,
+        event: QWheelEvent,
+    ):
         if event.modifiers() == Qt.KeyboardModifier.ControlModifier:
             # Check if Ctrl key is pressed
             if event.angleDelta().y() > 0:

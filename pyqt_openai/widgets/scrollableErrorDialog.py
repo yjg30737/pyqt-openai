@@ -1,23 +1,30 @@
-from PySide6.QtWidgets import (
-    QDialog,
-    QLabel,
-    QVBoxLayout,
-    QScrollArea,
-    QPushButton,
-    QHBoxLayout,
-)
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+from qtpy.QtWidgets import QDialog, QHBoxLayout, QLabel, QPushButton, QScrollArea, QVBoxLayout
 
 from pyqt_openai import REPORT_ERROR_URL
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.widgets.linkLabel import LinkLabel
 
+if TYPE_CHECKING:
+    from qtpy.QtWidgets import QWidget
+
 
 class ScrollableErrorDialog(QDialog):
-    def __init__(self, error_msg, parent=None):
+    def __init__(
+        self,
+        error_msg: str,
+        parent: QWidget | None = None,
+    ):
         super().__init__(parent)
         self.__initUi(error_msg)
 
-    def __initUi(self, error_msg):
+    def __initUi(
+        self,
+        error_msg: str,
+    ):
         # TODO LANGUAGE
         self.setWindowTitle(LangClass.TRANSLATIONS["Error"])
 

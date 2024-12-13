@@ -1,9 +1,15 @@
-from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QDialog, QFormLayout, QLabel, QPushButton
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+from qtpy.QtCore import Qt
+from qtpy.QtWidgets import QDialog, QFormLayout, QLabel, QPushButton
 
 from pyqt_openai.lang.translations import LangClass
-from pyqt_openai.models import ChatMessageContainer
 from pyqt_openai.util.common import getSeparator
+
+if TYPE_CHECKING:
+    from pyqt_openai.models import ChatMessageContainer
 
 
 class ResponseInfoDialog(QDialog):

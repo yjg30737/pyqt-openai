@@ -1,8 +1,10 @@
-from PySide6.QtCore import Signal
-from PySide6.QtWidgets import (
+from __future__ import annotations
+
+from qtpy.QtCore import Signal
+from qtpy.QtWidgets import (
+    QSplitter,
     QVBoxLayout,
     QWidget,
-    QSplitter,
 )
 
 from pyqt_openai.chat_widget.prompt_gen_widget.promptGroupList import PromptGroupList
@@ -13,7 +15,7 @@ from pyqt_openai.globals import DB
 class PromptPage(QWidget):
     updated = Signal(str)
 
-    def __init__(self, prompt_type='form', parent=None):
+    def __init__(self, prompt_type="form", parent=None):
         super().__init__(parent)
         self.__initVal(prompt_type)
         self.__initUi()
@@ -50,9 +52,7 @@ class PromptPage(QWidget):
         self.__table.showEntries(id)
 
     def delete(self, id):
-        if self.__table.getId() == id:
-            self.__table.setNothingRightNow()
-        elif len(DB.selectPromptGroup(prompt_type=self.prompt_type)) == 0:
+        if self.__table.getId() == id or len(DB.selectPromptGroup(prompt_type=self.prompt_type)) == 0:
             self.__table.setNothingRightNow()
 
     def __showEntries(self, id):

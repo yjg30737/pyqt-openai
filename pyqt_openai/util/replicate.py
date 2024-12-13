@@ -1,7 +1,10 @@
-import os
-import requests
+from __future__ import annotations
+
 import base64
+import os
+
 import replicate
+import requests
 
 from pyqt_openai.models import ImagePromptContainer
 
@@ -95,7 +98,6 @@ class ReplicateWrapper:
                 }
                 arg = ImagePromptContainer(**arg)
                 return arg
-            else:
-                raise Exception("No output")
+            raise Exception("No output")
         except Exception as e:
             raise e

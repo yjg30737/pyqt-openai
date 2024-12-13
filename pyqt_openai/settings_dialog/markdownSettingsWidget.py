@@ -1,6 +1,6 @@
 # TODO WILL_BE_IMPLEMENTED AFTER v2.x.0
 
-# from PySide6.QtWidgets import (QWidget, QVBoxLayout, QCheckBox, QLabel, QComboBox,
+# from qtpy.QtWidgets import (QWidget, QVBoxLayout, QCheckBox, QLabel, QComboBox,
 #                             QPushButton, QColorDialog, QFormLayout, QScrollArea)
 #
 # from pyqt_openai.lang.translations import LangClass

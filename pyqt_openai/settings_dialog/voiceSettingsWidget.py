@@ -1,20 +1,22 @@
-from PySide6.QtWidgets import (
-    QWidget,
-    QComboBox,
-    QFormLayout,
-    QDoubleSpinBox,
-    QGroupBox,
-    QVBoxLayout,
-    QSpinBox,
+from __future__ import annotations
+
+from qtpy.QtWidgets import (
     QCheckBox,
+    QComboBox,
+    QDoubleSpinBox,
+    QFormLayout,
+    QGroupBox,
     QLabel,
+    QSpinBox,
+    QVBoxLayout,
+    QWidget,
 )
 
 from pyqt_openai import (
-    WHISPER_TTS_VOICE_TYPE,
-    WHISPER_TTS_VOICE_SPEED_RANGE,
-    EDGE_TTS_VOICE_TYPE,
     DEFAULT_HIGHLIGHT_TEXT_COLOR,
+    EDGE_TTS_VOICE_TYPE,
+    WHISPER_TTS_VOICE_SPEED_RANGE,
+    WHISPER_TTS_VOICE_TYPE,
 )
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.lang.translations import LangClass
@@ -32,7 +34,7 @@ class VoiceSettingsWidget(QWidget):
         self.speed = CONFIG_MANAGER.get_general_property("voice_speed")
         self.auto_play = CONFIG_MANAGER.get_general_property("auto_play_voice")
         self.auto_stop_silence_duration = CONFIG_MANAGER.get_general_property(
-            "auto_stop_silence_duration"
+            "auto_stop_silence_duration",
         )
 
     def __initUi(self):
@@ -42,14 +44,14 @@ class VoiceSettingsWidget(QWidget):
         self.__voiceProviderCmbBox.addItems(["OpenAI", "edge-tts"])
         self.__voiceProviderCmbBox.setCurrentText(self.voice_provider)
         self.__voiceProviderCmbBox.currentTextChanged.connect(
-            self.__voiceProviderChanged
+            self.__voiceProviderChanged,
         )
 
         # TODO LANGUAGE
         self.__warningLbl = QLabel(
             "You need to install mpv to use edge-tts. "
             "<a href='https://mpv.io/installation/'>Link</a>"
-            "<br>Also edge-tts can only be used when run with python."
+            "<br>Also edge-tts can only be used when run with python.",
         )
         self.__warningLbl.setOpenExternalLinks(True)
         self.__warningLbl.setStyleSheet(f"color: {DEFAULT_HIGHLIGHT_TEXT_COLOR};")
@@ -68,7 +70,7 @@ class VoiceSettingsWidget(QWidget):
 
         # Auto-Play voice when response is received
         self.__autoPlayChkBox = QCheckBox(
-            "Auto-Play Voice when Response is Received (Work in Progress)"
+            "Auto-Play Voice when Response is Received (Work in Progress)",
         )
         self.__autoPlayChkBox.setChecked(self.auto_play)
         # TODO implement auto-play voice in v1.8.0

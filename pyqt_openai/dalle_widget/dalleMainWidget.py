@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.dalle_widget.dalleHome import DallEHome
 from pyqt_openai.dalle_widget.dalleRightSideBar import DallERightSideBarWidget

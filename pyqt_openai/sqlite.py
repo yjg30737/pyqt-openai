@@ -1,36 +1,41 @@
+from __future__ import annotations
+
 import json
 import os
 import sqlite3
+
 from datetime import datetime
-from typing import List
+from typing import TYPE_CHECKING
 
 from pyqt_openai import (
-    THREAD_TABLE_NAME,
-    THREAD_TRIGGER_NAME,
+    CHAT_FILE_TABLE_NAME,
+    DEFAULT_DATETIME_FORMAT,
+    IMAGE_TABLE_NAME,
     MESSAGE_TABLE_NAME,
+    PROMPT_ENTRY_TABLE_NAME,
+    PROMPT_GROUP_TABLE_NAME,
+    THREAD_MESSAGE_DELETED_TR_NAME,
     THREAD_MESSAGE_INSERTED_TR_NAME,
     THREAD_MESSAGE_UPDATED_TR_NAME,
-    THREAD_MESSAGE_DELETED_TR_NAME,
-    IMAGE_TABLE_NAME,
-    PROMPT_GROUP_TABLE_NAME,
-    PROMPT_ENTRY_TABLE_NAME,
+    THREAD_TABLE_NAME,
+    THREAD_TRIGGER_NAME,
     get_config_directory,
-    DEFAULT_DATETIME_FORMAT,
-    CHAT_FILE_TABLE_NAME,
 )
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.models import (
-    ImagePromptContainer,
     ChatMessageContainer,
     PromptEntryContainer,
     PromptGroupContainer,
 )
 
+if TYPE_CHECKING:
+    from pyqt_openai.models import (
+        ImagePromptContainer,
+    )
+
 
 def get_db_filename():
-    """
-    Get the database file's name from the settings.
-    """
+    """Get the database file's name from the settings."""
     db_filename = CONFIG_MANAGER.get_general_property("db") + ".db"
     config_dir = get_config_directory()
     db_path = os.path.join(config_dir, db_filename)
@@ -38,8 +43,7 @@ def get_db_filename():
 
 
 class SqliteDatabase:
-    """
-    Functions which only meant to be used frequently are defined.
+    """Functions which only meant to be used frequently are defined.
     If there is no functions you want to use, use ``getCursor`` instead.
     """
 
@@ -78,7 +82,7 @@ class SqliteDatabase:
     def __createPromptGroup(self):
         try:
             self.__c.execute(
-                f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{PROMPT_GROUP_TABLE_NAME}'"
+                f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{PROMPT_GROUP_TABLE_NAME}'",
             )
             if self.__c.fetchone()[0] == 1:
                 # TODO WILL_REMOVED_IN_FUTURE AFTER v2.0.0
@@ -90,7 +94,7 @@ class SqliteDatabase:
                                       name VARCHAR(255) UNIQUE,
                                       prompt_type VARCHAR(255),
                                       update_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
-                                      insert_dt DATETIME DEFAULT CURRENT_TIMESTAMP)"""
+                                      insert_dt DATETIME DEFAULT CURRENT_TIMESTAMP)""",
                 )
                 # Create prompt entry
                 self.__createPromptEntry()
@@ -120,9 +124,9 @@ class SqliteDatabase:
         try:
             query = f"SELECT * FROM {PROMPT_GROUP_TABLE_NAME}"
             if prompt_type == "form":
-                query += f' WHERE prompt_type="form"'
+                query += ' WHERE prompt_type="form"'
             elif prompt_type == "sentence":
-                query += f' WHERE prompt_type="sentence"'
+                query += ' WHERE prompt_type="sentence"'
             self.__c.execute(query)
             return [PromptGroupContainer(**elem) for elem in self.__c.fetchall()]
         except sqlite3.Error as e:
@@ -130,9 +134,7 @@ class SqliteDatabase:
             raise
 
     def selectCertainPromptGroup(self, id=None, name=None):
-        """
-        Select specific prompt group by id or name
-        """
+        """Select specific prompt group by id or name."""
         try:
             query = f"SELECT * FROM {PROMPT_GROUP_TABLE_NAME}"
             if id or name:
@@ -146,8 +148,7 @@ class SqliteDatabase:
             result = self.__c.execute(query).fetchone()
             if result:
                 return PromptGroupContainer(**result)
-            else:
-                return None
+            return None
         except sqlite3.Error as e:
             print(f"An error occurred: {e}")
             raise
@@ -155,7 +156,7 @@ class SqliteDatabase:
     def updatePromptGroup(self, id, name):
         try:
             self.__c.execute(
-                f"UPDATE {PROMPT_GROUP_TABLE_NAME} SET name=? WHERE id={id}", (name,)
+                f"UPDATE {PROMPT_GROUP_TABLE_NAME} SET name=? WHERE id={id}", (name,),
             )
             self.__conn.commit()
         except sqlite3.Error as e:
@@ -176,7 +177,7 @@ class SqliteDatabase:
     def __createPromptEntry(self):
         try:
             self.__c.execute(
-                f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{PROMPT_ENTRY_TABLE_NAME}'"
+                f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{PROMPT_ENTRY_TABLE_NAME}'",
             )
             if self.__c.fetchone()[0] == 1:
                 # TODO WILL_REMOVED_IN_FUTURE AFTER v2.0.0
@@ -204,7 +205,7 @@ class SqliteDatabase:
                                                     update_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
                                                     FOREIGN KEY (group_id) REFERENCES {PROMPT_GROUP_TABLE_NAME}(id)
                                                     ON DELETE CASCADE)
-                                """
+                                """,
                         )
 
                         # Copy data from the old table to the new table, renaming columns
@@ -214,7 +215,7 @@ class SqliteDatabase:
                                            name AS act, content AS prompt,
                                            insert_dt, update_dt
                                     FROM {temp_table}
-                                """
+                                """,
                         )
 
                         # Drop the temporary table
@@ -238,7 +239,7 @@ class SqliteDatabase:
                                     update_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
                                     FOREIGN KEY (group_id) REFERENCES {PROMPT_GROUP_TABLE_NAME}(id)
                                     ON DELETE CASCADE)
-                """
+                """,
                 )
                 self.__conn.commit()
         except sqlite3.Error as e:
@@ -261,8 +262,8 @@ class SqliteDatabase:
             raise
 
     def selectPromptEntry(
-            self, group_id, id=None, act=None
-    ) -> List[PromptEntryContainer]:
+            self, group_id, id=None, act=None,
+    ) -> list[PromptEntryContainer]:
         try:
             query = f"SELECT * FROM {PROMPT_ENTRY_TABLE_NAME} WHERE group_id={group_id}"
             if id:
@@ -306,7 +307,7 @@ class SqliteDatabase:
             # Create thread table if not exists
             thread_tb_exists = (
                 self.__c.execute(
-                    f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{THREAD_TABLE_NAME}'"
+                    f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{THREAD_TABLE_NAME}'",
                 ).fetchone()[0]
                 == 1
             )
@@ -320,7 +321,7 @@ class SqliteDatabase:
                              (id INTEGER PRIMARY KEY,
                               name TEXT,
                               update_dt DATETIME,
-                              insert_dt DATETIME DEFAULT CURRENT_TIMESTAMP)"""
+                              insert_dt DATETIME DEFAULT CURRENT_TIMESTAMP)""",
                 )
 
             # Create message table
@@ -329,7 +330,7 @@ class SqliteDatabase:
             # Create trigger if not exists
             thread_trigger_exists = (
                 self.__c.execute(
-                    f"SELECT count(*) FROM sqlite_master WHERE type='trigger' AND name='{THREAD_TRIGGER_NAME}'"
+                    f"SELECT count(*) FROM sqlite_master WHERE type='trigger' AND name='{THREAD_TRIGGER_NAME}'",
                 ).fetchone()[0]
                 == 1
             )
@@ -345,7 +346,7 @@ class SqliteDatabase:
                                UPDATE {THREAD_TABLE_NAME}
                                SET update_dt=CURRENT_TIMESTAMP
                                WHERE id=OLD.id;
-                             END;"""
+                             END;""",
                 )
             # Commit the transaction
             self.__conn.commit()
@@ -354,9 +355,8 @@ class SqliteDatabase:
             raise
 
     def selectAllThread(self, id_arr=None):
-        """
-        Select all thread
-        id_arr: list of thread id
+        """Select all thread
+        id_arr: list of thread id.
         """
         try:
             query = f"SELECT * FROM {THREAD_TABLE_NAME}"
@@ -369,9 +369,7 @@ class SqliteDatabase:
             raise
 
     def selectThread(self, id):
-        """
-        Select specific thread
-        """
+        """Select specific thread."""
         try:
             self.__c.execute(f"SELECT * FROM {THREAD_TABLE_NAME} WHERE id={id}")
             return self.__c.fetchone()
@@ -406,7 +404,7 @@ class SqliteDatabase:
     def updateThread(self, id, name):
         try:
             self.__c.execute(
-                f"UPDATE {THREAD_TABLE_NAME} SET name=(?) WHERE id={id}", (name,)
+                f"UPDATE {THREAD_TABLE_NAME} SET name=(?) WHERE id={id}", (name,),
             )
             self.__conn.commit()
         except sqlite3.Error as e:
@@ -425,11 +423,9 @@ class SqliteDatabase:
             raise
 
     def __createMessageTrigger(
-        self, insert_trigger=True, update_trigger=True, delete_trigger=True
+        self, insert_trigger=True, update_trigger=True, delete_trigger=True,
     ):
-        """
-        Create message trigger
-        """
+        """Create message trigger."""
         if insert_trigger:
             # Create insert trigger
             self.__c.execute(
@@ -439,7 +435,7 @@ class SqliteDatabase:
                 BEGIN
                   UPDATE {THREAD_TABLE_NAME} SET update_dt = CURRENT_TIMESTAMP WHERE id = NEW.thread_id;
                 END
-            """
+            """,
             )
 
         if update_trigger:
@@ -451,7 +447,7 @@ class SqliteDatabase:
                 BEGIN
                   UPDATE {THREAD_TABLE_NAME} SET update_dt = CURRENT_TIMESTAMP WHERE id = NEW.thread_id;
                 END
-            """
+            """,
             )
 
         if delete_trigger:
@@ -463,20 +459,18 @@ class SqliteDatabase:
                 BEGIN
                   UPDATE {THREAD_TABLE_NAME} SET update_dt = CURRENT_TIMESTAMP WHERE id = OLD.thread_id;
                 END
-            """
+            """,
             )
 
         # Commit the transaction
         self.__conn.commit()
 
     def __createMessage(self):
-        """
-        Create message table
-        """
+        """Create message table."""
         try:
             # Check if the table exists
             self.__c.execute(
-                f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{MESSAGE_TABLE_NAME}'"
+                f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{MESSAGE_TABLE_NAME}'",
             )
             if self.__c.fetchone()[0] == 1:
                 pass
@@ -501,7 +495,7 @@ class SqliteDatabase:
                               is_g4f INT DEFAULT 0,
                               provider VARCHAR(255),
                               FOREIGN KEY (thread_id) REFERENCES {THREAD_TABLE_NAME}(id)
-                              ON DELETE CASCADE)"""
+                              ON DELETE CASCADE)""",
                 )
 
                 self.__createMessageTrigger()
@@ -511,8 +505,7 @@ class SqliteDatabase:
             raise
 
     def selectCertainThreadMessagesRaw(self, thread_id, content_to_select=None):
-        """
-        This is for selecting all messages in a thread with a specific thread_id.
+        """This is for selecting all messages in a thread with a specific thread_id.
         The format of the result is a list of sqlite Rows.
         """
         # Begin the query with the thread_id filter
@@ -531,24 +524,21 @@ class SqliteDatabase:
         return self.__c.fetchall()
 
     def selectCertainThreadMessages(
-        self, thread_id, content_to_select=None
-    ) -> List[ChatMessageContainer]:
-        """
-        This is for selecting all messages in a thread with a specific thread_id.
+        self, thread_id, content_to_select=None,
+    ) -> list[ChatMessageContainer]:
+        """This is for selecting all messages in a thread with a specific thread_id.
         The format of the result is a list of ChatMessageContainer.
         """
         result = [
             ChatMessageContainer(**elem)
             for elem in self.selectCertainThreadMessagesRaw(
-                thread_id, content_to_select=content_to_select
+                thread_id, content_to_select=content_to_select,
             )
         ]
         return result
 
     def selectAllContentOfThread(self, content_to_select=None):
-        """
-        This is for selecting all messages in all threads which include the content_to_select.
-        """
+        """This is for selecting all messages in all threads which include the content_to_select."""
         arr = []
         for _id in [conv[0] for conv in self.selectAllThread()]:
             result = self.selectCertainThreadMessages(_id, content_to_select)
@@ -563,14 +553,14 @@ class SqliteDatabase:
                 self.__c.execute(f"DROP TRIGGER {THREAD_MESSAGE_INSERTED_TR_NAME}")
             excludes = ["id", "update_dt", "insert_dt"]
             insert_query = arg.create_insert_query(
-                table_name=MESSAGE_TABLE_NAME, excludes=excludes
+                table_name=MESSAGE_TABLE_NAME, excludes=excludes,
             )
             self.__c.execute(insert_query, arg.get_values_for_insert(excludes=excludes))
             new_id = self.__c.lastrowid
             if deactivate_trigger:
                 # Create the trigger
                 self.__createMessageTrigger(
-                    insert_trigger=True, update_trigger=False, delete_trigger=False
+                    insert_trigger=True, update_trigger=False, delete_trigger=False,
                 )
 
             # Commit the transaction
@@ -581,19 +571,17 @@ class SqliteDatabase:
             raise
 
     def updateMessage(self, id, favorite):
-        """
-        Update message favorite
-        """
+        """Update message favorite."""
         try:
             current_date = datetime.now().strftime(DEFAULT_DATETIME_FORMAT)
             self.__c.execute(
                 f"""
-                            UPDATE {MESSAGE_TABLE_NAME} 
+                            UPDATE {MESSAGE_TABLE_NAME}
                             SET favorite = ?,
-                                favorite_set_date = CASE 
-                                                      WHEN ? = 1 THEN ? 
-                                                      ELSE NULL 
-                                                    END 
+                                favorite_set_date = CASE
+                                                      WHEN ? = 1 THEN ?
+                                                      ELSE NULL
+                                                    END
                             WHERE id = ?
                         """,
                 (favorite, favorite, current_date, id),
@@ -609,7 +597,7 @@ class SqliteDatabase:
         try:
             # Check if the table exists
             self.__c.execute(
-                f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{CHAT_FILE_TABLE_NAME}'"
+                f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{CHAT_FILE_TABLE_NAME}'",
             )
             if self.__c.fetchone()[0] == 1:
                 # Add provider column if not exists
@@ -617,7 +605,7 @@ class SqliteDatabase:
                 columns = self.__c.fetchall()
                 if not any([col[1] == "provider" for col in columns]):
                     self.__c.execute(
-                        f"ALTER TABLE {CHAT_FILE_TABLE_NAME} ADD COLUMN provider VARCHAR(255)"
+                        f"ALTER TABLE {CHAT_FILE_TABLE_NAME} ADD COLUMN provider VARCHAR(255)",
                     )
             else:
                 self.__c.execute(
@@ -628,7 +616,7 @@ class SqliteDatabase:
                               name TEXT,
                               data BLOB,
                               update_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
-                              insert_dt DATETIME DEFAULT CURRENT_TIMESTAMP)"""
+                              insert_dt DATETIME DEFAULT CURRENT_TIMESTAMP)""",
                 )
                 # Commit the transaction
                 self.__conn.commit()
@@ -640,7 +628,7 @@ class SqliteDatabase:
         try:
             # Check if the table exists
             self.__c.execute(
-                f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{IMAGE_TABLE_NAME}'"
+                f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{IMAGE_TABLE_NAME}'",
             )
             if self.__c.fetchone()[0] == 1:
                 # Add provider column if not exists
@@ -648,7 +636,7 @@ class SqliteDatabase:
                 columns = self.__c.fetchall()
                 if not any([col[1] == "provider" for col in columns]):
                     self.__c.execute(
-                        f"ALTER TABLE {IMAGE_TABLE_NAME} ADD COLUMN provider VARCHAR(255)"
+                        f"ALTER TABLE {IMAGE_TABLE_NAME} ADD COLUMN provider VARCHAR(255)",
                     )
             else:
                 self.__c.execute(
@@ -666,7 +654,7 @@ class SqliteDatabase:
                               negative_prompt TEXT,
                               provider VARCHAR(255),
                               update_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
-                              insert_dt DATETIME DEFAULT CURRENT_TIMESTAMP)"""
+                              insert_dt DATETIME DEFAULT CURRENT_TIMESTAMP)""",
                 )
                 # Commit the transaction
                 self.__conn.commit()
@@ -684,7 +672,7 @@ class SqliteDatabase:
             self.__conn.commit()
             return new_id
         except sqlite3.Error as e:
-            print(f"An error occurred..")
+            print("An error occurred..")
             raise
 
     def selectImage(self):
@@ -717,7 +705,7 @@ class SqliteDatabase:
     def selectFavorite(self):
         try:
             self.__c.execute(
-                f"SELECT * FROM {MESSAGE_TABLE_NAME} WHERE favorite=1 order by favorite_set_date"
+                f"SELECT * FROM {MESSAGE_TABLE_NAME} WHERE favorite=1 order by favorite_set_date",
             )
             return self.__c.fetchall()
         except sqlite3.Error as e:
@@ -731,7 +719,7 @@ class SqliteDatabase:
         # Convert it into dictionary
         for d in data:
             d["messages"] = list(
-                map(lambda x: x.__dict__, self.selectCertainThreadMessages(d["id"]))
+                map(lambda x: x.__dict__, self.selectCertainThreadMessages(d["id"])),
             )
 
         # Save the JSON

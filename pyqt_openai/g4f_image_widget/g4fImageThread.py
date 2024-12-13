@@ -1,13 +1,13 @@
-from abc import ABCMeta
+from __future__ import annotations
 
-from PySide6.QtCore import QThread, Signal
 from g4f.providers.retry_provider import IterListProvider
+from qtpy.QtCore import QThread, Signal
 
 from pyqt_openai import G4F_PROVIDER_DEFAULT
 from pyqt_openai.globals import G4F_CLIENT
 from pyqt_openai.models import ImagePromptContainer
+from pyqt_openai.util.common import convert_to_provider, generate_random_prompt
 from pyqt_openai.util.replicate import download_image_as_base64
-from pyqt_openai.util.common import generate_random_prompt, convert_to_provider
 
 
 class G4FImageThread(QThread):
@@ -16,7 +16,7 @@ class G4FImageThread(QThread):
     allReplyGenerated = Signal()
 
     def __init__(
-        self, input_args, number_of_images, randomizing_prompt_source_arr=None
+        self, input_args, number_of_images, randomizing_prompt_source_arr=None,
     ):
         super().__init__()
         self.__input_args = input_args
@@ -35,7 +35,7 @@ class G4FImageThread(QThread):
             if self.__input_args["provider"] != G4F_PROVIDER_DEFAULT:
                 provider = self.__input_args["provider"]
                 self.__input_args["provider"] = convert_to_provider(
-                    self.__input_args["provider"]
+                    self.__input_args["provider"],
                 )
 
             for _ in range(self.__number_of_images):
@@ -43,14 +43,14 @@ class G4FImageThread(QThread):
                     break
                 if self.__randomizing_prompt_source_arr is not None:
                     self.__input_args["prompt"] = generate_random_prompt(
-                        self.__randomizing_prompt_source_arr
+                        self.__randomizing_prompt_source_arr,
                     )
                 images = G4F_CLIENT.images
                 if provider != G4F_PROVIDER_DEFAULT:
                     images.provider = self.__input_args["provider"]
                 else:
                     del self.__input_args["provider"]
-                    provider = images.models.get(self.__input_args['model'], images.provider)
+                    provider = images.models.get(self.__input_args["model"], images.provider)
                     if isinstance(provider, IterListProvider):
                         if provider.providers:
                             provider = provider.providers[0]

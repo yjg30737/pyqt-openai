@@ -1,5 +1,7 @@
-from PySide6.QtCore import Signal, Qt
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel
+from __future__ import annotations
+
+from qtpy.QtCore import Qt, Signal
+from qtpy.QtWidgets import QLabel, QVBoxLayout, QWidget
 
 from pyqt_openai import LLAMA_INDEX_DEFAULT_ALL_SUPPORTED_FORMATS_LIST
 from pyqt_openai.config_loader import CONFIG_MANAGER
@@ -28,7 +30,7 @@ class SupportedFileFormatsWidget(QWidget):
 
         lay = QVBoxLayout()
         # TODO LANGUAGE
-        lay.addWidget(QLabel('Supported File Formats'))
+        lay.addWidget(QLabel("Supported File Formats"))
         lay.addWidget(self.__listWidget)
         lay.setContentsMargins(0, 0, 0, 0)
         self.setLayout(lay)
