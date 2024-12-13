@@ -1,5 +1,7 @@
-from PySide6.QtCore import Signal
-from PySide6.QtWidgets import QListWidget, QWidget, QVBoxLayout, QLabel
+from __future__ import annotations
+
+from qtpy.QtCore import Signal
+from qtpy.QtWidgets import QLabel, QListWidget, QVBoxLayout, QWidget
 
 from pyqt_openai.lang.translations import LangClass
 

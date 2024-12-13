@@ -1,22 +1,24 @@
-from PySide6.QtCore import Qt, Signal
-from PySide6.QtWidgets import (
-    QWidget,
-    QComboBox,
+from __future__ import annotations
+
+from qtpy.QtCore import Qt, Signal
+from qtpy.QtWidgets import (
     QCheckBox,
+    QComboBox,
     QFormLayout,
-    QTextBrowser,
     QSizePolicy,
+    QTextBrowser,
+    QWidget,
 )
 
 from pyqt_openai import G4F_PROVIDER_DEFAULT
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.util.common import (
-    get_g4f_providers,
-    get_g4f_models_by_provider,
+    getSeparator,
     get_chat_model,
     get_g4f_models,
-    getSeparator,
+    get_g4f_models_by_provider,
+    get_g4f_providers,
 )
 
 
@@ -46,10 +48,10 @@ class UsingG4FPage(QWidget):
         <h3>Description</h3>
         <p>- Responses may often be slow or incomplete.</p>
         <p>- The response server may be unstable.</p>
-        """
+        """,
         )
         manualBrowser.setSizePolicy(
-            QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred
+            QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred,
         )
 
         self.__modelCmbBox = QComboBox()
@@ -71,7 +73,7 @@ class UsingG4FPage(QWidget):
         # TODO NEEDS ADDITIONAL DESCRIPTION
         g4f_use_chat_historyChkBox = QCheckBox("Use chat history")
         g4f_use_chat_historyChkBox.setChecked(
-            CONFIG_MANAGER.get_general_property("g4f_use_chat_history")
+            CONFIG_MANAGER.get_general_property("g4f_use_chat_history"),
         )
         g4f_use_chat_historyChkBox.toggled.connect(self.__saveChatHistory)
 

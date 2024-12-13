@@ -1,19 +1,21 @@
-from PySide6.QtCore import Qt
-from PySide6.QtWidgets import (
-    QWidget,
-    QSpinBox,
-    QVBoxLayout,
-    QPlainTextEdit,
+from __future__ import annotations
+
+from qtpy.QtCore import Qt
+from qtpy.QtWidgets import (
     QFormLayout,
     QLabel,
+    QPlainTextEdit,
+    QSpinBox,
     QSplitter,
+    QVBoxLayout,
+    QWidget,
 )
 
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.replicate_widget.replicateThread import ReplicateThread
-from pyqt_openai.widgets.imageControlWidget import ImageControlWidget
 from pyqt_openai.widgets.APIInputButton import APIInputButton
+from pyqt_openai.widgets.imageControlWidget import ImageControlWidget
 
 
 class ReplicateRightSideBarWidget(ImageControlWidget):
@@ -27,22 +29,22 @@ class ReplicateRightSideBarWidget(ImageControlWidget):
 
         self._prompt = CONFIG_MANAGER.get_replicate_property("prompt")
         self._continue_generation = CONFIG_MANAGER.get_replicate_property(
-            "continue_generation"
+            "continue_generation",
         )
         self._save_prompt_as_text = CONFIG_MANAGER.get_replicate_property(
-            "save_prompt_as_text"
+            "save_prompt_as_text",
         )
         self._is_save = CONFIG_MANAGER.get_replicate_property("is_save")
         self._directory = CONFIG_MANAGER.get_replicate_property("directory")
         self._number_of_images_to_create = CONFIG_MANAGER.get_replicate_property(
-            "number_of_images_to_create"
+            "number_of_images_to_create",
         )
 
         self.__model = CONFIG_MANAGER.get_replicate_property("model")
         self.__width = CONFIG_MANAGER.get_replicate_property("width")
         self.__height = CONFIG_MANAGER.get_replicate_property("height")
         self.__negative_prompt = CONFIG_MANAGER.get_replicate_property(
-            "negative_prompt"
+            "negative_prompt",
         )
 
     def _initUi(self):
@@ -81,7 +83,7 @@ class ReplicateRightSideBarWidget(ImageControlWidget):
 
         self._negativeTextEdit = QPlainTextEdit()
         self._negativeTextEdit.setPlaceholderText(
-            "ugly, deformed, noisy, blurry, distorted"
+            "ugly, deformed, noisy, blurry, distorted",
         )
         self._negativeTextEdit.setPlainText(self.__negative_prompt)
         self._negativeTextEdit.textChanged.connect(self.__replicateTextChanged)
@@ -140,7 +142,7 @@ class ReplicateRightSideBarWidget(ImageControlWidget):
             elif sender == self._negativeTextEdit:
                 self.__negative_prompt = sender.toPlainText()
                 CONFIG_MANAGER.set_replicate_property(
-                    "negative_prompt", self.__negative_prompt
+                    "negative_prompt", self.__negative_prompt,
                 )
 
     def _setSaveDirectory(self, directory):

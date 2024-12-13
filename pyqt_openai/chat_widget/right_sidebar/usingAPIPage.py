@@ -1,36 +1,39 @@
-from PySide6.QtCore import Qt, Signal
-from PySide6.QtGui import QFont
-from PySide6.QtWidgets import (
-    QWidget,
-    QDoubleSpinBox,
-    QSpinBox,
-    QFormLayout,
-    QSizePolicy,
-    QLabel,
-    QVBoxLayout,
+from __future__ import annotations
+
+from qtpy.QtCore import Qt, Signal
+from qtpy.QtGui import QFont
+from qtpy.QtWidgets import (
     QCheckBox,
-    QPushButton,
-    QScrollArea,
+    QDoubleSpinBox,
+    QFormLayout,
     QGroupBox,
     QHBoxLayout,
-    QTextBrowser,
+    QLabel,
     QPlainTextEdit,
+    QPushButton,
+    QScrollArea,
+    QSizePolicy,
+    QSpinBox,
+    QTextBrowser,
+    QVBoxLayout,
+    QWidget,
 )
 
 from pyqt_openai import (
     DEFAULT_SHORTCUT_JSON_MODE,
-    OPENAI_TEMPERATURE_RANGE,
-    OPENAI_TEMPERATURE_STEP,
-    MAX_TOKENS_RANGE,
-    TOP_P_RANGE,
-    TOP_P_STEP,
+    DEFAULT_WARNING_COLOR,
     FREQUENCY_PENALTY_RANGE,
-    PRESENCE_PENALTY_STEP,
-    PRESENCE_PENALTY_RANGE,
     FREQUENCY_PENALTY_STEP,
     LLAMAINDEX_URL,
+    MAX_TOKENS_RANGE,
     O1_MODELS,
-    SMALL_LABEL_PARAM, DEFAULT_WARNING_COLOR,
+    OPENAI_TEMPERATURE_RANGE,
+    OPENAI_TEMPERATURE_STEP,
+    PRESENCE_PENALTY_RANGE,
+    PRESENCE_PENALTY_STEP,
+    SMALL_LABEL_PARAM,
+    TOP_P_RANGE,
+    TOP_P_STEP,
 )
 from pyqt_openai.chat_widget.right_sidebar.modelSearchBar import ModelSearchBar
 from pyqt_openai.config_loader import CONFIG_MANAGER
@@ -39,8 +42,8 @@ from pyqt_openai.util.common import (
     getSeparator,
     init_llama,
 )
-from pyqt_openai.widgets.linkLabel import LinkLabel
 from pyqt_openai.widgets.APIInputButton import APIInputButton
+from pyqt_openai.widgets.linkLabel import LinkLabel
 
 
 class UsingAPIPage(QWidget):
@@ -60,10 +63,10 @@ class UsingAPIPage(QWidget):
         self.__max_tokens = CONFIG_MANAGER.get_general_property("max_tokens")
         self.__top_p = CONFIG_MANAGER.get_general_property("top_p")
         self.__frequency_penalty = CONFIG_MANAGER.get_general_property(
-            "frequency_penalty"
+            "frequency_penalty",
         )
         self.__presence_penalty = CONFIG_MANAGER.get_general_property(
-            "presence_penalty"
+            "presence_penalty",
         )
         self.__json_object = CONFIG_MANAGER.get_general_property("json_object")
 
@@ -94,11 +97,11 @@ class UsingAPIPage(QWidget):
         <p>- JSON response functionality available (limited to specific LLMs).</p>
         <p>- LlamaIndex can be used.</p>
         <p>- Various hyperparameters can be assigned.</p>
-        """
+        """,
         )
 
         manualBrowser.setSizePolicy(
-            QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.MinimumExpanding
+            QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.MinimumExpanding,
         )
 
         systemlbl = QLabel(LangClass.TRANSLATIONS["System"])
@@ -107,13 +110,13 @@ class UsingAPIPage(QWidget):
                 "Basically system means instructions or rules that the model should follow."
             ]
             + "\n"
-            + LangClass.TRANSLATIONS["You can write your own system instructions here."]
+            + LangClass.TRANSLATIONS["You can write your own system instructions here."],
         )
 
         self.__systemTextEdit = QPlainTextEdit()
         self.__systemTextEdit.setPlainText(self.__system)
         self.__systemTextEdit.setSizePolicy(
-            QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Preferred
+            QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Preferred,
         )
         self.__systemTextEdit.setMaximumHeight(100)
         saveSystemBtn = QPushButton(LangClass.TRANSLATIONS["Save System"])
@@ -142,7 +145,7 @@ class UsingAPIPage(QWidget):
         # TODO LANGUAGE
         self.__warningLbl.setText(self.__warningMessage)
         self.__warningLbl.setTextInteractionFlags(
-            Qt.TextInteractionFlag.TextSelectableByMouse
+            Qt.TextInteractionFlag.TextSelectableByMouse,
         )
 
         advancedSettingsScrollArea = QScrollArea()
@@ -160,7 +163,7 @@ class UsingAPIPage(QWidget):
             + "\n"
             + LangClass.TRANSLATIONS[
                 "A lower value results in less random completions."
-            ]
+            ],
         )
 
         self.__maxTokensSpinBox = QSpinBox()
@@ -175,7 +178,7 @@ class UsingAPIPage(QWidget):
             + "\n"
             + LangClass.TRANSLATIONS[
                 "The model will stop generating tokens once it reaches the limit."
-            ]
+            ],
         )
 
         self.__toppSpinBox = QDoubleSpinBox()
@@ -191,7 +194,7 @@ class UsingAPIPage(QWidget):
             + "\n"
             + LangClass.TRANSLATIONS[
                 "The model will stop generating tokens once the cumulative probability of the generated tokens exceeds the threshold."
-            ]
+            ],
         )
 
         self.__frequencyPenaltySpinBox = QDoubleSpinBox()
@@ -207,7 +210,7 @@ class UsingAPIPage(QWidget):
             + "\n"
             + LangClass.TRANSLATIONS[
                 "The model will be less likely to generate tokens that have already been generated."
-            ]
+            ],
         )
 
         self.__presencePenaltySpinBox = QDoubleSpinBox()
@@ -223,7 +226,7 @@ class UsingAPIPage(QWidget):
             + "\n"
             + LangClass.TRANSLATIONS[
                 "The model will be less likely to generate tokens that are not present in the input."
-            ]
+            ],
         )
 
         useMaxTokenChkBox = QCheckBox()
@@ -268,7 +271,7 @@ class UsingAPIPage(QWidget):
         self.__jsonChkBox.setToolTip(
             LangClass.TRANSLATIONS[
                 "When enabled, you can send a JSON object to the API and the response will be in JSON format. Otherwise, it will be in plain text."
-            ]
+            ],
         )
 
         # TODO LANGUAGE

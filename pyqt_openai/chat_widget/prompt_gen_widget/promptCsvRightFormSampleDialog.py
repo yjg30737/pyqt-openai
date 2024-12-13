@@ -1,5 +1,7 @@
-from PySide6.QtWidgets import QDialog, QVBoxLayout, QLabel
-from PySide6.QtGui import QPainter
+from __future__ import annotations
+
+from qtpy.QtGui import QPainter
+from qtpy.QtWidgets import QDialog, QLabel, QVBoxLayout
 
 from pyqt_openai import IMAGE_IMPORT_PROMPT_WITH_CSV_RIGHT_FORM
 from pyqt_openai.lang.translations import LangClass
@@ -21,6 +23,6 @@ class PromptCSVRightFormSampleDialog(QDialog):
 
         lay = QVBoxLayout()
         lay.addWidget(view)
-        lay.addWidget(QLabel('This is from awesome_chatgpt_prompt.csv file from huggingface.'))
+        lay.addWidget(QLabel("This is from awesome_chatgpt_prompt.csv file from huggingface."))
 
         self.setLayout(lay)

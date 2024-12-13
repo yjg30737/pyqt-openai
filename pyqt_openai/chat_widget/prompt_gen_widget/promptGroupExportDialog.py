@@ -1,15 +1,19 @@
-from PySide6.QtCore import Qt
-from PySide6.QtWidgets import (
-    QPushButton,
+from __future__ import annotations
+
+from qtpy.QtCore import Qt
+from qtpy.QtWidgets import (
     QCheckBox,
-    QDialogButtonBox,
     QDialog,
-    QVBoxLayout,
+    QDialogButtonBox,
     QLabel,
+    QPushButton,
+    QVBoxLayout,
 )
 
-from pyqt_openai import SENTENCE_PROMPT_GROUP_SAMPLE, FORM_PROMPT_GROUP_SAMPLE
-from pyqt_openai.chat_widget.prompt_gen_widget.promptCsvRightFormSampleDialog import PromptCSVRightFormSampleDialog
+from pyqt_openai import FORM_PROMPT_GROUP_SAMPLE, SENTENCE_PROMPT_GROUP_SAMPLE
+from pyqt_openai.chat_widget.prompt_gen_widget.promptCsvRightFormSampleDialog import (
+    PromptCSVRightFormSampleDialog,
+)
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.util.common import showJsonSample
 from pyqt_openai.widgets.checkBoxListWidget import CheckBoxListWidget
@@ -17,7 +21,7 @@ from pyqt_openai.widgets.jsonEditor import JSONEditor
 
 
 class PromptGroupExportDialog(QDialog):
-    def __init__(self, data, prompt_type="form", ext='.json', parent=None):
+    def __init__(self, data, prompt_type="form", ext=".json", parent=None):
         super().__init__(parent)
         self.__initVal(data, prompt_type, ext)
         self.__initUi()
@@ -31,13 +35,13 @@ class PromptGroupExportDialog(QDialog):
         self.setWindowTitle(LangClass.TRANSLATIONS["Export Prompt Group"])
         self.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.WindowCloseButtonHint)
 
-        btnText = LangClass.TRANSLATIONS["Preview of the JSON format to be created after export"] if self.__ext == '.json' else LangClass.TRANSLATIONS["Preview of the CSV format to be created after export"]
+        btnText = LangClass.TRANSLATIONS["Preview of the JSON format to be created after export"] if self.__ext == ".json" else LangClass.TRANSLATIONS["Preview of the CSV format to be created after export"]
         btn = QPushButton(btnText)
 
-        if self.__ext == '.json':
+        if self.__ext == ".json":
             btn.clicked.connect(self.__showJsonSample)
             self.__jsonSampleWidget = JSONEditor()
-        elif self.__ext == '.csv':
+        elif self.__ext == ".csv":
             btn.clicked.connect(self.__showCSVSample)
 
         allCheckBox = QCheckBox(LangClass.TRANSLATIONS["Select All"])
@@ -47,14 +51,14 @@ class PromptGroupExportDialog(QDialog):
         allCheckBox.stateChanged.connect(self.__listWidget.toggleState)
 
         self.__buttonBox = QDialogButtonBox(
-            QDialogButtonBox.Ok | QDialogButtonBox.Cancel
+            QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel,
         )
         self.__buttonBox.accepted.connect(self.accept)
         self.__buttonBox.rejected.connect(self.reject)
 
         lay = QVBoxLayout()
         lay.addWidget(
-            QLabel(LangClass.TRANSLATIONS["Select the prompts you want to export."])
+            QLabel(LangClass.TRANSLATIONS["Select the prompts you want to export."]),
         )
         lay.addWidget(allCheckBox)
         lay.addWidget(self.__listWidget)
@@ -67,8 +71,8 @@ class PromptGroupExportDialog(QDialog):
         allCheckBox.setChecked(True)
 
     def __toggledBtn(self):
-        self.__buttonBox.button(QDialogButtonBox.Ok).setEnabled(
-            len(self.__listWidget.getCheckedRows()) > 0
+        self.__buttonBox.button(QDialogButtonBox.StandardButton.Ok).setEnabled(
+            len(self.__listWidget.getCheckedRows()) > 0,
         )
 
     def __showJsonSample(self):
@@ -84,8 +88,7 @@ class PromptGroupExportDialog(QDialog):
         dialog.exec()
 
     def getSelected(self):
-        """
-        Get selected prompt group names.
+        """Get selected prompt group names.
         The data is used to export the selected prompt groups.
         This function is giving names instead of ids because the name field is unique anyway.
         """

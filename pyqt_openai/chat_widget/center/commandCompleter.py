@@ -1,10 +1,12 @@
-from PySide6.QtCore import Qt, Signal
-from PySide6.QtWidgets import (
-    QTableWidget,
+from __future__ import annotations
+
+from qtpy.QtCore import Qt, Signal
+from qtpy.QtWidgets import (
     QHeaderView,
     QScrollArea,
-    QStyledItemDelegate,
     QStyle,
+    QStyledItemDelegate,
+    QTableWidget,
     QTableWidgetItem,
 )
 

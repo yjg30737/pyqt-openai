@@ -1,13 +1,15 @@
-from PySide6.QtCore import Qt, Signal
-from PySide6.QtGui import QFont
-from PySide6.QtWidgets import QTextBrowser, QMessageBox
-from PySide6.QtWidgets import QWidget, QLabel, QVBoxLayout
+from __future__ import annotations
+
+from qtpy.QtCore import Qt, Signal
+from qtpy.QtGui import QFont
+from qtpy.QtWidgets import QLabel, QTextBrowser, QVBoxLayout, QWidget
 
 from pyqt_openai import SMALL_LABEL_PARAM
-from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.chat_widget.right_sidebar.llama_widget.filesWidget import FilesWidget
-from pyqt_openai.chat_widget.right_sidebar.llama_widget.supportedFileFormatsWidget import SupportedFileFormatsWidget
-from pyqt_openai.globals import LLAMAINDEX_WRAPPER
+from pyqt_openai.chat_widget.right_sidebar.llama_widget.supportedFileFormatsWidget import (
+    SupportedFileFormatsWidget,
+)
+from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.lang.translations import LangClass
 
 
@@ -33,7 +35,7 @@ class LlamaPage(QWidget):
         self.__txtBrowser.setPlaceholderText(
             LangClass.TRANSLATIONS[
                 "This text browser shows selected file's content in the list."
-            ]
+            ],
         )
         self.__txtBrowser.setMaximumHeight(150)
 
@@ -53,10 +55,10 @@ class LlamaPage(QWidget):
 
     def __setTextInBrowser(self, file):
         try:
-            with open(file, "r", encoding="utf-8") as f:
+            with open(file, encoding="utf-8") as f:
                 self.__txtBrowser.setText(f.read())
         except UnicodeDecodeError as e:
-            self.__txtBrowser.setText('Some files like Excel files cannot be previewed.')
+            self.__txtBrowser.setText("Some files like Excel files cannot be previewed.")
         except Exception as e:
             print(e)
 

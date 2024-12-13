@@ -1,10 +1,12 @@
-from PySide6.QtCore import Qt
-from PySide6.QtWidgets import (
+from __future__ import annotations
+
+from qtpy.QtCore import Qt
+from qtpy.QtWidgets import (
     QButtonGroup,
+    QDialog,
+    QDialogButtonBox,
     QGroupBox,
     QRadioButton,
-    QDialogButtonBox,
-    QDialog,
     QVBoxLayout,
 )
 
@@ -41,7 +43,7 @@ class SelectChatImportTypeDialog(QDialog):
         importTypeGrpBox = QGroupBox(LangClass.TRANSLATIONS["Import Type"])
         importTypeGrpBox.setLayout(lay)
 
-        buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        buttonBox = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
         buttonBox.accepted.connect(self.accept)
         buttonBox.rejected.connect(self.reject)
 
@@ -55,7 +57,6 @@ class SelectChatImportTypeDialog(QDialog):
         selected_button_id = self.__buttonGroup.checkedId()
         if selected_button_id == 1:
             return "general"
-        elif selected_button_id == 2:
+        if selected_button_id == 2:
             return "chatgpt"
-        else:
-            return None
+        return None

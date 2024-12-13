@@ -1,13 +1,16 @@
+from __future__ import annotations
+
 import pyperclip
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QPalette
-from PySide6.QtWidgets import (
-    QWidget,
-    QVBoxLayout,
+
+from qtpy.QtCore import Qt
+from qtpy.QtGui import QPalette
+from qtpy.QtWidgets import (
     QHBoxLayout,
-    QSpacerItem,
-    QSizePolicy,
     QLabel,
+    QSizePolicy,
+    QSpacerItem,
+    QVBoxLayout,
+    QWidget,
 )
 
 from pyqt_openai import DEFAULT_ICON_SIZE, ICON_COPY

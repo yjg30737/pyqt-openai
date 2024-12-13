@@ -1,8 +1,15 @@
-from PySide6.QtWidgets import QDialog, QLabel, QVBoxLayout, QPushButton
-from PySide6.QtCore import Qt
+from __future__ import annotations
 
-from pyqt_openai import FORM_PROMPT_GROUP_SAMPLE, SENTENCE_PROMPT_GROUP_SAMPLE, AWESOME_CHATGPT_PROMPTS_URL
-from pyqt_openai.chat_widget.prompt_gen_widget.promptCsvRightFormSampleDialog import PromptCSVRightFormSampleDialog
+from qtpy.QtCore import Qt
+from qtpy.QtWidgets import QDialog, QLabel, QPushButton, QVBoxLayout
+
+from pyqt_openai import (
+    AWESOME_CHATGPT_PROMPTS_URL,
+    SENTENCE_PROMPT_GROUP_SAMPLE,
+)
+from pyqt_openai.chat_widget.prompt_gen_widget.promptCsvRightFormSampleDialog import (
+    PromptCSVRightFormSampleDialog,
+)
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.util.common import showJsonSample
 from pyqt_openai.widgets.jsonEditor import JSONEditor
@@ -19,13 +26,13 @@ class ImportPromptManualDialog(QDialog):
         jsonRightFormBtn = QPushButton(
             LangClass.TRANSLATIONS[
                 "What is the right form of json to be imported?"
-            ]
+            ],
         )
 
         csvRightFormBtn = QPushButton(
             LangClass.TRANSLATIONS[
                 "What is the right form of csv to be imported?"
-            ]
+            ],
         )
 
         jsonRightFormBtn.clicked.connect(self.__showJsonSample)
@@ -33,7 +40,7 @@ class ImportPromptManualDialog(QDialog):
 
         awesomeChatGptPromptDownloadLink = QLabel(f'Try downloading <a href="{AWESOME_CHATGPT_PROMPTS_URL}">Awesome ChatGPT prompts</a> and import! 😊')
         awesomeChatGptPromptDownloadLink.setTextInteractionFlags(
-            Qt.TextInteractionFlag.TextBrowserInteraction
+            Qt.TextInteractionFlag.TextBrowserInteraction,
         )
         awesomeChatGptPromptDownloadLink.setOpenExternalLinks(True)  # Enable hyperlink functionality.
 

@@ -1,24 +1,36 @@
 # TODO WILL_BE_USED AFTER v2.x.0
 
 # This works perfectly for showing the key combination in a QLineEdit widget.
+from __future__ import annotations
 
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QKeyEvent
-from PySide6.QtWidgets import QLineEdit
+from typing import TYPE_CHECKING
+
+from qtpy.QtCore import Qt
+from qtpy.QtWidgets import QLineEdit
+
+if TYPE_CHECKING:
+    from qtpy.QtGui import QKeyEvent
+    from qtpy.QtWidgets import QWidget
 
 
 class ShowingKeyUserInputLineEdit(QLineEdit):
-    def __init__(self, parent=None):
+    def __init__(
+        self,
+        parent: QWidget | None = None,
+    ):
         super().__init__(parent)
-        self.shortcut = ""
+        self.shortcut: str = ""
 
-    def keyPressEvent(self, event: QKeyEvent):
-        modifiers = event.modifiers()
-        key = event.key()
+    def keyPressEvent(
+        self,
+        event: QKeyEvent,
+    ):
+        modifiers: Qt.KeyboardModifier = event.modifiers()
+        key: Qt.Key | int = event.key()
 
-        key_text = self._get_key_text(key)
+        key_text: str | None = self._get_key_text(key)
         if key_text:
-            parts = []
+            parts: list[str] = []
 
             if modifiers & Qt.KeyboardModifier.ControlModifier:
                 parts.append("Ctrl")
@@ -33,8 +45,11 @@ class ShowingKeyUserInputLineEdit(QLineEdit):
             self.shortcut = "+".join(parts)
             self.setText(self.shortcut)
 
-    def _get_key_text(self, key):
-        special_keys = {
+    def _get_key_text(
+        self,
+        key: Qt.Key | int,
+    ) -> str | None:
+        special_keys: dict[Qt.Key, str] = {
             Qt.Key.Key_Escape: "Esc",
             Qt.Key.Key_Tab: "Tab",
             Qt.Key.Key_Backtab: "Backtab",
@@ -65,9 +80,9 @@ class ShowingKeyUserInputLineEdit(QLineEdit):
 
         if key in special_keys:
             return special_keys[key]
-        elif 0x20 <= key <= 0x7E:  # Regular printable ASCII characters
+        if 0x20 <= key <= 0x7E:  # Regular printable ASCII characters
             return chr(key)
-        elif 0x100 <= key <= 0x10FFFF:  # Other valid Unicode characters
+        if 0x100 <= key <= 0x10FFFF:  # Other valid Unicode characters
             try:
                 return chr(key).upper()
             except ValueError:

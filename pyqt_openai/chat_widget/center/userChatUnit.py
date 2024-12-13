@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from pyqt_openai.chat_widget.center.chatUnit import ChatUnit
 
 

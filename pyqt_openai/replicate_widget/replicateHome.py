@@ -1,6 +1,8 @@
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QFont
-from PySide6.QtWidgets import QLabel, QWidget, QVBoxLayout, QScrollArea
+from __future__ import annotations
+
+from qtpy.QtCore import Qt
+from qtpy.QtGui import QFont
+from qtpy.QtWidgets import QLabel, QScrollArea, QVBoxLayout, QWidget
 
 from pyqt_openai import (
     CONTEXT_DELIMITER,
@@ -28,7 +30,7 @@ class ReplicateHome(QScrollArea):
             + LangClass.TRANSLATIONS[
                 "You can use a lot of models to generate images, only you need to have an API key."
             ]
-            + CONTEXT_DELIMITER
+            + CONTEXT_DELIMITER,
         )
 
         description.setFont(QFont(*MEDIUM_LABEL_PARAM))

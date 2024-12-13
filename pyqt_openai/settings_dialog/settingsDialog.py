@@ -1,17 +1,19 @@
-from PySide6.QtCore import Qt
-from PySide6.QtWidgets import (
+from __future__ import annotations
+
+from qtpy.QtCore import Qt
+from qtpy.QtWidgets import (
     QDialog,
-    QVBoxLayout,
     QDialogButtonBox,
+    QHBoxLayout,
     QMessageBox,
     QStackedWidget,
+    QVBoxLayout,
     QWidget,
-    QHBoxLayout,
 )
 
-from pyqt_openai.settings_dialog.apiWidget import ApiWidget
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import SettingsParamsContainer
+from pyqt_openai.settings_dialog.apiWidget import ApiWidget
 from pyqt_openai.settings_dialog.generalSettingsWidget import GeneralSettingsWidget
 from pyqt_openai.settings_dialog.voiceSettingsWidget import VoiceSettingsWidget
 from pyqt_openai.widgets.navWidget import NavBar

@@ -1,30 +1,34 @@
+from __future__ import annotations
+
 import re
 
-from PySide6.QtCore import Signal, Qt
-from PySide6.QtWidgets import (
-    QWidget,
-    QLabel,
-    QHBoxLayout,
+from typing import TYPE_CHECKING
+
+from qtpy.QtCore import Signal
+from qtpy.QtWidgets import (
     QGridLayout,
+    QHBoxLayout,
+    QLabel,
     QLineEdit,
     QMessageBox,
+    QWidget,
 )
 
-from pyqt_openai.chat_widget.center.chatBrowser import ChatBrowser
 from pyqt_openai import (
-    DEFAULT_SHORTCUT_FIND_PREV,
     DEFAULT_SHORTCUT_FIND_NEXT,
+    DEFAULT_SHORTCUT_FIND_PREV,
     DEFAULT_SHORTCUT_GENERAL_ACTION,
-    DEFAULT_SHORTCUT_FIND_CLOSE,
-    ICON_PREV,
-    ICON_NEXT,
     ICON_CASE,
-    ICON_WORD,
+    ICON_NEXT,
+    ICON_PREV,
     ICON_REGEX,
-    ICON_CLOSE,
+    ICON_WORD,
 )
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.widgets.button import Button
+
+if TYPE_CHECKING:
+    from pyqt_openai.chat_widget.center.chatBrowser import ChatBrowser
 
 
 class FindTextWidget(QWidget):
@@ -85,11 +89,11 @@ class FindTextWidget(QWidget):
 
         self.__prevBtn.setToolTip(
             LangClass.TRANSLATIONS["Previous Occurrence"]
-            + f" ({DEFAULT_SHORTCUT_FIND_PREV})"
+            + f" ({DEFAULT_SHORTCUT_FIND_PREV})",
         )
         self.__nextBtn.setToolTip(
             LangClass.TRANSLATIONS["Next Occurrence"]
-            + f" ({DEFAULT_SHORTCUT_FIND_NEXT})"
+            + f" ({DEFAULT_SHORTCUT_FIND_NEXT})",
         )
         self.__caseBtn.setToolTip(LangClass.TRANSLATIONS["Match Case"])
         self.__wordBtn.setToolTip(LangClass.TRANSLATIONS["Match Word"])
@@ -184,7 +188,7 @@ class FindTextWidget(QWidget):
             self.__caseBtn.isChecked(),
         )
         self.__chatBrowser.verticalScrollBar().setSliderPosition(
-            self.__selections[self.__cur_idx]["pos"]
+            self.__selections[self.__cur_idx]["pos"],
         )
 
     def prev(self):

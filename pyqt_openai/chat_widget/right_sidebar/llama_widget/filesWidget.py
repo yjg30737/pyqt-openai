@@ -1,19 +1,21 @@
+from __future__ import annotations
+
 import os
 
-from PySide6.QtCore import Signal
-from PySide6.QtWidgets import (
-    QListWidget,
-    QWidget,
-    QVBoxLayout,
-    QLabel,
+from qtpy.QtCore import Signal
+from qtpy.QtWidgets import (
+    QFileDialog,
     QHBoxLayout,
-    QSpacerItem,
+    QLabel,
+    QListWidget,
     QPushButton,
     QSizePolicy,
-    QFileDialog,
+    QSpacerItem,
+    QVBoxLayout,
+    QWidget,
 )
 
-from pyqt_openai import TEXT_FILE_EXT_LIST, QFILEDIALOG_DEFAULT_DIRECTORY
+from pyqt_openai import QFILEDIALOG_DEFAULT_DIRECTORY
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.util.common import getSeparator
@@ -87,7 +89,7 @@ class FilesWidget(QWidget):
                     filter(
                         lambda x: os.path.splitext(x)[-1] in self.__extension,
                         os.listdir(directory),
-                    )
+                    ),
                 )
                 self.__listWidget.addItems(filenames)
                 self.itemUpdate.emit(len(filenames) > 0)
@@ -98,8 +100,8 @@ class FilesWidget(QWidget):
                 # activate event as clicking first item (because this selects the first item anyway)
                 self.clicked.emit(
                     os.path.join(
-                        self.__current_directory_name, self.__listWidget.currentItem().text()
-                    )
+                        self.__current_directory_name, self.__listWidget.currentItem().text(),
+                    ),
                 )
                 self.onDirectorySelected.emit()
         except Exception as e:

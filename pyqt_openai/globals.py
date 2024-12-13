@@ -1,6 +1,5 @@
-"""
-This is the file that contains the global variables that are used, or possibly used, throughout the application.
-"""
+"""This is the file that contains the global variables that are used, or possibly used, throughout the application."""
+from __future__ import annotations
 
 from g4f.client import Client
 from openai import OpenAI

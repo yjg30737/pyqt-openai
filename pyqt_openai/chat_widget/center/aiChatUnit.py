@@ -1,19 +1,21 @@
-from PySide6.QtGui import QPalette
-from PySide6.QtWidgets import QMessageBox
+from __future__ import annotations
+
+from qtpy.QtGui import QPalette
+from qtpy.QtWidgets import QMessageBox
 
 from pyqt_openai import (
     ICON_FAVORITE_NO,
-    ICON_INFO,
     ICON_FAVORITE_YES,
+    ICON_FILE,
+    ICON_INFO,
     ICON_SPEAKER,
     WHISPER_TTS_MODEL,
-    ICON_FILE,
 )
-from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.chat_widget.center.chatUnit import ChatUnit
 from pyqt_openai.chat_widget.center.responseInfoDialog import ResponseInfoDialog
-from pyqt_openai.models import ChatMessageContainer
+from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.globals import DB
+from pyqt_openai.models import ChatMessageContainer
 from pyqt_openai.util.common import stream_to_speakers
 from pyqt_openai.widgets.button import Button
 from pyqt_openai.widgets.fileTableDialog import FileTableDialog
@@ -28,7 +30,7 @@ class AIChatUnit(ChatUnit):
     def __initVal(self):
         self.__result_info = ""
         self.__show_as_markdown = CONFIG_MANAGER.get_general_property(
-            "show_as_markdown"
+            "show_as_markdown",
         )
 
     def __initAIChatUi(self):
@@ -101,19 +103,17 @@ class AIChatUnit(ChatUnit):
         self.__speakerBtn.setEnabled(f)
 
     def getResponseInfo(self):
-        """
-        Get the response information
-        :return: ChatMessageContainer
+        """Get the response information
+        :return: ChatMessageContainer.
 
         Note: This function is used to get the response information after the response is generated.
         """
         try:
             if self.__result_info and isinstance(
-                self.__result_info, ChatMessageContainer
+                self.__result_info, ChatMessageContainer,
             ):
                 return self.__result_info
-            else:
-                raise AttributeError("Response information is not available")
+            raise AttributeError("Response information is not available")
         except AttributeError as e:
             raise e
 
@@ -132,7 +132,7 @@ class AIChatUnit(ChatUnit):
                 self.thread = stream_to_speakers(voice_provider, args)
                 self.thread.finished.connect(self.__on_thread_complete)
                 self.thread.errorGenerated.connect(
-                    lambda x: QMessageBox.critical(self, "Error", x)
+                    lambda x: QMessageBox.critical(self, "Error", x),
                 )
                 self.thread.start()
         else:

@@ -1,9 +1,19 @@
-from PySide6.QtWidgets import QDialog, QTableWidget, QHeaderView, QVBoxLayout
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+from qtpy.QtWidgets import QDialog, QHeaderView, QTableWidget, QVBoxLayout
+
+if TYPE_CHECKING:
+    from qtpy.QtWidgets import QWidget
 
 
 # TODO v1.8.0
 class FileTableDialog(QDialog):
-    def __init__(self, parent=None):
+    def __init__(
+        self,
+        parent: QWidget | None = None,
+    ):
         super().__init__(parent)
         self.__initUi()
 
@@ -16,9 +26,9 @@ class FileTableDialog(QDialog):
         self.__fileTable.setHorizontalHeaderLabels(["File Name", "Type"])
         self.__fileTable.setColumnWidth(0, 300)
         self.__fileTable.setColumnWidth(1, 100)
-        self.__fileTable.setEditTriggers(QTableWidget.NoEditTriggers)
-        self.__fileTable.setSelectionBehavior(QTableWidget.SelectRows)
-        self.__fileTable.setSelectionMode(QTableWidget.SingleSelection)
+        self.__fileTable.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
+        self.__fileTable.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
+        self.__fileTable.setSelectionMode(QTableWidget.SelectionMode.SingleSelection)
         self.__fileTable.setSortingEnabled(True)
         self.__fileTable.setAlternatingRowColors(True)
         self.__fileTable.setShowGrid(False)
@@ -26,10 +36,8 @@ class FileTableDialog(QDialog):
         self.__fileTable.horizontalHeader().setStretchLastSection(True)
         self.__fileTable.horizontalHeader().setHighlightSections(False)
         self.__fileTable.horizontalHeader().setSectionsClickable(True)
-        self.__fileTable.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
-        self.__fileTable.horizontalHeader().setSectionResizeMode(
-            1, QHeaderView.ResizeToContents
-        )
+        self.__fileTable.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)
+        self.__fileTable.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.ResizeToContents)
         lay = QVBoxLayout()
         lay.addWidget(self.__fileTable)
         self.setLayout(lay)

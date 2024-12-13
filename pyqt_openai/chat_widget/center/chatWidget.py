@@ -1,14 +1,16 @@
+from __future__ import annotations
+
 import json
 import sys
 
-from PySide6.QtCore import Signal
-from PySide6.QtWidgets import (
-    QStackedWidget,
-    QWidget,
-    QSizePolicy,
+from qtpy.QtCore import Signal
+from qtpy.QtWidgets import (
     QHBoxLayout,
-    QVBoxLayout,
     QMessageBox,
+    QSizePolicy,
+    QStackedWidget,
+    QVBoxLayout,
+    QWidget,
 )
 
 from pyqt_openai.chat_widget.center.chatBrowser import ChatBrowser
@@ -17,10 +19,10 @@ from pyqt_openai.chat_widget.center.menuWidget import MenuWidget
 from pyqt_openai.chat_widget.center.prompt import Prompt
 from pyqt_openai.chat_widget.llamaIndexThread import LlamaIndexThread
 from pyqt_openai.config_loader import CONFIG_MANAGER
-from pyqt_openai.globals import LLAMAINDEX_WRAPPER, DB
-from pyqt_openai.util.common import get_argument, ChatThread
+from pyqt_openai.globals import DB, LLAMAINDEX_WRAPPER
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ChatMessageContainer
+from pyqt_openai.util.common import ChatThread, get_argument
 from pyqt_openai.widgets.notifier import NotifierWidget
 
 
@@ -77,7 +79,7 @@ class ChatWidget(QWidget):
         self.__queryWidget = QWidget()
         self.__queryWidget.setLayout(lay)
         self.__queryWidget.setSizePolicy(
-            QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Maximum
+            QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Maximum,
         )
 
         lay = QVBoxLayout()
@@ -110,7 +112,7 @@ class ChatWidget(QWidget):
         self.__prompt.setEnabled(f)
 
     def refreshCustomizedInformation(
-        self, background_image=None, user_image=None, ai_image=None
+        self, background_image=None, user_image=None, ai_image=None,
     ):
         self.__homePage.setPixmap(background_image)
         self.__browser.setUserImage(user_image)
@@ -155,14 +157,14 @@ class ChatWidget(QWidget):
             use_max_tokens = CONFIG_MANAGER.get_general_property("use_max_tokens")
             provider = CONFIG_MANAGER.get_general_property("provider")
             g4f_use_chat_history = CONFIG_MANAGER.get_general_property(
-                "g4f_use_chat_history"
+                "g4f_use_chat_history",
             )
 
             # Get image files
             images = self.__prompt.getImageBuffers()
 
             maximum_messages_in_parameter = CONFIG_MANAGER.get_general_property(
-                "maximum_messages_in_parameter"
+                "maximum_messages_in_parameter",
             )
             messages = self.__browser.getMessages(maximum_messages_in_parameter)
             if self.__is_g4f and not g4f_use_chat_history:
@@ -181,7 +183,7 @@ class ChatWidget(QWidget):
                         pass
                     else:
                         LLAMAINDEX_WRAPPER.set_query_engine(
-                            streaming=stream, similarity_top_k=3
+                            streaming=stream, similarity_top_k=3,
                         )
                 else:
                     QMessageBox.warning(
@@ -264,11 +266,11 @@ class ChatWidget(QWidget):
             # Run a different thread based on whether the llama-index is enabled or not.
             if is_llama_available:
                 self.__t = LlamaIndexThread(
-                    param, container, LLAMAINDEX_WRAPPER, query_text
+                    param, container, LLAMAINDEX_WRAPPER, query_text,
                 )
             else:
                 self.__t = ChatThread(
-                    param, info=container, is_g4f=self.__is_g4f, provider=provider
+                    param, info=container, is_g4f=self.__is_g4f, provider=provider,
                 )
 
             self.__t.started.connect(self.__beforeGenerated)
@@ -290,7 +292,7 @@ class ChatWidget(QWidget):
                 self,
                 LangClass.TRANSLATIONS["Error"],
                 f"""
-                {str(e)},
+                {e!s},
                 'File: {filename}',
                 'Line: {lineno}'
             """,

@@ -1,19 +1,20 @@
-import re
-from typing import List
+from __future__ import annotations
 
-from PySide6.QtGui import QTextCharFormat, QColor, QTextCursor
-from PySide6.QtCore import Qt, Signal
-from PySide6.QtWidgets import QScrollArea, QVBoxLayout, QWidget, QLabel
+import re
+
+from qtpy.QtCore import Qt, Signal
+from qtpy.QtGui import QColor, QTextCharFormat, QTextCursor
+from qtpy.QtWidgets import QLabel, QScrollArea, QVBoxLayout, QWidget
 
 from pyqt_openai import (
-    MAXIMUM_MESSAGES_IN_PARAMETER,
     DEFAULT_FOUND_TEXT_BG_COLOR,
     DEFAULT_FOUND_TEXT_COLOR,
+    MAXIMUM_MESSAGES_IN_PARAMETER,
 )
 from pyqt_openai.chat_widget.center.aiChatUnit import AIChatUnit
 from pyqt_openai.chat_widget.center.userChatUnit import UserChatUnit
-from pyqt_openai.models import ChatMessageContainer
 from pyqt_openai.globals import DB
+from pyqt_openai.models import ChatMessageContainer
 from pyqt_openai.util.common import is_valid_regex
 
 
@@ -61,8 +62,7 @@ class ChatBrowser(QScrollArea):
         item = self.getLayout().itemAt(self.getLayout().count() - 1)
         if item:
             return item.widget()
-        else:
-            return None
+        return None
 
     def __setResponseInfo(self, unit, arg: ChatMessageContainer):
         if isinstance(unit, AIChatUnit):
@@ -91,7 +91,7 @@ class ChatBrowser(QScrollArea):
                 if isinstance(unit, AIChatUnit):
                     unit.toggleGUI(False)
                     unit.addText(text)
-                    return
+                    return None
             chatUnit.setText(text)
 
         self.getLayout().addWidget(chatUnit)
@@ -100,7 +100,7 @@ class ChatBrowser(QScrollArea):
     def event(self, event):
         if event.type() == 43:
             self.verticalScrollBar().setSliderPosition(
-                self.verticalScrollBar().maximum()
+                self.verticalScrollBar().maximum(),
             )
         return super().event(event)
 
@@ -124,9 +124,7 @@ class ChatBrowser(QScrollArea):
         return ""
 
     def clear(self):
-        """
-        This method is used to clear the chat widget, not the database.
-        """
+        """This method is used to clear the chat widget, not the database."""
         lay = self.getLayout()
         if lay:
             for i in range(lay.count() - 1, -1, -1):
@@ -146,8 +144,7 @@ class ChatBrowser(QScrollArea):
         self.setCurId(id)
 
     def __getLabelsByType(self, label_type=None):
-        """
-        Retrieve all labels from the widget's layout, optionally filtering by a specific label type.
+        """Retrieve all labels from the widget's layout, optionally filtering by a specific label type.
 
         :param label_type: The type of label to filter by (e.g., UserChatUnit, AIChatUnit). If None, retrieves all labels.
         :return: A list of label widgets.
@@ -163,24 +160,21 @@ class ChatBrowser(QScrollArea):
         return labels
 
     def __getEveryLabels(self):
-        """
-        Retrieve all labels from the widget's layout.
+        """Retrieve all labels from the widget's layout.
 
         :return: A list of all label widgets.
         """
         return self.__getLabelsByType()
 
     def __getEveryUserLabels(self):
-        """
-        Retrieve all user-specific labels from the widget's layout.
+        """Retrieve all user-specific labels from the widget's layout.
 
         :return: A list of UserChatUnit label widgets.
         """
         return self.__getLabelsByType(UserChatUnit)
 
     def __getEveryAILabels(self):
-        """
-        Retrieve all AI-specific labels from the widget's layout.
+        """Retrieve all AI-specific labels from the widget's layout.
 
         :return: A list of AIChatUnit label widgets.
         """
@@ -232,7 +226,7 @@ class ChatBrowser(QScrollArea):
             cursor.setCharFormat(format)
 
     def setCurrentLabelIncludingTextBySliderPosition(
-        self, text, case_sensitive=False, word_only=False, is_regex=False
+        self, text, case_sensitive=False, word_only=False, is_regex=False,
     ):
         labels = self.__getEveryLabels()
         label_info = [
@@ -255,37 +249,31 @@ class ChatBrowser(QScrollArea):
                         result = re.search(pattern, _["text"])
                         if result:
                             selections.append(_)
-                else:
-                    if _["text"].find(text) != -1:
+                elif _["text"].find(text) != -1:
+                    selections.append(_)
+            elif case_sensitive:
+                if word_only:
+                    pattern = r"\b" + re.escape(text) + r"\b"
+                    result = re.search(pattern, _["text"])
+                    if result:
                         selections.append(_)
+                elif _["text"].find(text) != -1:
+                    selections.append(_)
+            elif word_only:
+                pattern = r"\b" + re.escape(text) + r"\b"
+                result = re.search(pattern, _["text"], re.IGNORECASE)
+                if result:
+                    selections.append(_)
             else:
-                if case_sensitive:
-                    if word_only:
-                        pattern = r"\b" + re.escape(text) + r"\b"
-                        result = re.search(pattern, _["text"])
-                        if result:
-                            selections.append(_)
-                    else:
-                        if _["text"].find(text) != -1:
-                            selections.append(_)
-                else:
-                    if word_only:
-                        pattern = r"\b" + re.escape(text) + r"\b"
-                        result = re.search(pattern, _["text"], re.IGNORECASE)
-                        if result:
-                            selections.append(_)
-                    else:
-                        pattern = re.escape(text)
-                        result = re.search(pattern, _["text"], re.IGNORECASE)
-                        if result:
-                            selections.append(_)
+                pattern = re.escape(text)
+                result = re.search(pattern, _["text"], re.IGNORECASE)
+                if result:
+                    selections.append(_)
 
         return selections
 
-    def replaceThread(self, args: List[ChatMessageContainer], id):
-        """
-        For showing messages from the thread
-        """
+    def replaceThread(self, args: list[ChatMessageContainer], id):
+        """For showing messages from the thread."""
         self.clear()
         self.setCurId(id)
         self.onReplacedCurrentPage.emit(1)
@@ -295,10 +283,8 @@ class ChatBrowser(QScrollArea):
             unit = self.__setLabel(arg.content, False, arg.role)
             self.__setResponseInfo(unit, arg)
 
-    def replaceThreadForFavorite(self, args: List[ChatMessageContainer]):
-        """
-        For showing favorite messages
-        """
+    def replaceThreadForFavorite(self, args: list[ChatMessageContainer]):
+        """For showing favorite messages."""
         self.clear()
         self.onReplacedCurrentPage.emit(1)
         for i in range(len(args)):

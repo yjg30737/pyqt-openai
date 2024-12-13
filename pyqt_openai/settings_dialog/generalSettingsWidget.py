@@ -1,31 +1,34 @@
-from PySide6.QtCore import QRegularExpression
-from PySide6.QtGui import QRegularExpressionValidator
-from PySide6.QtWidgets import (
+from __future__ import annotations
+
+from qtpy.QtCore import QRegularExpression
+from qtpy.QtGui import QRegularExpressionValidator
+from qtpy.QtWidgets import (
+    QCheckBox,
     QComboBox,
     QFormLayout,
-    QLineEdit,
-    QCheckBox,
-    QSizePolicy,
-    QVBoxLayout,
-    QHBoxLayout,
     QGroupBox,
-    QSplitter,
+    QHBoxLayout,
     QLabel,
-    QWidget,
-    QSpinBox,
+    QLineEdit,
     QScrollArea,
+    QSizePolicy,
+    QSpinBox,
+    QSplitter,
+    QVBoxLayout,
+    QWidget,
 )
 
 from pyqt_openai import (
     COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_CHAT,
     COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_IMAGE,
-    LANGUAGE_DICT,
     DB_NAME_REGEX,
-    MAXIMUM_MESSAGES_IN_PARAMETER_RANGE, DEFAULT_WARNING_COLOR,
+    DEFAULT_WARNING_COLOR,
+    LANGUAGE_DICT,
+    MAXIMUM_MESSAGES_IN_PARAMETER_RANGE,
 )
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.lang.translations import LangClass
-from pyqt_openai.models import ImagePromptContainer, ChatThreadContainer
+from pyqt_openai.models import ChatThreadContainer, ImagePromptContainer
 from pyqt_openai.widgets.checkBoxListWidget import CheckBoxListWidget
 
 
@@ -41,16 +44,16 @@ class GeneralSettingsWidget(QScrollArea):
         self.do_not_ask_again = CONFIG_MANAGER.get_general_property("do_not_ask_again")
         self.notify_finish = CONFIG_MANAGER.get_general_property("notify_finish")
         self.show_secondary_toolbar = CONFIG_MANAGER.get_general_property(
-            "show_secondary_toolbar"
+            "show_secondary_toolbar",
         )
         self.chat_column_to_show = CONFIG_MANAGER.get_general_property(
-            "chat_column_to_show"
+            "chat_column_to_show",
         )
         self.image_column_to_show = CONFIG_MANAGER.get_general_property(
-            "image_column_to_show"
+            "image_column_to_show",
         )
         self.maximum_messages_in_parameter = CONFIG_MANAGER.get_general_property(
-            "maximum_messages_in_parameter"
+            "maximum_messages_in_parameter",
         )
         self.show_as_markdown = CONFIG_MANAGER.get_general_property("show_as_markdown")
         self.run_at_startup = CONFIG_MANAGER.get_general_property("run_at_startup")
@@ -62,7 +65,7 @@ class GeneralSettingsWidget(QScrollArea):
         self.__langCmbBox.addItems(list(LANGUAGE_DICT.keys()))
         self.__langCmbBox.setCurrentText(self.lang)
         self.__langCmbBox.setSizePolicy(
-            QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.MinimumExpanding
+            QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.MinimumExpanding,
         )
 
         lay = QHBoxLayout()
@@ -82,40 +85,40 @@ class GeneralSettingsWidget(QScrollArea):
         self.__dbLineEdit.setValidator(self.__validator)
         dbLayout.addWidget(
             QLabel(
-                LangClass.TRANSLATIONS["Name of target database (without extension)"]
-            )
+                LangClass.TRANSLATIONS["Name of target database (without extension)"],
+            ),
         )
         dbLayout.addWidget(self.__dbLineEdit)
 
         # Checkboxes
         self.__doNotAskAgainCheckBox = QCheckBox(
-            f'{LangClass.TRANSLATIONS["Do not ask again when closing"]} ({LangClass.TRANSLATIONS["Always close the application"]})'
+            f'{LangClass.TRANSLATIONS["Do not ask again when closing"]} ({LangClass.TRANSLATIONS["Always close the application"]})',
         )
         self.__doNotAskAgainCheckBox.setChecked(self.do_not_ask_again)
 
         self.__notifyFinishCheckBox = QCheckBox(
             LangClass.TRANSLATIONS[
                 "Notify when finish processing any task (Conversion, etc.)"
-            ]
+            ],
         )
         self.__notifyFinishCheckBox.setChecked(self.notify_finish)
         self.__showSecondaryToolBarChkBox = QCheckBox(
-            LangClass.TRANSLATIONS["Show Secondary Toolbar"]
+            LangClass.TRANSLATIONS["Show Secondary Toolbar"],
         )
         self.__showSecondaryToolBarChkBox.setChecked(self.show_secondary_toolbar)
         # TODO LANGUAGE
         self.__runAtStartupCheckBox = QCheckBox(
-            LangClass.TRANSLATIONS["Run at startup (Windows only)"]
+            LangClass.TRANSLATIONS["Run at startup (Windows only)"],
         )
         self.__runAtStartupCheckBox.setChecked(self.run_at_startup)
 
         self.__manual_updateCheckBox = QCheckBox(
-            LangClass.TRANSLATIONS["Manual Update (<-> Auto Update)"]
+            LangClass.TRANSLATIONS["Manual Update (<-> Auto Update)"],
         )
         self.__manual_updateCheckBox.setChecked(self.manual_update)
 
         self.__manual_UpdateWarning = QLabel(
-            LangClass.TRANSLATIONS["Auto-update is supported on Windows only."]
+            LangClass.TRANSLATIONS["Auto-update is supported on Windows only."],
         )
         self.__manual_UpdateWarning.setStyleSheet(f"color: {DEFAULT_WARNING_COLOR};")
 
@@ -134,10 +137,10 @@ class GeneralSettingsWidget(QScrollArea):
 
         self.__maximumMessagesInParameterSpinBox = QSpinBox()
         self.__maximumMessagesInParameterSpinBox.setRange(
-            *MAXIMUM_MESSAGES_IN_PARAMETER_RANGE
+            *MAXIMUM_MESSAGES_IN_PARAMETER_RANGE,
         )
         self.__maximumMessagesInParameterSpinBox.setValue(
-            self.maximum_messages_in_parameter
+            self.maximum_messages_in_parameter,
         )
 
         self.__show_as_markdown = QCheckBox(LangClass.TRANSLATIONS["Show as Markdown"])
@@ -156,14 +159,14 @@ class GeneralSettingsWidget(QScrollArea):
         chatColAllCheckBox = QCheckBox(LangClass.TRANSLATIONS["Check All"])
         self.__chatColCheckBoxListWidget = CheckBoxListWidget()
         for k in ChatThreadContainer.get_keys(
-            excludes=COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_CHAT
+            excludes=COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_CHAT,
         ):
             self.__chatColCheckBoxListWidget.addItem(
-                k, checked=k in self.chat_column_to_show
+                k, checked=k in self.chat_column_to_show,
             )
 
         chatColAllCheckBox.stateChanged.connect(
-            self.__chatColCheckBoxListWidget.toggleState
+            self.__chatColCheckBoxListWidget.toggleState,
         )
 
         lay = QVBoxLayout()
@@ -171,8 +174,8 @@ class GeneralSettingsWidget(QScrollArea):
             QLabel(
                 LangClass.TRANSLATIONS[
                     "Select the columns you want to show in the chat list."
-                ]
-            )
+                ],
+            ),
         )
         lay.addWidget(chatColAllCheckBox)
         lay.addWidget(self.__chatColCheckBoxListWidget)
@@ -183,14 +186,14 @@ class GeneralSettingsWidget(QScrollArea):
         imageColAllCheckBox = QCheckBox(LangClass.TRANSLATIONS["Check all"])
         self.__imageColCheckBoxListWidget = CheckBoxListWidget()
         for k in ImagePromptContainer.get_keys(
-            excludes=COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_IMAGE
+            excludes=COLUMN_TO_EXCLUDE_FROM_SHOW_HIDE_IMAGE,
         ):
             self.__imageColCheckBoxListWidget.addItem(
-                k, checked=k in self.image_column_to_show
+                k, checked=k in self.image_column_to_show,
             )
 
         imageColAllCheckBox.stateChanged.connect(
-            self.__imageColCheckBoxListWidget.toggleState
+            self.__imageColCheckBoxListWidget.toggleState,
         )
 
         lay = QVBoxLayout()
@@ -198,8 +201,8 @@ class GeneralSettingsWidget(QScrollArea):
             QLabel(
                 LangClass.TRANSLATIONS[
                     "Select the columns you want to show in the image list."
-                ]
-            )
+                ],
+            ),
         )
         lay.addWidget(imageColAllCheckBox)
         lay.addWidget(self.__imageColCheckBoxListWidget)
@@ -215,7 +218,7 @@ class GeneralSettingsWidget(QScrollArea):
         self.__splitter.setSizes([500, 500])
         self.__splitter.setStyleSheet("QSplitterHandle {background-color: lightgray;}")
         self.__splitter.setSizePolicy(
-            QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.MinimumExpanding
+            QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.MinimumExpanding,
         )
 
         lay = QVBoxLayout()

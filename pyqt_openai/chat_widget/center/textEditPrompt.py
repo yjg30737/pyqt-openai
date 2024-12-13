@@ -1,9 +1,15 @@
-from pathlib import Path
+from __future__ import annotations
 
-from PySide6.QtCore import Qt, Signal, QMimeData
-from PySide6.QtWidgets import QTextEdit
+from pathlib import Path
+from typing import TYPE_CHECKING
+
+from qtpy.QtCore import Qt, Signal
+from qtpy.QtWidgets import QTextEdit
 
 from pyqt_openai import IMAGE_FILE_EXT_LIST
+
+if TYPE_CHECKING:
+    from qtpy.QtCore import QMimeData
 
 
 class TextEditPrompt(QTextEdit):
@@ -40,27 +46,24 @@ class TextEditPrompt(QTextEdit):
                 self.sendSuggestionWidget.emit("up")
             elif event.key() == Qt.Key.Key_Down:
                 self.sendSuggestionWidget.emit("down")
-        else:
-            if event.modifiers() == Qt.KeyboardModifier.ControlModifier:
-                if event.key() == Qt.Key.Key_Up:
-                    self.moveCursorToOtherPrompt.emit("up")
-                    return
-                elif event.key() == Qt.Key.Key_Down:
-                    self.moveCursorToOtherPrompt.emit("down")
-                    return
-                else:
-                    return super().keyPressEvent(event)
+        elif event.modifiers() == Qt.KeyboardModifier.ControlModifier:
+            if event.key() == Qt.Key.Key_Up:
+                self.moveCursorToOtherPrompt.emit("up")
+                return None
+            if event.key() == Qt.Key.Key_Down:
+                self.moveCursorToOtherPrompt.emit("down")
+                return None
+            return super().keyPressEvent(event)
 
         if (
             event.key() == Qt.Key.Key_Return or event.key() == Qt.Key.Key_Enter
         ) and self.__executeEnabled:
             if event.modifiers() == Qt.KeyboardModifier.ShiftModifier:
                 return super().keyPressEvent(event)
+            if self.__commandSuggestionEnabled:
+                self.sendSuggestionWidget.emit("enter")
             else:
-                if self.__commandSuggestionEnabled:
-                    self.sendSuggestionWidget.emit("enter")
-                else:
-                    self.sendMessage()
+                self.sendMessage()
         else:
             return super().keyPressEvent(event)
 

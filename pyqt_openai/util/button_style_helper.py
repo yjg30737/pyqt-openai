@@ -1,17 +1,22 @@
-from PySide6.QtGui import QColor, QPalette, qGray, QIcon
-from PySide6.QtWidgets import (
-    QGraphicsColorizeEffect,
-    QWidget,
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+from qtpy.QtGui import QColor, QPalette, qGray
+from qtpy.QtWidgets import (
     QApplication,
-    QToolButton,
-    QPushButton,
 )
 
 from pyqt_openai import (
+    DEFAULT_BUTTON_CHECKED_COLOR,
     DEFAULT_BUTTON_HOVER_COLOR,
     DEFAULT_BUTTON_PRESSED_COLOR,
-    DEFAULT_BUTTON_CHECKED_COLOR,
 )
+
+if TYPE_CHECKING:
+    from qtpy.QtWidgets import (
+        QWidget,
+    )
 
 
 class ButtonStyleHelper:
@@ -71,11 +76,10 @@ class ButtonStyleHelper:
         )
         if r == g == b:
             text_color = QColor(r, g, b)
+        elif qGray(r, g, b) > 255 // 2:
+            text_color = QColor(255, 255, 255)
         else:
-            if qGray(r, g, b) > 255 // 2:
-                text_color = QColor(255, 255, 255)
-            else:
-                text_color = QColor(0, 0, 0)
+            text_color = QColor(0, 0, 0)
         return text_color.name()
 
     def styleInit(self):

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.g4f_image_widget.g4fImageHome import G4FImageHome
 from pyqt_openai.g4f_image_widget.g4fImageRightSideBar import G4FImageRightSideBarWidget

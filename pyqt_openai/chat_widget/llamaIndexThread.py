@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from llama_index.core.base.response.schema import StreamingResponse
-from PySide6.QtCore import QThread, Signal
+from qtpy.QtCore import QThread, Signal
 
 from pyqt_openai.models import ChatMessageContainer
 
@@ -33,8 +35,7 @@ class LlamaIndexThread(QThread):
                         self.__info.finish_reason = "stopped by user"
                         self.streamFinished.emit(self.__info)
                         break
-                    else:
-                        self.replyGenerated.emit(chunk, True, self.__info)
+                    self.replyGenerated.emit(chunk, True, self.__info)
             else:
                 self.__info.content = resp.response
                 # self.__info.prompt_tokens = ""

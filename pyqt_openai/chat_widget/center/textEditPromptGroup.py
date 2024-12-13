@@ -1,16 +1,18 @@
+from __future__ import annotations
+
 from pathlib import Path
 
-from PySide6.QtCore import Signal, QBuffer, QByteArray
-from PySide6.QtGui import QTextCursor, QKeySequence
-from PySide6.QtWidgets import QVBoxLayout, QWidget, QApplication
+from qtpy.QtCore import QBuffer, QByteArray, Signal
+from qtpy.QtGui import QKeySequence, QTextCursor
+from qtpy.QtWidgets import QApplication, QVBoxLayout, QWidget
 
 from pyqt_openai import (
-    PROMPT_BEGINNING_KEY_NAME,
-    PROMPT_MAIN_KEY_NAME,
-    PROMPT_END_KEY_NAME,
-    PROMPT_JSON_KEY_NAME,
     CONTEXT_DELIMITER,
     IMAGE_FILE_EXT_LIST,
+    PROMPT_BEGINNING_KEY_NAME,
+    PROMPT_END_KEY_NAME,
+    PROMPT_JSON_KEY_NAME,
+    PROMPT_MAIN_KEY_NAME,
     TEXT_FILE_EXT_LIST,
 )
 from pyqt_openai.chat_widget.center.textEditPrompt import TextEditPrompt
@@ -98,9 +100,7 @@ class TextEditPromptGroup(QWidget):
                 return w
 
     def adjustHeight(self) -> int:
-        """
-        Adjust overall height of text edit group based on their contents and return adjusted height
-        """
+        """Adjust overall height of text edit group based on their contents and return adjusted height."""
         group_height = 0
         for w in self.__textGroup.values():
             document = w.document()
@@ -136,8 +136,7 @@ class TextEditPromptGroup(QWidget):
         return self.__textEdit
 
     def getGroup(self):
-        """
-        Get the text group.
+        """Get the text group.
         These are only used when you need to handle widgets in the group in detail.
         """
         return self.__textGroup
@@ -156,7 +155,7 @@ class TextEditPromptGroup(QWidget):
                     data = f.read()
                     self.onPasteFile.emit(data)
             elif Path(url).suffix in TEXT_FILE_EXT_LIST:
-                with open(url, "r") as f:
+                with open(url) as f:
                     data = f.read()
                     self.onPasteText.emit(data)
 
@@ -179,8 +178,7 @@ class TextEditPromptGroup(QWidget):
                     # Both formats failed
                     buffer.close()
                     return
-                else:
-                    image_format = "JPG"
+                image_format = "JPG"
 
             buffer.seek(0)
             image_data = buffer.data()

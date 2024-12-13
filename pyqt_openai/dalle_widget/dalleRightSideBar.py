@@ -1,24 +1,22 @@
-from PySide6.QtWidgets import (
-    QSpinBox,
-    QGroupBox,
-    QVBoxLayout,
-    QComboBox,
-    QPlainTextEdit,
-    QFormLayout,
-    QLabel,
-    QRadioButton,
-)
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any
+
+from qtpy.QtWidgets import QComboBox, QFormLayout, QGroupBox, QLabel, QPlainTextEdit, QRadioButton, QSpinBox, QVBoxLayout
 
 from pyqt_openai import OPENAI_DEFAULT_IMAGE_MODEL
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.dalle_widget.dalleThread import DallEThread
 from pyqt_openai.lang.translations import LangClass
-from pyqt_openai.widgets.imageControlWidget import ImageControlWidget
 from pyqt_openai.widgets.APIInputButton import APIInputButton
+from pyqt_openai.widgets.imageControlWidget import ImageControlWidget
+
+if TYPE_CHECKING:
+    from qtpy.QtWidgets import QWidget
 
 
 class DallERightSideBarWidget(ImageControlWidget):
-    def __init__(self, parent=None):
+    def __init__(self, parent: QWidget | None = None):
         super().__init__(parent)
         self._initVal()
         self._initUi()
@@ -26,27 +24,21 @@ class DallERightSideBarWidget(ImageControlWidget):
     def _initVal(self):
         super()._initVal()
 
-        self._prompt = CONFIG_MANAGER.get_dalle_property("prompt")
-        self._continue_generation = CONFIG_MANAGER.get_dalle_property(
-            "continue_generation"
-        )
-        self._save_prompt_as_text = CONFIG_MANAGER.get_dalle_property(
-            "save_prompt_as_text"
-        )
-        self._is_save = CONFIG_MANAGER.get_dalle_property("is_save")
-        self._directory = CONFIG_MANAGER.get_dalle_property("directory")
-        self._number_of_images_to_create = CONFIG_MANAGER.get_dalle_property(
-            "number_of_images_to_create"
-        )
+        self._prompt: str = CONFIG_MANAGER.get_dalle_property("prompt") or ""
+        self._continue_generation: bool = bool(CONFIG_MANAGER.get_dalle_property("continue_generation"))
+        self._save_prompt_as_text: bool = bool(CONFIG_MANAGER.get_dalle_property("save_prompt_as_text"))
+        self._is_save: bool = bool(CONFIG_MANAGER.get_dalle_property("is_save"))
+        self._directory: str = CONFIG_MANAGER.get_dalle_property("directory") or ""
+        self._number_of_images_to_create: int = int(CONFIG_MANAGER.get_dalle_property("number_of_images_to_create") or 1)
 
-        self.__quality = CONFIG_MANAGER.get_dalle_property("quality")
-        self.__n = CONFIG_MANAGER.get_dalle_property("n")
-        self.__size = CONFIG_MANAGER.get_dalle_property("size")
-        self.__style = CONFIG_MANAGER.get_dalle_property("style")
-        self.__response_format = CONFIG_MANAGER.get_dalle_property("response_format")
-        self.__prompt_type = CONFIG_MANAGER.get_dalle_property("prompt_type")
-        self.__width = CONFIG_MANAGER.get_dalle_property("width")
-        self.__height = CONFIG_MANAGER.get_dalle_property("height")
+        self.__quality: str = CONFIG_MANAGER.get_dalle_property("quality") or "standard"
+        self.__n: int = int(CONFIG_MANAGER.get_dalle_property("n") or 1)
+        self.__size: str = CONFIG_MANAGER.get_dalle_property("size") or "1024x1024"
+        self.__style: str = CONFIG_MANAGER.get_dalle_property("style") or "vivid"
+        self.__response_format: str = CONFIG_MANAGER.get_dalle_property("response_format") or "url"
+        self.__prompt_type: int = int(CONFIG_MANAGER.get_dalle_property("prompt_type") or 1)
+        self.__width: int = int(CONFIG_MANAGER.get_dalle_property("width") or 1024)
+        self.__height: int = int(CONFIG_MANAGER.get_dalle_property("height") or 1024)
 
     def _initUi(self):
         super()._initUi()
@@ -56,7 +48,7 @@ class DallERightSideBarWidget(ImageControlWidget):
         self.__setApiBtn.setText("Set API Key")
 
         self.__promptTypeToShowRadioGrpBox = QGroupBox(
-            LangClass.TRANSLATIONS["Prompt Type To Show"]
+            LangClass.TRANSLATIONS["Prompt Type To Show"],
         )
 
         self.__normalOne = QRadioButton(LangClass.TRANSLATIONS["Normal"])
@@ -87,19 +79,19 @@ class DallERightSideBarWidget(ImageControlWidget):
 
         self.__qualityCmbBox = QComboBox()
         self.__qualityCmbBox.addItems(["standard", "hd"])
-        self.__qualityCmbBox.setCurrentText(self.__quality)
+        self.__qualityCmbBox.setCurrentText(self.__quality or "standard")
         self.__qualityCmbBox.currentTextChanged.connect(self.__dalleChanged)
 
         self.__nSpinBox = QSpinBox()
         self.__nSpinBox.setRange(1, 10)
-        self.__nSpinBox.setValue(self.__n)
+        self.__nSpinBox.setValue(int(self.__n or 1))
         self.__nSpinBox.valueChanged.connect(self.__dalleChanged)
         self.__nSpinBox.setEnabled(False)
 
         self.__sizeLimitLabel = QLabel(
             LangClass.TRANSLATIONS[
                 "※ Images can have a size of 1024x1024, 1024x1792 or 1792x1024 pixels."
-            ]
+            ],
         )
         self.__sizeLimitLabel.setWordWrap(True)
 
@@ -139,10 +131,10 @@ class DallERightSideBarWidget(ImageControlWidget):
         sender = self.sender()
         if sender == self.__qualityCmbBox:
             self.__quality = v
-            CONFIG_MANAGER.set_dalle_property("quality", self.__quality)
+            CONFIG_MANAGER.set_dalle_property("quality", str(self.__quality))
         elif sender == self.__nSpinBox:
             self.__n = v
-            CONFIG_MANAGER.set_dalle_property("n", self.__n)
+            CONFIG_MANAGER.set_dalle_property("n", str(self.__n))
         elif sender == self.__widthCmbBox:
             if (
                 self.__widthCmbBox.currentText() == "1792"
@@ -150,7 +142,7 @@ class DallERightSideBarWidget(ImageControlWidget):
             ):
                 self.__heightCmbBox.setCurrentText("1024")
             self.__width = v
-            CONFIG_MANAGER.set_dalle_property("width", self.__width)
+            CONFIG_MANAGER.set_dalle_property("width", str(self.__width))
         elif sender == self.__heightCmbBox:
             if (
                 self.__widthCmbBox.currentText() == "1792"
@@ -158,10 +150,10 @@ class DallERightSideBarWidget(ImageControlWidget):
             ):
                 self.__widthCmbBox.setCurrentText("1024")
             self.__height = v
-            CONFIG_MANAGER.set_dalle_property("height", self.__height)
+            CONFIG_MANAGER.set_dalle_property("height", str(self.__height))
         elif sender == self.__styleCmbBox:
             self.__style = v
-            CONFIG_MANAGER.set_dalle_property("style", self.__style)
+            CONFIG_MANAGER.set_dalle_property("style", str(self.__style))
 
     # TODO combine __dalleTextChanged and __replicateTextChanged and rename them to __promptTextChanged
     def __dalleTextChanged(self):
@@ -171,36 +163,36 @@ class DallERightSideBarWidget(ImageControlWidget):
                 self._prompt = sender.toPlainText()
                 CONFIG_MANAGER.set_dalle_property("prompt", self._prompt)
 
-    def _setSaveDirectory(self, directory):
+    def _setSaveDirectory(self, directory: str):
         super()._setSaveDirectory(directory)
         CONFIG_MANAGER.set_dalle_property("directory", directory)
 
-    def _saveChkBoxToggled(self, f):
+    def _saveChkBoxToggled(self, f: bool):
         super()._saveChkBoxToggled(f)
-        CONFIG_MANAGER.set_dalle_property("is_save", f)
+        CONFIG_MANAGER.set_dalle_property("is_save", str(f))
 
-    def _continueGenerationChkBoxToggled(self, f):
+    def _continueGenerationChkBoxToggled(self, f: bool):
         super()._continueGenerationChkBoxToggled(f)
-        CONFIG_MANAGER.set_dalle_property("continue_generation", f)
+        CONFIG_MANAGER.set_dalle_property("continue_generation", str(f))
 
-    def _savePromptAsTextChkBoxToggled(self, f):
+    def _savePromptAsTextChkBoxToggled(self, f: bool):
         super()._savePromptAsTextChkBoxToggled(f)
-        CONFIG_MANAGER.set_dalle_property("save_prompt_as_text", f)
+        CONFIG_MANAGER.set_dalle_property("save_prompt_as_text", str(f))
 
-    def _numberOfImagesToCreateSpinBoxValueChanged(self, value):
+    def _numberOfImagesToCreateSpinBoxValueChanged(self, value: int):
         super()._numberOfImagesToCreateSpinBoxValueChanged(value)
-        CONFIG_MANAGER.set_dalle_property("number_of_images_to_create", value)
+        CONFIG_MANAGER.set_dalle_property("number_of_images_to_create", str(value))
 
-    def __promptTypeToggled(self, f):
+    def __promptTypeToggled(self, f: bool):
         sender = self.sender()
         # Prompt type to show on the image
         # 1 is normal, 2 is revised
         if sender == self.__normalOne:
             self.__prompt_type = 1
-            CONFIG_MANAGER.set_dalle_property("prompt_type", self.__prompt_type)
+            CONFIG_MANAGER.set_dalle_property("prompt_type", str(self.__prompt_type))
         elif sender == self.__revisedOne:
             self.__prompt_type = 2
-            CONFIG_MANAGER.set_dalle_property("prompt_type", self.__prompt_type)
+            CONFIG_MANAGER.set_dalle_property("prompt_type", str(self.__prompt_type))
 
     def _submit(self):
         arg = self.getArgument()
@@ -215,7 +207,7 @@ class DallERightSideBarWidget(ImageControlWidget):
         self._setThread(t)
         super()._submit()
 
-    def getArgument(self):
+    def getArgument(self) -> dict[str, Any]:
         obj = super().getArgument()
         return {
             **obj,

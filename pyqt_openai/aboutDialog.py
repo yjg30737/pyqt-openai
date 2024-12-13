@@ -1,24 +1,23 @@
+from __future__ import annotations
+
 import datetime
 
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QPixmap
-from PySide6.QtWidgets import (
-    QDialog,
-    QPushButton,
-    QHBoxLayout,
-    QWidget,
-    QVBoxLayout,
-    QLabel,
-)
+from qtpy.QtCore import Qt
+from qtpy.QtGui import QPixmap
+from qtpy.QtWidgets import QDialog, QHBoxLayout, QLabel, QPushButton, QVBoxLayout, QWidget
 
 import pyqt_openai
-from pyqt_openai import DEFAULT_APP_ICON, LICENSE_URL, DEFAULT_APP_NAME, CONTACT
+
+from pyqt_openai import CONTACT, DEFAULT_APP_ICON, DEFAULT_APP_NAME, LICENSE_URL
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.widgets.linkLabel import LinkLabel
 
 
 class AboutDialog(QDialog):
-    def __init__(self, parent=None):
+    def __init__(
+        self,
+        parent: QWidget | None = None,
+    ) -> None:
         super().__init__(parent)
         self.__initUi()
 
@@ -26,7 +25,7 @@ class AboutDialog(QDialog):
         self.setWindowTitle(LangClass.TRANSLATIONS["About"])
         self.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.WindowCloseButtonHint)
 
-        self.__okBtn = QPushButton(LangClass.TRANSLATIONS["OK"])
+        self.__okBtn: QPushButton = QPushButton(LangClass.TRANSLATIONS["OK"])
         self.__okBtn.clicked.connect(self.accept)
 
         p = QPixmap(DEFAULT_APP_ICON)
@@ -40,7 +39,7 @@ class AboutDialog(QDialog):
         Software Version {pyqt_openai.__version__}<br/><br/>
         © 2023 {datetime.datetime.now().year}. Used under the {pyqt_openai.LICENSE} License.<br/>
         Copyright (c) {datetime.datetime.now().year} {pyqt_openai.__author__}<br/>
-        """
+        """,
         )
 
         descWidget2 = LinkLabel()
@@ -52,7 +51,7 @@ class AboutDialog(QDialog):
             f"""
         <br/><br/>Contact: {CONTACT}<br/>
         <p>Powered by<br><br> PySide6, GPT4Free, LiteLLM,<br>LlamaIndex</p>
-        """
+        """,
         )
 
         descWidget1.setAlignment(Qt.AlignmentFlag.AlignTop)
