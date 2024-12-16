@@ -28,7 +28,7 @@ dependencies = [
     "docx2txt",
     "openpyxl",
 
-    "g4f==0.3.3.4",
+    "g4f==0.3.9.4",
     "curl_cffi",
     "litellm",
 
