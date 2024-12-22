@@ -17,21 +17,19 @@ import subprocess
 import sys
 import tempfile
 import time
-import filetype
 import traceback
 import wave
 import zipfile
 from datetime import datetime
-from io import BytesIO
 from pathlib import Path
+from inspect import signature
 
-import PIL.Image
+import filetype
 import numpy as np
 import psutil
 from g4f import ProviderType
 from g4f.providers.base_provider import ProviderModelMixin
 from litellm import completion
-
 from pyqt_openai.widgets.scrollableErrorDialog import ScrollableErrorDialog
 
 if sys.platform == "win32":
@@ -45,7 +43,7 @@ from PySide6.QtWidgets import QMessageBox, QFrame
 from g4f.Provider import ProviderUtils, __providers__, __map__
 from g4f.errors import ProviderNotFoundError
 from g4f.models import ModelUtils
-from g4f.providers.retry_provider import IterProvider
+from g4f.providers.retry_provider import IterListProvider
 from jinja2 import Template
 
 import pyqt_openai.util
@@ -64,8 +62,7 @@ from pyqt_openai import (
     O1_MODELS,
     STT_MODEL,
     DEFAULT_DATETIME_FORMAT,
-    DEFAULT_TOKEN_CHUNK_SIZE, DEFAULT_API_CONFIGS, INDENT_SIZE, FAMOUS_LLM_LIST,
-)
+    DEFAULT_TOKEN_CHUNK_SIZE, DEFAULT_API_CONFIGS, INDENT_SIZE, )
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.globals import (
     DB,
@@ -526,7 +523,7 @@ def convert_to_provider(provider: str):
         ]
         if not provider_list:
             raise ProviderNotFoundError(f"Providers not found: {provider}")
-        provider = IterProvider(provider_list)
+        provider = IterListProvider(provider_list)
     elif provider in ProviderUtils.convert:
         provider = ProviderUtils.convert[provider]
     elif provider:
@@ -636,32 +633,62 @@ def get_g4f_image_models() -> list:
     Get all the models that support image generation
     Some of the image providers are not included in this list
     """
-    image_models = []
-    index = []
-    for provider in __providers__:
-        if hasattr(provider, "image_models"):
-            if hasattr(provider, "get_models"):
-                provider.get_models()
-            parent = provider
-            if hasattr(provider, "parent"):
-                parent = __map__[provider.parent]
-            if parent.__name__ not in index:
-                if provider.image_models:
-                    for model in provider.image_models:
-                        image_models.append(
-                            {
-                                "provider": parent.__name__,
-                                "url": parent.url,
-                                "label": parent.label if hasattr(parent, "label") else None,
-                                "image_model": model,
-                            }
-                        )
-                        index.append(parent.__name__)
+    image_models = [
+        ### Stability AI ###
+        'sdxl',
+        'sd-3',
 
-    models = [model["image_model"] for model in image_models]
-    # Filter out the models in FAMOUS_LLM_LIST
-    models = [model for model in models if model not in FAMOUS_LLM_LIST]
-    return models
+        ### Playground ###
+        'playground-v2.5',
+
+        ### Flux AI ###
+        'flux',
+        'flux-pro',
+        'flux-dev',
+        'flux-realism',
+        'flux-anime',
+        'flux-3d',
+        'flux-disney',
+        'flux-pixel',
+        'flux-4o',
+
+        ### OpenAI ###
+        'dall-e-3',
+
+        ### Recraft ###
+        'recraft-v3',
+
+        ### Other ###
+        'any-dark'
+    ]
+    index = []
+    # for provider in __providers__:
+    #     try:
+    #         if hasattr(provider, "image_models"):
+    #             if hasattr(provider, "get_models"):
+    #                 provider.get_models()
+    #             parent = provider
+    #             if hasattr(provider, "parent"):
+    #                 parent = __map__[provider.parent]
+    #             if parent.__name__ not in index:
+    #                 if provider.image_models:
+    #                     for model in provider.image_models:
+    #                         image_models.append(
+    #                             {
+    #                                 "provider": parent.__name__,
+    #                                 "url": parent.url,
+    #                                 "label": parent.label if hasattr(parent, "label") else None,
+    #                                 "image_model": model,
+    #                             }
+    #                         )
+    #                         index.append(parent.__name__)
+    #     except Exception as e:
+    #         continue
+    #
+    # models = [model["image_model"] for model in image_models]
+    # # Filter out the models in FAMOUS_LLM_LIST
+    # models = [model for model in models if model not in FAMOUS_LLM_LIST]
+    return image_models
 
 
 def get_g4f_image_providers(including_auto=False) -> list:
@@ -700,37 +727,24 @@ def get_g4f_image_models_from_provider(provider) -> list:
     if provider == G4F_PROVIDER_DEFAULT:
         return get_g4f_image_models()
 
-    def get_provider_models(provider: str) -> list[dict]:
-        """
-        From g4f/gui/server/api.py
-        """
+    def get_provider_models(provider: str, api_key: str = None):
         if provider in __map__:
             provider: ProviderType = __map__[provider]
             if issubclass(provider, ProviderModelMixin):
+                if api_key is not None and "api_key" in signature(provider.get_models).parameters:
+                    models = provider.get_models(api_key=api_key)
+                else:
+                    models = provider.get_models()
                 return [
-                    {"model": model, "default": model == provider.default_model}
-                    for model in provider.get_models()
+                    {
+                        "model": model,
+                        "default": model == provider.default_model,
+                        "vision": getattr(provider, "default_vision_model", None) == model or model in getattr(provider, "vision_models", []),
+                        "image": False if provider.image_models is None else model in provider.image_models,
+                    }
+                    for model in models
                 ]
-            elif provider.supports_gpt_35_turbo or provider.supports_gpt_4:
-                return [
-                    *(
-                        [{"model": "gpt-4", "default": not provider.supports_gpt_4}]
-                        if provider.supports_gpt_4
-                        else []
-                    ),
-                    *(
-                        [
-                            {
-                                "model": "gpt-3.5-turbo",
-                                "default": not provider.supports_gpt_4,
-                            }
-                        ]
-                        if provider.supports_gpt_35_turbo
-                        else []
-                    ),
-                ]
-            else:
-                return []
+        return []
 
     return [model["model"] for model in get_provider_models(provider)]
 
