@@ -16,7 +16,8 @@ llama-index
 docx2txt
 openpyxl
 
-g4f==0.3.3.4
+g4f
+nodriver
 
 curl_cffi
 litellm

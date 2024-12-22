@@ -30,13 +30,9 @@ class G4FImageThread(QThread):
         self.__stop = True
 
     def run(self):
-        try:
-            provider = G4F_PROVIDER_DEFAULT
-            if self.__input_args["provider"] != G4F_PROVIDER_DEFAULT:
-                provider = self.__input_args["provider"]
-                self.__input_args["provider"] = convert_to_provider(
-                    self.__input_args["provider"]
-                )
+        # try:
+            if self.__input_args["provider"] == G4F_PROVIDER_DEFAULT:
+                del self.__input_args["provider"]
 
             for _ in range(self.__number_of_images):
                 if self.__stop:
@@ -45,26 +41,17 @@ class G4FImageThread(QThread):
                     self.__input_args["prompt"] = generate_random_prompt(
                         self.__randomizing_prompt_source_arr
                     )
-                images = G4F_CLIENT.images
-                if provider != G4F_PROVIDER_DEFAULT:
-                    images.provider = self.__input_args["provider"]
-                else:
-                    del self.__input_args["provider"]
-                    provider = images.models.get(self.__input_args['model'], images.provider)
-                    if isinstance(provider, IterListProvider):
-                        if provider.providers:
-                            provider = provider.providers[0]
-                            provider = provider.__name__
-
-                response = images.generate(**self.__input_args)
+                response =  G4F_CLIENT.images.generate(
+                    **self.__input_args
+                )
                 arg = {
                     **self.__input_args,
-                    "provider": provider,
+                    "provider": response.provider,
                     "data": download_image_as_base64(response.data[0].url),
                 }
 
                 result = ImagePromptContainer(**arg)
                 self.replyGenerated.emit(result)
             self.allReplyGenerated.emit()
-        except Exception as e:
-            self.errorGenerated.emit(str(e))
+#         except Exception as e:
+#             self.errorGenerated.emit(str(e))
