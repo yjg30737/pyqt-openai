@@ -136,6 +136,9 @@ pyqt_openai/pyqt_openai.ini
 pyqt_openai/*.db
 pyqt_openai/test/
 pyqt_openai/config.yaml
+
 .history
 .archivist
 .ruff_cache
+
+test

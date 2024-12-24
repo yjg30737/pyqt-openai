@@ -22,11 +22,13 @@ import zipfile
 
 from datetime import datetime
 from pathlib import Path
+from inspect import signature
 
 import filetype
 import numpy as np
 import psutil
 
+from g4f import ProviderType
 from g4f.providers.base_provider import ProviderModelMixin
 from litellm import completion
 
@@ -41,10 +43,10 @@ from typing import TYPE_CHECKING
 
 import pyaudio
 
-from g4f.Provider import ProviderUtils, __map__, __providers__
+from g4f.Provider import ProviderUtils, __providers__, __map__
 from g4f.errors import ProviderNotFoundError
 from g4f.models import ModelUtils
-from g4f.providers.retry_provider import IterProvider
+from g4f.providers.retry_provider import IterListProvider
 from jinja2 import Template
 from qtpy.QtCore import QThread, QUrl, Qt, Signal
 from qtpy.QtGui import QDesktopServices
@@ -53,25 +55,21 @@ from qtpy.QtWidgets import QFrame, QMessageBox
 import pyqt_openai.util
 
 from pyqt_openai import (
-    AUTOSTART_REGISTRY_KEY,
-    CONTEXT_DELIMITER,
-    DEFAULT_API_CONFIGS,
-    DEFAULT_APP_NAME,
-    DEFAULT_DATETIME_FORMAT,
-    DEFAULT_TOKEN_CHUNK_SIZE,
-    FAMOUS_LLM_LIST,
-    G4F_PROVIDER_DEFAULT,
-    INDENT_SIZE,
     MAIN_INDEX,
-    O1_MODELS,
+    PROMPT_MAIN_KEY_NAME,
     PROMPT_BEGINNING_KEY_NAME,
     PROMPT_END_KEY_NAME,
     PROMPT_JSON_KEY_NAME,
-    PROMPT_MAIN_KEY_NAME,
-    STT_MODEL,
+    CONTEXT_DELIMITER,
     THREAD_ORDERBY,
+    DEFAULT_APP_NAME,
+    AUTOSTART_REGISTRY_KEY,
     is_frozen,
-)
+    G4F_PROVIDER_DEFAULT,
+    O1_MODELS,
+    STT_MODEL,
+    DEFAULT_DATETIME_FORMAT,
+    DEFAULT_TOKEN_CHUNK_SIZE, DEFAULT_API_CONFIGS, INDENT_SIZE, )
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.globals import (
     DB,
@@ -87,7 +85,6 @@ if TYPE_CHECKING:
     from g4f import ProviderType
 
     from pyqt_openai.models import ImagePromptContainer
-
 
 def get_generic_ext_out_of_qt_ext(text):
     pattern = r"\((\*\.(.+))\)"
@@ -139,7 +136,7 @@ def conv_unit_to_html(db, id, title):
                 .message:nth-child(even) {
                     background-color: #ddd; /* Color for even messages */
                 }
-
+                
                 .message:nth-child(odd) {
                     background-color: #fff; /* Color for odd messages */
                 }
@@ -156,7 +153,7 @@ def conv_unit_to_html(db, id, title):
             </div>
         </body>
     </html>
-    """,
+    """
     )
     html = template.render(title=title, chat_history=chat_history)
     return html
@@ -175,7 +172,7 @@ def generate_random_string(length):
 def get_image_filename_for_saving(arg: ImagePromptContainer):
     ext = ".png"
     filename_prompt_prefix = "_".join(
-        "".join(re.findall("[a-zA-Z0-9\\s]", arg.prompt[:20])).split(" "),
+        "".join(re.findall("[a-zA-Z0-9\\s]", arg.prompt[:20])).split(" ")
     )
     size = f"{arg.width}x{arg.height}"
     filename = (
@@ -212,7 +209,7 @@ def show_message_box_after_change_to_restart(change_list):
     msg_box.setWindowTitle(title)
     msg_box.setText(text)
     msg_box.setStandardButtons(
-        QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+        QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
     )
     msg_box.setDefaultButton(QMessageBox.StandardButton.Yes)
     result = msg_box.exec()
@@ -220,7 +217,7 @@ def show_message_box_after_change_to_restart(change_list):
 
 
 def get_chatgpt_data_for_preview(filename, most_recent_n: int = None):
-    data = json.load(open(filename))
+    data = json.load(open(filename, "r"))
     conv_arr = []
     for i in range(len(data)):
         conv = data[i]
@@ -228,14 +225,14 @@ def get_chatgpt_data_for_preview(filename, most_recent_n: int = None):
         name = conv["title"]
         insert_dt = (
             datetime.fromtimestamp(conv["create_time"]).strftime(
-                DEFAULT_DATETIME_FORMAT,
+                DEFAULT_DATETIME_FORMAT
             )
             if conv["create_time"]
             else None
         )
         update_dt = (
             datetime.fromtimestamp(conv["update_time"]).strftime(
-                DEFAULT_DATETIME_FORMAT,
+                DEFAULT_DATETIME_FORMAT
             )
             if conv["update_time"]
             else None
@@ -266,14 +263,14 @@ def get_chatgpt_data_for_import(conv_arr):
                 role = message["author"]["role"]
                 create_time = (
                     datetime.fromtimestamp(message["create_time"]).strftime(
-                        DEFAULT_DATETIME_FORMAT,
+                        DEFAULT_DATETIME_FORMAT
                     )
                     if message["create_time"]
                     else None
                 )
                 update_time = (
                     datetime.fromtimestamp(message["update_time"]).strftime(
-                        DEFAULT_DATETIME_FORMAT,
+                        DEFAULT_DATETIME_FORMAT
                     )
                     if message["update_time"]
                     else None
@@ -288,24 +285,25 @@ def get_chatgpt_data_for_import(conv_arr):
                     content_parts = "\n".join([str(c) for c in content["parts"]])
                     obj["content"] = content_parts
                     conv["messages"].append(obj)
-                elif role == "tool":
-                    pass
-                elif role == "assistant":
-                    model_slug = metadata.get("model_slug", None)
-                    obj["model"] = model_slug
-                    content_type = content["content_type"]
-                    # Text (General chat)
-                    if content_type == "text":
-                        content_parts = "\n".join(content["parts"])
-                        obj["content"] = content_parts
-                        conv["messages"].append(obj)
-                    elif content_type == "code":
-                        # Currently there is no way to apply every aspect of the "code" content_type into the code.
-                        # So let it be for now.
+                else:
+                    if role == "tool":
                         pass
-                elif role == "system":
-                    # Won't use the system
-                    pass
+                    elif role == "assistant":
+                        model_slug = metadata.get("model_slug", None)
+                        obj["model"] = model_slug
+                        content_type = content["content_type"]
+                        # Text (General chat)
+                        if content_type == "text":
+                            content_parts = "\n".join(content["parts"])
+                            obj["content"] = content_parts
+                            conv["messages"].append(obj)
+                        elif content_type == "code":
+                            # Currently there is no way to apply every aspect of the "code" content_type into the code.
+                            # So let it be for now.
+                            pass
+                    elif role == "system":
+                        # Won't use the system
+                        pass
     # Remove mapping keys
     for conv in conv_arr:
         del conv["mapping"]
@@ -314,8 +312,9 @@ def get_chatgpt_data_for_import(conv_arr):
 
 
 def is_prompt_group_name_valid(text):
-    """Check if the prompt group name is valid or not and exists in the database
-    :param text: The text to check.
+    """
+    Check if the prompt group name is valid or not and exists in the database
+    :param text: The text to check
     """
     text = text.strip()
     if not text:
@@ -327,9 +326,10 @@ def is_prompt_group_name_valid(text):
 
 
 def is_prompt_entry_name_valid(group_id, text):
-    """Check if the prompt entry name is valid or not and exists in the database
+    """
+    Check if the prompt entry name is valid or not and exists in the database
     :param group_id: The group id to check
-    :param text: The text to check.
+    :param text: The text to check
     """
     text = text.strip()
     # Check if the prompt entry with same name already exists
@@ -402,22 +402,23 @@ def showJsonSample(json_sample_widget, json_sample):
     json_sample_widget.setWindowFlags(
         Qt.WindowType.Window
         | Qt.WindowType.WindowCloseButtonHint
-        | Qt.WindowType.WindowStaysOnTopHint,
+        | Qt.WindowType.WindowStaysOnTopHint
     )
     json_sample_widget.show()
 
 
 def get_content_of_text_file_for_send(filenames: list[str]):
-    """Get the content of the text file for sending to the AI
+    """
+    Get the content of the text file for sending to the AI
     :param filenames: The list of filenames to get the content from
-    :return: The content of the text file.
+    :return: The content of the text file
     """
     source_context = ""
     for filename in filenames:
         base_filename = os.path.basename(filename)
         source_context += f"=== {base_filename} start ==="
         source_context += CONTEXT_DELIMITER
-        with open(filename, encoding="utf-8") as f:
+        with open(filename, "r", encoding="utf-8") as f:
             source_context += f.read()
         source_context += CONTEXT_DELIMITER
         source_context += f"=== {base_filename} end ==="
@@ -428,9 +429,10 @@ def get_content_of_text_file_for_send(filenames: list[str]):
 
 # FIXME This should be used but this has a couple of flaws that need to be fixed
 def moveCursorToOtherPrompt(direction, textGroup):
-    """Move the cursor to another prompt based on the direction
+    """
+    Move the cursor to another prompt based on the direction
     :param direction: The direction to move the cursor to
-    :param textGroup: The prompt in the group to move the cursor to.
+    :param textGroup: The prompt in the group to move the cursor to
     """
 
     def switch_focus(from_key, to_key):
@@ -467,7 +469,8 @@ def getSeparator(orientation="horizontal"):
 
 
 def handle_exception(exc_type, exc_value, exc_traceback):
-    """Global exception handler.
+    """
+    Global exception handler.
     This should be only used in release mode.
     """
     error_msg = "".join(traceback.format_exception(exc_type, exc_value, exc_traceback))
@@ -487,15 +490,17 @@ def set_auto_start_windows(enable: bool):
         return
 
     key = winreg.OpenKey(
-        winreg.HKEY_CURRENT_USER, AUTOSTART_REGISTRY_KEY, 0, winreg.KEY_WRITE,
+        winreg.HKEY_CURRENT_USER, AUTOSTART_REGISTRY_KEY, 0, winreg.KEY_WRITE
     )
 
     if enable:
         exe_path = sys.executable  # Current executable path
         winreg.SetValueEx(key, DEFAULT_APP_NAME, 0, winreg.REG_SZ, exe_path)
     else:
-        with contextlib.suppress(FileNotFoundError):
+        try:
             winreg.DeleteValue(key, DEFAULT_APP_NAME)
+        except FileNotFoundError:
+            pass
 
 
 def generate_random_prompt(arr):
@@ -507,8 +512,8 @@ def generate_random_prompt(arr):
                 filter(
                     lambda x: x != "",
                     [random.choices(_, weights[: len(_)])[0] for _ in arr],
-                ),
-            ),
+                )
+            )
         )
     else:
         random_prompt = ""
@@ -529,7 +534,7 @@ def convert_to_provider(provider: str):
         ]
         if not provider_list:
             raise ProviderNotFoundError(f"Providers not found: {provider}")
-        provider = IterProvider(provider_list)
+        provider = IterListProvider(provider_list)
     elif provider in ProviderUtils.convert:
         provider = ProviderUtils.convert[provider]
     elif provider:
@@ -579,10 +584,11 @@ def get_g4f_providers_by_model(model, including_auto=False):
 def get_chat_model(is_g4f=False):
     if is_g4f:
         return get_g4f_models()
-    all_models = []
-    for obj in DEFAULT_API_CONFIGS:
-        all_models.extend(obj.get("model_list", []))
-    return all_models
+    else:
+        all_models = []
+        for obj in DEFAULT_API_CONFIGS:
+            all_models.extend(obj.get("model_list", []))
+        return all_models
 
 def set_api_key(env_var_name, api_key):
     api_key = api_key.strip() if api_key else ""
@@ -609,7 +615,9 @@ def get_mime_type_from_bytes(byte_data):
     return kind.mime
 
 def get_image_url_from_local(image):
-    """Image is bytes, this function converts it to base64 and returns the image url."""
+    """
+    Image is bytes, this function converts it to base64 and returns the image url
+    """
 
     # Function to encode the image
     def encode_image(image):
@@ -632,45 +640,79 @@ def get_provider_from_model(model):
 
 
 def get_g4f_image_models() -> list:
-    """Get all the models that support image generation
-    Some of the image providers are not included in this list.
     """
-    image_models = []
-    index = []
-    for provider in __providers__:
-        if hasattr(provider, "image_models"):
-            if hasattr(provider, "get_models"):
-                provider.get_models()
-            parent = provider
-            if hasattr(provider, "parent"):
-                parent = __map__[provider.parent]
-            if parent.__name__ not in index:
-                if provider.image_models:
-                    for model in provider.image_models:
-                        image_models.append(
-                            {
-                                "provider": parent.__name__,
-                                "url": parent.url,
-                                "label": parent.label if hasattr(parent, "label") else None,
-                                "image_model": model,
-                            },
-                        )
-                        index.append(parent.__name__)
+    Get all the models that support image generation
+    Some of the image providers are not included in this list
+    """
+    image_models = [
+        ### Stability AI ###
+        'sdxl',
+        'sd-3',
 
-    models = [model["image_model"] for model in image_models]
-    # Filter out the models in FAMOUS_LLM_LIST
-    models = [model for model in models if model not in FAMOUS_LLM_LIST]
-    return models
+        ### Playground ###
+        'playground-v2.5',
+
+        ### Flux AI ###
+        'flux',
+        'flux-pro',
+        'flux-dev',
+        'flux-realism',
+        'flux-anime',
+        'flux-3d',
+        'flux-disney',
+        'flux-pixel',
+        'flux-4o',
+
+        ### OpenAI ###
+        'dall-e-3',
+
+        ### Recraft ###
+        'recraft-v3',
+
+        ### Other ###
+        'any-dark'
+    ]
+    index = []
+    # for provider in __providers__:
+    #     try:
+    #         if hasattr(provider, "image_models"):
+    #             if hasattr(provider, "get_models"):
+    #                 provider.get_models()
+    #             parent = provider
+    #             if hasattr(provider, "parent"):
+    #                 parent = __map__[provider.parent]
+    #             if parent.__name__ not in index:
+    #                 if provider.image_models:
+    #                     for model in provider.image_models:
+    #                         image_models.append(
+    #                             {
+    #                                 "provider": parent.__name__,
+    #                                 "url": parent.url,
+    #                                 "label": parent.label if hasattr(parent, "label") else None,
+    #                                 "image_model": model,
+    #                             }
+    #                         )
+    #                         index.append(parent.__name__)
+    #     except Exception as e:
+    #         continue
+    #
+    # models = [model["image_model"] for model in image_models]
+    # # Filter out the models in FAMOUS_LLM_LIST
+    # models = [model for model in models if model not in FAMOUS_LLM_LIST]
+    return image_models
 
 
 def get_g4f_image_providers(including_auto=False) -> list:
-    """Get all the providers that support image generation
+    """
+    Get all the providers that support image generation
     (Even though this is not a perfect way to get the providers that support image generation)
-    (So i have to bring get_providers function directly from g4f library).
+    (So i have to bring get_providers function directly from g4f library)
     """
 
     def get_providers():
-        """The function get from g4f/gui/server/api.py."""
+        """
+        The function get from g4f/gui/server/api.py
+        """
         return {
             provider.__name__: (
                 provider.label if hasattr(provider, "label") else provider.__name__
@@ -688,41 +730,32 @@ def get_g4f_image_providers(including_auto=False) -> list:
 
 
 def get_g4f_image_models_from_provider(provider) -> list:
-    """Get all the models that support image generation for a specific provider
+    """
+    Get all the models that support image generation for a specific provider
     (Again, this is not a perfect way to get the models that support image generation)
-    (So i have to bring get_provider_models function directly from g4f library).
+    (So i have to bring get_provider_models function directly from g4f library)
     """
     if provider == G4F_PROVIDER_DEFAULT:
         return get_g4f_image_models()
 
-    def get_provider_models(provider: str) -> list[dict]:
-        """From g4f/gui/server/api.py."""
+    def get_provider_models(provider: str, api_key: str = None):
         if provider in __map__:
             provider: ProviderType = __map__[provider]
             if issubclass(provider, ProviderModelMixin):
+                if api_key is not None and "api_key" in signature(provider.get_models).parameters:
+                    models = provider.get_models(api_key=api_key)
+                else:
+                    models = provider.get_models()
                 return [
-                    {"model": model, "default": model == provider.default_model}
-                    for model in provider.get_models()
+                    {
+                        "model": model,
+                        "default": model == provider.default_model,
+                        "vision": getattr(provider, "default_vision_model", None) == model or model in getattr(provider, "vision_models", []),
+                        "image": False if provider.image_models is None else model in provider.image_models,
+                    }
+                    for model in models
                 ]
-            if provider.supports_gpt_35_turbo or provider.supports_gpt_4:
-                return [
-                    *(
-                        [{"model": "gpt-4", "default": not provider.supports_gpt_4}]
-                        if provider.supports_gpt_4
-                        else []
-                    ),
-                    *(
-                        [
-                            {
-                                "model": "gpt-3.5-turbo",
-                                "default": not provider.supports_gpt_4,
-                            },
-                        ]
-                        if provider.supports_gpt_35_turbo
-                        else []
-                    ),
-                ]
-            return []
+        return []
 
     return [model["model"] for model in get_provider_models(provider)]
 
@@ -781,14 +814,14 @@ def get_api_argument(
                         "image_url": {
                             "url": get_image_url_from_local(image),
                         },
-                    },
+                    }
                 )
 
             multiple_images_content = [
-                {"type": "text", "text": cur_text},
+                {"type": "text", "text": cur_text}
             ] + multiple_images_content[:]
             arg["messages"].append(
-                {"role": "user", "content": multiple_images_content},
+                {"role": "user", "content": multiple_images_content}
             )
         else:
             arg["messages"].append({"role": "user", "content": cur_text})
@@ -867,7 +900,8 @@ def get_api_response(args, get_content_only=True):
         response = completion(drop_params=True, **args)
         if args["stream"]:
             return stream_response(response)
-        return response.choices[0].message.content or ""
+        else:
+            return response.choices[0].message.content or ""
     except Exception as e:
         print(e)
         raise e
@@ -882,27 +916,31 @@ def get_g4f_response(args, get_content_only=True):
                 is_g4f=True,
                 get_content_only=get_content_only,
             )
-        if get_content_only:
-            return response.choices[0].message.content
-        return response
+        else:
+            if get_content_only:
+                return response.choices[0].message.content
+            else:
+                return response
     except Exception as e:
         print(e)
         raise e
 
 
 def get_response(args, is_g4f=False, get_content_only=True, provider=""):
-    """Get the response from the API
+    """
+    Get the response from the API
     :param args: The arguments to pass to the API
     :param is_g4f: Whether the model is G4F or not
     :param get_content_only: Whether to get the content only or not
-    :param provider: The provider of the model (Auto if not provided).
+    :param provider: The provider of the model (Auto if not provided)
     """
     try:
         if is_g4f:
             if provider != G4F_PROVIDER_DEFAULT:
                 args["provider"] = convert_to_provider(provider)
             return get_g4f_response(args, get_content_only=False)
-        return get_api_response(args, get_content_only)
+        else:
+            return get_api_response(args, get_content_only)
     except Exception as e:
         print(e)
         raise e
@@ -936,14 +974,14 @@ class TTSThread(QThread):
         try:
             if self.voice_provider == "OpenAI":
                 player_stream = pyaudio.PyAudio().open(
-                    format=pyaudio.paInt16, channels=1, rate=24000, output=True,
+                    format=pyaudio.paInt16, channels=1, rate=24000, output=True
                 )
                 with OPENAI_CLIENT.audio.speech.with_streaming_response.create(
                     **self.input_args,
                     response_format="pcm",  # similar to WAV, but without a header chunk at the start.
                 ) as response:
                     for chunk in response.iter_bytes(
-                        chunk_size=DEFAULT_TOKEN_CHUNK_SIZE,
+                        chunk_size=DEFAULT_TOKEN_CHUNK_SIZE
                     ):
                         if self.__stop:
                             break
@@ -1040,7 +1078,7 @@ class RecorderThread(QThread):
 
     # Silence detection parameters
     def __init__(
-        self, is_silence_detection=False, silence_duration=3, silence_threshold=500,
+        self, is_silence_detection=False, silence_duration=3, silence_threshold=500
     ):
         super().__init__()
         self.__stop = False
@@ -1123,7 +1161,7 @@ class RecorderThread(QThread):
         except Exception as e:
             if str(e).find("-9996") != -1:
                 self.errorGenerated.emit(
-                    "No valid input device found. Please connect a microphone or check your audio device settings.",
+                    "No valid input device found. Please connect a microphone or check your audio device settings."
                 )
             else:
                 self.errorGenerated.emit(f'<p style="color:red">{e}</p>')
@@ -1140,31 +1178,32 @@ class STTThread(QThread):
     def run(self):
         try:
             transcript = OPENAI_CLIENT.audio.transcriptions.create(
-                model=STT_MODEL, file=Path(self.filename),
+                model=STT_MODEL, file=Path(self.filename)
             )
             self.stt_finished.emit(transcript.text)
         except Exception as e:
             # TODO LANGUAGE
             self.errorGenerated.emit(
                 f'<p style="color:red">{e}\n\n'
-                f"(Are you registered valid OpenAI API Key? This feature requires OpenAI API Key.)</p>",
+                f"(Are you registered valid OpenAI API Key? This feature requires OpenAI API Key.)</p>"
             )
         finally:
             os.remove(self.filename)
 
 
 class ChatThread(QThread):
-    """== replyGenerated Signal ==
+    """
+    == replyGenerated Signal ==
     First: response
     Second: streaming or not streaming
-    Third: ChatMessageContainer.
+    Third: ChatMessageContainer
     """
 
     replyGenerated = Signal(str, bool, ChatMessageContainer)
     streamFinished = Signal(ChatMessageContainer)
 
     def __init__(
-        self, input_args, info: ChatMessageContainer, is_g4f=False, provider="",
+        self, input_args, info: ChatMessageContainer, is_g4f=False, provider=""
     ):
         super().__init__()
         self.__input_args = input_args
@@ -1186,7 +1225,7 @@ class ChatThread(QThread):
 
             if self.__input_args["stream"]:
                 response = get_response(
-                    self.__input_args, self.__is_g4f, get_content_only, self.__provider,
+                    self.__input_args, self.__is_g4f, get_content_only, self.__provider
                 )
                 for chunk in response:
                     # Get provider if it is G4F
@@ -1200,10 +1239,11 @@ class ChatThread(QThread):
                         self.__info.finish_reason = "stopped by user"
                         self.streamFinished.emit(self.__info)
                         break
-                    self.replyGenerated.emit(chunk, True, self.__info)
+                    else:
+                        self.replyGenerated.emit(chunk, True, self.__info)
             else:
                 response = get_response(
-                    self.__input_args, self.__is_g4f, get_content_only,
+                    self.__input_args, self.__is_g4f, get_content_only
                 )
                 # Get provider if it is G4F
                 # Get the content from choices[0].message.content if it is G4F, otherwise get it from response
@@ -1259,7 +1299,7 @@ def stream_to_speakers(voice_provider, input_args):
 
 
 def get_litellm_prefixes():
-    return [{"Provider": obj.get("display_name", ""), "Prefix": obj.get("prefix", "")} for obj in DEFAULT_API_CONFIGS]
+    return [{'Provider': obj.get('display_name', ''), 'Prefix': obj.get('prefix', '')} for obj in DEFAULT_API_CONFIGS]
 
 
 def export_prompt(data, filename, ext):
@@ -1273,14 +1313,14 @@ def export_prompt(data, filename, ext):
             json.dump(data, f, indent=INDENT_SIZE)
     elif ext == ".csv":
         # Create a zip file
-        with zipfile.ZipFile(filename, mode="w", compression=zipfile.ZIP_DEFLATED) as zipf:
+        with zipfile.ZipFile(filename, mode='w', compression=zipfile.ZIP_DEFLATED) as zipf:
             for d in data:
                 # Create individual CSV files for each item in data
-                csv_filename = d["name"] + ext
-                with open(csv_filename, mode="w", encoding="utf-8", newline="") as f:
-                    writer = csv.DictWriter(f, fieldnames=["act", "prompt"])
+                csv_filename = d['name'] + ext
+                with open(csv_filename, mode='w', encoding='utf-8', newline='') as f:
+                    writer = csv.DictWriter(f, fieldnames=['act', 'prompt'])
                     writer.writeheader()  # Write the column headers
-                    writer.writerows(d["data"])  # Write the rows
+                    writer.writerows(d['data'])  # Write the rows
 
                 # Add the CSV file to the zip archive
                 zipf.write(csv_filename, arcname=csv_filename)
