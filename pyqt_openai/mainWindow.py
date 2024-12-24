@@ -238,30 +238,18 @@ class MainWindow(QMainWindow):
         else:
             self.showNormal()
 
-    def __activateFocusMode(
-        self,
-        f: bool,
-    ):
+    def __activateFocusMode(self, f):
         f = not f
         # Toggle GUI
         for i in range(self.__mainWidget.count()):
-            currentWidget: QWidget = self.__mainWidget.widget(i)
-            if not isinstance(currentWidget, ChatMainWidget):
-                QMessageBox.critical(
-                    None,  # pyright: ignore[reportArgumentType]
-                    LangClass.TRANSLATIONS["Error"],
-                    LangClass.TRANSLATIONS["This feature is not available for this AI type."],
-                    QMessageBox.StandardButton.Ok,
-                    QMessageBox.StandardButton.Cancel,
-                )
-                return
+            currentWidget = self.__mainWidget.widget(i)
             currentWidget.showSecondaryToolBar(f)
             currentWidget.toggleButtons(f)
         self.__toggleSecondaryToolBar(f)
 
         # Toggle container
         self.__settingsParamContainer.show_secondary_toolbar = f
-        CONFIG_MANAGER.set_general_property("focus_mode", str(not f))
+        CONFIG_MANAGER.set_general_property("focus_mode", not f)
 
     def __setMenuBar(self):
         menubar = self.menuBar()
@@ -372,19 +360,9 @@ class MainWindow(QMainWindow):
     def __setTransparency(self, v: int):
         self.setWindowOpacity(v / 100)
 
-    def __toggleSecondaryToolBar(self, f: bool):
+    def __toggleSecondaryToolBar(self, f):
         self.__showSecondaryToolBarAction.setChecked(f)
-        curWidget = self.__mainWidget.currentWidget()
-        if not isinstance(curWidget, ChatMainWidget):
-            QMessageBox.warning(
-                None,  # pyright: ignore[reportArgumentType]
-                LangClass.TRANSLATIONS["Error"],
-                LangClass.TRANSLATIONS["This feature is not available for this AI type. Secondary toolbar is only available for Chat."],
-                QMessageBox.StandardButton.Ok,
-                QMessageBox.StandardButton.Cancel,
-            )
-            return
-        curWidget.showSecondaryToolBar(f)
+        self.__mainWidget.currentWidget().showSecondaryToolBar(f)
         self.__settingsParamContainer.show_secondary_toolbar = f
 
     def __executeCustomizeDialog(self):
@@ -396,23 +374,13 @@ class MainWindow(QMainWindow):
             self.__refreshContainer(container)
             self.__chatMainWidget.refreshCustomizedInformation(container)
 
-    def __aiTypeChanged(
-        self,
-        i: int,
-    ):
+    def __aiTypeChanged(self, i):
         self.__mainWidget.setCurrentIndex(i)
         self.__navBar.setActiveButton(i)
-        widget: QWidget = self.__mainWidget.currentWidget()
-        if not isinstance(widget, ChatMainWidget):
-            QMessageBox.critical(
-                None,  # pyright: ignore[reportArgumentType]
-                LangClass.TRANSLATIONS["Error"],
-                LangClass.TRANSLATIONS["This feature is not available for this AI type."],
-                QMessageBox.StandardButton.Ok,
-                QMessageBox.StandardButton.Cancel,
-            )
-            return
-        widget.showSecondaryToolBar(self.__settingsParamContainer.show_secondary_toolbar)
+        widget = self.__mainWidget.currentWidget()
+        widget.showSecondaryToolBar(
+            self.__settingsParamContainer.show_secondary_toolbar
+        )
 
     def __initContainer(
         self,

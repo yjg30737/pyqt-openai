@@ -1,12 +1,9 @@
 from __future__ import annotations
 
 import os.path
-
 from typing import TYPE_CHECKING
 
 from llama_index.core import SimpleDirectoryReader, VectorStoreIndex
-from llama_index.core.base.base_query_engine import BaseQueryEngine
-
 from pyqt_openai.config_loader import CONFIG_MANAGER
 
 if TYPE_CHECKING:
@@ -25,19 +22,16 @@ class LlamaIndexWrapper:
         directory: str,
         ext: list[str] | None = None,
     ) -> None:
-        try:
-            if not ext:
-                default_ext = CONFIG_MANAGER.get_general_property("llama_index_supported_formats")
-                ext = [default_ext] if default_ext and default_ext.strip() else []
-            assert ext, "llama_index_supported_formats is not set"
-            self._directory = directory
-            documents = SimpleDirectoryReader(
-                input_dir=self._directory,
-                required_exts=ext,
-            ).load_data()
-            self._index = VectorStoreIndex.from_documents(documents)
-        except Exception as e:
-            print(e)
+        if not ext:
+            default_ext = CONFIG_MANAGER.get_general_property("llama_index_supported_formats")
+            ext = default_ext if default_ext else []
+        assert ext, "llama_index_supported_formats is not set"
+        self._directory = directory
+        documents = SimpleDirectoryReader(
+            input_dir=self._directory,
+            required_exts=ext,
+        ).load_data()
+        self._index = VectorStoreIndex.from_documents(documents)
 
     def is_query_engine_set(self) -> bool:
         return self._query_engine is not None

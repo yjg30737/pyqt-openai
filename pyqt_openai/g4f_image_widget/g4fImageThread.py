@@ -1,12 +1,11 @@
 from __future__ import annotations
 
-from g4f.providers.retry_provider import IterListProvider
-from qtpy.QtCore import QThread, Signal
-
 from pyqt_openai import G4F_PROVIDER_DEFAULT
 from pyqt_openai.globals import G4F_CLIENT
 from pyqt_openai.models import ImagePromptContainer
-from pyqt_openai.util.common import convert_to_provider, generate_random_prompt
+from pyqt_openai.util.common import generate_random_prompt
+from pyqt_openai.util.replicate import download_image_as_base64
+from qtpy.QtCore import QThread, Signal
 
 
 class G4FImageThread(QThread):
@@ -29,7 +28,7 @@ class G4FImageThread(QThread):
         self.__stop = True
 
     def run(self):
-        try:
+        # try:
             if self.__input_args["provider"] == G4F_PROVIDER_DEFAULT:
                 del self.__input_args["provider"]
 
@@ -52,5 +51,5 @@ class G4FImageThread(QThread):
                 result = ImagePromptContainer(**arg)
                 self.replyGenerated.emit(result)
             self.allReplyGenerated.emit()
-         except Exception as e:
-             self.errorGenerated.emit(str(e))
+#         except Exception as e:
+#             self.errorGenerated.emit(str(e))
