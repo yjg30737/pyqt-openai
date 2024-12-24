@@ -1,10 +1,9 @@
-"""
-This file is used to store the constants and the global constants / variables that are used throughout the application.
+"""This file is used to store the constants and the global constants / variables that are used throughout the application.
 Constants/Variables that are stored here are used throughout the application for the following purposes:
 - Initial values related to the environment settings
 - Values used internally within the application (e.g., application name, DB name, table name, etc.)
 - Values related to the design and UI of the application
-- Default LLM list for the application settings
+- Default LLM list for the application settings.
 
 Constants/Variables that are stored here are not supposed to be changed during the runtime except for __init__.py.
 Variables which are used globally and can be changed are stored in globals.py.
@@ -14,7 +13,6 @@ import json
 import os
 import shutil
 import sys
-
 from pathlib import Path
 
 SRC_DIR = Path(__file__).resolve().parent  # VividNode/pyqt_openai
@@ -47,7 +45,7 @@ def is_frozen():
 # The executable path of the application
 def get_executable_path():
     if is_frozen():  # For PyInstaller
-        executable_path = sys._MEIPASS
+        executable_path = getattr(sys, "_MEIPASS", os.path.dirname(os.path.abspath(__file__)))
     else:
         executable_path = os.path.dirname(os.path.abspath(__file__))
     return executable_path
@@ -61,7 +59,7 @@ CURRENT_FILENAME = os.path.join(EXEC_PATH, f"{DEFAULT_APP_NAME}.exe")
 
 def get_config_directory():
     if os.name == "nt":  # Windows
-        config_dir = os.path.join(os.getenv("APPDATA"), DEFAULT_APP_NAME)
+        config_dir = os.path.join(os.getenv("APPDATA", os.path.expanduser("~")), DEFAULT_APP_NAME)
     elif os.name == "posix":  # macOS/Linux
         config_dir = os.path.join(
             os.getenv("XDG_CONFIG_HOME", os.path.expanduser("~/.config")),
@@ -288,7 +286,7 @@ INI_FILE_NAME = os.path.join(get_config_directory(), "config.yaml")
 LANGUAGE_FILE_BASE_NAME = "translations.json"
 LANGUAGE_FILE = os.path.join(get_config_directory(), LANGUAGE_FILE_BASE_NAME)
 LANGUAGE_FILE_SRC = os.path.join(
-    os.path.join(EXEC_PATH, "lang"), LANGUAGE_FILE_BASE_NAME
+    os.path.join(EXEC_PATH, "lang"), LANGUAGE_FILE_BASE_NAME,
 )
 
 # Make sure the language file exists
@@ -422,7 +420,7 @@ DEFAULT_API_CONFIGS = [
         "env_var_name": "OPENAI_API_KEY",
         "api_key": "",
         "manual_url": HOW_TO_GET_OPENAI_API_KEY_URL,
-        "model_list": ["gpt-4o", "gpt-4o-mini"] + O1_MODELS
+        "model_list": ["gpt-4o", "gpt-4o-mini"] + O1_MODELS,
     },
     # Azure
     {
@@ -482,7 +480,7 @@ DEFAULT_API_CONFIGS = [
         "api_key": "",
         "manual_url": HOW_TO_GET_GEMINI_API_KEY_URL,
         "prefix": "gemini",
-        "model_list": ["gemini/gemini-1.5-flash", "gemini/gemini-1.5-pro"]
+        "model_list": ["gemini/gemini-1.5-flash", "gemini/gemini-1.5-pro"],
     },
     # Anthropic
     {
@@ -490,7 +488,7 @@ DEFAULT_API_CONFIGS = [
         "env_var_name": "ANTHROPIC_API_KEY",
         "api_key": "",
         "manual_url": HOW_TO_GET_CLAUDE_API_KEY_URL,
-        "model_list": ["claude-3-haiku-20240307", "claude-3-5-sonnet-20240620"]
+        "model_list": ["claude-3-haiku-20240307", "claude-3-5-sonnet-20240620"],
     },
     # AWS Sagemaker
     {
@@ -907,8 +905,8 @@ MAXIMUM_MESSAGES_IN_PARAMETER = 40
 MAXIMUM_MESSAGES_IN_PARAMETER_RANGE = 2, 1000
 
 # llamaIndex
-LLAMA_INDEX_DEFAULT_SUPPORTED_FORMATS_LIST = ['.txt']
-LLAMA_INDEX_DEFAULT_ALL_SUPPORTED_FORMATS_LIST = ['.txt', '.docx', '.hwp', '.ipynb', '.csv', '.jpeg', '.jpg', '.mbox', '.md', '.mp3', '.mp4', '.pdf', '.png', '.ppt', '.pptx', '.pptm']
+LLAMA_INDEX_DEFAULT_SUPPORTED_FORMATS_LIST = [".txt"]
+LLAMA_INDEX_DEFAULT_ALL_SUPPORTED_FORMATS_LIST = [".txt", ".docx", ".hwp", ".ipynb", ".csv", ".jpeg", ".jpg", ".mbox", ".md", ".mp3", ".mp4", ".pdf", ".png", ".ppt", ".pptx", ".pptm"]
 
 # PROMPT
 ## DEFAULT JSON FILENAME FOR PROMPT

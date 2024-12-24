@@ -1,16 +1,18 @@
-from PySide6.QtCore import Qt
-from PySide6.QtWidgets import (
+from __future__ import annotations
+
+from qtpy.QtCore import Qt
+from qtpy.QtWidgets import (
     QDialog,
-    QVBoxLayout,
-    QMessageBox,
-    QLineEdit,
-    QPushButton,
     QHBoxLayout,
+    QLineEdit,
+    QMessageBox,
+    QPushButton,
+    QVBoxLayout,
     QWidget,
 )
 
 from pyqt_openai.lang.translations import LangClass
-from pyqt_openai.util.common import is_prompt_group_name_valid, getSeparator
+from pyqt_openai.util.common import getSeparator, is_prompt_group_name_valid
 
 
 class PromptGroupDirectInputDialog(QDialog):
@@ -25,7 +27,7 @@ class PromptGroupDirectInputDialog(QDialog):
         self.__name = QLineEdit()
         self.__name.setPlaceholderText(LangClass.TRANSLATIONS["Name"])
         self.__name.textChanged.connect(
-            lambda x: self.__okBtn.setEnabled(x.strip() != "")
+            lambda x: self.__okBtn.setEnabled(x.strip() != ""),
         )
 
         sep = getSeparator("horizontal")
@@ -36,23 +38,23 @@ class PromptGroupDirectInputDialog(QDialog):
         cancelBtn = QPushButton(LangClass.TRANSLATIONS["Cancel"])
         cancelBtn.clicked.connect(self.close)
 
-        lay = QHBoxLayout()
-        lay.addWidget(self.__okBtn)
-        lay.addWidget(cancelBtn)
-        lay.setAlignment(Qt.AlignmentFlag.AlignRight)
-        lay.setContentsMargins(0, 0, 0, 0)
+        hlay = QHBoxLayout()
+        hlay.addWidget(self.__okBtn)
+        hlay.addWidget(cancelBtn)
+        hlay.setAlignment(Qt.AlignmentFlag.AlignRight)
+        hlay.setContentsMargins(0, 0, 0, 0)
 
         okCancelWidget = QWidget()
-        okCancelWidget.setLayout(lay)
+        okCancelWidget.setLayout(hlay)
 
-        lay = QVBoxLayout()
-        lay.addWidget(self.__name)
-        lay.addWidget(sep)
-        lay.addWidget(okCancelWidget)
+        vlay = QVBoxLayout()
+        vlay.addWidget(self.__name)
+        vlay.addWidget(sep)
+        vlay.addWidget(okCancelWidget)
 
-        self.setLayout(lay)
+        self.setLayout(vlay)
 
-    def getPromptGroupName(self):
+    def getPromptGroupName(self) -> str:
         return self.__name.text()
 
     def __accept(self):
@@ -61,7 +63,7 @@ class PromptGroupDirectInputDialog(QDialog):
             self.accept()
         else:
             self.__name.setFocus()
-            QMessageBox.warning(
+            QMessageBox.warning(  # type: ignore[call-arg]
                 self,
                 LangClass.TRANSLATIONS["Warning"],
                 LangClass.TRANSLATIONS["Prompt name already exists."],

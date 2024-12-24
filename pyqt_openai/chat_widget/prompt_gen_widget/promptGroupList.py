@@ -1,29 +1,31 @@
+from __future__ import annotations
+
 import json
 import os
 
-from PySide6.QtCore import Signal, Qt
-from PySide6.QtWidgets import (
+from qtpy.QtCore import Qt, Signal
+from qtpy.QtWidgets import (
+    QDialog,
     QFileDialog,
+    QHBoxLayout,
+    QLabel,
+    QListWidget,
+    QListWidgetItem,
     QMessageBox,
     QSizePolicy,
     QSpacerItem,
-    QLabel,
-    QHBoxLayout,
     QVBoxLayout,
     QWidget,
-    QDialog,
-    QListWidget,
-    QListWidgetItem,
 )
 
 from pyqt_openai import (
-    JSON_FILE_EXT_LIST_STR,
     ICON_ADD,
     ICON_DELETE,
-    ICON_IMPORT,
     ICON_EXPORT,
-    QFILEDIALOG_DEFAULT_DIRECTORY,
+    ICON_IMPORT,
     INDENT_SIZE,
+    JSON_FILE_EXT_LIST_STR,
+    QFILEDIALOG_DEFAULT_DIRECTORY,
 )
 from pyqt_openai.chat_widget.prompt_gen_widget.promptGroupDirectInputDialog import (
     PromptGroupDirectInputDialog,
@@ -36,7 +38,7 @@ from pyqt_openai.chat_widget.prompt_gen_widget.promptGroupImportDialog import (
 )
 from pyqt_openai.globals import DB
 from pyqt_openai.lang.translations import LangClass
-from pyqt_openai.util.common import open_directory, get_prompt_data, export_prompt
+from pyqt_openai.util.common import export_prompt, get_prompt_data, open_directory
 from pyqt_openai.widgets.button import Button
 
 
@@ -46,7 +48,7 @@ class PromptGroupList(QWidget):
     currentRowChanged = Signal(int)
     itemChanged = Signal(int)
 
-    def __init__(self, prompt_type='form', parent=None):
+    def __init__(self, prompt_type="form", parent=None):
         super().__init__(parent)
         self.__initVal(prompt_type)
         self.__initUi()
@@ -154,7 +156,7 @@ class PromptGroupList(QWidget):
 
     def __export(self):
         try:
-            if self.prompt_type == 'form':
+            if self.prompt_type == "form":
                 # Get the file
                 file_data = QFileDialog.getSaveFileName(
                     self,
@@ -173,7 +175,7 @@ class PromptGroupList(QWidget):
                         # Save the data
                         with open(filename, "w") as f:
                             json.dump(data, f, indent=INDENT_SIZE)
-            elif self.prompt_type == 'sentence':
+            elif self.prompt_type == "sentence":
                 # Get the file
                 file_data = QFileDialog.getSaveFileName(
                     self,

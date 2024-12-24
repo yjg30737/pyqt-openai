@@ -1,12 +1,14 @@
-from PySide6.QtCore import Qt
-from PySide6.QtWidgets import (
-    QWidget,
-    QVBoxLayout,
-    QPlainTextEdit,
+from __future__ import annotations
+
+from qtpy.QtCore import Qt
+from qtpy.QtWidgets import (
+    QComboBox,
     QFormLayout,
     QLabel,
+    QPlainTextEdit,
     QSplitter,
-    QComboBox,
+    QVBoxLayout,
+    QWidget,
 )
 
 from pyqt_openai.config_loader import CONFIG_MANAGER
@@ -31,21 +33,21 @@ class G4FImageRightSideBarWidget(ImageControlWidget):
 
         self._prompt = CONFIG_MANAGER.get_g4f_image_property("prompt")
         self._continue_generation = CONFIG_MANAGER.get_g4f_image_property(
-            "continue_generation"
+            "continue_generation",
         )
         self._save_prompt_as_text = CONFIG_MANAGER.get_g4f_image_property(
-            "save_prompt_as_text"
+            "save_prompt_as_text",
         )
         self._is_save = CONFIG_MANAGER.get_g4f_image_property("is_save")
         self._directory = CONFIG_MANAGER.get_g4f_image_property("directory")
         self._number_of_images_to_create = CONFIG_MANAGER.get_g4f_image_property(
-            "number_of_images_to_create"
+            "number_of_images_to_create",
         )
 
         self.__model = CONFIG_MANAGER.get_g4f_image_property("model")
         self.__provider = CONFIG_MANAGER.get_g4f_image_property("provider")
         self.__negative_prompt = CONFIG_MANAGER.get_g4f_image_property(
-            "negative_prompt"
+            "negative_prompt",
         )
 
     def _initUi(self):
@@ -76,7 +78,7 @@ class G4FImageRightSideBarWidget(ImageControlWidget):
 
         self._negativeTextEdit = QPlainTextEdit()
         self._negativeTextEdit.setPlaceholderText(
-            "ugly, deformed, noisy, blurry, distorted"
+            "ugly, deformed, noisy, blurry, distorted",
         )
         self._negativeTextEdit.setPlainText(self.__negative_prompt)
         self._negativeTextEdit.textChanged.connect(self.__replicateTextChanged)
@@ -138,7 +140,7 @@ class G4FImageRightSideBarWidget(ImageControlWidget):
             elif sender == self._negativeTextEdit:
                 self.__negative_prompt = sender.toPlainText()
                 CONFIG_MANAGER.set_g4f_image_property(
-                    "negative_prompt", self.__negative_prompt
+                    "negative_prompt", self.__negative_prompt,
                 )
 
     def _setSaveDirectory(self, directory):

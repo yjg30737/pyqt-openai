@@ -1,12 +1,22 @@
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QFont
-from PySide6.QtWidgets import QDialog, QLabel, QHBoxLayout
+from __future__ import annotations
 
-from pyqt_openai import SMALL_LABEL_PARAM, DEFAULT_WARNING_COLOR
+from typing import TYPE_CHECKING
+
+from qtpy.QtCore import Qt
+from qtpy.QtGui import QFont
+from qtpy.QtWidgets import QDialog, QHBoxLayout, QLabel
+
+from pyqt_openai import DEFAULT_WARNING_COLOR, SMALL_LABEL_PARAM
+
+if TYPE_CHECKING:
+    from qtpy.QtWidgets import QWidget
 
 
 class ModelInputManualDialog(QDialog):
-    def __init__(self, parent=None):
+    def __init__(
+        self,
+        parent: QWidget | None = None,
+    ):
         super().__init__(parent)
         self.__initVal()
         self.__initUi()
@@ -21,16 +31,14 @@ class ModelInputManualDialog(QDialog):
         )
 
     def __initUi(self):
-        self.setWindowTitle('Model Input Manual')
-        self.__warningLbl = QLabel()
+        self.setWindowTitle("Model Input Manual")
+        self.__warningLbl: QLabel = QLabel()
         self.__warningLbl.setStyleSheet(
-            f"color: {DEFAULT_WARNING_COLOR};"
+            f"color: {DEFAULT_WARNING_COLOR};",
         )  # Text color remains orange for visibility.
         self.__warningLbl.setWordWrap(True)
-        self.__warningLbl.setFont(QFont(SMALL_LABEL_PARAM))
-        self.__warningLbl.setTextInteractionFlags(
-            Qt.TextInteractionFlag.TextBrowserInteraction
-        )
+        self.__warningLbl.setFont(QFont(*SMALL_LABEL_PARAM))
+        self.__warningLbl.setTextInteractionFlags(Qt.TextInteractionFlag.TextBrowserInteraction)
         self.__warningLbl.setOpenExternalLinks(True)  # Enable hyperlink functionality.
         self.__warningLbl.setText(self.__warningMessage)  # Ensure HTML is passed as text.
 

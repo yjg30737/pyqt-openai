@@ -1,17 +1,19 @@
-from PySide6.QtCore import Qt
-from PySide6.QtWidgets import (
+from __future__ import annotations
+
+from qtpy.QtCore import Qt
+from qtpy.QtWidgets import (
     QDialog,
-    QVBoxLayout,
-    QPlainTextEdit,
-    QLineEdit,
-    QPushButton,
     QHBoxLayout,
-    QWidget,
+    QLineEdit,
     QMessageBox,
+    QPlainTextEdit,
+    QPushButton,
+    QVBoxLayout,
+    QWidget,
 )
 
 from pyqt_openai.lang.translations import LangClass
-from pyqt_openai.util.common import is_prompt_entry_name_valid, getSeparator
+from pyqt_openai.util.common import getSeparator, is_prompt_entry_name_valid
 
 
 class PromptEntryDirectInputDialog(QDialog):
@@ -68,11 +70,10 @@ class PromptEntryDirectInputDialog(QDialog):
         exists_f = is_prompt_entry_name_valid(self.__group_id, self.__name.text())
         if exists_f:
             self.__name.setFocus()
-            QMessageBox.warning(
+            QMessageBox.warning(  # type: ignore[call-arg]
                 self,
                 LangClass.TRANSLATIONS["Warning"],
                 LangClass.TRANSLATIONS["Entry name already exists."],
             )
             return
-        else:
-            self.accept()
+        self.accept()

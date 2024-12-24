@@ -1,10 +1,12 @@
+from __future__ import annotations
+
 import json
 
-# from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout
-from PySide6.QtGui import QPalette, QColor, QDesktopServices
-from PySide6.QtWidgets import QTextBrowser
+# from qtpy.QtWidgets import QApplication, QWidget, QVBoxLayout
+from qtpy.QtGui import QColor, QDesktopServices, QPalette
+from qtpy.QtWidgets import QTextBrowser
 
-from pyqt_openai import MESSAGE_MAXIMUM_HEIGHT, MESSAGE_PADDING, INDENT_SIZE
+from pyqt_openai import INDENT_SIZE, MESSAGE_MAXIMUM_HEIGHT, MESSAGE_PADDING
 
 
 class MessageTextBrowser(QTextBrowser):

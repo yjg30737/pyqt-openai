@@ -11,8 +11,8 @@ The following is a list of planned features and tasks that are still in progress
 1. **Software Maintainer for Mac**: Seeking a maintainer to support and improve the software for Mac users.
 2. **Software Maintainer for Linux**: Seeking a maintainer to support and improve the software for Linux users.
 
-As of October 14, 2024, Windows has an updater and auto-start features; 
-however, these features are currently unavailable for Mac and Linux. If you are a user of either platform, please contact me! (I'm Windows user 💻) 
+As of October 14, 2024, Windows has an updater and auto-start features;
+however, these features are currently unavailable for Mac and Linux. If you are a user of either platform, please contact me! (I'm Windows user 💻)
 
 ### TODO (Additional Improvements)
 

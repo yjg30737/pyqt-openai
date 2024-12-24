@@ -1,11 +1,17 @@
-from PySide6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QLabel
-from PySide6.QtCore import Signal
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+from qtpy.QtCore import Signal
+from qtpy.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout, QWidget
 
 from pyqt_openai import DEFAULT_SHORTCUT_FIND_CLOSE, ICON_CLOSE
 from pyqt_openai.chat_widget.center.findTextWidget import FindTextWidget
-from pyqt_openai.chat_widget.center.chatBrowser import ChatBrowser
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.widgets.button import Button
+
+if TYPE_CHECKING:
+    from pyqt_openai.chat_widget.center.chatBrowser import ChatBrowser
 
 
 class MenuWidget(QWidget):
@@ -26,7 +32,7 @@ class MenuWidget(QWidget):
         self.__closeBtn.setStyleAndIcon(ICON_CLOSE)
 
         self.__closeBtn.setToolTip(
-            LangClass.TRANSLATIONS["Close"] + f" ({DEFAULT_SHORTCUT_FIND_CLOSE})"
+            LangClass.TRANSLATIONS["Close"] + f" ({DEFAULT_SHORTCUT_FIND_CLOSE})",
         )
 
         lay = QVBoxLayout()

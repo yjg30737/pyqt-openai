@@ -1,16 +1,18 @@
-from PySide6.QtCore import Signal, Qt
-from PySide6.QtWidgets import (
-    QTableWidget,
+from __future__ import annotations
+
+from qtpy.QtCore import Qt, Signal
+from qtpy.QtWidgets import (
+    QAbstractItemView,
+    QDialog,
+    QHBoxLayout,
+    QHeaderView,
+    QLabel,
     QSizePolicy,
     QSpacerItem,
-    QLabel,
-    QAbstractItemView,
+    QTableWidget,
     QTableWidgetItem,
-    QHeaderView,
-    QHBoxLayout,
     QVBoxLayout,
     QWidget,
-    QDialog,
 )
 
 from pyqt_openai import (
@@ -63,13 +65,13 @@ class PromptTable(QWidget):
         self.__table = QTableWidget()
         self.__table.setColumnCount(2)
         self.__table.setSelectionBehavior(
-            QAbstractItemView.SelectionBehavior.SelectRows
+            QAbstractItemView.SelectionBehavior.SelectRows,
         )
         self.__table.setHorizontalHeaderLabels(
-            [LangClass.TRANSLATIONS["Name"], LangClass.TRANSLATIONS["Value"]]
+            [LangClass.TRANSLATIONS["Name"], LangClass.TRANSLATIONS["Value"]],
         )
         self.__table.horizontalHeader().setSectionResizeMode(
-            1, QHeaderView.ResizeMode.Stretch
+            1, QHeaderView.ResizeMode.Stretch,
         )
         self.__table.currentItemChanged.connect(self.__rowChanged)
         self.__table.itemChanged.connect(self.__saveChangedPrompt)
@@ -164,7 +166,7 @@ class PromptTable(QWidget):
 
     def __delete(self):
         for i in sorted(
-            set([i.row() for i in self.__table.selectedIndexes()]), reverse=True
+            set([i.row() for i in self.__table.selectedIndexes()]), reverse=True,
         ):
             id = self.__table.item(i, 0).data(Qt.ItemDataRole.UserRole)
             self.__table.removeRow(i)

@@ -1,10 +1,12 @@
+from __future__ import annotations
+
 from functools import partial
 
-from PySide6.QtCore import Signal
-from PySide6.QtWidgets import QScrollArea, QWidget, QTabWidget, QGridLayout, QMessageBox
+from qtpy.QtCore import Signal
+from qtpy.QtWidgets import QGridLayout, QMessageBox, QScrollArea, QTabWidget, QWidget
 
-from pyqt_openai.chat_widget.right_sidebar.usingAPIPage import UsingAPIPage
 from pyqt_openai.chat_widget.right_sidebar.llama_widget.llamaPage import LlamaPage
+from pyqt_openai.chat_widget.right_sidebar.usingAPIPage import UsingAPIPage
 from pyqt_openai.chat_widget.right_sidebar.usingG4FPage import UsingG4FPage
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.globals import LLAMAINDEX_WRAPPER
@@ -24,7 +26,7 @@ class ChatRightSideBarWidget(QScrollArea):
         self.__cur_idx = CONFIG_MANAGER.get_general_property("TAB_IDX")
         self.__use_llama_index = CONFIG_MANAGER.get_general_property("use_llama_index")
         self.__llama_index_directory = CONFIG_MANAGER.get_general_property(
-            "llama_index_directory"
+            "llama_index_directory",
         )
 
     def __initUi(self):

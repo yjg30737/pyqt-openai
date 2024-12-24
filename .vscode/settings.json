@@ -1,0 +1,4 @@
+{
+    "makefile.configureOnOpen": false,
+    "mypy.dmypyExecutable": "${workspaceFolder}\\.venv\\Scripts\\dmypy.exe"
+}

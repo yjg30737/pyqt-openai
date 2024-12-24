@@ -1,12 +1,12 @@
 # Currently this page is home page of the application.
+from __future__ import annotations
 
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QFont, QPixmap
-from PySide6.QtWidgets import QLabel, QWidget, QVBoxLayout, QScrollArea
+from qtpy.QtCore import Qt
+from qtpy.QtGui import QFont, QPixmap
+from qtpy.QtWidgets import QLabel, QScrollArea, QVBoxLayout, QWidget
 
 from pyqt_openai import (
     DEFAULT_APP_NAME,
-    HOW_TO_GET_OPENAI_API_KEY_URL,
     LARGE_LABEL_PARAM,
     MEDIUM_LABEL_PARAM,
     QUICKSTART_MANUAL_URL,
@@ -26,7 +26,7 @@ class ChatHome(QScrollArea):
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         description = QLabel(
-            LangClass.TRANSLATIONS["Enjoy convenient chatting, all day long!"]
+            LangClass.TRANSLATIONS["Enjoy convenient chatting, all day long!"],
         )
 
         self.__quickStartManualLbl = LinkLabel()

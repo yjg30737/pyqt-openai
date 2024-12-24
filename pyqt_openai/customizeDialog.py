@@ -1,17 +1,10 @@
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QFont
-from PySide6.QtWidgets import (
-    QDialog,
-    QPushButton,
-    QHBoxLayout,
-    QVBoxLayout,
-    QWidget,
-    QFormLayout,
-    QSplitter,
-    QSizePolicy,
-)
+from __future__ import annotations
 
-from pyqt_openai import IMAGE_FILE_EXT_LIST_STR, DEFAULT_ICON_SIZE
+from qtpy.QtCore import Qt
+from qtpy.QtGui import QFont
+from qtpy.QtWidgets import QDialog, QFormLayout, QHBoxLayout, QPushButton, QSizePolicy, QSplitter, QVBoxLayout, QWidget
+
+from pyqt_openai import DEFAULT_ICON_SIZE, IMAGE_FILE_EXT_LIST_STR
 from pyqt_openai.fontWidget import FontWidget
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import CustomizeParamsContainer
@@ -22,43 +15,50 @@ from pyqt_openai.widgets.normalImageView import NormalImageView
 
 
 class CustomizeDialog(QDialog):
-    def __init__(self, args: CustomizeParamsContainer, parent=None):
+    def __init__(
+        self,
+        args: CustomizeParamsContainer,
+        parent: QWidget | None = None,
+    ) -> None:
         super().__init__(parent)
         self.__initVal(args)
         self.__initUi()
 
-    def __initVal(self, args):
-        self.__background_image = args.background_image
-        self.__user_image = args.user_image
-        self.__ai_image = args.ai_image
-        self.__font_size = args.font_size
-        self.__font_family = args.font_family
+    def __initVal(
+        self,
+        args: CustomizeParamsContainer,
+    ) -> None:
+        self.__background_image: str = args.background_image
+        self.__user_image: str = args.user_image
+        self.__ai_image: str = args.ai_image
+        self.__font_size: int = args.font_size
+        self.__font_family: str = args.font_family
 
     def __initUi(self):
         self.setWindowTitle(LangClass.TRANSLATIONS["Customize"])
         self.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.WindowCloseButtonHint)
 
-        self.__homePageGraphicsView = NormalImageView()
+        self.__homePageGraphicsView: NormalImageView = NormalImageView()
         self.__homePageGraphicsView.setFilename(self.__background_image)
 
-        self.__userImage = RoundedImage()
+        self.__userImage: RoundedImage = RoundedImage()
         self.__userImage.setMaximumSize(*DEFAULT_ICON_SIZE)
         self.__userImage.setImage(self.__user_image)
-        self.__AIImage = RoundedImage()
+        self.__AIImage: RoundedImage = RoundedImage()
         self.__AIImage.setImage(self.__ai_image)
         self.__AIImage.setMaximumSize(*DEFAULT_ICON_SIZE)
 
-        self.__findPathWidget1 = FindPathWidget()
+        self.__findPathWidget1: FindPathWidget = FindPathWidget()
         self.__findPathWidget1.getLineEdit().setText(self.__background_image)
         self.__findPathWidget1.added.connect(self.__homePageGraphicsView.setFilename)
         self.__findPathWidget1.setExtOfFiles(IMAGE_FILE_EXT_LIST_STR)
 
-        self.__findPathWidget2 = FindPathWidget()
+        self.__findPathWidget2: FindPathWidget = FindPathWidget()
         self.__findPathWidget2.getLineEdit().setText(self.__user_image)
         self.__findPathWidget2.added.connect(self.__userImage.setImage)
         self.__findPathWidget2.setExtOfFiles(IMAGE_FILE_EXT_LIST_STR)
 
-        self.__findPathWidget3 = FindPathWidget()
+        self.__findPathWidget3: FindPathWidget = FindPathWidget()
         self.__findPathWidget3.getLineEdit().setText(self.__ai_image)
         self.__findPathWidget3.added.connect(self.__AIImage.setImage)
         self.__findPathWidget3.setExtOfFiles(IMAGE_FILE_EXT_LIST_STR)
@@ -92,9 +92,9 @@ class CustomizeDialog(QDialog):
         leftWidget = QWidget()
         leftWidget.setLayout(lay)
 
-        self.__fontWidget = FontWidget(QFont(self.__font_family, self.__font_size))
+        self.__fontWidget: FontWidget = FontWidget(QFont(self.__font_family, self.__font_size))
 
-        self.__splitter = QSplitter()
+        self.__splitter: QSplitter = QSplitter()
         self.__splitter.addWidget(leftWidget)
         self.__splitter.addWidget(self.__fontWidget)
         self.__splitter.setHandleWidth(1)
@@ -102,12 +102,12 @@ class CustomizeDialog(QDialog):
         self.__splitter.setSizes([500, 500])
         self.__splitter.setStyleSheet("QSplitterHandle {background-color: lightgray;}")
         self.__splitter.setSizePolicy(
-            QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding
+            QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.MinimumExpanding,
         )
 
         sep = getSeparator("horizontal")
 
-        self.__okBtn = QPushButton(LangClass.TRANSLATIONS["OK"])
+        self.__okBtn: QPushButton = QPushButton(LangClass.TRANSLATIONS["OK"])
         self.__okBtn.clicked.connect(self.accept)
 
         cancelBtn = QPushButton(LangClass.TRANSLATIONS["Cancel"])
@@ -129,7 +129,7 @@ class CustomizeDialog(QDialog):
 
         self.setLayout(lay)
 
-    def getParam(self):
+    def getParam(self) -> CustomizeParamsContainer:
         return CustomizeParamsContainer(
             background_image=self.__findPathWidget1.getFileName(),
             user_image=self.__findPathWidget2.getFileName(),

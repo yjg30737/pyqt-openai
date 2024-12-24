@@ -1,0 +1,22 @@
+{
+    "recommendations": [
+        "tamasfe.even-better-toml",
+        "davidanson.vscode-markdownlint",
+        "yzhang.markdown-all-in-one",
+        "irony.qsseditor",
+        "theqtcompany.qt-core",
+        "dvratil.vscode-qtdoc",
+        "seanwu.vscode-qt-for-python",
+        "theqtcompany.qt-qml",
+        "theqtcompany.qt-ui",
+        "charliermarsh.ruff",
+        "ms-python.vscode-pylance",
+        "ms-python.python",
+        "ms-python.debugpy",
+        "patrick91.python-dependencies-vscode",
+        "donjayamanne.python-environment-manager",
+        "twixes.pypi-assistant",
+        "njqdev.vscode-python-typehint",
+        "matangover.mypy"
+    ]
+}

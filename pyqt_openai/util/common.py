@@ -1,11 +1,10 @@
-"""
-This file includes utility functions that are used in various parts of the application.
+"""This file includes utility functions that are used in various parts of the application.
 Mostly, these functions are used to perform chat-related tasks such as sending and receiving messages
 or common tasks such as opening a directory, generating random strings, etc.
 Some of the functions are used to set PyQt settings, restart the application, show message boxes, etc.
 """
+from __future__ import annotations
 
-import asyncio
 import base64
 import csv
 import json
@@ -20,6 +19,7 @@ import time
 import traceback
 import wave
 import zipfile
+
 from datetime import datetime
 from pathlib import Path
 from inspect import signature
@@ -27,26 +27,33 @@ from inspect import signature
 import filetype
 import numpy as np
 import psutil
+
 from g4f import ProviderType
 from g4f.providers.base_provider import ProviderModelMixin
 from litellm import completion
+
 from pyqt_openai.widgets.scrollableErrorDialog import ScrollableErrorDialog
 
 if sys.platform == "win32":
     import winreg
 
+import contextlib
+
+from typing import TYPE_CHECKING
+
 import pyaudio
 
-from PySide6.QtCore import Qt, QUrl, QThread, Signal
-from PySide6.QtGui import QDesktopServices
-from PySide6.QtWidgets import QMessageBox, QFrame
 from g4f.Provider import ProviderUtils, __providers__, __map__
 from g4f.errors import ProviderNotFoundError
 from g4f.models import ModelUtils
 from g4f.providers.retry_provider import IterListProvider
 from jinja2 import Template
+from qtpy.QtCore import QThread, QUrl, Qt, Signal
+from qtpy.QtGui import QDesktopServices
+from qtpy.QtWidgets import QFrame, QMessageBox
 
 import pyqt_openai.util
+
 from pyqt_openai import (
     MAIN_INDEX,
     PROMPT_MAIN_KEY_NAME,
@@ -66,14 +73,18 @@ from pyqt_openai import (
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.globals import (
     DB,
-    OPENAI_CLIENT,
     G4F_CLIENT,
     LLAMAINDEX_WRAPPER,
+    OPENAI_CLIENT,
     REPLICATE_CLIENT,
 )
 from pyqt_openai.lang.translations import LangClass
-from pyqt_openai.models import ImagePromptContainer, ChatMessageContainer
+from pyqt_openai.models import ChatMessageContainer
 
+if TYPE_CHECKING:
+    from g4f import ProviderType
+
+    from pyqt_openai.models import ImagePromptContainer
 
 def get_generic_ext_out_of_qt_ext(text):
     pattern = r"\((\*\.(.+))\)"

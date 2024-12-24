@@ -23,3 +23,4 @@ curl_cffi
 litellm
 
 edge-tts
+qtpy
