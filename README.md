@@ -1,15 +1,15 @@
-# VividNode(pyqt-openai)
+  # VividNode(pyqt-openai)
 
-![VividNode Logo](https://github.com/user-attachments/assets/ab169535-8af0-40c7-848d-59a7e5e4b304)
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/ab169535-8af0-40c7-848d-59a7e5e4b304"/>
 
-**A cross-platform AI desktop chatbot application for LLM such as GPT, Claude, Gemini, Llama chatbot interaction and image generation, offering customizable features, local chat history, and enhanced performance—no browser required!
+  <b>A cross-platform AI desktop chatbot application for LLM such as GPT, Claude, Gemini, Llama chatbot interaction and image generation, offering customizable features, local chat history, and enhanced performance—no browser required!<br><br>
+  Basically for free, powered by GPT4Free and LiteLLM.</b>
 
-Basically for free, powered by GPT4Free and LiteLLM.**
+<hr>
 
----
-
-[![Discord Server](https://dcbadge.vercel.app/api/server/cHekprskVE)](https://discord.gg/cHekprskVE)
-
+  [![](https://dcbadge.vercel.app/api/server/cHekprskVE)](https://discord.gg/cHekprskVE)
+  
   [![PyPI - Version](https://img.shields.io/pypi/v/pyqt-openai?logo=pypi&logoColor=white)](https://pypi.org/project/pyqt-openai/) [![Downloads](https://static.pepy.tech/badge/pyqt-openai)](https://pepy.tech/project/pyqt-openai) [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/pyqt-openai?logo=python&logoColor=gold)](https://pypi.org/project/pyqt-openai/) ![commit](https://img.shields.io/github/commit-activity/w/yjg30737/pyqt-openai)
 </div>
 
