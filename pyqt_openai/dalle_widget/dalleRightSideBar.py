@@ -131,10 +131,10 @@ class DallERightSideBarWidget(ImageControlWidget):
         sender = self.sender()
         if sender == self.__qualityCmbBox:
             self.__quality = v
-            CONFIG_MANAGER.set_dalle_property("quality", str(self.__quality))
+            CONFIG_MANAGER.set_dalle_property("quality", self.__quality)
         elif sender == self.__nSpinBox:
             self.__n = v
-            CONFIG_MANAGER.set_dalle_property("n", str(self.__n))
+            CONFIG_MANAGER.set_dalle_property("n", self.__n)
         elif sender == self.__widthCmbBox:
             if (
                 self.__widthCmbBox.currentText() == "1792"
@@ -142,7 +142,7 @@ class DallERightSideBarWidget(ImageControlWidget):
             ):
                 self.__heightCmbBox.setCurrentText("1024")
             self.__width = v
-            CONFIG_MANAGER.set_dalle_property("width", str(self.__width))
+            CONFIG_MANAGER.set_dalle_property("width", self.__width)
         elif sender == self.__heightCmbBox:
             if (
                 self.__widthCmbBox.currentText() == "1792"
@@ -150,10 +150,10 @@ class DallERightSideBarWidget(ImageControlWidget):
             ):
                 self.__widthCmbBox.setCurrentText("1024")
             self.__height = v
-            CONFIG_MANAGER.set_dalle_property("height", str(self.__height))
+            CONFIG_MANAGER.set_dalle_property("height", self.__height)
         elif sender == self.__styleCmbBox:
             self.__style = v
-            CONFIG_MANAGER.set_dalle_property("style", str(self.__style))
+            CONFIG_MANAGER.set_dalle_property("style", self.__style)
 
     # TODO combine __dalleTextChanged and __replicateTextChanged and rename them to __promptTextChanged
     def __dalleTextChanged(self):
@@ -169,19 +169,19 @@ class DallERightSideBarWidget(ImageControlWidget):
 
     def _saveChkBoxToggled(self, f: bool):
         super()._saveChkBoxToggled(f)
-        CONFIG_MANAGER.set_dalle_property("is_save", str(f))
+        CONFIG_MANAGER.set_dalle_property("is_save",f)
 
     def _continueGenerationChkBoxToggled(self, f: bool):
         super()._continueGenerationChkBoxToggled(f)
-        CONFIG_MANAGER.set_dalle_property("continue_generation", str(f))
+        CONFIG_MANAGER.set_dalle_property("continue_generation",f)
 
     def _savePromptAsTextChkBoxToggled(self, f: bool):
         super()._savePromptAsTextChkBoxToggled(f)
-        CONFIG_MANAGER.set_dalle_property("save_prompt_as_text", str(f))
+        CONFIG_MANAGER.set_dalle_property("save_prompt_as_text",f)
 
     def _numberOfImagesToCreateSpinBoxValueChanged(self, value: int):
         super()._numberOfImagesToCreateSpinBoxValueChanged(value)
-        CONFIG_MANAGER.set_dalle_property("number_of_images_to_create", str(value))
+        CONFIG_MANAGER.set_dalle_property("number_of_images_to_create",value)
 
     def __promptTypeToggled(self, f: bool):
         sender = self.sender()
@@ -189,10 +189,10 @@ class DallERightSideBarWidget(ImageControlWidget):
         # 1 is normal, 2 is revised
         if sender == self.__normalOne:
             self.__prompt_type = 1
-            CONFIG_MANAGER.set_dalle_property("prompt_type", str(self.__prompt_type))
+            CONFIG_MANAGER.set_dalle_property("prompt_type", self.__prompt_type)
         elif sender == self.__revisedOne:
             self.__prompt_type = 2
-            CONFIG_MANAGER.set_dalle_property("prompt_type", str(self.__prompt_type))
+            CONFIG_MANAGER.set_dalle_property("prompt_type", self.__prompt_type)
 
     def _submit(self):
         arg = self.getArgument()
