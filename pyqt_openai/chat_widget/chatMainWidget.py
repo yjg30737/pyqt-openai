@@ -22,6 +22,7 @@ from pyqt_openai import (
     THREAD_TABLE_NAME,
 )
 from pyqt_openai.chat_widget.center.chatWidget import ChatWidget
+from pyqt_openai.chat_widget.center.messageTextBrowser import MessageTextBrowser
 from pyqt_openai.chat_widget.center.realtimeApiWidget import RealtimeApiWidget
 from pyqt_openai.chat_widget.left_sidebar.chatNavWidget import ChatNavWidget
 from pyqt_openai.chat_widget.prompt_gen_widget.promptGeneratorWidget import PromptGeneratorWidget
@@ -219,26 +220,26 @@ class ChatMainWidget(QWidget):
     def toggleSideBar(self, x: bool):
         self.__chatNavWidget.setVisible(x)
         self.__show_chat_list = x
-        CONFIG_MANAGER.set_general_property("show_chat_list", str(self.__show_chat_list))
+        CONFIG_MANAGER.set_general_property("show_chat_list", self.__show_chat_list)
 
     def toggleRealtimeApiScreen(self, x: bool):
         self.__centerWidget.setCurrentIndex(1 if x else 0)
         self.__show_realtime_api = x
         CONFIG_MANAGER.set_general_property(
-            "show_realtime_api", str(self.__show_realtime_api),
+            "show_realtime_api", self.__show_realtime_api,
         )
 
     def toggleSetting(self, x: bool):
         self.__chatRightSideBarWidget.setVisible(x)
         self.__show_setting = x
-        CONFIG_MANAGER.set_general_property("show_setting", str(self.__show_setting))
+        CONFIG_MANAGER.set_general_property("show_setting", self.__show_setting)
         if not self.__promptGeneratorWidget.isVisible():
             self.__rightSideBar.setVisible(x)
 
     def togglePrompt(self, x: bool):
         self.__promptGeneratorWidget.setVisible(x)
         self.__show_prompt = x
-        CONFIG_MANAGER.set_general_property("show_prompt", str(self.__show_prompt))
+        CONFIG_MANAGER.set_general_property("show_prompt", self.__show_prompt)
         if not self.__chatRightSideBarWidget.isVisible():
             self.__rightSideBar.setVisible(x)
 
