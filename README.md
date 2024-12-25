@@ -104,6 +104,8 @@ You can contact me 24/7 by sending me an email to **<yjg30737@gmail.com>** or jo
 
 - **Me (WizMiner)** 😊
   - Creator of VividNode 🐐
+- Benjamin Auquite
+  - [PR](https://github.com/yjg30737/pyqt-openai/pull/199)
 
 ## Disclaimer
 
