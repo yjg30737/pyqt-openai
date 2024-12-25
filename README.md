@@ -107,6 +107,10 @@ You can contact me 24/7 by sending me an email to **<yjg30737@gmail.com>** or jo
 - Benjamin Auquite
   - [PR](https://github.com/yjg30737/pyqt-openai/pull/199)
 
+<a href="https://github.com/yjg30737/pyqt-openai/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=yjg30737/pyqt-openai" />
+</a>
+
 ## Disclaimer
 
 Please do not distribute this commercially without my permission, by claiming it as your own creation.
