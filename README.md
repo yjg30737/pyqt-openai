@@ -78,6 +78,7 @@ This is the [default test scenario page](https://github.com/yjg30737/pyqt-openai
 
 - If you encounter the following error message when trying to update VividNode via the auto-update feature: **PermissionError: [Errno 13] Permission denied**, To resolve this issue, run VividNode as an administrator.
 - Also, if VividNode keeps asking "Wanna update?" even though you've updated it already, just install this again and everything will be fine.
+- If another error occurs when running, please reinstall.
 
 #### Runtime error
 
