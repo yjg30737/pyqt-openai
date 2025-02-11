@@ -909,10 +909,6 @@ LLAMA_INDEX_DEFAULT_SUPPORTED_FORMATS_LIST = [".txt"]
 LLAMA_INDEX_DEFAULT_ALL_SUPPORTED_FORMATS_LIST = [".txt", ".docx", ".hwp", ".ipynb", ".csv", ".jpeg", ".jpg", ".mbox", ".md", ".mp3", ".mp4", ".pdf", ".png", ".ppt", ".pptx", ".pptm"]
 
 # PROMPT
-## DEFAULT JSON FILENAME FOR PROMPT
-AWESOME_CHATGPT_PROMPTS_FILENAME = "prompt_res/awesome_chatgpt_prompts.json"
-ALEX_BROGAN_PROMPT_FILENAME = "prompt_res/alex_brogan.json"
-
 FORM_PROMPT_GROUP_SAMPLE = json.dumps(
     [{"name": "Default", "data": PROPERTY_PROMPT_UNIT_DEFAULT_VALUE}],
     indent=INDENT_SIZE,
@@ -946,12 +942,6 @@ SENTENCE_PROMPT_GROUP_SAMPLE = """[
         ]
     }
 ]"""
-
-## Load the default prompt
-if os.path.exists(AWESOME_CHATGPT_PROMPTS_FILENAME):
-    AWESOME_CHATGPT_PROMPTS = json.load(open(AWESOME_CHATGPT_PROMPTS_FILENAME))[0]
-if os.path.exists(ALEX_BROGAN_PROMPT_FILENAME):
-    ALEX_BROGAN_PROMPT = json.load(open(ALEX_BROGAN_PROMPT_FILENAME))[0]
 
 ## Data for random prompt generating feature for image generation
 hair_color_randomizer = [

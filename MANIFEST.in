@@ -1,5 +1,4 @@
 include pyqt_openai/ico/*
-include pyqt_openai/prompt_res/*
 include pyqt_openai/lang/*
 include pyqt_openai/img/*
 
