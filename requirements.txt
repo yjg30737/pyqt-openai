@@ -1,3 +1,4 @@
+qtpy
 PySide6
 pyperclip
 jinja2
@@ -8,8 +9,6 @@ psutil
 filetype
 
 openai
-anthropic
-google-generativeai
 replicate
 
 llama-index
@@ -23,4 +22,3 @@ curl_cffi
 litellm
 
 edge-tts
-qtpy

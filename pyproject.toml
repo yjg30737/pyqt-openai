@@ -10,6 +10,7 @@ authors = [{ name = "Jung Gyu Yoon", email = "yjg30737@gmail.com" }]
 license = { text = "MIT" }
 readme = "README.md"
 dependencies = [
+    "qtpy",
     "PySide6",
     "pyperclip",
     "jinja2",
@@ -20,8 +21,6 @@ dependencies = [
     "filetype",
 
     "openai",
-    "anthropic",
-    "google-generativeai",
     "replicate",
 
     "llama-index",
