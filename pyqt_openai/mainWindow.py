@@ -57,12 +57,10 @@ from pyqt_openai.aboutDialog import AboutDialog
 from pyqt_openai.chat_widget.chatMainWidget import ChatMainWidget
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.customizeDialog import CustomizeDialog
-from pyqt_openai.dalle_widget.dalleMainWidget import DallEMainWidget
 from pyqt_openai.doNotAskAgainDialog import DoNotAskAgainDialog
-from pyqt_openai.g4f_image_widget.g4fImageMainWidget import G4FImageMainWidget
+from pyqt_openai.image_widget.imageMainWidget import ImageMainWidget
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import CustomizeParamsContainer, SettingsParamsContainer
-from pyqt_openai.replicate_widget.replicateMainWidget import ReplicateMainWidget
 from pyqt_openai.settings_dialog.settingsDialog import SettingsDialog
 from pyqt_openai.shortcutDialog import ShortcutDialog
 from pyqt_openai.updateSoftwareDialog import update_software
@@ -94,15 +92,11 @@ class MainWindow(QMainWindow):
         self.setWindowTitle(DEFAULT_APP_NAME)
 
         self.__chatMainWidget: ChatMainWidget = ChatMainWidget(self)
-        self.__dallEWidget: DallEMainWidget = DallEMainWidget(self)
-        self.__replicateWidget: ReplicateMainWidget = ReplicateMainWidget(self)
-        self.__g4fImageWidget: G4FImageMainWidget = G4FImageMainWidget(self)
+        self.__imageWidget: ImageMainWidget = ImageMainWidget(self)
 
         self.__mainWidget: QStackedWidget = QStackedWidget()
         self.__mainWidget.addWidget(self.__chatMainWidget)
-        self.__mainWidget.addWidget(self.__dallEWidget)
-        self.__mainWidget.addWidget(self.__replicateWidget)
-        self.__mainWidget.addWidget(self.__g4fImageWidget)
+        self.__mainWidget.addWidget(self.__imageWidget)
 
         self.__setActions()
         self.__setMenuBar()
@@ -190,9 +184,7 @@ class MainWindow(QMainWindow):
 
         self.__navBar = NavBar()
         self.__navBar.add(LangClass.TRANSLATIONS["Chat"])
-        self.__navBar.add("DALL-E")
-        self.__navBar.add("Replicate")
-        self.__navBar.add("G4F Image")
+        self.__navBar.add("Image")
         self.__navBar.setSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Preferred)
         self.__navBar.itemClicked.connect(self.__aiTypeChanged)
 
@@ -454,8 +446,7 @@ class MainWindow(QMainWindow):
         image_column_to_show = self.__settingsParamContainer.image_column_to_show
         if image_column_to_show.__contains__("data"):
             image_column_to_show.remove("data")
-        self.__dallEWidget.setColumns(self.__settingsParamContainer.image_column_to_show)
-        self.__replicateWidget.setColumns(self.__settingsParamContainer.image_column_to_show)
+        self.__imageWidget.setColumns(self.__settingsParamContainer.image_column_to_show)
 
     def __showSettingsDialog(self):
         dialog = SettingsDialog(parent=self)

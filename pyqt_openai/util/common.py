@@ -702,7 +702,7 @@ def get_g4f_image_models() -> list:
     return image_models
 
 
-def get_g4f_image_providers(including_auto=False) -> list:
+def get_image_providers(including_auto=False) -> list:
     """
     Get all the providers that support image generation
     (Even though this is not a perfect way to get the providers that support image generation)

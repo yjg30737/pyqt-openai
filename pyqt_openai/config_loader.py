@@ -66,6 +66,19 @@ def init_yaml() -> None:
             yaml.dump(prev_yaml_data, yaml_file, default_flow_style=False)
 
 
+# Use when you need to update the yaml file
+def update_yaml():
+    # TODO WILL_REMOVED_IN_FUTURE AFTER v2.2.0
+    # 2025-02-11 by Jung Gyu Yoon
+    # Update related to image attributes
+    # Move each attribute value in REPLICATE to IMAGE
+    for key, value in CONFIG_DATA["REPLICATE"].items():
+        CONFIG_DATA["IMAGE"][key] = value
+    # Remove DALLE, G4F, REPLICATE attributes, if they exist
+    CONFIG_DATA.pop("DALLE", None)
+    CONFIG_DATA.pop("G4F", None)
+    CONFIG_DATA.pop("REPLICATE", None)
+
 class ConfigManager:
     def __init__(
         self,
@@ -85,39 +98,19 @@ class ConfigManager:
         with open(self.yaml_file, "w") as file:
             yaml.safe_dump(self.config, file)
 
-    # Getter methods
-    def get_dalle(self) -> dict[str, str]:
-        return self.config.get("DALLE", {})
-
     def get_general(self) -> dict[str, str]:
         return self.config.get("General", {})
 
-    def get_replicate(self) -> dict[str, str]:
-        return self.config.get("REPLICATE", {})
-
-    def get_g4f_image(self) -> dict[str, str]:
-        return self.config.get("G4F_IMAGE", {})
-
-    def get_dalle_property(self, key: str) -> str | None:
-        return self.config.get("DALLE", {}).get(key)
+    def get_image(self) -> dict[str, str]:
+        return self.config.get("IMAGE", {})
 
     def get_general_property(self, key: str) -> str | None:
         value = self.config.get("General", {}).get(key)
         logger.info(f"Getting general property {key}: {repr(value)}")
         return value
 
-    def get_replicate_property(self, key: str) -> str | None:
-        return self.config.get("REPLICATE", {}).get(key)
-
-    def get_g4f_image_property(self, key: str) -> str | None:
-        return self.config.get("G4F_IMAGE", {}).get(key)
-
-    # Setter methods
-    def set_dalle_property(self, key: str, value: str) -> None:
-        if "DALLE" not in self.config:
-            self.config["DALLE"] = {}
-        self.config["DALLE"][key] = value
-        self._save_yaml()
+    def get_image_property(self, key: str) -> str | None:
+        return self.config.get("IMAGE", {}).get(key)
 
     def set_general_property(self, key: str, value: str) -> None:
         logger.info(f"Setting general property {key} with value: {repr(value)}")
@@ -126,16 +119,10 @@ class ConfigManager:
         self.config["General"][key] = value
         self._save_yaml()
 
-    def set_replicate_property(self, key: str, value: str) -> None:
-        if "REPLICATE" not in self.config:
-            self.config["REPLICATE"] = {}
-        self.config["REPLICATE"][key] = value
-        self._save_yaml()
-
-    def set_g4f_image_property(self, key: str, value: str) -> None:
-        if "G4F_IMAGE" not in self.config:
-            self.config["G4F_IMAGE"] = {}
-        self.config["G4F_IMAGE"][key] = value
+    def set_image_property(self, key: str, value: str) -> None:
+        if "IMAGE" not in self.config:
+            self.config["IMAGE"] = {}
+        self.config["IMAGE"][key] = value
         self._save_yaml()
 
 
