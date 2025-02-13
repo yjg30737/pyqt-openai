@@ -8,11 +8,10 @@ from qtpy.QtWidgets import QCheckBox, QGroupBox, QMessageBox, QPlainTextEdit, QP
     QVBoxLayout, QWidget, QLabel, QFormLayout, QSplitter
 
 from pyqt_openai.config_loader import CONFIG_MANAGER
-from pyqt_openai.image_widget.imageThread import ImageThread
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ImagePromptContainer
 from pyqt_openai.util.common import getSeparator, get_image_providers, get_g4f_image_models, \
-    get_g4f_image_models_from_provider
+    get_g4f_image_models_from_provider, ImageThread
 from pyqt_openai.widgets.APIInputButton import APIInputButton
 from pyqt_openai.widgets.findPathWidget import FindPathWidget
 from pyqt_openai.widgets.notifier import NotifierWidget

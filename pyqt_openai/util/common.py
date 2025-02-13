@@ -27,11 +27,13 @@ from inspect import signature
 import filetype
 import numpy as np
 import psutil
+from PySide6.QtCore import QThread, Signal
 
 from g4f import ProviderType
 from g4f.providers.base_provider import ProviderModelMixin
 from litellm import completion
 
+from pyqt_openai.util.replicate import download_image_as_base64
 from pyqt_openai.widgets.scrollableErrorDialog import ScrollableErrorDialog
 
 if sys.platform == "win32":
@@ -79,7 +81,7 @@ from pyqt_openai.globals import (
     REPLICATE_CLIENT,
 )
 from pyqt_openai.lang.translations import LangClass
-from pyqt_openai.models import ChatMessageContainer
+from pyqt_openai.models import ChatMessageContainer, ImagePromptContainer
 
 if TYPE_CHECKING:
     from g4f import ProviderType
@@ -1301,3 +1303,50 @@ def export_prompt(data, filename, ext):
 
                 # Remove the CSV file after adding it to the zip
                 os.remove(csv_filename)
+
+
+class ImageThread(QThread):
+    replyGenerated = Signal(ImagePromptContainer)
+    errorGenerated = Signal(str)
+    allReplyGenerated = Signal()
+
+    def __init__(
+        self, input_args, number_of_images, randomizing_prompt_source_arr=None
+    ):
+        super().__init__()
+        self.__input_args = input_args
+        self.__stop = False
+
+        self.__randomizing_prompt_source_arr = randomizing_prompt_source_arr
+
+        self.__number_of_images = number_of_images
+
+    def stop(self):
+        self.__stop = True
+
+    def run(self):
+        try:
+            if self.__input_args["provider"] == G4F_PROVIDER_DEFAULT:
+                del self.__input_args["provider"]
+
+            for _ in range(self.__number_of_images):
+                if self.__stop:
+                    break
+                if self.__randomizing_prompt_source_arr is not None:
+                    self.__input_args["prompt"] = generate_random_prompt(
+                        self.__randomizing_prompt_source_arr
+                    )
+                response =  G4F_CLIENT.images.generate(
+                    **self.__input_args
+                )
+                arg = {
+                    **self.__input_args,
+                    "provider": response.provider,
+                    "data": download_image_as_base64(response.data[0].url),
+                }
+
+                result = ImagePromptContainer(**arg)
+                self.replyGenerated.emit(result)
+            self.allReplyGenerated.emit()
+        except Exception as e:
+            self.errorGenerated.emit(str(e))

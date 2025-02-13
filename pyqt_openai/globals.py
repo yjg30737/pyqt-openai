@@ -14,7 +14,8 @@ LLAMAINDEX_WRAPPER = LlamaIndexWrapper()
 
 G4F_CLIENT = Client()
 
-# For Whisper
+# For Image Generation and TTS & STT
 OPENAI_CLIENT = OpenAI(api_key="")
 
+# For Image Generation
 REPLICATE_CLIENT = ReplicateWrapper(api_key="")
