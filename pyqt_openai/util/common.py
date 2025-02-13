@@ -69,7 +69,7 @@ from pyqt_openai import (
     O1_MODELS,
     STT_MODEL,
     DEFAULT_DATETIME_FORMAT,
-    DEFAULT_TOKEN_CHUNK_SIZE, DEFAULT_API_CONFIGS, INDENT_SIZE, )
+    DEFAULT_TOKEN_CHUNK_SIZE, DEFAULT_API_CONFIGS, INDENT_SIZE, DEFAULT_IMAGE_PROVIDER_LIST, COMBOBOX_SEPARATOR, )
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.globals import (
     DB,
@@ -672,33 +672,6 @@ def get_g4f_image_models() -> list:
         ### Other ###
         'any-dark'
     ]
-    index = []
-    # for provider in __providers__:
-    #     try:
-    #         if hasattr(provider, "image_models"):
-    #             if hasattr(provider, "get_models"):
-    #                 provider.get_models()
-    #             parent = provider
-    #             if hasattr(provider, "parent"):
-    #                 parent = __map__[provider.parent]
-    #             if parent.__name__ not in index:
-    #                 if provider.image_models:
-    #                     for model in provider.image_models:
-    #                         image_models.append(
-    #                             {
-    #                                 "provider": parent.__name__,
-    #                                 "url": parent.url,
-    #                                 "label": parent.label if hasattr(parent, "label") else None,
-    #                                 "image_model": model,
-    #                             }
-    #                         )
-    #                         index.append(parent.__name__)
-    #     except Exception as e:
-    #         continue
-    #
-    # models = [model["image_model"] for model in image_models]
-    # # Filter out the models in FAMOUS_LLM_LIST
-    # models = [model for model in models if model not in FAMOUS_LLM_LIST]
     return image_models
 
 
@@ -713,6 +686,7 @@ def get_image_providers(including_auto=False) -> list:
         """
         The function get from g4f/gui/server/api.py
         """
+        default_providers = set(DEFAULT_IMAGE_PROVIDER_LIST)
         return {
             provider.__name__: (
                 provider.label if hasattr(provider, "label") else provider.__name__
@@ -720,12 +694,12 @@ def get_image_providers(including_auto=False) -> list:
             + (" (WebDriver)" if "webdriver" in provider.get_parameters() else "")
             + (" (Auth)" if provider.needs_auth else "")
             for provider in __providers__
-            if provider.working
+            if provider.working and provider.__name__ not in default_providers
         }
 
-    providers = get_providers()
+    providers = DEFAULT_IMAGE_PROVIDER_LIST + COMBOBOX_SEPARATOR + [provider for provider in get_providers()]
     if including_auto:
-        providers = [G4F_PROVIDER_DEFAULT] + [provider for provider in providers]
+        providers = [G4F_PROVIDER_DEFAULT] + providers
     return providers
 
 
