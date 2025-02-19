@@ -410,7 +410,8 @@ DEFAULT_DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 # https://platform.openai.com/docs/models#current-model-aliases
 # This has to be managed separately since some of the arguments are different with usual models
-REASONING_MODELS = ["o1", "o1-preview", "o1-mini", "o3-mini"]
+GPT_MODELS = ["gpt-4o", "gpt-4o-mini", "chatgpt-4o-latest"]
+REASONING_MODELS = ["o1", "o1-mini", "o3-mini"]
 # TODO
 REALTIME_MODELS = [
     "gpt-4o-realtime-preview",
@@ -429,7 +430,7 @@ DEFAULT_API_CONFIGS = [
         "env_var_name": "OPENAI_API_KEY",
         "api_key": "",
         "manual_url": HOW_TO_GET_OPENAI_API_KEY_URL,
-        "model_list": ["gpt-4o", "gpt-4o-mini"] + REASONING_MODELS,
+        "model_list": GPT_MODELS + REASONING_MODELS,
     },
     # Azure
     {
