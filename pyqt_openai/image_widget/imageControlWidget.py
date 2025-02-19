@@ -7,6 +7,8 @@ from qtpy.QtCore import Signal, Qt
 from qtpy.QtWidgets import QCheckBox, QGroupBox, QMessageBox, QPlainTextEdit, QPushButton, QScrollArea, QSpinBox, \
     QVBoxLayout, QWidget, QLabel, QFormLayout, QSplitter
 
+from pyqt_openai import MIN_IMAGE_SIZE, MAX_IMAGE_SIZE
+from pyqt_openai.chat_widget.right_sidebar.modelSearchBar import ModelSearchBar
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ImagePromptContainer
@@ -51,6 +53,8 @@ class ImageControlWidget(QScrollArea):
         self.__negative_prompt = CONFIG_MANAGER.get_image_property(
             "negative_prompt",
         )
+        self.__width: int = int(CONFIG_MANAGER.get_image_property("width") or 1024)
+        self.__height: int = int(CONFIG_MANAGER.get_image_property("height") or 1024)
 
     def _initUi(self):
         self._findPathWidget: FindPathWidget = FindPathWidget()
@@ -85,6 +89,18 @@ class ImageControlWidget(QScrollArea):
 
         self._generalGrpBox: QGroupBox = QGroupBox()
         self._generalGrpBox.setTitle(LangClass.TRANSLATIONS["General"])
+
+        self.__widthSpinBox = QSpinBox()
+        self.__widthSpinBox.setRange(MIN_IMAGE_SIZE, MAX_IMAGE_SIZE)
+        self.__widthSpinBox.setSingleStep(8)
+        self.__widthSpinBox.setValue(self.__width)
+        self.__widthSpinBox.valueChanged.connect(self.__widthHeightChanged)
+
+        self.__heightSpinBox = QSpinBox()
+        self.__heightSpinBox.setRange(MIN_IMAGE_SIZE, MAX_IMAGE_SIZE)
+        self.__heightSpinBox.setSingleStep(8)
+        self.__heightSpinBox.setValue(self.__height)
+        self.__heightSpinBox.valueChanged.connect(self.__widthHeightChanged)
 
         self._promptTextEdit: QPlainTextEdit = QPlainTextEdit()
         self._promptTextEdit.setPlaceholderText(LangClass.TRANSLATIONS["Enter prompt here..."])
@@ -127,11 +143,11 @@ class ImageControlWidget(QScrollArea):
         self.__providerCmbBox.addItems(g4f_image_providers)
         self.__providerCmbBox.currentTextChanged.connect(self.__providerChanged)
 
-        self.__modelCmbBox = QComboBox()
+        self.__modelCmbBox = ModelSearchBar()
         g4f_image_models = get_g4f_image_models()
-        self.__modelCmbBox.addItems(g4f_image_models)
-        self.__modelCmbBox.setCurrentText(self.__model)
-        self.__modelCmbBox.currentTextChanged.connect(self.__modelChanged)
+        self.__modelCmbBox.setChatModel(g4f_image_models)
+        self.__modelCmbBox.setText(self.__model)
+        self.__modelCmbBox.textChanged.connect(self.__modelChanged)
 
         self.__providerCmbBox.setCurrentText(self.__provider)
 
@@ -167,6 +183,8 @@ class ImageControlWidget(QScrollArea):
         lay = QFormLayout()
         lay.addRow(LangClass.TRANSLATIONS["Provider"], self.__providerCmbBox)
         lay.addRow(LangClass.TRANSLATIONS["Model"], self.__modelCmbBox)
+        lay.addRow(LangClass.TRANSLATIONS["Width"], self.__widthSpinBox)
+        lay.addRow(LangClass.TRANSLATIONS["Height"], self.__heightSpinBox)
         otherParamWidget = QWidget()
         otherParamWidget.setLayout(lay)
 
@@ -305,10 +323,6 @@ class ImageControlWidget(QScrollArea):
     def __modelChanged(self, text):
         self.__model = text
         CONFIG_MANAGER.set_image_property("model", self.__model)
-        #
-        # g4f_image_providers = get_g4f_providers_by_model(self.__model, including_auto=True)
-        # self.__providerCmbBox.clear()
-        # self.__providerCmbBox.addItems(g4f_image_providers)
 
     def __providerChanged(self, text):
         self.__provider = text
@@ -316,7 +330,17 @@ class ImageControlWidget(QScrollArea):
 
         image_models = get_g4f_image_models_from_provider(self.__provider)
         self.__modelCmbBox.clear()
-        self.__modelCmbBox.addItems(image_models)
+        self.__modelCmbBox.setChatModel(image_models)
+
+    def __widthHeightChanged(self):
+        sender = self.sender()
+        if isinstance(sender, QSpinBox):
+            if sender == self.__widthSpinBox:
+                self.__width = sender.value()
+                CONFIG_MANAGER.set_image_property("width", self.__width)
+            elif sender == self.__heightSpinBox:
+                self.__height = sender.value()
+                CONFIG_MANAGER.set_image_property("height", self.__height)
 
     def __promptChanged(self):
         sender = self.sender()
@@ -329,7 +353,6 @@ class ImageControlWidget(QScrollArea):
                 CONFIG_MANAGER.set_image_property(
                     "negative_prompt", self.__negative_prompt,
                 )
-
 
     def _submit(self):
         arg = self.getArgument()
@@ -353,9 +376,9 @@ class ImageControlWidget(QScrollArea):
     def getArgument(self):
         return {
             "prompt": self._promptTextEdit.toPlainText(),
-            "model": self.__modelCmbBox.currentText(),
+            "model": self.__modelCmbBox.text(),
             "provider": self.__providerCmbBox.currentText(),
-            "response_format": "url",
-            "prompt": self._promptTextEdit.toPlainText(),
             "negative_prompt": self._negativeTextEdit.toPlainText(),
+            "width": self.__width,
+            "height": self.__height,
         }

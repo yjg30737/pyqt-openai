@@ -19,17 +19,13 @@ import time
 import traceback
 import wave
 import zipfile
-
 from datetime import datetime
-from pathlib import Path
 from inspect import signature
+from pathlib import Path
 
 import filetype
 import numpy as np
 import psutil
-from PySide6.QtCore import QThread, Signal
-
-from g4f import ProviderType
 from g4f.providers.base_provider import ProviderModelMixin
 from litellm import completion
 
@@ -39,11 +35,10 @@ from pyqt_openai.widgets.scrollableErrorDialog import ScrollableErrorDialog
 if sys.platform == "win32":
     import winreg
 
-import contextlib
-
 from typing import TYPE_CHECKING
 
 import pyaudio
+import inspect
 
 from g4f.Provider import ProviderUtils, __providers__, __map__
 from g4f.errors import ProviderNotFoundError
@@ -71,7 +66,8 @@ from pyqt_openai import (
     O1_MODELS,
     STT_MODEL,
     DEFAULT_DATETIME_FORMAT,
-    DEFAULT_TOKEN_CHUNK_SIZE, DEFAULT_API_CONFIGS, INDENT_SIZE, DEFAULT_IMAGE_PROVIDER_LIST, COMBOBOX_SEPARATOR, )
+    DEFAULT_TOKEN_CHUNK_SIZE, DEFAULT_API_CONFIGS, INDENT_SIZE, DEFAULT_IMAGE_PROVIDER_LIST, COMBOBOX_SEPARATOR,
+    OPENAI_IMAGE_MODELS, REPLICATE_IMAGE_MODELS, G4F_IMAGE_GENERATION_ERROR_MESSAGE, )
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.globals import (
     DB,
@@ -94,6 +90,13 @@ def get_generic_ext_out_of_qt_ext(text):
     extension = "." + match.group(2) if match.group(2) else ""
     return extension
 
+def filter_dict(dict_to_filter, thing_with_kwargs):
+    sig = inspect.signature(thing_with_kwargs)
+    filter_keys = [param.name for param in sig.parameters.values()]
+    filtered_dict = {filter_key:dict_to_filter.get(filter_key) for filter_key in filter_keys}
+    # Remove None values
+    filtered_dict = {k: v for k, v in filtered_dict.items() if v is not None}
+    return filtered_dict
 
 def open_directory(path):
     QDesktopServices.openUrl(QUrl.fromLocalFile(path))
@@ -560,29 +563,6 @@ def get_g4f_models_by_provider(provider):
         models = provider.models if provider.models else []
     return models
 
-
-def get_g4f_providers_by_model(model, including_auto=False):
-    providers = get_g4f_providers()
-    supported_providers = []
-
-    for provider in providers:
-        provider = ProviderUtils.convert[provider]
-
-        if hasattr(provider, "models"):
-            models = provider.models if provider.models else models
-            if model in models:
-                supported_providers.append(provider)
-
-    supported_providers = [
-        provider.get_dict()["name"] for provider in supported_providers
-    ]
-
-    if including_auto:
-        supported_providers = [G4F_PROVIDER_DEFAULT] + supported_providers
-
-    return supported_providers
-
-
 def get_chat_model(is_g4f=False):
     if is_g4f:
         return get_g4f_models()
@@ -699,9 +679,11 @@ def get_image_providers(including_auto=False) -> list:
             if provider.working and provider.__name__ not in default_providers
         }
 
-    providers = DEFAULT_IMAGE_PROVIDER_LIST + COMBOBOX_SEPARATOR + [provider for provider in get_providers()]
+    providers = DEFAULT_IMAGE_PROVIDER_LIST + COMBOBOX_SEPARATOR
     if including_auto:
-        providers = [G4F_PROVIDER_DEFAULT] + providers
+        providers = providers + [G4F_PROVIDER_DEFAULT] + [provider for provider in get_providers()]
+    else:
+        providers = providers + [provider for provider in get_providers()]
     return providers
 
 
@@ -713,6 +695,12 @@ def get_g4f_image_models_from_provider(provider) -> list:
     """
     if provider == G4F_PROVIDER_DEFAULT:
         return get_g4f_image_models()
+
+    if provider.lower() == "openai":
+        return OPENAI_IMAGE_MODELS
+
+    if provider.lower() == "replicate":
+        return REPLICATE_IMAGE_MODELS
 
     def get_provider_models(provider: str, api_key: str = None):
         if provider in __map__:
@@ -1246,12 +1234,8 @@ class ChatThread(QThread):
             self.__info.content = f'<p style="color:red">{e}</p>'
             if self.__is_g4f:
                 # TODO LANGUAGE
-                self.__info.content += """\n
-You can try the following:
-
-- Change the provider
-- Change the model
-- Use API instead of G4F
+                self.__info.content += f"""\n
+{G4F_IMAGE_GENERATION_ERROR_MESSAGE}
 """
             self.replyGenerated.emit(self.__info.content, False, self.__info)
 
@@ -1326,8 +1310,9 @@ class ImageThread(QThread):
 
     def run(self):
         try:
-            if self.__input_args["provider"] == G4F_PROVIDER_DEFAULT:
-                del self.__input_args["provider"]
+            print('Before Image Generation')
+            print(self.__input_args)
+            provider = self.__input_args.get("provider")
 
             for _ in range(self.__number_of_images):
                 if self.__stop:
@@ -1336,17 +1321,72 @@ class ImageThread(QThread):
                     self.__input_args["prompt"] = generate_random_prompt(
                         self.__randomizing_prompt_source_arr
                     )
-                response =  G4F_CLIENT.images.generate(
-                    **self.__input_args
-                )
-                arg = {
-                    **self.__input_args,
-                    "provider": response.provider,
-                    "data": download_image_as_base64(response.data[0].url),
-                }
+                if provider is not None and provider in DEFAULT_IMAGE_PROVIDER_LIST:
+                    if provider.lower() == "openai":
+                        print('OpenAI Image Generation')
 
-                result = ImagePromptContainer(**arg)
-                self.replyGenerated.emit(result)
+                        self.__input_args["response_format"] = "b64_json"
+                        self.__input_args["size"] = f'{self.__input_args["width"]}x{self.__input_args["height"]}'
+
+                        # TODO
+                        # Separate the function that substitutes parameters according to the provider
+                        # Filter out attributes which are not needed
+                        filtered_args = filter_dict(self.__input_args, OPENAI_CLIENT.images.generate)
+
+                        response = OPENAI_CLIENT.images.generate(
+                            **filtered_args
+                            # model="dall-e-3",
+                            # prompt="a white siamese cat",
+                            # size="1024x1024",
+                            # quality="standard",
+                            # n=1,
+                        )
+                        container = ImagePromptContainer(**self.__input_args)
+                        for _ in response.data:
+                            image_data = base64.b64decode(_.b64_json)
+                            container.data = image_data
+                            container.revised_prompt = _.revised_prompt
+                            container.width = filtered_args["size"].split("x")[0]
+                            container.height = filtered_args["size"].split("x")[1]
+                            self.replyGenerated.emit(container)
+                        continue
+                    elif provider.lower() == "replicate":
+                        print('Replicate Image Generation')
+                        response = REPLICATE_CLIENT.get_image_response(
+                            model=self.__input_args["model"], input_args=self.__input_args,
+                        )
+                        self.replyGenerated.emit(response)
+                        continue
+                else:
+                    if provider == G4F_PROVIDER_DEFAULT:
+                        del self.__input_args["provider"]
+
+                    print("G4F Input Arguments:", self.__input_args)
+
+                    response =  G4F_CLIENT.images.generate(
+                        **self.__input_args
+                    )
+
+                    print("Response:", response)
+                    print("provider:", response.provider)
+                    print("만약에 response.provider가 있으면 provider 어쩌고 하는 에러는 거짓말")
+
+                    arg = {
+                        **self.__input_args,
+                        "provider": response.provider,
+                        "data": download_image_as_base64(response.data[0].url),
+                    }
+
+                    result = ImagePromptContainer(**arg)
+                    # print("Result:", result)
+                    self.replyGenerated.emit(result)
             self.allReplyGenerated.emit()
         except Exception as e:
-            self.errorGenerated.emit(str(e))
+            message = str(e)
+            if provider not in DEFAULT_IMAGE_PROVIDER_LIST:
+                message += f"""\n
+{G4F_IMAGE_GENERATION_ERROR_MESSAGE}
+"""
+            self.errorGenerated.emit(message)
+
+

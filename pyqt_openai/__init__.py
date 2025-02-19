@@ -402,7 +402,9 @@ STT_MODEL = "whisper-1"
 DEFAULT_TOKEN_CHUNK_SIZE = 1024
 
 # This doesn't need endpoint
-OPENAI_DEFAULT_IMAGE_MODEL = "dall-e-3"
+OPENAI_IMAGE_MODELS = ["dall-e-3"]
+
+REPLICATE_IMAGE_MODELS = ["stability-ai/sdxl:39ed52f2a78e934b3ba6e2a89f5b1c712de7dfea535525255b1aa35c5565e08b"]
 
 DEFAULT_DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
@@ -896,7 +898,19 @@ DEFAULT_LLM = "gpt-4o"
 
 DEFAULT_IMAGE_PROVIDER_LIST = ["openai", "replicate"]
 
-COMBOBOX_SEPARATOR = ['-'*8]
+G4F_IMAGE_GENERATION_ERROR_MESSAGE = """
+You can try the following:
+
+- Change the provider
+- Change the model
+- Use API instead of G4F
+"""
+
+DEFAULT_IMAGE_SIZE = 1024
+MIN_IMAGE_SIZE = 512
+MAX_IMAGE_SIZE = 4096
+
+COMBOBOX_SEPARATOR = ['----G4F----']
 
 G4F_PROVIDER_DEFAULT = "Auto"
 
@@ -1162,8 +1176,8 @@ CONFIG_DATA = {
     },
     "IMAGE": {
         "model": G4F_DEFAULT_IMAGE_MODEL,
-        "width": 1024,
-        "height": 1024,
+        "width": DEFAULT_IMAGE_SIZE,
+        "height": DEFAULT_IMAGE_SIZE,
         "show_history": True,
         "show_setting": True,
         "prompt": "Astronaut in a jungle, cold color palette, muted colors, detailed, 8k",

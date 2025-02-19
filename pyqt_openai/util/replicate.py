@@ -2,19 +2,13 @@ from __future__ import annotations
 
 import base64
 import os
+from urllib.parse import urlparse
 
-import replicate
 import requests
 
+import replicate
+
 from pyqt_openai.models import ImagePromptContainer
-
-
-def download_image_as_base64(url: str):
-    response = requests.get(url)
-    response.raise_for_status()  # Check if the URL is correct and raise an exception if there is a problem
-    image_data = response.content
-    base64_encoded = base64.b64decode(base64.b64encode(image_data).decode("utf-8"))
-    return base64_encoded
 
 
 class ReplicateWrapper:
@@ -85,11 +79,12 @@ class ReplicateWrapper:
 
             if output is not None and len(output) > 0:
                 arg = {
+                    "provider": input_args["provider"],
                     "model": model,
                     "prompt": input_args["prompt"],
                     "size": f"{input_args['width']}x{input_args['height']}",
                     "quality": "high",
-                    "data": download_image_as_base64(output[0]),
+                    "data": download_image_as_base64(output[0], is_replicate=True),
                     "style": "",
                     "revised_prompt": "",
                     "width": input_args["width"],
@@ -101,3 +96,44 @@ class ReplicateWrapper:
             raise Exception("No output")
         except Exception as e:
             raise e
+
+
+def download_image_as_base64(url: str, is_replicate: bool = False):
+    if not is_replicate:
+        print("replicate가 아닐때")
+        parsed_url = urlparse(url)
+
+        if not parsed_url.scheme or parsed_url.scheme == 'file':
+            print("파일일때")
+            local_path = os.path.join("generated_images", os.path.basename(url))
+
+            if not os.path.exists(local_path):
+                raise FileNotFoundError(f"File not found: {local_path}")
+
+            with open(local_path, "rb") as image_file:
+                base64_encoded = base64.b64decode(base64.b64encode(image_file.read()).decode("utf-8"))
+
+            print(f"파일일때 base64_encoded의 타입: {type(base64_encoded)}")
+
+            return base64_encoded
+    try:
+        print("웹일때")
+        response = requests.get(url)
+        response.raise_for_status()
+        image_data = response.content
+        base64_encoded = base64.b64decode(base64.b64encode(image_data).decode("utf-8"))
+        # base64_encoded = base64.b64encode(image_data).decode("utf-8")
+
+        print(f"웹일때 base64_encoded의 타입: {type(base64_encoded)}")
+
+        return base64_encoded
+    except requests.RequestException as e:
+        raise ValueError(f"Failed to download image from {url}: {e}")
+
+# def download_image_as_base64(url: str):
+#     response = requests.get(url)
+#     response.raise_for_status()  # Check if the URL is correct and raise an exception if there is a problem
+#     image_data = response.content
+#     base64_encoded = base64.b64decode(base64.b64encode(image_data).decode("utf-8"))
+#     print(f"웹일때 base64_encoded의 타입: {type(base64_encoded)}")
+#     return base64_encoded

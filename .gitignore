@@ -142,3 +142,6 @@ pyqt_openai/config.yaml
 .ruff_cache
 
 test
+
+# Related to g4f
+har_and_cookies
