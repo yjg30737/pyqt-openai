@@ -102,6 +102,7 @@ class MainWindow(QMainWindow):
         self.__setMenuBar()
         self.__setTrayMenu()
         self.__setToolBar()
+        self.__setStatusBar()
 
         self.__loadApiKeys()
 
@@ -329,6 +330,10 @@ class MainWindow(QMainWindow):
                 print(f"error: Current widget at index {i} is not a ChatMainWidget, skipping")
                 continue
             currentWidget.showSecondaryToolBar(self.__settingsParamContainer.show_secondary_toolbar)
+
+    def __setStatusBar(self):
+        self.__statusBar = self.statusBar()
+        self.__statusBar.showMessage(LangClass.TRANSLATIONS["Ready"])
 
     def __showAboutDialog(self):
         aboutDialog: AboutDialog = AboutDialog(self)
