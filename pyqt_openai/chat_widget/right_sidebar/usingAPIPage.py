@@ -26,7 +26,7 @@ from pyqt_openai import (
     FREQUENCY_PENALTY_STEP,
     LLAMAINDEX_URL,
     MAX_TOKENS_RANGE,
-    O1_MODELS,
+    REASONING_MODELS,
     OPENAI_TEMPERATURE_RANGE,
     OPENAI_TEMPERATURE_STEP,
     PRESENCE_PENALTY_RANGE,
@@ -315,7 +315,7 @@ class UsingAPIPage(QWidget):
         additional_message = (
             "\nNote: The selected model is only available at Tier 3 or higher."
         )
-        if self.__model in O1_MODELS:
+        if self.__model in REASONING_MODELS:
             self.__warningLbl.setText(self.__warningMessage + additional_message)
         else:
             self.__warningLbl.setText(self.__warningMessage)

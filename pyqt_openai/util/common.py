@@ -63,10 +63,10 @@ from pyqt_openai import (
     AUTOSTART_REGISTRY_KEY,
     is_frozen,
     G4F_PROVIDER_DEFAULT,
-    O1_MODELS,
+    REASONING_MODELS,
     STT_MODEL,
     DEFAULT_DATETIME_FORMAT,
-    DEFAULT_TOKEN_CHUNK_SIZE, DEFAULT_API_CONFIGS, INDENT_SIZE, DEFAULT_IMAGE_PROVIDER_LIST, COMBOBOX_SEPARATOR,
+    DEFAULT_TOKEN_CHUNK_SIZE, DEFAULT_API_CONFIGS, INDENT_SIZE, DEFAULT_IMAGE_PROVIDER_LIST, G4F_IMAGE_COMBOBOX_SEPARATOR,
     OPENAI_IMAGE_MODELS, REPLICATE_IMAGE_MODELS, G4F_IMAGE_GENERATION_ERROR_MESSAGE, )
 from pyqt_openai.config_loader import CONFIG_MANAGER
 from pyqt_openai.globals import (
@@ -679,7 +679,7 @@ def get_image_providers(including_auto=False) -> list:
             if provider.working and provider.__name__ not in default_providers
         }
 
-    providers = DEFAULT_IMAGE_PROVIDER_LIST + COMBOBOX_SEPARATOR
+    providers = DEFAULT_IMAGE_PROVIDER_LIST + G4F_IMAGE_COMBOBOX_SEPARATOR
     if including_auto:
         providers = providers + [G4F_PROVIDER_DEFAULT] + [provider for provider in get_providers()]
     else:
@@ -748,7 +748,7 @@ def get_api_argument(
     json_content=None,
 ):
     try:
-        if model in O1_MODELS:
+        if model in REASONING_MODELS:
             stream = False
         else:
             system_obj = get_message_obj("system", system)

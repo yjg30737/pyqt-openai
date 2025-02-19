@@ -408,8 +408,15 @@ REPLICATE_IMAGE_MODELS = ["stability-ai/sdxl:39ed52f2a78e934b3ba6e2a89f5b1c712de
 
 DEFAULT_DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
+# https://platform.openai.com/docs/models#current-model-aliases
 # This has to be managed separately since some of the arguments are different with usual models
-O1_MODELS = ["o1-preview", "o1-mini"]
+REASONING_MODELS = ["o1", "o1-preview", "o1-mini", "o3-mini"]
+# TODO
+REALTIME_MODELS = [
+    "gpt-4o-realtime-preview",
+    "gpt-4o-mini-realtime-preview",
+    "gpt-4o-audio-preview"
+]
 
 # For filtering out famous LLMs for image models
 FAMOUS_LLM_LIST = ["gpt", "claude", "gemini", "llama", "meta", "qwen", "falcon"]
@@ -422,7 +429,7 @@ DEFAULT_API_CONFIGS = [
         "env_var_name": "OPENAI_API_KEY",
         "api_key": "",
         "manual_url": HOW_TO_GET_OPENAI_API_KEY_URL,
-        "model_list": ["gpt-4o", "gpt-4o-mini"] + O1_MODELS,
+        "model_list": ["gpt-4o", "gpt-4o-mini"] + REASONING_MODELS,
     },
     # Azure
     {
@@ -910,7 +917,7 @@ DEFAULT_IMAGE_SIZE = 1024
 MIN_IMAGE_SIZE = 512
 MAX_IMAGE_SIZE = 4096
 
-COMBOBOX_SEPARATOR = ['----G4F----']
+G4F_IMAGE_COMBOBOX_SEPARATOR = ['----G4F----']
 
 G4F_PROVIDER_DEFAULT = "Auto"
 
