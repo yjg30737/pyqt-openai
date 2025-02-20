@@ -1326,6 +1326,7 @@ class ImageThread(QThread):
                         print('OpenAI Image Generation')
 
                         self.__input_args["response_format"] = "b64_json"
+                        self.__input_args["quality"] = "hd"
                         self.__input_args["size"] = f'{self.__input_args["width"]}x{self.__input_args["height"]}'
 
                         # TODO

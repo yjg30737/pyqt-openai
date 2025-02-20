@@ -83,7 +83,7 @@ class ReplicateWrapper:
                     "model": model,
                     "prompt": input_args["prompt"],
                     "size": f"{input_args['width']}x{input_args['height']}",
-                    "quality": "high",
+                    "quality": "",
                     "data": download_image_as_base64(output[0], is_replicate=True),
                     "style": "",
                     "revised_prompt": "",
@@ -114,6 +114,9 @@ def download_image_as_base64(url: str, is_replicate: bool = False):
                 base64_encoded = base64.b64decode(base64.b64encode(image_file.read()).decode("utf-8"))
 
             print(f"파일일때 base64_encoded의 타입: {type(base64_encoded)}")
+
+            os.remove(local_path)
+            print("local_path 삭제")
 
             return base64_encoded
     try:
