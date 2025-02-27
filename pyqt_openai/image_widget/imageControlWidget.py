@@ -2,10 +2,9 @@ from __future__ import annotations
 
 from typing import cast
 
-from PySide6.QtWidgets import QComboBox
 from qtpy.QtCore import Signal, Qt
 from qtpy.QtWidgets import QCheckBox, QGroupBox, QMessageBox, QPlainTextEdit, QPushButton, QScrollArea, QSpinBox, \
-    QVBoxLayout, QWidget, QLabel, QFormLayout, QSplitter
+    QVBoxLayout, QWidget, QLabel, QFormLayout, QSplitter, QComboBox
 
 from pyqt_openai import MIN_IMAGE_SIZE, MAX_IMAGE_SIZE
 from pyqt_openai.chat_widget.right_sidebar.modelSearchBar import ModelSearchBar
