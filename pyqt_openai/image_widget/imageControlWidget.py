@@ -214,7 +214,7 @@ class ImageControlWidget(QScrollArea):
         f = not self._t.isRunning()
         continue_generation = self._continue_generation
         self._generalGrpBox.setEnabled(f)
-        self._submitBtn.setEnabled(f)
+        # self._submitBtn.setEnabled(f)
         if continue_generation:
             self._stopGeneratingImageBtn.setEnabled(not f)
 
