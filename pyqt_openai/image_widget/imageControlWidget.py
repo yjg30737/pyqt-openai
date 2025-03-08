@@ -4,7 +4,7 @@ from typing import cast
 
 from qtpy.QtCore import Signal, Qt
 from qtpy.QtWidgets import QCheckBox, QGroupBox, QMessageBox, QPlainTextEdit, QPushButton, QScrollArea, QSpinBox, \
-    QVBoxLayout, QWidget, QLabel, QFormLayout, QSplitter, QComboBox
+    QVBoxLayout, QWidget, QLabel, QFormLayout, QSplitter, QComboBox, QApplication, QMainWindow
 
 from pyqt_openai import MIN_IMAGE_SIZE, MAX_IMAGE_SIZE
 from pyqt_openai.chat_widget.right_sidebar.modelSearchBar import ModelSearchBar
@@ -32,7 +32,7 @@ class ImageControlWidget(QScrollArea):
         self._initUi()
 
     def _initVal(self):
-        self._t = None
+        self._threads = []
 
         self._prompt = CONFIG_MANAGER.get_image_property("prompt")
         self._continue_generation = bool(CONFIG_MANAGER.get_image_property(
@@ -202,17 +202,11 @@ class ImageControlWidget(QScrollArea):
 
         self._completeUi()
 
-    def _setThread(
-        self,
-        thread: ImageThread,
-    ):
-        self._t = thread
-
     def _toggleWidget(self):
         assert self._t is not None
         f = not self._t.isRunning()
         continue_generation = self._continue_generation
-        self._generalGrpBox.setEnabled(f)
+        # self._generalGrpBox.setEnabled(f)
         # self._submitBtn.setEnabled(f)
         if continue_generation:
             self._stopGeneratingImageBtn.setEnabled(not f)
@@ -363,14 +357,30 @@ class ImageControlWidget(QScrollArea):
         )
 
         t = ImageThread(arg, number_of_images, random_prompt)
-        self._setThread(t)
+        self._threads.append(t)
 
-        self._t.start()
-        self._t.started.connect(self._toggleWidget)
-        self._t.replyGenerated.connect(self._afterGenerated)
-        self._t.errorGenerated.connect(self._failToGenerate)
-        self._t.finished.connect(self._toggleWidget)
-        self._t.allReplyGenerated.connect(self.submitAllComplete)
+        t.start()
+        # t.started.connect(self._toggleWidget)
+
+        t.replyGenerated.connect(self._afterGenerated)
+        t.errorGenerated.connect(self._failToGenerate)
+#         t.finished.connect(self._toggleWidget)
+        t.finished.connect(lambda: self._cleanupThread(t))
+        # t.allReplyGenerated.connect(self.submitAllComplete)
+
+        main_window = next(
+            (w for w in QApplication.instance().topLevelWidgets() if isinstance(w, QMainWindow)),
+            None
+        )
+        if main_window:
+            main_window.statusBar().showMessage('message')
+
+    def _cleanupThread(self, thread):
+        if thread in self._threads:
+            self._threads.remove(thread)
+            thread.deleteLater()
+        if len(self._threads) == 0:
+            self.submitAllComplete.emit()
 
     def getArgument(self):
         return {
