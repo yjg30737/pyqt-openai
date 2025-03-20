@@ -156,7 +156,7 @@ class CheckBoxTableWidget(QTableWidget):
         flag_lst: list[int] = []
         for i in range(self.rowCount()):
             item: QWidget = super().cellWidget(i, 0)  # pyright: ignore[reportAttributeAccessIssue]
-            if isinstance(item, QCheckBox) and item.isChecked() == flag:
+            if item.isChecked() == flag:
                 flag_lst.append(i)
 
         return flag_lst
