@@ -125,8 +125,11 @@ def check_for_updates(
         QMessageBox.critical(
             None,  # pyright: ignore[reportArgumentType]
             "Error",
-            f"Error fetching release notes: {e!s}",
-            QMessageBox.StandardButton.Ok,
+            f"Error fetching release notes for automatic updates"
+            f"<br><br>"
+            f": {e!s}"
+            f"<br><br>"
+            f"You need Internet connection to check for updates.",
             QMessageBox.StandardButton.Ok,
         )
         return None

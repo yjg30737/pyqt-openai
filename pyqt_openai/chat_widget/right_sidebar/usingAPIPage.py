@@ -42,7 +42,7 @@ from pyqt_openai.util.common import (
     getSeparator,
     init_llama,
 )
-from pyqt_openai.widgets.APIInputButton import APIInputButton
+from pyqt_openai.widgets.apiInputButton import APIInputButton
 from pyqt_openai.widgets.linkLabel import LinkLabel
 
 
@@ -132,8 +132,6 @@ class UsingAPIPage(QWidget):
         lay.setContentsMargins(0, 0, 0, 0)
 
         setApiBtn = APIInputButton()
-        # TODO LANGUAGE
-        setApiBtn.setText("Set API Key")
 
         selectModelWidget = QWidget()
         selectModelWidget.setLayout(lay)

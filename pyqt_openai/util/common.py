@@ -572,6 +572,32 @@ def get_chat_model(is_g4f=False):
             all_models.extend(obj.get("model_list", []))
         return all_models
 
+def get_ollama_model(name_only=False):
+    cmd = ["ollama", "list"]
+    result = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8")
+
+    if result.returncode != 0:
+        raise RuntimeError(f"Failed to run ollama list: {result.stderr}")
+
+    lines = result.stdout.strip().split("\n")
+    if len(lines) < 2:
+        return []
+
+    models = []
+    for line in lines[1:]:
+        parts = line.split()
+
+        if len(parts) >= 2:
+            model_name = parts[0]
+            size = "".join(parts[2:4])
+
+            models.append({"NAME": model_name, "SIZE": size})
+
+    if name_only:
+        models = [model["NAME"] for model in models]
+
+    return models
+
 def set_api_key(env_var_name, api_key):
     api_key = api_key.strip() if api_key else ""
     if env_var_name == "OPENAI_API_KEY":

@@ -4,7 +4,7 @@ from pyqt_openai.settings_dialog.settingsDialog import SettingsDialog
 from pyqt_openai.widgets.featureButton import FeatureButton
 
 
-class APIInputButton(FeatureButton):
+class OllamaButton(FeatureButton):
     def __init__(
         self,
         base_color: str = "#007BFF",
@@ -17,5 +17,4 @@ class APIInputButton(FeatureButton):
             lambda _: SettingsDialog(default_index=1, parent=self).exec(),
         )
         self.updateStylesheet(self.base_color)
-        # TODO LANGUAGE
-        self.setText("Set API Key")
+        self.setText('Manage Ollama Models')

@@ -13,7 +13,7 @@ from pyqt_openai.lang.translations import LangClass
 from pyqt_openai.models import ImagePromptContainer
 from pyqt_openai.util.common import getSeparator, get_image_providers, get_g4f_image_models, \
     get_g4f_image_models_from_provider, ImageThread
-from pyqt_openai.widgets.APIInputButton import APIInputButton
+from pyqt_openai.widgets.apiInputButton import APIInputButton
 from pyqt_openai.widgets.findPathWidget import FindPathWidget
 from pyqt_openai.widgets.notifier import NotifierWidget
 from pyqt_openai.widgets.randomImagePromptGeneratorWidget import RandomImagePromptGeneratorWidget
@@ -360,20 +360,10 @@ class ImageControlWidget(QScrollArea):
         self._threads.append(t)
 
         t.start()
-        # t.started.connect(self._toggleWidget)
 
         t.replyGenerated.connect(self._afterGenerated)
         t.errorGenerated.connect(self._failToGenerate)
-#         t.finished.connect(self._toggleWidget)
         t.finished.connect(lambda: self._cleanupThread(t))
-        # t.allReplyGenerated.connect(self.submitAllComplete)
-
-        main_window = next(
-            (w for w in QApplication.instance().topLevelWidgets() if isinstance(w, QMainWindow)),
-            None
-        )
-        if main_window:
-            main_window.statusBar().showMessage('message')
 
     def _cleanupThread(self, thread):
         if thread in self._threads:
