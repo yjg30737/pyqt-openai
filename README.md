@@ -55,8 +55,8 @@ Although this is named 'pyqt-openai', the model does not use only OpenAI-related
 ### Wanna download this without doing stuffs like above? You can download installer or zip file [here](https://github.com/yjg30737/pyqt-openai/releases)
 
 ## How to Use 🧐
-
-**[QuickStart](https://medium.com/@yjg30737/what-is-vividnode-how-to-use-it-4d8a9269a3c0)**
+* **[Tutorial Video](https://youtu.be/YbxNe_SODm0)**
+* **[QuickStart (Medium Article)](https://medium.com/@yjg30737/what-is-vividnode-how-to-use-it-4d8a9269a3c0)**
 
 ## Test Scenario
 

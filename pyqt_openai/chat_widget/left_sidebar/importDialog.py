@@ -158,7 +158,7 @@ class ImportDialog(QDialog):
                             r_idx, c_idx + 1, QTableWidgetItem(str(v)),
                         )
             elif self.__import_type == "chatgpt":
-                result_dict = get_chatgpt_data_for_preview(path, most_recent_n or 0)
+                result_dict = get_chatgpt_data_for_preview(path, most_recent_n or None)
                 columns = result_dict["columns"]
                 self.__data = result_dict["data"]
                 self.__checkBoxTableWidget.setHorizontalHeaderLabels(columns)
