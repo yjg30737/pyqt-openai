@@ -1181,6 +1181,8 @@ CONFIG_DATA = {
         "voice_speed": TTS_DEFAULT_SPEED,
         "auto_play_voice": TTS_DEFAULT_AUTO_PLAY,
         "auto_stop_silence_duration": TTS_DEFAULT_AUTO_STOP_SILENCE_DURATION,
+        # Ollama
+        "ollama_model": "",
     },
     "IMAGE": {
         "model": G4F_DEFAULT_IMAGE_MODEL,

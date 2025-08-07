@@ -572,7 +572,7 @@ def get_chat_model(is_g4f=False):
             all_models.extend(obj.get("model_list", []))
         return all_models
 
-def get_ollama_model(name_only=False):
+def get_ollama_model(name_only=True):
     cmd = ["ollama", "list"]
     result = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8")
 

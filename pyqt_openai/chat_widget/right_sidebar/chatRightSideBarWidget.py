@@ -6,7 +6,7 @@ from qtpy.QtCore import Signal
 from qtpy.QtWidgets import QGridLayout, QMessageBox, QScrollArea, QTabWidget, QWidget
 
 from pyqt_openai.chat_widget.right_sidebar.llama_widget.llamaPage import LlamaPage
-from pyqt_openai.chat_widget.right_sidebar.ollamaPage import OllamaPage
+from pyqt_openai.chat_widget.right_sidebar.ollama_widget.ollamaPage import OllamaPage
 from pyqt_openai.chat_widget.right_sidebar.usingAPIPage import UsingAPIPage
 from pyqt_openai.chat_widget.right_sidebar.usingG4FPage import UsingG4FPage
 from pyqt_openai.config_loader import CONFIG_MANAGER

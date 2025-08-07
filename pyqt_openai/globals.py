@@ -6,6 +6,7 @@ from openai import OpenAI
 
 from pyqt_openai.sqlite import SqliteDatabase
 from pyqt_openai.util.llamaindex import LlamaIndexWrapper
+from pyqt_openai.util.ollama import OllamaWrapper
 from pyqt_openai.util.replicate import ReplicateWrapper
 
 DB = SqliteDatabase()
@@ -19,3 +20,5 @@ OPENAI_CLIENT = OpenAI(api_key="")
 
 # For Image Generation
 REPLICATE_CLIENT = ReplicateWrapper(api_key="")
+
+OLLAMA_CLIENT = OllamaWrapper()
