@@ -97,6 +97,12 @@ class OllamaPage(QWidget):
 
     def __showOllamaModelsDialog(self):
         dialog = OllamaModelManagerDialog(self)
-        reply = dialog.exec()
-        if reply == QDialog.DialogCode.Accepted:
-            self.__modelCmbBox.addItems(get_ollama_model(name_only=True))
+        # If the dialog is closed, update the model list
+        if dialog.exec() == QDialog.Accepted:
+            # Refresh the model list in the combo box
+            self.__modelCmbBox.clear()
+            llama_models = get_ollama_model(name_only=True)
+            self.__modelCmbBox.addItems(llama_models)
+            # Set the current model to the first one in the list
+            if llama_models:
+                self.__modelCmbBox.setCurrentText(llama_models[0])

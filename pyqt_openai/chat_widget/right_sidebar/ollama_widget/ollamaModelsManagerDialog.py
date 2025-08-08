@@ -8,20 +8,20 @@ from qtpy.QtWidgets import (
     QDialog,
 )
 from pyqt_openai.chat_widget.right_sidebar.ollama_widget.ollamaDownloadModelDialog import DownloadDialog
+from pyqt_openai.globals import OLLAMA_CLIENT
 from pyqt_openai.util.common import get_ollama_model
 
 
 class RemoveModelThread(QThread):
-    def __init__(self, wrapper, models):
+    def __init__(self, models):
         super().__init__()
-        self.__wrapper = wrapper
         self.__models = models
 
     def run(self):
         try:
             for model in self.__models:
-                if self.__wrapper.model_exists(model):
-                    self.__wrapper.remove_model(model)
+                if OLLAMA_CLIENT.model_exists(model):
+                    OLLAMA_CLIENT.remove_model(model)
                 else:
                     print(f"Model {model} does not exist.")
         except Exception as e:
@@ -87,3 +87,6 @@ class OllamaModelManagerDialog(QDialog):
         for item in self.model_list.selectedItems():
             # Remove the selected item from the list
             self.model_list.takeItem(self.model_list.row(item))
+
+    def closeEvent(self, event):
+        self.accept()
