@@ -409,7 +409,7 @@ REPLICATE_IMAGE_MODELS = ["stability-ai/sdxl:39ed52f2a78e934b3ba6e2a89f5b1c712de
 DEFAULT_DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 # https://platform.openai.com/docs/models#current-model-aliases
-# This has to be managed separately since some of the arguments are different with usual models
+# This has to be managed separately since some arguments are different with usual models
 GPT_MODELS = ["gpt-4o", "gpt-4o-mini", "chatgpt-4o-latest"]
 REASONING_MODELS = ["o1", "o1-mini", "o3-mini"]
 # TODO
@@ -1181,8 +1181,6 @@ CONFIG_DATA = {
         "voice_speed": TTS_DEFAULT_SPEED,
         "auto_play_voice": TTS_DEFAULT_AUTO_PLAY,
         "auto_stop_silence_duration": TTS_DEFAULT_AUTO_STOP_SILENCE_DURATION,
-        # Ollama
-        "ollama_model": "",
     },
     "IMAGE": {
         "model": G4F_DEFAULT_IMAGE_MODEL,

@@ -22,7 +22,3 @@ curl_cffi
 litellm
 
 edge-tts
-
-# langchain
-langgraph
-langchain_ollama
