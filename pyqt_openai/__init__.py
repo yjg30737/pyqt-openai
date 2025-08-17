@@ -409,7 +409,7 @@ REPLICATE_IMAGE_MODELS = ["stability-ai/sdxl:39ed52f2a78e934b3ba6e2a89f5b1c712de
 DEFAULT_DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 # https://platform.openai.com/docs/models#current-model-aliases
-# This has to be managed separately since some of the arguments are different with usual models
+# This has to be managed separately since some arguments are different with usual models
 GPT_MODELS = ["gpt-4o", "gpt-4o-mini", "chatgpt-4o-latest"]
 REASONING_MODELS = ["o1", "o1-mini", "o3-mini"]
 # TODO
@@ -1181,8 +1181,6 @@ CONFIG_DATA = {
         "voice_speed": TTS_DEFAULT_SPEED,
         "auto_play_voice": TTS_DEFAULT_AUTO_PLAY,
         "auto_stop_silence_duration": TTS_DEFAULT_AUTO_STOP_SILENCE_DURATION,
-        # Ollama
-        "ollama_model": "",
     },
     "IMAGE": {
         "model": G4F_DEFAULT_IMAGE_MODEL,
@@ -1198,55 +1196,6 @@ CONFIG_DATA = {
         "number_of_images_to_create": 2,
         "save_prompt_as_text": True
     }
-
-    # "DALLE": {
-    #     "quality": "standard",
-    #     "n": 1,
-    #     "size": "1024x1024",
-    #     "style": "vivid",
-    #     "response_format": "b64_json",
-    #     "width": 1024,
-    #     "height": 1024,
-    #     "prompt_type": 1,
-    #     "show_history": True,
-    #     "show_setting": True,
-    #     "prompt": "Astronaut in a jungle, cold color palette, muted colors, detailed, 8k",
-    #     "directory": QFILEDIALOG_DEFAULT_DIRECTORY,
-    #     "is_save": True,
-    #     "continue_generation": False,
-    #     "number_of_images_to_create": 2,
-    #     "save_prompt_as_text": True,
-    #     "show_prompt_on_image": False,
-    # },
-    # "REPLICATE": {
-    #     "model": "stability-ai/sdxl:39ed52f2a78e934b3ba6e2a89f5b1c712de7dfea535525255b1aa35c5565e08b",
-    #     "width": 768,
-    #     "height": 768,
-    #     "show_history": True,
-    #     "show_setting": True,
-    #     "prompt": "Astronaut in a jungle, cold color palette, muted colors, detailed, 8k",
-    #     "directory": QFILEDIALOG_DEFAULT_DIRECTORY,
-    #     "is_save": True,
-    #     "continue_generation": False,
-    #     "number_of_images_to_create": 2,
-    #     "save_prompt_as_text": True,
-    #     "show_prompt_on_image": False,
-    #     "negative_prompt": "ugly, deformed, noisy, blurry, distorted",
-    # },
-    # "G4F_IMAGE": {
-    #     "model": G4F_DEFAULT_IMAGE_MODEL,
-    #     "provider": G4F_PROVIDER_DEFAULT,
-    #     "show_history": True,
-    #     "show_setting": True,
-    #     "prompt": "Astronaut in a jungle, cold color palette, muted colors, detailed, 8k",
-    #     "directory": QFILEDIALOG_DEFAULT_DIRECTORY,
-    #     "is_save": True,
-    #     "continue_generation": False,
-    #     "number_of_images_to_create": 2,
-    #     "save_prompt_as_text": True,
-    #     "show_prompt_on_image": False,
-    #     "negative_prompt": "ugly, deformed, noisy, blurry, distorted",
-    # },
 }
 
 

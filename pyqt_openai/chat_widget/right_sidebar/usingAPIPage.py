@@ -282,6 +282,10 @@ class UsingAPIPage(QWidget):
         self.__llamaChkBox.toggled.connect(self.__use_llama_indexChecked)
         self.__llamaChkBox.setText(LangClass.TRANSLATIONS["Use LlamaIndex (You need OpenAI API key)"])
 
+        self.__useRag = QCheckBox()
+        # self.__useRag.setChecked(self.__use_llama_index)
+        self.__useRag.setText(LangClass.TRANSLATIONS["Use RAG (Retrieval Augmented Generation, requires Tavily API key)"])
+
         lay = QVBoxLayout()
         lay.addWidget(manualBrowser)
         lay.addWidget(getSeparator("horizontal"))
@@ -296,6 +300,7 @@ class UsingAPIPage(QWidget):
         lay.addWidget(self.__jsonChkBox)
         lay.addWidget(self.__llamaChkBox)
         lay.addWidget(llamaManualLbl)
+        lay.addWidget(self.__useRag)
         lay.addWidget(getSeparator("horizontal"))
         lay.addWidget(advancedSettingsGrpBox)
         lay.setAlignment(Qt.AlignmentFlag.AlignTop)

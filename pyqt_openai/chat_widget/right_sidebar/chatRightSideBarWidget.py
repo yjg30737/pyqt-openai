@@ -6,7 +6,6 @@ from qtpy.QtCore import Signal
 from qtpy.QtWidgets import QGridLayout, QMessageBox, QScrollArea, QTabWidget, QWidget
 
 from pyqt_openai.chat_widget.right_sidebar.llama_widget.llamaPage import LlamaPage
-from pyqt_openai.chat_widget.right_sidebar.ollama_widget.ollamaPage import OllamaPage
 from pyqt_openai.chat_widget.right_sidebar.usingAPIPage import UsingAPIPage
 from pyqt_openai.chat_widget.right_sidebar.usingG4FPage import UsingG4FPage
 from pyqt_openai.config_loader import CONFIG_MANAGER
@@ -36,14 +35,12 @@ class ChatRightSideBarWidget(QScrollArea):
 
         usingG4FPage = UsingG4FPage()
         usingAPIPage = UsingAPIPage()
-        ollamaPage = OllamaPage()
         self.__llamaPage = LlamaPage()
         self.__llamaPage.onDirectorySelected.connect(self.__onDirectorySelected)
 
         # TODO LANGUAGE
         tabWidget.addTab(usingG4FPage, "Using G4F (Free)")
         tabWidget.addTab(usingAPIPage, "Using API")
-        tabWidget.addTab(ollamaPage, "Ollama (Free)")
         tabWidget.addTab(self.__llamaPage, "LlamaIndex")
         tabWidget.currentChanged.connect(self.__tabChanged)
         tabWidget.setTabEnabled(3, self.__use_llama_index)
