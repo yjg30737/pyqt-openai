@@ -1162,6 +1162,8 @@ CONFIG_DATA = {
         "use_max_tokens": False,
         # Llama Index
         "use_llama_index": False,
+        # RAG
+        "use_rag": False,
         "llama_index_directory": "",
         "llama_index_supported_formats": LLAMA_INDEX_DEFAULT_SUPPORTED_FORMATS_LIST,
         # Customize

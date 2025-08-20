@@ -24,6 +24,7 @@ from inspect import signature
 from pathlib import Path
 
 import filetype
+import litellm
 import numpy as np
 import psutil
 from g4f.providers.base_provider import ProviderModelMixin
@@ -861,7 +862,18 @@ def stream_response(response, is_g4f=False, get_content_only=True):
 
 def get_api_response(args, get_content_only=True):
     try:
-        response = completion(drop_params=True, **args)
+        response = ''
+        if litellm.supports_web_search(args["model"]):
+            response = completion(
+                model=args["model"],
+                messages=args["messages"],
+                stream=args["stream"],
+                web_search_options={
+                    "search_context_size": "low"  # Options: "low", "medium" (default), "high"
+                }
+            )
+        else:
+            response = completion(drop_params=True, **args)
         if args["stream"]:
             return stream_response(response)
         else:

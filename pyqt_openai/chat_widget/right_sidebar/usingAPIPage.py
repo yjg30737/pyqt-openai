@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import litellm
 from qtpy.QtCore import Qt, Signal
 from qtpy.QtGui import QFont
 from qtpy.QtWidgets import (
@@ -72,11 +73,11 @@ class UsingAPIPage(QWidget):
 
         self.__use_max_tokens = CONFIG_MANAGER.get_general_property("use_max_tokens")
         self.__use_llama_index = CONFIG_MANAGER.get_general_property("use_llama_index")
+        self.__use_rag = CONFIG_MANAGER.get_general_property("use_rag")
 
         self.__warningMessage = (
             "Note: For models other than OpenAI and Anthropic, please enter the model name in the format [ProviderName]/[ModelName].\n"
-            "For more information about ProviderName and ModelName, please refer to litellm documentation.\n"
-            "Certain models may not support JSON Mode or LlamaIndex."
+            "Certain models may not support JSON Mode, LlamaIndex."
         )
 
     def __initUi(self):
@@ -90,13 +91,14 @@ class UsingAPIPage(QWidget):
         <h2>Using API</h2>
         <h3>Description</h3>
         <p>- Fast responses.</p>
-        <p>- Stable response server.</p>
+        <p>- Stable response server. (Including Ollama)</p>
         <p>- Ability to save your AI usage history and statistics.</p>
         <p>- Option to add custom LLMs you have created.</p>
         <p>- Ability to save conversation history on the server.</p>
         <p>- JSON response functionality available (limited to specific LLMs).</p>
         <p>- LlamaIndex can be used.</p>
         <p>- Various hyperparameters can be assigned.</p>
+        <p>- RAG (Retrieval Augmented Generation) can be used.</p>
         """,
         )
 
@@ -272,6 +274,10 @@ class UsingAPIPage(QWidget):
             ],
         )
 
+        providersLink = LinkLabel()
+        providersLink.setText(LangClass.TRANSLATIONS["Supported Providers"])
+        providersLink.setUrl("https://docs.litellm.ai/docs/providers")
+
         # TODO LANGUAGE
         llamaManualLbl = LinkLabel()
         llamaManualLbl.setText(LangClass.TRANSLATIONS["What is LlamaIndex?"])
@@ -283,8 +289,12 @@ class UsingAPIPage(QWidget):
         self.__llamaChkBox.setText(LangClass.TRANSLATIONS["Use LlamaIndex (You need OpenAI API key)"])
 
         self.__useRag = QCheckBox()
-        # self.__useRag.setChecked(self.__use_llama_index)
+        self.__useRag.setChecked(self.__use_rag)
+        self.__useRag.toggled.connect(self.__use_rag_Checked)
         self.__useRag.setText(LangClass.TRANSLATIONS["Use RAG (Retrieval Augmented Generation, requires Tavily API key)"])
+        self.__useRagLbl = QLabel()
+        self.__show_rag_warning()
+        self.__useRagLbl.setStyleSheet(f"color: {DEFAULT_WARNING_COLOR};")
 
         lay = QVBoxLayout()
         lay.addWidget(manualBrowser)
@@ -296,11 +306,13 @@ class UsingAPIPage(QWidget):
         lay.addWidget(setApiBtn)
         lay.addWidget(selectModelWidget)
         lay.addWidget(self.__warningLbl)
+        lay.addWidget(providersLink)
         lay.addWidget(streamChkBox)
         lay.addWidget(self.__jsonChkBox)
         lay.addWidget(self.__llamaChkBox)
         lay.addWidget(llamaManualLbl)
         lay.addWidget(self.__useRag)
+        lay.addWidget(self.__useRagLbl)
         lay.addWidget(getSeparator("horizontal"))
         lay.addWidget(advancedSettingsGrpBox)
         lay.setAlignment(Qt.AlignmentFlag.AlignTop)
@@ -322,6 +334,7 @@ class UsingAPIPage(QWidget):
             self.__warningLbl.setText(self.__warningMessage + additional_message)
         else:
             self.__warningLbl.setText(self.__warningMessage)
+        self.__show_rag_warning()
 
     def __streamChecked(self, f):
         self.__stream = f
@@ -331,6 +344,24 @@ class UsingAPIPage(QWidget):
         self.__json_object = f
         CONFIG_MANAGER.set_general_property("json_object", f)
         self.onToggleJSON.emit(f)
+
+    def __show_rag_warning(self):
+        if litellm.supports_web_search(self.__model):
+            self.__useRagLbl.setText(
+                LangClass.TRANSLATIONS["RAG is enabled for this model."],
+            )
+        else:
+            self.__useRagLbl.setText(
+                LangClass.TRANSLATIONS["RAG is not supported for this model."],
+            )
+
+    def __use_rag_Checked(self, f):
+        self.__use_rag = f
+        CONFIG_MANAGER.set_general_property("use_rag", f)
+        if f:
+            self.__show_rag_warning()
+        else:
+            self.__useRagLbl.setText("")
 
     def __use_llama_indexChecked(self, f):
         self.__use_llama_index = f
