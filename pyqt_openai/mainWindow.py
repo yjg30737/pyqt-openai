@@ -10,6 +10,7 @@ from qtpy.QtWidgets import (
     QAction,  # pyright: ignore[reportPrivateImportUsage]
     QApplication,
     QDialog,
+    QPushButton,
     QHBoxLayout,
     QMainWindow,
     QMenu,
@@ -128,6 +129,27 @@ class MainWindow(QMainWindow):
         self.__stackAction.setIcon(QIcon(ICON_STACKONTOP))
         self.__stackAction.setCheckable(True)
         self.__stackAction.toggled.connect(self.__stackToggle)
+
+        self.__vividNodeV2 = QPushButton("VividNode V2 is now available! (Click here)", self)
+        # Extremely colorful and eye-catching button
+        self.__vividNodeV2.setStyleSheet("""
+            QPushButton {
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                    stop:0 #ff7e5f, stop:1 #feb47b);
+                border: none;
+                color: white;
+                padding: 5px 10px;
+                border-radius: 5px;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background: qlineargradient(x1:0, y1:0, x2:
+1, y2:1,
+                    stop:0 #feb47b, stop:1 #ff7e5f);
+            }
+        """)
+        self.__vividNodeV2.clicked.connect(lambda: webbrowser.open("https://github.com/yjg30737/vividnodev2"))
+
 
         self.__showSecondaryToolBarAction = QAction(LangClass.TRANSLATIONS["Show Secondary Toolbar"], self)
         self.__showSecondaryToolBarAction.setShortcut(DEFAULT_SHORTCUT_SHOW_SECONDARY_TOOLBAR)
@@ -301,6 +323,7 @@ class MainWindow(QMainWindow):
     def __setToolBar(self):
         self.__toolbar = QToolBar()
         self.__toolbar.addAction(self.__chooseAiAction)
+        self.__toolbar.addWidget(self.__vividNodeV2)
         self.__toolbar.addAction(self.__showSecondaryToolBarAction)
         self.__toolbar.addAction(self.__fullScreenAction)
         self.__toolbar.addAction(self.__stackAction)
